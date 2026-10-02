@@ -65,7 +65,7 @@ export function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@example.com"
+                placeholder="priya.sharma@gmail.com"
                 className="w-full text-xs sm:text-sm pl-9 pr-3 py-2.5 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon"
               />
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -90,38 +90,38 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-brand-maroon hover:bg-brand-maroon-hover disabled:bg-neutral-400 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center space-x-2"
+            className="w-full py-3 bg-[#5A1827] hover:bg-[#43121D] disabled:bg-neutral-400 text-white font-bold text-xs sm:text-sm rounded-xl shadow-2xs transition-all flex items-center justify-center space-x-2 cursor-pointer"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Sign In</span>}
           </button>
         </form>
 
-        {/* Quick Demo Credentials */}
-        <div className="bg-brand-cream border border-brand-border rounded-xl p-4 text-xs space-y-2">
-          <p className="font-bold text-neutral-800 text-[11px] uppercase tracking-wider">Quick Demo Login Accounts:</p>
-          <div className="flex flex-col gap-1.5">
+        {/* Quick Access Portals */}
+        <div className="bg-[#FAF7F2] border border-neutral-200/90 rounded-2xl p-4 text-xs space-y-2">
+          <p className="font-bold text-neutral-800 text-[11px] uppercase tracking-wider">Quick Sign-In Accounts:</p>
+          <div className="flex flex-col gap-2">
             <button
               type="button"
               onClick={() => handleQuickLogin('admin@oct9.com', 'admin123')}
-              className="w-full text-left px-3 py-2 bg-white rounded-lg border border-neutral-200 hover:border-brand-maroon flex items-center justify-between"
+              className="w-full text-left p-3 bg-white rounded-xl border border-neutral-200 hover:border-brand-maroon flex items-center justify-between shadow-2xs cursor-pointer transition-colors"
             >
               <div>
-                <strong className="text-neutral-900 block">Admin Account</strong>
-                <span className="text-[10px] text-neutral-500">admin@oct9.com (Full Delhivery & Razorpay Admin)</span>
+                <strong className="text-neutral-900 block text-xs">Admin Management Console</strong>
+                <span className="text-[11px] text-neutral-500">admin@oct9.com (Delhivery Logistics & Razorpay Admin)</span>
               </div>
-              <span className="text-[10px] text-brand-maroon font-bold">Autofill</span>
+              <span className="text-[11px] text-brand-maroon font-bold bg-[#FBF1F3] px-2 py-0.5 rounded">Autofill</span>
             </button>
 
             <button
               type="button"
               onClick={() => handleQuickLogin('customer@example.com', 'customer123')}
-              className="w-full text-left px-3 py-2 bg-white rounded-lg border border-neutral-200 hover:border-brand-maroon flex items-center justify-between"
+              className="w-full text-left p-3 bg-white rounded-xl border border-neutral-200 hover:border-brand-maroon flex items-center justify-between shadow-2xs cursor-pointer transition-colors"
             >
               <div>
-                <strong className="text-neutral-900 block">Demo Customer</strong>
-                <span className="text-[10px] text-neutral-500">customer@example.com (Priya Sharma)</span>
+                <strong className="text-neutral-900 block text-xs">Customer Account</strong>
+                <span className="text-[11px] text-neutral-500">customer@example.com (Priya Sharma)</span>
               </div>
-              <span className="text-[10px] text-brand-maroon font-bold">Autofill</span>
+              <span className="text-[11px] text-brand-maroon font-bold bg-[#FBF1F3] px-2 py-0.5 rounded">Autofill</span>
             </button>
           </div>
         </div>

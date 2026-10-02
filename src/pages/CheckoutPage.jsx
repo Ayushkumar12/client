@@ -191,35 +191,32 @@ export function CheckoutPage() {
           currency: 'INR',
           name: 'OCT9 Luxury Ethnic Wear',
           description: `Order #${createdOrder.order_number}`,
-          image: '/logo-gold.svg',
+          image: '/oct9-logo.jpg',
           order_id: createdOrder.razorpay_order_id,
           handler: async function (response) {
-            console.log('💳 [Razorpay Payment Success Callback Response]:', response);
             try {
               // Verify Signature on backend
               const verifyPayload = {
                 order_id: createdOrder.id,
                 order_number: createdOrder.order_number,
                 razorpay_order_id: response.razorpay_order_id || createdOrder.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id || `pay_${Date.now()}`,
-                razorpay_signature: response.razorpay_signature || 'demo_sig_signature_verified'
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
               };
-              console.log('💳 [Razorpay Verification] Sending payload to server:', verifyPayload);
 
               const verifyRes = await api.verifyPayment(verifyPayload);
-              console.log('✅ [Razorpay Verification Result]:', verifyRes);
 
               if (verifyRes.success) {
                 confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
                 clearCart();
                 navigate(`/order-success/${createdOrder.order_number}`);
               } else {
-                setErrorMsg('Payment verification failed: ' + verifyRes.message);
+                setErrorMsg('Payment verification failed: ' + (verifyRes.message || 'Verification rejected'));
                 setIsProcessing(false);
               }
             } catch (verErr) {
-              console.error('❌ [Razorpay Verification Error]:', verErr);
-              setErrorMsg('Error verifying payment: ' + verErr.message);
+              console.error('Payment Verification Error:', verErr);
+              setErrorMsg('Error verifying payment: ' + (verErr.message || 'Network error'));
               setIsProcessing(false);
             }
           },
@@ -233,39 +230,21 @@ export function CheckoutPage() {
           },
           modal: {
             ondismiss: function () {
-              console.log('💳 [Razorpay Modal] Dismissed by user.');
               setIsProcessing(false);
             }
           }
         };
 
         if (typeof window.Razorpay !== 'undefined') {
-          console.log('💳 [Razorpay SDK] Opening checkout window...');
           const rzp = new window.Razorpay(options);
           rzp.on('payment.failed', function (resp) {
-            console.error('❌ [Razorpay Payment Failed Response]:', resp);
-            setErrorMsg('Payment Failed: ' + (resp.error.description || 'Transaction cancelled'));
+            setErrorMsg('Payment Failed: ' + (resp.error?.description || 'Transaction cancelled'));
             setIsProcessing(false);
           });
           rzp.open();
         } else {
-          console.warn('⚠️ [Razorpay SDK] window.Razorpay not found. Simulating Sandbox flow...');
-          // Sandbox Fallback Simulation if script blocked
-          setTimeout(async () => {
-            const simPayload = {
-              order_id: createdOrder.id,
-              order_number: createdOrder.order_number,
-              razorpay_order_id: createdOrder.razorpay_order_id,
-              razorpay_payment_id: `pay_sim_${Date.now()}`,
-              razorpay_signature: 'demo_sig_sample'
-            };
-            console.log('💳 [Razorpay Simulated Callback Response]:', simPayload);
-            const verifyRes = await api.verifyPayment(simPayload);
-            console.log('✅ [Razorpay Verification Result]:', verifyRes);
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            clearCart();
-            navigate(`/order-success/${createdOrder.order_number}`);
-          }, 1000);
+          setErrorMsg('Payment gateway is loading. Please verify your internet connection and try again.');
+          setIsProcessing(false);
         }
       }
     } catch (err) {
@@ -309,13 +288,13 @@ export function CheckoutPage() {
                       required
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="e.g. Priya Sharma"
+                      placeholder="Full Name as per ID"
                       className="w-full text-xs sm:text-sm p-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-brand-maroon"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-neutral-700 mb-1">Mobile Phone (for Delhivery Updates) *</label>
+                    <label className="block text-xs font-bold text-neutral-700 mb-1">Mobile Phone (for Delivery SMS) *</label>
                     <input
                       type="tel"
                       name="phone"
@@ -323,7 +302,7 @@ export function CheckoutPage() {
                       maxLength={10}
                       value={formData.phone}
                       onChange={handleInputChange}
-                      placeholder="e.g. 9811223344"
+                      placeholder="10-digit mobile number"
                       className="w-full text-xs sm:text-sm p-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-brand-maroon"
                     />
                   </div>
@@ -336,7 +315,7 @@ export function CheckoutPage() {
                       required
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="e.g. priya@example.com"
+                      placeholder="name@domain.com"
                       className="w-full text-xs sm:text-sm p-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-brand-maroon"
                     />
                   </div>
@@ -363,7 +342,7 @@ export function CheckoutPage() {
                       required
                       value={formData.address_line1}
                       onChange={handleInputChange}
-                      placeholder="e.g. Flat 402, Royal Palms Residency"
+                      placeholder="House / Flat No., Apartment Name, Street"
                       className="w-full text-xs sm:text-sm p-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-brand-maroon"
                     />
                   </div>
@@ -375,7 +354,7 @@ export function CheckoutPage() {
                       name="address_line2"
                       value={formData.address_line2}
                       onChange={handleInputChange}
-                      placeholder="e.g. Near City Mall, MG Road"
+                      placeholder="Landmark, Area, Colony"
                       className="w-full text-xs sm:text-sm p-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-brand-maroon"
                     />
                   </div>

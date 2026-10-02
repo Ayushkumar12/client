@@ -61,7 +61,7 @@ export function RegisterPage() {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g. Ananya Mehra"
+                placeholder="Full Name as per ID"
                 className="w-full text-xs sm:text-sm pl-9 pr-3 py-2.5 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon"
               />
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -76,7 +76,7 @@ export function RegisterPage() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="ananya@example.com"
+                placeholder="name@domain.com"
                 className="w-full text-xs sm:text-sm pl-9 pr-3 py-2.5 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon"
               />
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -84,14 +84,14 @@ export function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-neutral-700 mb-1">Mobile Number (for Delhivery updates)</label>
+            <label className="block text-xs font-bold text-neutral-700 mb-1">Mobile Number (for Delivery SMS)</label>
             <div className="relative">
               <input
                 type="tel"
                 maxLength={10}
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="9876543210"
+                placeholder="10-digit mobile number"
                 className="w-full text-xs sm:text-sm pl-9 pr-3 py-2.5 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon"
               />
               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -117,7 +117,7 @@ export function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-brand-maroon hover:bg-brand-maroon-hover disabled:bg-neutral-400 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center space-x-2"
+            className="w-full py-3 bg-[#5A1827] hover:bg-[#43121D] disabled:bg-neutral-400 text-white font-bold text-xs sm:text-sm rounded-xl shadow-2xs transition-all flex items-center justify-center space-x-2 cursor-pointer"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Create OCT9 Account</span>}
           </button>

@@ -1,52 +1,11 @@
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 /**
- * Native Vector Tax Invoice PDF Generator & Downloader
- * Generates official A4 Tax Invoices matching Indian GST & Delhivery E-Commerce Standards
- * Outputs a 100% valid, crisp vector .pdf file that downloads directly without preview modals.
+ * Native Vector Tax Invoice PDF Generator & Direct Downloader
+ * Generates official A4 Tax Invoices adhering to Indian GST & Delhivery Logistics Standards.
+ * Triggers direct browser download as a valid, non-corrupt .pdf file with 0 preview modals.
  */
-
-async function ensureJsPdfLoaded() {
-  if (window.jspdf && window.jspdf.jsPDF) {
-    return window.jspdf;
-  }
-  if (window.jsPDF) {
-    return { jsPDF: window.jsPDF };
-  }
-
-  // Load jsPDF from CDN if not already loaded
-  await new Promise((resolve, reject) => {
-    const existing = document.querySelector('script[src*="jspdf.umd.min.js"]');
-    if (existing) {
-      existing.addEventListener('load', resolve);
-      existing.addEventListener('error', reject);
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-
-  // Load AutoTable plugin
-  if (!window.jspdf?.jsPDF?.prototype?.autoTable) {
-    await new Promise((resolve, reject) => {
-      const existing = document.querySelector('script[src*="jspdf.plugin.autotable"]');
-      if (existing) {
-        existing.addEventListener('load', resolve);
-        existing.addEventListener('error', reject);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
-  }
-
-  return window.jspdf || { jsPDF: window.jsPDF };
-}
-
 export async function downloadOrderInvoicePdf(order) {
   if (!order) {
     alert('Order details not found for invoice download.');
@@ -54,9 +13,6 @@ export async function downloadOrderInvoicePdf(order) {
   }
 
   try {
-    const jspdfModule = await ensureJsPdfLoaded();
-    const { jsPDF } = jspdfModule;
-
     const doc = new jsPDF({
       unit: 'mm',
       format: 'a4',
@@ -76,7 +32,7 @@ export async function downloadOrderInvoicePdf(order) {
       : [
           {
             product_title: 'Luxury Designer Ethnic Wear',
-            product_id: 'ETH',
+            product_id: 'ETH-001',
             size: 'Free Size',
             color: 'Standard',
             price: Number(order.grand_total || 1999),
@@ -85,151 +41,168 @@ export async function downloadOrderInvoicePdf(order) {
           }
         ];
 
-    const invoiceNum = `INV-${(order.order_number || 'OCT9-2026').replace('OCT9-', '')}`;
-    const salesNum = `SO-${(order.order_number || 'OCT9-2026').replace('OCT9-', '')}`;
+    const orderNum = order.order_number || 'OCT9-2026';
+    const invoiceNum = `INV-${orderNum.replace(/^OCT9-/, '')}`;
+    const salesNum = `SO-${orderNum.replace(/^OCT9-/, '')}`;
     const rawDate = new Date(order.created_at || Date.now());
-    const formattedDate = rawDate.toISOString().replace('T', ' ').substring(0, 19);
+    const formattedDate = !isNaN(rawDate.getTime()) 
+      ? rawDate.toISOString().replace('T', ' ').substring(0, 19)
+      : new Date().toISOString().replace('T', ' ').substring(0, 19);
 
     const discountAmount = Number(order.discount_amount || 0);
     const grandTotal = Number(order.grand_total || 0);
+    const subtotal = Number(order.subtotal || grandTotal + discountAmount);
     const isCOD = order.payment_method === 'cod';
-    const waybill = order.delhivery_waybill || '';
+    const waybill = order.delhivery_waybill || 'Pending Delhivery Dispatch';
 
-    // ==========================================
-    // 1. HEADER (Title, Invoice No, Date)
-    // ==========================================
-    doc.setTextColor(20, 20, 20);
+    // =========================================================================
+    // 1. BRAND HEADER & TAX INVOICE BADGE
+    // =========================================================================
+    // Top maroon accent bar
+    doc.setFillColor(90, 24, 39); // #5A1827 Brand Maroon
+    doc.rect(14, 12, 182, 3, 'F');
+
+    // Title
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(22);
-    doc.text('Tax Invoice', 14, 18);
+    doc.setFontSize(20);
+    doc.setTextColor(30, 30, 30);
+    doc.text('Tax Invoice', 14, 24);
 
+    // Invoice Metadata (Right Aligned)
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9.5);
-    doc.setTextColor(60, 60, 60);
-    doc.text(`Invoice No: `, 14, 25);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(20, 20, 20);
-    doc.text(invoiceNum, 34, 25);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(60, 60, 60);
-    doc.text(`Date: ${formattedDate}`, 14, 30);
-
-    // ==========================================
-    // 2. BILL FROM
-    // ==========================================
-    doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
-    doc.setTextColor(20, 20, 20);
-    doc.text('BILL FROM', 14, 38);
-
-    doc.setFontSize(9.5);
-    doc.text('OCT9 Luxury Apparel Pvt. Ltd.', 14, 43);
+    doc.setTextColor(80, 80, 80);
+    doc.text('Invoice No:', 135, 20);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 30, 30);
+    doc.text(invoiceNum, 160, 20);
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(70, 70, 70);
-    doc.text('Plot 42, Okhla Industrial Area Phase-III, New Delhi - 110020, Delhi, IN', 14, 48);
-    doc.text('Email: care@oct9.in   •   GSTIN: 07AAFCO9999P1Z8', 14, 53);
+    doc.setTextColor(80, 80, 80);
+    doc.text('Date & Time:', 135, 25);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 30, 30);
+    doc.text(formattedDate, 160, 25);
 
-    // Divider Line
-    doc.setDrawColor(220, 220, 220);
+    // =========================================================================
+    // 2. SELLER INFORMATION (BILL FROM)
+    // =========================================================================
+    doc.setDrawColor(225, 225, 225);
     doc.setLineWidth(0.3);
-    doc.line(14, 58, 196, 58);
+    doc.line(14, 29, 196, 29);
 
-    // ==========================================
-    // 3. 2-COLUMN ADDRESSES
-    // ==========================================
-    const leftX = 14;
-    const rightX = 108;
-
-    // Left: Shipping Address
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(20, 20, 20);
-    doc.text('SHIPPING ADDRESS', leftX, 65);
+    doc.setFontSize(8.5);
+    doc.setTextColor(90, 24, 39);
+    doc.text('SELLER / BILL FROM', 14, 35);
 
-    doc.setFontSize(9.5);
-    doc.text(order.customer_name || 'Valued Customer', leftX, 70);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(20, 20, 20);
+    doc.text('OCT9 Luxury Apparel Pvt. Ltd.', 14, 40);
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
+    doc.setFontSize(8);
     doc.setTextColor(70, 70, 70);
-    const shipAddrLine1 = `${addr.address_line1 || ''} ${addr.address_line2 || ''}`.trim() || 'Address on file';
-    const shipAddrLine2 = `${addr.city || 'Delhi'}, ${addr.state || 'Delhi'} - ${addr.pincode || '110001'}`;
-    const shipContact = `Email: ${order.customer_email || ''}  •  Phone: +91 ${order.customer_phone || ''}`;
+    doc.text('Plot 42, Okhla Industrial Area Phase-III, New Delhi - 110020, Delhi, India', 14, 45);
+    doc.text('Email: care@oct9.in   |   GSTIN: 07AAFCO9999P1Z8   |   PAN: AAFCO9999P', 14, 50);
 
-    doc.text(shipAddrLine1, leftX, 75);
-    doc.text(shipAddrLine2, leftX, 80);
-    doc.text(shipContact, leftX, 85);
+    // =========================================================================
+    // 3. SHIPPING & BILLING ADDRESSES (2 COLUMNS)
+    // =========================================================================
+    doc.line(14, 54, 196, 54);
 
-    // Right: Billing Address
+    const leftCol = 14;
+    const rightCol = 108;
+
+    // Shipping Address
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(20, 20, 20);
-    doc.text('BILLING ADDRESS', rightX, 65);
+    doc.setFontSize(8.5);
+    doc.setTextColor(90, 24, 39);
+    doc.text('SHIPPING ADDRESS (CONSIGNEE)', leftCol, 60);
 
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(9.5);
-    doc.text(order.customer_name || 'Valued Customer', rightX, 70);
+    doc.setTextColor(20, 20, 20);
+    doc.text(order.customer_name || 'Valued Customer', leftCol, 65);
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
+    doc.setFontSize(8);
     doc.setTextColor(70, 70, 70);
-    const billAddrLine1 = `${billingAddr.address_line1 || addr.address_line1 || ''} ${billingAddr.address_line2 || ''}`.trim() || shipAddrLine1;
-    const billAddrLine2 = `${billingAddr.city || addr.city || 'Delhi'}, ${billingAddr.state || addr.state || 'Delhi'} - ${billingAddr.pincode || addr.pincode || '110001'}`;
-    const billContact = shipContact;
+    const shipAddr1 = `${addr.address_line1 || ''} ${addr.address_line2 || ''}`.trim() || 'Address on file';
+    const shipAddr2 = `${addr.city || 'Delhi'}, ${addr.state || 'Delhi'} - ${addr.pincode || '110001'}`;
+    const shipContact = `Phone: +91 ${order.customer_phone || 'N/A'}   |   Email: ${order.customer_email || 'N/A'}`;
 
-    doc.text(billAddrLine1, rightX, 75);
-    doc.text(billAddrLine2, rightX, 80);
-    doc.text(billContact, rightX, 85);
+    doc.text(shipAddr1, leftCol, 70);
+    doc.text(shipAddr2, leftCol, 75);
+    doc.text(shipContact, leftCol, 80);
 
-    // Divider Line
-    doc.line(14, 91, 196, 91);
+    // Billing Address
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(90, 24, 39);
+    doc.text('BILLING ADDRESS', rightCol, 60);
 
-    // ==========================================
-    // 4. ORDER DETAILS
-    // ==========================================
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9.5);
+    doc.setTextColor(20, 20, 20);
+    doc.text(order.customer_name || 'Valued Customer', rightCol, 65);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(70, 70, 70);
+    const billAddr1 = `${billingAddr.address_line1 || addr.address_line1 || ''} ${billingAddr.address_line2 || ''}`.trim() || shipAddr1;
+    const billAddr2 = `${billingAddr.city || addr.city || 'Delhi'}, ${billingAddr.state || addr.state || 'Delhi'} - ${billingAddr.pincode || addr.pincode || '110001'}`;
+
+    doc.text(billAddr1, rightCol, 70);
+    doc.text(billAddr2, rightCol, 75);
+    doc.text(shipContact, rightCol, 80);
+
+    // =========================================================================
+    // 4. ORDER & LOGISTICS DETAILS (DELHIVERY ONE METADATA)
+    // =========================================================================
+    doc.line(14, 85, 196, 85);
+
+    doc.setFillColor(250, 247, 242); // Warm Cream
+    doc.rect(14, 87, 182, 18, 'F');
+    doc.rect(14, 87, 182, 18, 'S');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(80, 80, 80);
+    doc.text('SALES ORDER NO', 18, 93);
+    doc.text('DELHIVERY AWB NO', 68, 93);
+    doc.text('PAYMENT MODE', 125, 93);
+    doc.text('PLACE OF SUPPLY', 165, 93);
+
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
     doc.setTextColor(20, 20, 20);
-    doc.text('ORDER DETAILS', 14, 98);
+    doc.text(salesNum, 18, 99);
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(60, 60, 60);
+    doc.setTextColor(90, 24, 39); // Maroon for AWB
+    doc.text(waybill, 68, 99);
 
-    doc.text(`Sales Number:`, 14, 103);
-    doc.setFont('helvetica', 'bold');
     doc.setTextColor(20, 20, 20);
-    doc.text(salesNum, 38, 103);
+    doc.text(isCOD ? 'COD (Cash On Delivery)' : 'PREPAID (Razorpay)', 125, 99);
+    doc.text(`${addr.state || 'Delhi'} (07)`, 165, 99);
 
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(60, 60, 60);
-    doc.text(`AWB Number:`, 14, 108);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(90, 24, 39); // Brand Maroon
-    doc.text(waybill || 'Pending Allocation', 38, 108);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(60, 60, 60);
-    doc.text(`Sale Date:`, 14, 113);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(20, 20, 20);
-    doc.text(formattedDate, 38, 113);
-
-    // ==========================================
-    // 5. ITEMIZED TABLE (AutoTable)
-    // ==========================================
+    // =========================================================================
+    // 5. ITEM TABLE (jsPDF AutoTable)
+    // =========================================================================
     const tableHeaders = [
       'Item Description',
-      'SKU Code',
+      'HSN/SKU',
       'Qty',
-      'Rate',
-      'Disc',
-      'Taxable',
-      'Tax',
-      'Total'
+      'Gross Rate',
+      'Discount',
+      'Taxable Val',
+      'GST (5%)',
+      'Total (INR)'
     ];
+
+    let computedSubtotal = 0;
+    let computedTax = 0;
 
     const tableRows = items.map((it) => {
       const qty = Number(it.quantity || 1);
@@ -238,118 +211,144 @@ export async function downloadOrderInvoicePdf(order) {
       const taxable = lineTotal - tax;
       const rate = Number(it.price);
       const skuCode = `OCT9-${it.product_id || 'ETH'}${it.size ? `-${it.size}` : ''}`;
-      const desc = `${it.product_title}\nSize: ${it.size || 'Free Size'}${it.color ? ` | Color: ${it.color}` : ''}`;
+      const desc = `${it.product_title || 'Luxury Designer Suit'}\nSize: ${it.size || 'Free Size'}${it.color ? ` | Color: ${it.color}` : ''}`;
+
+      computedSubtotal += taxable;
+      computedTax += tax;
 
       return [
         desc,
         skuCode,
         qty.toString(),
-        `INR ${rate.toFixed(0)}`,
-        `INR 0`,
-        `INR ${taxable.toFixed(1)}`,
-        `INR ${tax.toFixed(0)}`,
-        `INR ${lineTotal.toFixed(0)}`
+        `Rs. ${rate.toFixed(0)}`,
+        `Rs. 0`,
+        `Rs. ${taxable.toFixed(2)}`,
+        `Rs. ${tax.toFixed(2)}`,
+        `Rs. ${lineTotal.toFixed(2)}`
       ];
     });
 
-    if (doc.autoTable) {
-      doc.autoTable({
-        startY: 118,
-        head: [tableHeaders],
-        body: tableRows,
-        margin: { left: 14, right: 14 },
-        theme: 'plain',
-        headStyles: {
-          fillColor: [248, 248, 248],
-          textColor: [20, 20, 20],
-          fontSize: 8,
-          fontStyle: 'bold',
-          lineWidth: 0.2,
-          lineColor: [220, 220, 220]
-        },
-        bodyStyles: {
-          fontSize: 8,
-          textColor: [40, 40, 40],
-          lineWidth: 0.1,
-          lineColor: [238, 238, 238]
-        },
-        columnStyles: {
-          0: { cellWidth: 55 },
-          1: { cellWidth: 28, font: 'courier' },
-          2: { cellWidth: 12, halign: 'center' },
-          3: { cellWidth: 20, halign: 'right' },
-          4: { cellWidth: 16, halign: 'right' },
-          5: { cellWidth: 22, halign: 'right' },
-          6: { cellWidth: 16, halign: 'right' },
-          7: { cellWidth: 23, halign: 'right', fontStyle: 'bold' }
-        }
-      });
-    }
+    autoTable(doc, {
+      startY: 110,
+      head: [tableHeaders],
+      body: tableRows,
+      margin: { left: 14, right: 14 },
+      theme: 'plain',
+      styles: {
+        font: 'helvetica',
+        fontSize: 8,
+        cellPadding: 3,
+        overflow: 'linebreak'
+      },
+      headStyles: {
+        fillColor: [90, 24, 39],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        halign: 'left'
+      },
+      bodyStyles: {
+        textColor: [40, 40, 40],
+        lineColor: [230, 230, 230],
+        lineWidth: 0.1
+      },
+      alternateRowStyles: {
+        fillColor: [253, 251, 249]
+      },
+      columnStyles: {
+        0: { cellWidth: 55 },
+        1: { cellWidth: 28, font: 'courier' },
+        2: { cellWidth: 12, halign: 'center' },
+        3: { cellWidth: 20, halign: 'right' },
+        4: { cellWidth: 16, halign: 'right' },
+        5: { cellWidth: 22, halign: 'right' },
+        6: { cellWidth: 16, halign: 'right' },
+        7: { cellWidth: 23, halign: 'right', fontStyle: 'bold' }
+      }
+    });
 
-    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 6 : 170;
+    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 6 : 180;
 
-    // ==========================================
-    // 6. DISCOUNT & TOTALS
-    // ==========================================
+    // =========================================================================
+    // 6. TOTALS & SUMMARY SECTION
+    // =========================================================================
     doc.setDrawColor(220, 220, 220);
     doc.line(14, finalY, 196, finalY);
 
+    // Left summary notes
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(30, 30, 30);
+    doc.text('DECLARATION & TERMS:', 14, finalY + 7);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(90, 90, 90);
+    doc.text('• We declare that this invoice shows the actual price of the goods described.', 14, finalY + 12);
+    doc.text('• Goods once sold can be exchanged/returned within 7 days as per OCT9 return policy.', 14, finalY + 16);
+    doc.text('• Logistics fulfillment and delivery handled via Delhivery Surface & Air Express Network.', 14, finalY + 20);
+
+    // Right summary totals
+    const rightLabelX = 145;
+    const rightValX = 196;
+
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.5);
-    doc.setTextColor(60, 60, 60);
-    doc.text(`Discount:   INR ${discountAmount.toFixed(0)}`, 196, finalY + 6, { align: 'right' });
+    doc.setTextColor(70, 70, 70);
+
+    doc.text('Taxable Subtotal:', rightLabelX, finalY + 7);
+    doc.text(`Rs. ${computedSubtotal.toFixed(2)}`, rightValX, finalY + 7, { align: 'right' });
+
+    doc.text('Integrated GST (5%):', rightLabelX, finalY + 12);
+    doc.text(`Rs. ${computedTax.toFixed(2)}`, rightValX, finalY + 12, { align: 'right' });
+
+    if (discountAmount > 0) {
+      doc.setTextColor(22, 101, 52); // Emerald Green
+      doc.text('Coupon Discount:', rightLabelX, finalY + 17);
+      doc.text(`- Rs. ${discountAmount.toFixed(2)}`, rightValX, finalY + 17, { align: 'right' });
+    }
+
+    const grandTotalY = discountAmount > 0 ? finalY + 24 : finalY + 19;
+    doc.setFillColor(250, 247, 242);
+    doc.rect(138, grandTotalY - 4, 58, 9, 'F');
+    doc.rect(138, grandTotalY - 4, 58, 9, 'S');
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(20, 20, 20);
-    doc.text(`Payment Type:`, 14, finalY + 12);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(60, 60, 60);
-    doc.text(isCOD ? 'Cash on Delivery (COD)' : 'Prepaid (Razorpay Online)', 42, finalY + 12);
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
+    doc.setFontSize(10.5);
     doc.setTextColor(90, 24, 39); // Brand Maroon
-    doc.text(`Total:   INR ${grandTotal.toFixed(0)}`, 196, finalY + 12, { align: 'right' });
+    doc.text('Grand Total:', rightLabelX, grandTotalY + 2);
+    doc.text(`Rs. ${grandTotal.toFixed(2)}`, rightValX - 2, grandTotalY + 2, { align: 'right' });
 
-    // ==========================================
-    // 7. FOOTER
-    // ==========================================
-    const footerY = Math.max(finalY + 24, 270);
-    doc.setDrawColor(235, 235, 235);
+    // =========================================================================
+    // 7. FOOTER & AUTHORIZED SIGNATURE
+    // =========================================================================
+    const footerY = Math.max(grandTotalY + 30, 268);
+
+    doc.setDrawColor(230, 230, 230);
     doc.line(14, footerY, 196, footerY);
 
-    doc.setFont('helvetica', 'normal');
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(7.5);
+    doc.setTextColor(110, 110, 110);
+    doc.text('This is a computer-generated tax invoice and requires no physical signature.', 14, footerY + 6);
+    doc.text('OCT9 Luxury Without Noise  •  Logistics by Delhivery One', 14, footerY + 10);
+
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
-    doc.setTextColor(120, 120, 120);
-    doc.text('Powered by Delhivery', 105, footerY + 6, { align: 'center' });
+    doc.setTextColor(90, 24, 39);
+    doc.text('OCT9 LUXURY APPAREL PVT LTD', 196, footerY + 6, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(110, 110, 110);
+    doc.text('Authorized Signatory', 196, footerY + 10, { align: 'right' });
 
-    // ==========================================
-    // 8. DIRECT AND EXPLICIT BROWSER DOWNLOAD
-    // ==========================================
-    const filename = `Tax_Invoice_${order.order_number || 'OCT9'}.pdf`;
-    const pdfBlob = doc.output('blob');
-
-    // Create a typed Blob with explicit application/pdf MIME type
-    const fileBlob = new Blob([pdfBlob], { type: 'application/pdf' });
-    const downloadUrl = URL.createObjectURL(fileBlob);
-
-    const downloadLink = document.createElement('a');
-    downloadLink.href = downloadUrl;
-    downloadLink.download = filename;
-    downloadLink.style.display = 'none';
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-
-    setTimeout(() => {
-      if (downloadLink.parentNode) {
-        document.body.removeChild(downloadLink);
-      }
-      URL.revokeObjectURL(downloadUrl);
-    }, 1500);
+    // =========================================================================
+    // 8. DIRECT SAVE & DOWNLOAD (CRISP VECTOR PDF)
+    // =========================================================================
+    const filename = `Tax_Invoice_${orderNum}.pdf`;
+    doc.save(filename);
 
   } catch (error) {
     console.error('Vector PDF generation error:', error);
-    alert('Failed to generate PDF: ' + (error.message || 'Unknown error'));
+    alert('Failed to generate Tax Invoice PDF: ' + (error.message || 'Unknown error'));
   }
 }

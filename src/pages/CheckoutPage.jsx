@@ -182,6 +182,9 @@ export function CheckoutPage() {
 
       // Handle Razorpay Payment Modal
       if (formData.payment_method === 'razorpay') {
+        console.log('💳 [Razorpay Checkout] Initializing payment with Key:', createdOrder.razorpay_key_id);
+        console.log('💳 [Razorpay Checkout] Order ID:', createdOrder.razorpay_order_id, 'Amount (₹):', grandTotal);
+
         const options = {
           key: createdOrder.razorpay_key_id || 'rzp_test_oct9DemoKey123',
           amount: Math.round(grandTotal * 100),
@@ -191,15 +194,20 @@ export function CheckoutPage() {
           image: '/logo-gold.svg',
           order_id: createdOrder.razorpay_order_id,
           handler: async function (response) {
+            console.log('💳 [Razorpay Payment Success Callback Response]:', response);
             try {
               // Verify Signature on backend
-              const verifyRes = await api.verifyPayment({
+              const verifyPayload = {
                 order_id: createdOrder.id,
                 order_number: createdOrder.order_number,
                 razorpay_order_id: response.razorpay_order_id || createdOrder.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id || `pay_${Date.now()}`,
                 razorpay_signature: response.razorpay_signature || 'demo_sig_signature_verified'
-              });
+              };
+              console.log('💳 [Razorpay Verification] Sending payload to server:', verifyPayload);
+
+              const verifyRes = await api.verifyPayment(verifyPayload);
+              console.log('✅ [Razorpay Verification Result]:', verifyRes);
 
               if (verifyRes.success) {
                 confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
@@ -210,6 +218,7 @@ export function CheckoutPage() {
                 setIsProcessing(false);
               }
             } catch (verErr) {
+              console.error('❌ [Razorpay Verification Error]:', verErr);
               setErrorMsg('Error verifying payment: ' + verErr.message);
               setIsProcessing(false);
             }
@@ -224,28 +233,35 @@ export function CheckoutPage() {
           },
           modal: {
             ondismiss: function () {
+              console.log('💳 [Razorpay Modal] Dismissed by user.');
               setIsProcessing(false);
             }
           }
         };
 
         if (typeof window.Razorpay !== 'undefined') {
+          console.log('💳 [Razorpay SDK] Opening checkout window...');
           const rzp = new window.Razorpay(options);
           rzp.on('payment.failed', function (resp) {
+            console.error('❌ [Razorpay Payment Failed Response]:', resp);
             setErrorMsg('Payment Failed: ' + (resp.error.description || 'Transaction cancelled'));
             setIsProcessing(false);
           });
           rzp.open();
         } else {
+          console.warn('⚠️ [Razorpay SDK] window.Razorpay not found. Simulating Sandbox flow...');
           // Sandbox Fallback Simulation if script blocked
           setTimeout(async () => {
-            await api.verifyPayment({
+            const simPayload = {
               order_id: createdOrder.id,
               order_number: createdOrder.order_number,
               razorpay_order_id: createdOrder.razorpay_order_id,
               razorpay_payment_id: `pay_sim_${Date.now()}`,
               razorpay_signature: 'demo_sig_sample'
-            });
+            };
+            console.log('💳 [Razorpay Simulated Callback Response]:', simPayload);
+            const verifyRes = await api.verifyPayment(simPayload);
+            console.log('✅ [Razorpay Verification Result]:', verifyRes);
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             clearCart();
             navigate(`/order-success/${createdOrder.order_number}`);

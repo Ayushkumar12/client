@@ -58,24 +58,54 @@ export const api = {
   updateProduct: (id, product) => request(`/products/${id}`, { method: 'PUT', body: JSON.stringify(product) }),
   deleteProduct: (id) => request(`/products/${id}`, { method: 'DELETE' }),
 
-  // Orders
-  createOrder: (orderData) => request('/orders/create', { method: 'POST', body: JSON.stringify(orderData) }),
-  verifyPayment: (paymentData) => request('/orders/verify-payment', { method: 'POST', body: JSON.stringify(paymentData) }),
+  // Orders & Payments (Razorpay + Delhivery)
+  createOrder: async (orderData) => {
+    console.log('🛍️ [Frontend API] createOrder request:', orderData);
+    const res = await request('/orders/create', { method: 'POST', body: JSON.stringify(orderData) });
+    console.log('💳 [Razorpay / Order API Response]:', res);
+    return res;
+  },
+  verifyPayment: async (paymentData) => {
+    console.log('💳 [Frontend API] verifyPayment request payload:', paymentData);
+    const res = await request('/orders/verify-payment', { method: 'POST', body: JSON.stringify(paymentData) });
+    console.log('💳 [Razorpay Signature & Delhivery Manifest Response]:', res);
+    return res;
+  },
   getUserOrders: () => request('/orders/my-orders'),
-  getOrderDetails: (orderIdentifier) => request(`/orders/track/${orderIdentifier}`),
+  getOrderDetails: async (orderIdentifier) => {
+    const res = await request(`/orders/track/${orderIdentifier}`);
+    console.log(`📦 [Order Details & Delhivery Info for #${orderIdentifier}]:`, res);
+    return res;
+  },
   adminGetAllOrders: (params = {}) => {
     const query = new URLSearchParams(params);
     return request(`/orders/admin/all?${query.toString()}`);
   },
   adminUpdateOrderStatus: (id, statusData) => request(`/orders/admin/${id}/status`, { method: 'PUT', body: JSON.stringify(statusData) }),
-  adminGenerateDelhiveryWaybill: (id) => request(`/orders/admin/${id}/generate-waybill`, { method: 'POST' }),
+  adminGenerateDelhiveryWaybill: async (id) => {
+    const res = await request(`/orders/admin/${id}/generate-waybill`, { method: 'POST' });
+    console.log(`🚚 [Delhivery Admin Waybill Generation Response for Order ${id}]:`, res);
+    return res;
+  },
 
   // Delhivery Logistics
-  checkPincode: (pincode) => request(`/delhivery/pincode/${pincode}`),
-  trackWaybill: (waybill) => request(`/delhivery/track/${waybill}`),
-  getShippingRate: (params) => {
+  checkPincode: async (pincode) => {
+    console.log(`🚚 [Delhivery API] Checking serviceability for PIN: ${pincode}`);
+    const res = await request(`/delhivery/pincode/${pincode}`);
+    console.log(`🚚 [Delhivery Pincode Response for ${pincode}]:`, res);
+    return res;
+  },
+  trackWaybill: async (waybill) => {
+    console.log(`🚚 [Delhivery API] Tracking Waybill: ${waybill}`);
+    const res = await request(`/delhivery/track/${waybill}`);
+    console.log(`🚚 [Delhivery Live Tracking Response for ${waybill}]:`, res);
+    return res;
+  },
+  getShippingRate: async (params) => {
     const query = new URLSearchParams(params);
-    return request(`/delhivery/rate-estimate?${query.toString()}`);
+    const res = await request(`/delhivery/rate-estimate?${query.toString()}`);
+    console.log('🚚 [Delhivery Shipping Rate Estimate Response]:', res);
+    return res;
   },
   getLogisticsStats: () => request('/delhivery/admin/overview'),
 

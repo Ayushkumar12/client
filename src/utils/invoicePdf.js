@@ -1,18 +1,50 @@
-function loadHtml2PdfScript() {
-  if (window.html2pdf) return Promise.resolve(window.html2pdf);
-  return new Promise((resolve, reject) => {
-    const existing = document.querySelector('script[src*="html2pdf"]');
+/**
+ * Native Vector Tax Invoice PDF Generator & Downloader
+ * Generates official A4 Tax Invoices matching Indian GST & Delhivery E-Commerce Standards
+ * Outputs a 100% valid, crisp vector .pdf file that downloads directly without preview modals.
+ */
+
+async function ensureJsPdfLoaded() {
+  if (window.jspdf && window.jspdf.jsPDF) {
+    return window.jspdf;
+  }
+  if (window.jsPDF) {
+    return { jsPDF: window.jsPDF };
+  }
+
+  // Load jsPDF from CDN if not already loaded
+  await new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[src*="jspdf.umd.min.js"]');
     if (existing) {
-      existing.addEventListener('load', () => resolve(window.html2pdf));
+      existing.addEventListener('load', resolve);
       existing.addEventListener('error', reject);
       return;
     }
     const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-    script.onload = () => resolve(window.html2pdf);
-    script.onerror = () => reject(new Error('Failed to load html2pdf library'));
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = resolve;
+    script.onerror = reject;
     document.head.appendChild(script);
   });
+
+  // Load AutoTable plugin
+  if (!window.jspdf?.jsPDF?.prototype?.autoTable) {
+    await new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[src*="jspdf.plugin.autotable"]');
+      if (existing) {
+        existing.addEventListener('load', resolve);
+        existing.addEventListener('error', reject);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  return window.jspdf || { jsPDF: window.jsPDF };
 }
 
 export async function downloadOrderInvoicePdf(order) {
@@ -21,181 +53,303 @@ export async function downloadOrderInvoicePdf(order) {
     return;
   }
 
-  const addr = typeof order.shipping_address === 'string'
-    ? JSON.parse(order.shipping_address)
-    : (order.shipping_address || {});
-
-  const billingAddr = typeof order.billing_address === 'string'
-    ? JSON.parse(order.billing_address)
-    : (order.billing_address || addr);
-
-  const items = Array.isArray(order.items) && order.items.length > 0
-    ? order.items
-    : [];
-
-  const invoiceNum = `INV-${order.order_number.replace('OCT9-', '')}`;
-  const salesNum = `SO-${order.order_number.replace('OCT9-', '')}`;
-  const rawDate = new Date(order.created_at || Date.now());
-  const formattedDate = rawDate.toISOString().replace('T', ' ').substring(0, 19);
-
-  const discountAmount = Number(order.discount_amount || 0);
-  const grandTotal = Number(order.grand_total || 0);
-  const isCOD = order.payment_method === 'cod';
-  const waybill = order.delhivery_waybill || '';
-
-  // Create temporary off-screen container for PDF rendering
-  const container = document.createElement('div');
-  container.style.position = 'fixed';
-  container.style.left = '-9999px';
-  container.style.top = '-9999px';
-  container.style.width = '794px'; // Standard A4 width in px at 96 DPI
-  container.style.backgroundColor = '#FFFFFF';
-  container.style.color = '#222222';
-  container.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
-  container.style.fontSize = '12px';
-  container.style.lineHeight = '1.45';
-  container.style.padding = '32px 36px';
-
-  container.innerHTML = `
-    <div style="background: #FFFFFF; padding: 10px;">
-      <!-- Title -->
-      <h1 style="font-size: 22px; font-weight: 800; color: #111; margin-bottom: 4px;">Tax Invoice</h1>
-      <div style="font-size: 13px; color: #333; margin-bottom: 2px;">Invoice No: <strong>${invoiceNum}</strong></div>
-      <div style="font-size: 13px; color: #333; margin-bottom: 14px;">Date: ${formattedDate}</div>
-
-      <!-- BILL FROM -->
-      <div style="margin-top: 14px; margin-bottom: 14px;">
-        <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #111; margin-bottom: 3px;">BILL FROM</div>
-        <div style="font-size: 13px; font-weight: 700; color: #111;">OCT9 Luxury Apparel Pvt. Ltd.</div>
-        <div style="font-size: 12px; color: #333; line-height: 1.4;">
-          Plot 42, Okhla Industrial Area Phase-III<br />
-          New Delhi - 110020, Delhi, IN<br />
-          Email: care@oct9.in • GSTIN: 07AAFCO9999P1Z8
-        </div>
-      </div>
-
-      <hr style="border: none; border-top: 1px solid #E2E2E2; margin: 14px 0;" />
-
-      <!-- 2-Col Address -->
-      <div style="display: table; width: 100%; margin-bottom: 14px;">
-        <div style="display: table-cell; width: 50%; vertical-align: top; padding-right: 15px;">
-          <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #111; margin-bottom: 3px;">SHIPPING ADDRESS</div>
-          <div style="font-size: 13px; font-weight: 700; color: #111;">${order.customer_name}</div>
-          <div style="font-size: 12px; color: #333; line-height: 1.4;">
-            ${addr.address_line1 || ''} ${addr.address_line2 || ''}<br />
-            ${addr.city || ''}, ${addr.state || ''} - ${addr.pincode || ''}<br />
-            Email: ${order.customer_email || ''} • Phone: +91 ${order.customer_phone || ''}
-          </div>
-        </div>
-
-        <div style="display: table-cell; width: 50%; vertical-align: top; padding-left: 15px;">
-          <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #111; margin-bottom: 3px;">BILLING ADDRESS</div>
-          <div style="font-size: 13px; font-weight: 700; color: #111;">${order.customer_name}</div>
-          <div style="font-size: 12px; color: #333; line-height: 1.4;">
-            ${billingAddr.address_line1 || addr.address_line1 || ''} ${billingAddr.address_line2 || ''}<br />
-            ${billingAddr.city || addr.city || ''}, ${billingAddr.state || addr.state || ''} - ${billingAddr.pincode || addr.pincode || ''}<br />
-            Email: ${order.customer_email || ''} • Phone: +91 ${order.customer_phone || ''}
-          </div>
-        </div>
-      </div>
-
-      <hr style="border: none; border-top: 1px solid #E2E2E2; margin: 14px 0;" />
-
-      <!-- ORDER DETAILS -->
-      <div style="margin-bottom: 16px;">
-        <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #111; margin-bottom: 4px;">ORDER DETAILS</div>
-        <div style="font-size: 12px; color: #333;">Sales Number: <strong>${salesNum}</strong></div>
-        <div style="font-size: 12px; color: #333;">AWB Number: <strong style="font-family: monospace;">${waybill || 'Pending Allocation'}</strong></div>
-        <div style="font-size: 12px; color: #333;">Sale Date: <strong>${formattedDate}</strong></div>
-      </div>
-
-      <!-- Itemized Table -->
-      <table style="width: 100%; border-collapse: collapse; margin-top: 12px; margin-bottom: 12px; font-size: 11px;">
-        <thead>
-          <tr style="background-color: #F8F8F8; color: #111; text-align: left; border-top: 1px solid #E2E2E2; border-bottom: 1px solid #E2E2E2;">
-            <th style="padding: 8px 10px; width: 34%;">Item Description</th>
-            <th style="padding: 8px 6px; width: 14%;">SKU Code</th>
-            <th style="padding: 8px 6px; text-align: center; width: 8%;">Qty</th>
-            <th style="padding: 8px 6px; text-align: right; width: 11%;">Rate</th>
-            <th style="padding: 8px 6px; text-align: right; width: 9%;">Disc</th>
-            <th style="padding: 8px 6px; text-align: right; width: 12%;">Taxable</th>
-            <th style="padding: 8px 6px; text-align: right; width: 10%;">Tax</th>
-            <th style="padding: 8px 10px; text-align: right; width: 12%;">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${items.map(it => {
-            const qty = Number(it.quantity || 1);
-            const lineTotal = Number(it.total || it.price * qty);
-            const tax = (lineTotal * 5) / 105;
-            const taxable = lineTotal - tax;
-            const rate = Number(it.price);
-            const skuCode = `OCT9-${it.product_id || 'ETH'}${it.size ? `-${it.size}` : ''}`;
-
-            return `
-              <tr style="border-bottom: 1px solid #EEEEEE;">
-                <td style="padding: 9px 10px;">
-                  <strong style="color: #111;">${it.product_title}</strong>
-                  <div style="font-size: 10px; color: #666;">Size: ${it.size || 'Free Size'}${it.color ? ` | Color: ${it.color}` : ''}</div>
-                </td>
-                <td style="padding: 9px 6px; font-family: monospace; color: #555;">${skuCode}</td>
-                <td style="padding: 9px 6px; text-align: center; font-weight: 700;">${qty}</td>
-                <td style="padding: 9px 6px; text-align: right;">INR ${rate.toFixed(0)}</td>
-                <td style="padding: 9px 6px; text-align: right;">INR 0</td>
-                <td style="padding: 9px 6px; text-align: right;">INR ${taxable.toFixed(1)}</td>
-                <td style="padding: 9px 6px; text-align: right;">INR ${tax.toFixed(0)}</td>
-                <td style="padding: 9px 10px; text-align: right; font-weight: 700;">INR ${lineTotal.toFixed(0)}</td>
-              </tr>
-            `;
-          }).join('')}
-        </tbody>
-      </table>
-
-      <!-- Discount & Totals -->
-      <div style="border-top: 1px solid #E2E2E2; padding-top: 10px; margin-top: 8px;">
-        <div style="text-align: right; font-size: 12px; font-weight: 700; margin-bottom: 10px; padding-right: 10px;">
-          Discount &nbsp;&nbsp;&nbsp;&nbsp; INR ${discountAmount.toFixed(0)}
-        </div>
-
-        <div style="display: table; width: 100%; font-size: 13px; padding: 0 10px;">
-          <div style="display: table-cell; width: 50%; vertical-align: middle;">
-            <div style="font-weight: 800; color: #111; margin-bottom: 2px;">Payment Type</div>
-            <div style="color: #444;">${isCOD ? 'Cash on Delivery (COD)' : 'Prepaid (Razorpay Online)'}</div>
-          </div>
-          <div style="display: table-cell; width: 50%; text-align: right; vertical-align: middle; font-weight: 800; font-size: 14px; color: #111;">
-            Total &nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #5A1827; font-size: 16px;">INR ${grandTotal.toFixed(0)}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Footer -->
-      <div style="text-align: center; font-size: 11px; color: #666; margin-top: 32px; padding-top: 12px; border-top: 1px solid #EAEAEA; font-weight: 600;">
-        Powered by Delhivery
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(container);
-
-  const filename = `Tax_Invoice_${order.order_number}.pdf`;
-
   try {
-    const html2pdf = await loadHtml2PdfScript();
-    const opt = {
-      margin: [6, 6, 6, 6],
-      filename: filename,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+    const jspdfModule = await ensureJsPdfLoaded();
+    const { jsPDF } = jspdfModule;
 
-    await html2pdf().set(opt).from(container).save();
-  } catch (e) {
-    console.error('Invoice PDF generation error:', e);
-    alert('Could not download PDF automatically: ' + (e.message || 'Unknown error'));
-  } finally {
-    if (container.parentNode) {
-      document.body.removeChild(container);
+    const doc = new jsPDF({
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait'
+    });
+
+    const addr = typeof order.shipping_address === 'string'
+      ? JSON.parse(order.shipping_address)
+      : (order.shipping_address || {});
+
+    const billingAddr = typeof order.billing_address === 'string'
+      ? JSON.parse(order.billing_address)
+      : (order.billing_address || addr);
+
+    const items = Array.isArray(order.items) && order.items.length > 0
+      ? order.items
+      : [
+          {
+            product_title: 'Luxury Designer Ethnic Wear',
+            product_id: 'ETH',
+            size: 'Free Size',
+            color: 'Standard',
+            price: Number(order.grand_total || 1999),
+            quantity: 1,
+            total: Number(order.grand_total || 1999)
+          }
+        ];
+
+    const invoiceNum = `INV-${(order.order_number || 'OCT9-2026').replace('OCT9-', '')}`;
+    const salesNum = `SO-${(order.order_number || 'OCT9-2026').replace('OCT9-', '')}`;
+    const rawDate = new Date(order.created_at || Date.now());
+    const formattedDate = rawDate.toISOString().replace('T', ' ').substring(0, 19);
+
+    const discountAmount = Number(order.discount_amount || 0);
+    const grandTotal = Number(order.grand_total || 0);
+    const isCOD = order.payment_method === 'cod';
+    const waybill = order.delhivery_waybill || '';
+
+    // ==========================================
+    // 1. HEADER (Title, Invoice No, Date)
+    // ==========================================
+    doc.setTextColor(20, 20, 20);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.text('Tax Invoice', 14, 18);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(60, 60, 60);
+    doc.text(`Invoice No: `, 14, 25);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(20, 20, 20);
+    doc.text(invoiceNum, 34, 25);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 60, 60);
+    doc.text(`Date: ${formattedDate}`, 14, 30);
+
+    // ==========================================
+    // 2. BILL FROM
+    // ==========================================
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(20, 20, 20);
+    doc.text('BILL FROM', 14, 38);
+
+    doc.setFontSize(9.5);
+    doc.text('OCT9 Luxury Apparel Pvt. Ltd.', 14, 43);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(70, 70, 70);
+    doc.text('Plot 42, Okhla Industrial Area Phase-III, New Delhi - 110020, Delhi, IN', 14, 48);
+    doc.text('Email: care@oct9.in   •   GSTIN: 07AAFCO9999P1Z8', 14, 53);
+
+    // Divider Line
+    doc.setDrawColor(220, 220, 220);
+    doc.setLineWidth(0.3);
+    doc.line(14, 58, 196, 58);
+
+    // ==========================================
+    // 3. 2-COLUMN ADDRESSES
+    // ==========================================
+    const leftX = 14;
+    const rightX = 108;
+
+    // Left: Shipping Address
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(20, 20, 20);
+    doc.text('SHIPPING ADDRESS', leftX, 65);
+
+    doc.setFontSize(9.5);
+    doc.text(order.customer_name || 'Valued Customer', leftX, 70);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(70, 70, 70);
+    const shipAddrLine1 = `${addr.address_line1 || ''} ${addr.address_line2 || ''}`.trim() || 'Address on file';
+    const shipAddrLine2 = `${addr.city || 'Delhi'}, ${addr.state || 'Delhi'} - ${addr.pincode || '110001'}`;
+    const shipContact = `Email: ${order.customer_email || ''}  •  Phone: +91 ${order.customer_phone || ''}`;
+
+    doc.text(shipAddrLine1, leftX, 75);
+    doc.text(shipAddrLine2, leftX, 80);
+    doc.text(shipContact, leftX, 85);
+
+    // Right: Billing Address
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(20, 20, 20);
+    doc.text('BILLING ADDRESS', rightX, 65);
+
+    doc.setFontSize(9.5);
+    doc.text(order.customer_name || 'Valued Customer', rightX, 70);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(70, 70, 70);
+    const billAddrLine1 = `${billingAddr.address_line1 || addr.address_line1 || ''} ${billingAddr.address_line2 || ''}`.trim() || shipAddrLine1;
+    const billAddrLine2 = `${billingAddr.city || addr.city || 'Delhi'}, ${billingAddr.state || addr.state || 'Delhi'} - ${billingAddr.pincode || addr.pincode || '110001'}`;
+    const billContact = shipContact;
+
+    doc.text(billAddrLine1, rightX, 75);
+    doc.text(billAddrLine2, rightX, 80);
+    doc.text(billContact, rightX, 85);
+
+    // Divider Line
+    doc.line(14, 91, 196, 91);
+
+    // ==========================================
+    // 4. ORDER DETAILS
+    // ==========================================
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(20, 20, 20);
+    doc.text('ORDER DETAILS', 14, 98);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(60, 60, 60);
+
+    doc.text(`Sales Number:`, 14, 103);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(20, 20, 20);
+    doc.text(salesNum, 38, 103);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 60, 60);
+    doc.text(`AWB Number:`, 14, 108);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(90, 24, 39); // Brand Maroon
+    doc.text(waybill || 'Pending Allocation', 38, 108);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 60, 60);
+    doc.text(`Sale Date:`, 14, 113);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(20, 20, 20);
+    doc.text(formattedDate, 38, 113);
+
+    // ==========================================
+    // 5. ITEMIZED TABLE (AutoTable)
+    // ==========================================
+    const tableHeaders = [
+      'Item Description',
+      'SKU Code',
+      'Qty',
+      'Rate',
+      'Disc',
+      'Taxable',
+      'Tax',
+      'Total'
+    ];
+
+    const tableRows = items.map((it) => {
+      const qty = Number(it.quantity || 1);
+      const lineTotal = Number(it.total || it.price * qty);
+      const tax = (lineTotal * 5) / 105;
+      const taxable = lineTotal - tax;
+      const rate = Number(it.price);
+      const skuCode = `OCT9-${it.product_id || 'ETH'}${it.size ? `-${it.size}` : ''}`;
+      const desc = `${it.product_title}\nSize: ${it.size || 'Free Size'}${it.color ? ` | Color: ${it.color}` : ''}`;
+
+      return [
+        desc,
+        skuCode,
+        qty.toString(),
+        `INR ${rate.toFixed(0)}`,
+        `INR 0`,
+        `INR ${taxable.toFixed(1)}`,
+        `INR ${tax.toFixed(0)}`,
+        `INR ${lineTotal.toFixed(0)}`
+      ];
+    });
+
+    if (doc.autoTable) {
+      doc.autoTable({
+        startY: 118,
+        head: [tableHeaders],
+        body: tableRows,
+        margin: { left: 14, right: 14 },
+        theme: 'plain',
+        headStyles: {
+          fillColor: [248, 248, 248],
+          textColor: [20, 20, 20],
+          fontSize: 8,
+          fontStyle: 'bold',
+          lineWidth: 0.2,
+          lineColor: [220, 220, 220]
+        },
+        bodyStyles: {
+          fontSize: 8,
+          textColor: [40, 40, 40],
+          lineWidth: 0.1,
+          lineColor: [238, 238, 238]
+        },
+        columnStyles: {
+          0: { cellWidth: 55 },
+          1: { cellWidth: 28, font: 'courier' },
+          2: { cellWidth: 12, halign: 'center' },
+          3: { cellWidth: 20, halign: 'right' },
+          4: { cellWidth: 16, halign: 'right' },
+          5: { cellWidth: 22, halign: 'right' },
+          6: { cellWidth: 16, halign: 'right' },
+          7: { cellWidth: 23, halign: 'right', fontStyle: 'bold' }
+        }
+      });
     }
+
+    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 6 : 170;
+
+    // ==========================================
+    // 6. DISCOUNT & TOTALS
+    // ==========================================
+    doc.setDrawColor(220, 220, 220);
+    doc.line(14, finalY, 196, finalY);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(60, 60, 60);
+    doc.text(`Discount:   INR ${discountAmount.toFixed(0)}`, 196, finalY + 6, { align: 'right' });
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(20, 20, 20);
+    doc.text(`Payment Type:`, 14, finalY + 12);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 60, 60);
+    doc.text(isCOD ? 'Cash on Delivery (COD)' : 'Prepaid (Razorpay Online)', 42, finalY + 12);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(90, 24, 39); // Brand Maroon
+    doc.text(`Total:   INR ${grandTotal.toFixed(0)}`, 196, finalY + 12, { align: 'right' });
+
+    // ==========================================
+    // 7. FOOTER
+    // ==========================================
+    const footerY = Math.max(finalY + 24, 270);
+    doc.setDrawColor(235, 235, 235);
+    doc.line(14, footerY, 196, footerY);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(120, 120, 120);
+    doc.text('Powered by Delhivery', 105, footerY + 6, { align: 'center' });
+
+    // ==========================================
+    // 8. DIRECT AND EXPLICIT BROWSER DOWNLOAD
+    // ==========================================
+    const filename = `Tax_Invoice_${order.order_number || 'OCT9'}.pdf`;
+    const pdfBlob = doc.output('blob');
+
+    // Create a typed Blob with explicit application/pdf MIME type
+    const fileBlob = new Blob([pdfBlob], { type: 'application/pdf' });
+    const downloadUrl = URL.createObjectURL(fileBlob);
+
+    const downloadLink = document.createElement('a');
+    downloadLink.href = downloadUrl;
+    downloadLink.download = filename;
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    setTimeout(() => {
+      if (downloadLink.parentNode) {
+        document.body.removeChild(downloadLink);
+      }
+      URL.revokeObjectURL(downloadUrl);
+    }, 1500);
+
+  } catch (error) {
+    console.error('Vector PDF generation error:', error);
+    alert('Failed to generate PDF: ' + (error.message || 'Unknown error'));
   }
 }

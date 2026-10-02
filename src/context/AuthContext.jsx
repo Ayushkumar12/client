@@ -1,0 +1,115 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '../services/api.js';
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(() => localStorage.getItem('oct9_token'));
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadUser() {
+      if (token) {
+        try {
+          const res = await api.getProfile();
+          if (res.success) {
+            setUser(res.user);
+          } else {
+            logout();
+          }
+        } catch (e) {
+          console.warn('Session expired or server unavailable:', e.message);
+          logout();
+        }
+      }
+      setLoading(false);
+    }
+    loadUser();
+  }, [token]);
+
+  const login = async (email, password) => {
+    const res = await api.login({ email, password });
+    if (res.success) {
+      localStorage.setItem('oct9_token', res.token);
+      setToken(res.token);
+      setUser(res.user);
+      return res;
+    }
+    throw new Error(res.message || 'Login failed');
+  };
+
+  const register = async (userData) => {
+    const res = await api.register(userData);
+    if (res.success) {
+      localStorage.setItem('oct9_token', res.token);
+      setToken(res.token);
+      setUser(res.user);
+      return res;
+    }
+    throw new Error(res.message || 'Registration failed');
+  };
+
+  const logout = () => {
+    localStorage.removeItem('oct9_token');
+    setToken(null);
+    setUser(null);
+  };
+
+  const refreshProfile = async () => {
+    if (token) {
+      const res = await api.getProfile();
+      if (res.success) {
+        setUser(res.user);
+      }
+    }
+  };
+
+  const saveAddress = async (addressData) => {
+    const res = await api.saveAddress(addressData);
+    if (res.success && user) {
+      setUser(prev => ({
+        ...prev,
+        addresses: res.addresses
+      }));
+    }
+    return res;
+  };
+
+  const deleteAddress = async (addressId) => {
+    const res = await api.deleteAddress(addressId);
+    if (res.success && user) {
+      setUser(prev => ({
+        ...prev,
+        addresses: res.addresses
+      }));
+    }
+    return res;
+  };
+
+  const isAdmin = Boolean(user && user.role === 'admin');
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        isAuthenticated: Boolean(user),
+        isAdmin,
+        login,
+        register,
+        logout,
+        refreshProfile,
+        saveAddress,
+        deleteAddress,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
+}

@@ -1,0 +1,17 @@
+{
+  "short_name": "OCT9",
+  "name": "OCT9 - Luxury Ethnic Elegance",
+  "icons": [
+    {
+      "src": "/logo-gold.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#141414",
+  "theme_color": "#141414",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/"
+}

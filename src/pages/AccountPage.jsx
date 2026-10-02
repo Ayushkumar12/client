@@ -46,6 +46,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useWishlist } from '../context/WishlistContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import { DelhiveryTrackerModal } from '../components/common/DelhiveryTrackerModal.jsx';
+import { OrderMilestoneTracker } from '../components/common/OrderMilestoneTracker.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
 import { getOrderMilestones } from '../utils/orderMilestones.js';
@@ -1225,95 +1226,8 @@ export function AccountPage() {
                           {/* Stepped Tracker (For active / completed orders) */}
                           {!isCancelled && (
                             <div className="pt-3 border-t border-neutral-100 space-y-3">
-                              {/* 5-Step Visual Tracker Bar */}
-                              <div className="relative">
-                                {/* Connector Background Track */}
-                                <div className="absolute top-2 left-[10%] right-[10%] h-0.5 bg-neutral-200 -z-0" />
-                                <div
-                                  className="absolute top-2 left-[10%] h-0.5 bg-emerald-600 transition-all duration-500 -z-0"
-                                  style={{
-                                    width: isDelivered ? '80%' : isShipped ? '40%' : '15%'
-                                  }}
-                                />
-
-                                <div className="grid grid-cols-5 text-center text-[11px] font-semibold text-neutral-500 relative z-10">
-                                  {/* 1. Confirmed */}
-                                  <div className="flex flex-col items-center space-y-1">
-                                    <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[9px] shadow-2xs">
-                                      ✓
-                                    </div>
-                                    <span className="text-neutral-900 font-bold">Confirmed</span>
-                                  </div>
-
-                                  {/* 2. Packed */}
-                                  <div className="flex flex-col items-center space-y-1">
-                                    <div
-                                      className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] shadow-2xs ${
-                                        isDelivered || isShipped
-                                          ? 'bg-emerald-600 text-white'
-                                          : isProcessing
-                                          ? 'bg-[#5A1827] ring-4 ring-[#5A1827]/20 text-white font-bold'
-                                          : 'border-2 border-neutral-300 bg-white text-neutral-400'
-                                      }`}
-                                    >
-                                      {isDelivered || isShipped ? '✓' : isProcessing ? '●' : ''}
-                                    </div>
-                                    <span className={isDelivered || isShipped || isProcessing ? 'text-neutral-900 font-bold' : ''}>
-                                      Packed
-                                    </span>
-                                  </div>
-
-                                  {/* 3. Shipped */}
-                                  <div className="flex flex-col items-center space-y-1">
-                                    <div
-                                      className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] shadow-2xs ${
-                                        isDelivered
-                                          ? 'bg-emerald-600 text-white'
-                                          : isShipped
-                                          ? 'bg-[#5A1827] ring-4 ring-[#5A1827]/20 text-white font-bold'
-                                          : 'border-2 border-neutral-300 bg-white text-neutral-400'
-                                      }`}
-                                    >
-                                      {isDelivered ? '✓' : isShipped ? '●' : ''}
-                                    </div>
-                                    <span className={isDelivered ? 'text-neutral-900 font-bold' : isShipped ? 'text-[#5A1827] font-bold' : ''}>
-                                      Shipped
-                                    </span>
-                                  </div>
-
-                                  {/* 4. Out for Delivery */}
-                                  <div className="flex flex-col items-center space-y-1">
-                                    <div
-                                      className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] shadow-2xs ${
-                                        isDelivered
-                                          ? 'bg-emerald-600 text-white'
-                                          : 'border-2 border-neutral-300 bg-white text-neutral-400'
-                                      }`}
-                                    >
-                                      {isDelivered ? '✓' : ''}
-                                    </div>
-                                    <span className={isDelivered ? 'text-neutral-900 font-bold' : ''}>
-                                      Out for Delivery
-                                    </span>
-                                  </div>
-
-                                  {/* 5. Delivered */}
-                                  <div className="flex flex-col items-center space-y-1">
-                                    <div
-                                      className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] shadow-2xs ${
-                                        isDelivered
-                                          ? 'bg-emerald-600 text-white'
-                                          : 'border-2 border-neutral-300 bg-white text-neutral-400'
-                                      }`}
-                                    >
-                                      {isDelivered ? '✓' : ''}
-                                    </div>
-                                    <span className={isDelivered ? 'text-emerald-700 font-bold' : ''}>
-                                      Delivered
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
+                              {/* 5-Step Visual Tracker Bar with Milestone Locations & Timestamps */}
+                              <OrderMilestoneTracker order={o} />
 
                               {/* Milestone Checkpoints (Scan Locations, Timestamps & Operational Telemetry) */}
                               <div className="mt-3 bg-[#FAF7F2] rounded-xl p-3.5 sm:p-4 border border-brand-border/70 space-y-3">

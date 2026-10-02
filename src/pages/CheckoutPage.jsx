@@ -322,7 +322,6 @@ export function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Shipping Address & Delhivery live check */}
               <div className="bg-white rounded-2xl p-6 border border-brand-border shadow-sm space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="font-serif font-bold text-base text-neutral-900">
@@ -425,11 +424,10 @@ export function CheckoutPage() {
                 <div className="space-y-3">
                   {/* Razorpay Online */}
                   <label
-                    className={`flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      formData.payment_method === 'razorpay'
+                    className={`flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.payment_method === 'razorpay'
                         ? 'border-brand-maroon bg-brand-maroon/5 ring-1 ring-brand-maroon'
                         : 'border-neutral-200 hover:border-neutral-300'
-                    }`}
+                      }`}
                   >
                     <input
                       type="radio"
@@ -459,11 +457,10 @@ export function CheckoutPage() {
 
                   {/* Cash on Delivery */}
                   <label
-                    className={`flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      formData.payment_method === 'cod'
+                    className={`flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.payment_method === 'cod'
                         ? 'border-brand-maroon bg-brand-maroon/5 ring-1 ring-brand-maroon'
                         : 'border-neutral-200 hover:border-neutral-300'
-                    }`}
+                      }`}
                   >
                     <input
                       type="radio"

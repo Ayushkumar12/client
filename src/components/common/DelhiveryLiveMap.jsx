@@ -10,6 +10,7 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import { api } from '../../services/api.js';
+import { OrderMilestoneTracker } from './OrderMilestoneTracker.jsx';
 
 export function DelhiveryLiveMap({
   waybill,
@@ -66,17 +67,16 @@ export function DelhiveryLiveMap({
     }
   };
 
-  const isDelivered = currentStatus === 'delivered';
-  const isOutForDelivery = currentStatus === 'out_for_delivery' || isDelivered;
-  const isInTransit = currentStatus === 'in_transit' || isOutForDelivery;
-
-  const steps = [
-    { label: 'Order Manifested', done: true, current: !isInTransit },
-    { label: 'Dispatched from Hub', done: isInTransit, current: isInTransit && !isOutForDelivery },
-    { label: 'In Transit', done: isInTransit, current: false },
-    { label: 'Out for Delivery', done: isOutForDelivery, current: currentStatus === 'out_for_delivery' },
-    { label: 'Delivered', done: isDelivered, current: isDelivered }
-  ];
+  const trackerOrder = {
+    delhivery_waybill: activeWaybill,
+    order_status: currentStatus,
+    delhivery_status: apiData?.current_status || currentStatus,
+    shipping_address: {
+      city: destinationCity,
+      pincode: destinationPincode
+    },
+    delhivery_expected_date: estDeliveryDate
+  };
 
   return (
     <div className="bg-white rounded-2xl border border-neutral-200 shadow-xs overflow-hidden">
@@ -137,105 +137,14 @@ export function DelhiveryLiveMap({
         </div>
       </div>
 
-      {/* Shipment Status Stepper */}
-      <div className="px-6 py-5 bg-white border-b border-neutral-100">
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          {steps.map((step, idx) => (
-            <div key={idx} className="flex flex-col space-y-1 text-left">
-              <div className="flex items-center space-x-2">
-                <div
-                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                    step.done
-                      ? 'bg-emerald-600 text-white'
-                      : step.current
-                      ? 'bg-brand-maroon text-white animate-pulse'
-                      : 'bg-neutral-200 text-neutral-500'
-                  }`}
-                >
-                  {step.done ? '✓' : idx + 1}
-                </div>
-                <div className={`h-0.5 flex-1 hidden sm:block ${step.done ? 'bg-emerald-500' : 'bg-neutral-200'}`} />
-              </div>
-              <p className={`text-xs font-semibold ${step.done || step.current ? 'text-neutral-900' : 'text-neutral-400'}`}>
-                {step.label}
-              </p>
-            </div>
-          ))}
-        </div>
+      {/* Shipment Status Stepper with Milestone Scan Locations & Timestamps */}
+      <div className="px-5 sm:px-6 py-4.5 bg-white border-b border-neutral-100">
+        <OrderMilestoneTracker order={trackerOrder} customStatus={currentStatus} />
       </div>
 
 
 
-      {/* Milestone Checkpoints (Scan Locations, Timestamps, and Status Updates) */}
-      {apiData?.milestone_checkpoints && apiData.milestone_checkpoints.length > 0 && (
-        <div className="p-5 sm:p-6 bg-white border-b border-neutral-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-2">
-              <MapPin className="w-4 h-4 text-brand-maroon" />
-              <h4 className="font-serif font-bold text-sm text-neutral-900">
-                Milestone Checkpoints (Scan Locations)
-              </h4>
-            </div>
-            <span className="text-[11px] text-neutral-500 font-medium">
-              Delhivery Logistics Telemetry
-            </span>
-          </div>
 
-          <div className="space-y-4 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-neutral-200">
-            {apiData.milestone_checkpoints.map((cp, idx) => {
-              const isDone = cp.completed !== undefined ? cp.completed : (idx === 0);
-              const isCurr = cp.current;
-
-              return (
-                <div key={idx} className="relative flex items-start space-x-3.5 pl-1">
-                  {/* Status Indicator Icon */}
-                  <div
-                    className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 border-2 transition-all ${
-                      isDone
-                        ? 'bg-emerald-600 border-emerald-600 text-white'
-                        : isCurr
-                        ? 'bg-brand-maroon border-brand-maroon text-white animate-pulse'
-                        : 'bg-white border-neutral-300 text-neutral-400'
-                    }`}
-                  >
-                    {isDone ? '✓' : idx + 1}
-                  </div>
-
-                  {/* Checkpoint Details */}
-                  <div className="flex-1 bg-[#FAF7F2] p-3 sm:p-3.5 rounded-xl border border-brand-border/70 space-y-1">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                      <p className="font-bold text-xs text-neutral-900">
-                        {cp.activity || cp.title || cp.status}
-                      </p>
-                      {cp.timestamp && (
-                        <div className="flex items-center space-x-1 text-[11px] text-neutral-500 shrink-0 font-medium">
-                          <Clock className="w-3 h-3 text-neutral-400" />
-                          <span>{cp.timestamp}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Scan Location */}
-                    {cp.location && (
-                      <div className="flex items-center space-x-1.5 text-xs text-neutral-700">
-                        <MapPin className="w-3.5 h-3.5 text-red-600 shrink-0" />
-                        <span className="font-semibold text-neutral-800">{cp.location}</span>
-                      </div>
-                    )}
-
-                    {/* Operational Status Update */}
-                    {cp.status && cp.status !== cp.activity && (
-                      <p className="text-[11px] text-neutral-600 pt-0.5 border-t border-neutral-200/60 leading-relaxed">
-                        {cp.status}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       {/* Transit Route Details */}
       <div className="p-4 sm:p-5 bg-neutral-50 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-neutral-700">

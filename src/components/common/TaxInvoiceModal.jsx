@@ -2,14 +2,9 @@ import React, { useRef, useState } from 'react';
 import {
   X,
   Printer,
-  Download,
-  CheckCircle2,
   Truck,
-  ShieldCheck,
-  Building,
   FileText,
-  Copy,
-  ExternalLink
+  Copy
 } from 'lucide-react';
 
 export function TaxInvoiceModal({ order, isOpen, onClose }) {
@@ -24,37 +19,9 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
 
   const items = Array.isArray(order.items) && order.items.length > 0
     ? order.items
-    : [
-        {
-          product_title: 'Embroidered Anarkali Suit',
-          product_slug: 'embroidered-anarkali-suit',
-          size: 'M',
-          color: 'Royal Blue',
-          quantity: 1,
-          price: 2399,
-          total: 2399
-        },
-        {
-          product_title: 'Designer Palazzo Set',
-          product_slug: 'designer-palazzo-set',
-          size: 'M',
-          color: 'Deep Wine',
-          quantity: 1,
-          price: 2799,
-          total: 2799
-        }
-      ];
+    : [];
 
-  const waybill = order.delhivery_waybill || 'DLV349312857849';
-  const pickupToken = order.delhivery_pickup_token || `PU_OCT9_${(order.order_number || '98214').slice(-5)}`;
-  const ewayBill = order.delhivery_eway_bill || 'EWB-789321471928';
-  const routingCode = `DLV-RTE-NORTH-${waybill.slice(-4)}`;
-  const originHubCode = 'DEL/OKH/110001 (OCT9 Atelier Hub)';
-  const destHubCode = `DEL/BAP/${addr.pincode || '110001'} (${addr.city || 'Delhi'})`;
-  const packageWeight = '0.85 kg (Volumetric: 1.20 kg)';
-  const dimensions = '30 x 25 x 5 cm';
-  const slaService = 'Delhivery Express Surface & Air (Door-to-Door)';
-
+  const waybill = order.delhivery_waybill || '';
   const subtotal = Number(order.subtotal || items.reduce((sum, it) => sum + Number(it.total || it.price), 0));
   const discount = Number(order.discount_amount || 0);
   const taxableAmount = Math.max(0, subtotal - discount);
@@ -81,6 +48,7 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
   };
 
   const copyAWB = () => {
+    if (!waybill) return;
     navigator.clipboard.writeText(waybill);
     setCopiedAWB(true);
     setTimeout(() => setCopiedAWB(false), 2000);
@@ -151,24 +119,23 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
 
             <div className="text-left sm:text-right space-y-1 bg-neutral-50 border border-neutral-200 p-3 rounded-xl min-w-[220px]">
               <span className="text-[10px] uppercase font-bold text-brand-maroon tracking-wider block">TAX INVOICE</span>
-              <p className="font-mono text-xs font-bold text-neutral-900">INV-{order.order_number || '2026-98214'}</p>
+              <p className="font-mono text-xs font-bold text-neutral-900">INV-{order.order_number}</p>
               <p className="text-[11px] text-neutral-600">Date: <strong>{formatDate(order.created_at)}</strong></p>
               <p className="text-[11px] text-neutral-600">Order Ref: <strong>#{order.order_number}</strong></p>
               <p className="text-[11px] text-neutral-600">Place of Supply: <strong>{addr.state || 'Delhi'} ({isInterstate ? 'Inter-State' : 'Intra-State'})</strong></p>
             </div>
           </div>
 
-          {/* Clean Standard Logistics & Delhivery Tracking Details */}
-          <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3.5 space-y-2.5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-200 pb-2">
+          {/* Logistics & Delivery Details */}
+          {waybill && (
+            <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
               <div className="flex items-center space-x-2">
                 <Truck className="w-4 h-4 text-brand-maroon" />
-                <span className="font-semibold text-xs text-neutral-900">Logistics Partner: Delhivery Express</span>
-                <span className="text-[10px] text-neutral-500">({slaService})</span>
+                <span className="font-semibold text-neutral-900">Logistics Partner: Delhivery Express</span>
               </div>
 
-              <div className="flex items-center space-x-2 text-xs">
-                <span className="text-neutral-500">AWB / Waybill:</span>
+              <div className="flex items-center space-x-2">
+                <span className="text-neutral-500">Waybill AWB:</span>
                 <strong className="font-mono text-neutral-900">{waybill}</strong>
                 <button
                   type="button"
@@ -181,32 +148,13 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
                 {copiedAWB && <span className="text-[10px] text-emerald-600 font-semibold">Copied</span>}
               </div>
             </div>
+          )}
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px]">
-              <div>
-                <span className="text-neutral-500 block text-[10px]">Manifest / Pickup Token:</span>
-                <span className="font-mono font-semibold text-neutral-800">{pickupToken}</span>
-              </div>
-              <div>
-                <span className="text-neutral-500 block text-[10px]">Government E-Way Bill:</span>
-                <span className="font-mono font-semibold text-neutral-800">{ewayBill}</span>
-              </div>
-              <div>
-                <span className="text-neutral-500 block text-[10px]">Weight & Dimensions:</span>
-                <span className="font-medium text-neutral-800">{packageWeight}</span>
-              </div>
-              <div>
-                <span className="text-neutral-500 block text-[10px]">Transit Route:</span>
-                <span className="font-medium text-neutral-800">{originHubCode} → {destHubCode}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Customer Details */}
+          {/* Customer & Shipping Details */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="border border-neutral-200 rounded-xl p-3.5 space-y-1">
               <span className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider block">Billed To (Customer Details)</span>
-              <p className="font-bold text-neutral-900 text-xs">{order.customer_name || 'Valued Customer'}</p>
+              <p className="font-bold text-neutral-900 text-xs">{order.customer_name || 'Customer'}</p>
               <p className="text-[11px] text-neutral-600">{addr.address_line1} {addr.address_line2 || ''}</p>
               <p className="text-[11px] text-neutral-600">{addr.city}, {addr.state} - <strong>{addr.pincode}</strong></p>
               <p className="text-[11px] text-neutral-600">Phone: +91 {order.customer_phone} • Email: {order.customer_email}</p>
@@ -214,10 +162,13 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
 
             <div className="border border-neutral-200 rounded-xl p-3.5 space-y-1">
               <span className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider block">Shipped To (Delivery Destination)</span>
-              <p className="font-bold text-neutral-900 text-xs">{order.customer_name || 'Valued Customer'}</p>
+              <p className="font-bold text-neutral-900 text-xs">{order.customer_name || 'Customer'}</p>
               <p className="text-[11px] text-neutral-600">{addr.address_line1} {addr.address_line2 || ''}</p>
               <p className="text-[11px] text-neutral-600">{addr.city}, {addr.state} - <strong>{addr.pincode}</strong></p>
               <p className="text-[11px] text-neutral-600">Payment: <strong className="uppercase">{order.payment_method === 'cod' ? 'Cash on Delivery (COD)' : 'Prepaid Online via Razorpay'}</strong></p>
+              {order.razorpay_payment_id && (
+                <p className="text-[10px] font-mono text-neutral-500">Txn ID: {order.razorpay_payment_id}</p>
+              )}
             </div>
           </div>
 
@@ -248,10 +199,9 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
                       <td className="py-2.5 px-3 text-neutral-500">{idx + 1}</td>
                       <td className="py-2.5 px-3 font-semibold text-neutral-900">
                         {it.product_title}
-                        <span className="block text-[9px] text-neutral-500 font-mono">SKU: OCT-APL-{idx + 101}</span>
                       </td>
                       <td className="py-2.5 px-3 text-center font-mono text-neutral-600">{getHsnCode(it.product_title)}</td>
-                      <td className="py-2.5 px-3 text-center text-neutral-600">{it.size} / {it.color}</td>
+                      <td className="py-2.5 px-3 text-center text-neutral-600">{it.size || 'Free Size'} {it.color ? `/ ${it.color}` : ''}</td>
                       <td className="py-2.5 px-3 text-center font-bold text-neutral-900">{itQty}</td>
                       <td className="py-2.5 px-3 text-right text-neutral-600">₹{Number(it.price).toLocaleString('en-IN')}</td>
                       <td className="py-2.5 px-3 text-right text-neutral-700">₹{itNet.toFixed(2)}</td>
@@ -266,11 +216,10 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
 
           {/* Tax Summary & Totals */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
-            <div className="space-y-1.5 text-[11px] text-neutral-600 bg-neutral-50 p-3.5 rounded-xl border border-neutral-200">
+            <div className="space-y-1 text-[11px] text-neutral-600 bg-neutral-50 p-3.5 rounded-xl border border-neutral-200">
               <span className="font-bold text-neutral-900 block text-xs">GST & Compliance:</span>
-              <p>• Reverse Charge Applicable: <strong>No</strong></p>
-              <p>• E-Way Bill: <strong>{ewayBill}</strong></p>
-              <p>• Delhivery AWB: <strong>{waybill}</strong></p>
+              <p>• Reverse Charge: <strong>No</strong></p>
+              {waybill && <p>• Delhivery AWB: <strong className="font-mono">{waybill}</strong></p>}
               <p>• GST 5% composite rate applicable under Chapter 62 / 54 for apparel.</p>
             </div>
 

@@ -2,17 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {
   Truck,
   MapPin,
-  Navigation,
   Clock,
-  Phone,
-  ShieldCheck,
   RotateCcw,
-  CheckCircle2,
   Package,
   Copy,
   ExternalLink,
-  ChevronRight,
-  Info
+  ShieldCheck
 } from 'lucide-react';
 import { api } from '../../services/api.js';
 
@@ -25,11 +20,11 @@ export function DelhiveryLiveMap({
 }) {
   const [copiedAWB, setCopiedAWB] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState('Just now');
   const [apiData, setApiData] = useState(null);
 
   useEffect(() => {
     async function loadWaybillData() {
+      if (!waybill) return;
       try {
         const res = await api.trackWaybill(waybill);
         if (res && res.success) {
@@ -42,13 +37,12 @@ export function DelhiveryLiveMap({
     loadWaybillData();
   }, [waybill]);
 
-  const cleanAWB = waybill || 'DLV349312857849';
-  const riderName = apiData?.rider_name || 'Rajesh Kumar Verma';
-  const riderPhone = apiData?.rider_phone || '+91 98765 43210';
-  const vehicleNumber = apiData?.vehicle_number || 'DL-01-AX-9821';
-  const packageWeight = apiData?.package_weight || '0.85 kg';
-  const pickupToken = apiData?.pickup_token || `PU_OCT9_${cleanAWB.slice(-6)}`;
-  const ewayBill = apiData?.e_way_bill || 'EWB-789321471928';
+  const cleanAWB = waybill || apiData?.waybill || 'DLV349312857849';
+  const courierPartner = apiData?.courier || 'Delhivery Express';
+  const serviceType = apiData?.service_type || 'Delhivery Express (Door-to-Door)';
+  const originLocation = apiData?.origin || 'New Delhi (110001)';
+  const deliveryStatusText = apiData?.current_status || (currentStatus === 'manifested' ? 'Manifest Created' : 'In Transit');
+  const estDeliveryDate = apiData?.expected_delivery || expectedDelivery || 'Within 2-3 Days';
 
   const copyAWB = () => {
     navigator.clipboard.writeText(cleanAWB);
@@ -56,25 +50,31 @@ export function DelhiveryLiveMap({
     setTimeout(() => setCopiedAWB(false), 2000);
   };
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
-    setTimeout(() => {
+    try {
+      const res = await api.trackWaybill(cleanAWB);
+      if (res && res.success) {
+        setApiData(res);
+      }
+    } catch (e) {
+      console.warn('Refresh error:', e);
+    } finally {
       setRefreshing(false);
-      setLastUpdated('Updated just now');
-    }, 800);
+    }
   };
 
   const steps = [
-    { label: 'Order Placed', time: 'Oct 02, 09:30 AM', done: true },
-    { label: 'Shipped via Delhivery', time: 'Oct 02, 01:15 PM', done: true },
-    { label: 'In Transit', time: 'On the way to Hub', done: currentStatus === 'in_transit' || currentStatus === 'out_for_delivery' || currentStatus === 'delivered', current: currentStatus === 'in_transit' },
-    { label: 'Out for Delivery', time: expectedDelivery || 'Expected soon', done: currentStatus === 'delivered', current: currentStatus === 'out_for_delivery' },
-    { label: 'Delivered', time: 'Pending OTP', done: currentStatus === 'delivered' }
+    { label: 'Order Manifested', done: true },
+    { label: 'Picked Up by Delhivery', done: true },
+    { label: 'In Transit', done: currentStatus === 'in_transit' || currentStatus === 'out_for_delivery' || currentStatus === 'delivered', current: currentStatus === 'in_transit' },
+    { label: 'Out for Delivery', done: currentStatus === 'delivered', current: currentStatus === 'out_for_delivery' },
+    { label: 'Delivered', done: currentStatus === 'delivered' }
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-neutral-200/90 shadow-sm overflow-hidden">
-      {/* Top Courier Header */}
+    <div className="bg-white rounded-2xl border border-neutral-200 shadow-xs overflow-hidden">
+      {/* Top Header */}
       <div className="p-5 sm:p-6 bg-[#FCFBF9] border-b border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start space-x-3.5">
           <div className="w-11 h-11 rounded-xl bg-red-50 border border-red-200 flex items-center justify-center text-red-600 shrink-0">
@@ -83,10 +83,10 @@ export function DelhiveryLiveMap({
           <div>
             <div className="flex items-center space-x-2">
               <h3 className="font-serif font-bold text-neutral-900 text-base">
-                Delhivery Express Tracking
+                {courierPartner}
               </h3>
-              <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
-                In Transit
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md">
+                {deliveryStatusText}
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-600 mt-1">
@@ -100,34 +100,34 @@ export function DelhiveryLiveMap({
               </button>
               {copiedAWB && <span className="text-[10px] text-emerald-600 font-semibold">Copied</span>}
               <span>•</span>
-              <span className="text-neutral-500">Surface Express (Door-to-Door)</span>
+              <span className="text-neutral-500">{serviceType}</span>
             </div>
           </div>
         </div>
 
-        {/* Expected Delivery Pill & Refresh */}
+        {/* Expected Delivery Date & Refresh */}
         <div className="flex items-center space-x-3 self-start sm:self-auto">
           <div className="text-left sm:text-right">
-            <span className="text-[11px] text-neutral-500 block">Estimated Delivery:</span>
-            <span className="text-sm font-bold text-neutral-900">{expectedDelivery || 'Within 2-3 Days'}</span>
+            <span className="text-[11px] text-neutral-500 block">Expected Delivery</span>
+            <span className="text-sm font-bold text-neutral-900">{estDeliveryDate}</span>
           </div>
 
           <button
             onClick={handleRefresh}
             disabled={refreshing}
             className="p-2 border border-neutral-300 hover:bg-neutral-100 rounded-xl text-neutral-600 transition-colors cursor-pointer"
-            title="Refresh tracking status"
+            title="Refresh Delhivery tracking"
           >
             <RotateCcw className={`w-4 h-4 ${refreshing ? 'animate-spin text-brand-maroon' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* Standard Clean E-Commerce Shipment Stepper */}
+      {/* Shipment Status Stepper */}
       <div className="px-6 py-5 bg-white border-b border-neutral-100">
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {steps.map((step, idx) => (
-            <div key={idx} className="flex flex-col space-y-1.5 text-left">
+            <div key={idx} className="flex flex-col space-y-1 text-left">
               <div className="flex items-center space-x-2">
                 <div
                   className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
@@ -145,15 +145,14 @@ export function DelhiveryLiveMap({
               <p className={`text-xs font-semibold ${step.done || step.current ? 'text-neutral-900' : 'text-neutral-400'}`}>
                 {step.label}
               </p>
-              <p className="text-[10px] text-neutral-500 truncate">{step.time}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* CLEAN GOOGLE/APPLE MAPS STYLE ROUTE MAP */}
-      <div className="relative w-full h-72 sm:h-80 bg-[#F4F3F0] overflow-hidden select-none border-b border-neutral-200">
-        {/* Realistic road map grid texture */}
+      {/* Clean Route Map */}
+      <div className="relative w-full h-64 sm:h-72 bg-[#F4F3F0] overflow-hidden select-none border-b border-neutral-200">
+        {/* Road Map Grid */}
         <div
           className="absolute inset-0 opacity-40"
           style={{
@@ -162,120 +161,92 @@ export function DelhiveryLiveMap({
           }}
         />
 
-        {/* Clean Road Corridor Lines */}
+        {/* Route Highway */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none">
-          {/* Main Highway NH-48 */}
           <path
-            d="M -20 230 C 200 240, 320 130, 520 120 C 720 110, 850 180, 1100 170"
+            d="M -20 200 C 200 210, 340 120, 520 110 C 700 100, 850 160, 1100 150"
             fill="none"
             stroke="#FFFFFF"
             strokeWidth="12"
             strokeLinecap="round"
           />
           <path
-            d="M -20 230 C 200 240, 320 130, 520 120 C 720 110, 850 180, 1100 170"
+            d="M -20 200 C 200 210, 340 120, 520 110 C 700 100, 850 160, 1100 150"
             fill="none"
             stroke="#D5D1CB"
             strokeWidth="8"
             strokeLinecap="round"
           />
-
-          {/* Active Courier Route in Rich Maroon */}
           <path
-            d="M 120 220 C 260 210, 380 135, 520 120 C 650 110, 780 160, 880 165"
+            d="M 120 190 C 260 180, 380 125, 520 110 C 650 100, 780 145, 880 150"
             fill="none"
-            stroke="#800020"
+            stroke="#6E1A24"
             strokeWidth="4"
             strokeLinecap="round"
             strokeDasharray="6 4"
           />
         </svg>
 
-        {/* Origin Hub (OCT9 Delhi Atelier) */}
-        <div className="absolute left-[12%] top-[60%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
+        {/* Origin Hub */}
+        <div className="absolute left-[15%] top-[55%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
           <div className="w-8 h-8 rounded-full bg-white border-2 border-emerald-600 shadow-md flex items-center justify-center text-emerald-700">
             <Package className="w-4 h-4" />
           </div>
-          <div className="mt-1.5 bg-white border border-neutral-300 shadow-sm px-2.5 py-1 rounded-lg text-center">
-            <p className="text-[11px] font-bold text-neutral-900">OCT9 Delhi Atelier</p>
-            <p className="text-[9px] text-neutral-500">Origin (110001)</p>
+          <div className="mt-1.5 bg-white border border-neutral-300 shadow-xs px-2.5 py-1 rounded-lg text-center">
+            <p className="text-[11px] font-bold text-neutral-900">OCT9 Central Hub</p>
+            <p className="text-[9px] text-neutral-500">New Delhi (110001)</p>
           </div>
         </div>
 
-        {/* Intermediate Transit Hub (Bilaspur Gateway) */}
-        <div className="absolute left-[45%] top-[34%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
-          <div className="w-7 h-7 rounded-full bg-white border-2 border-neutral-600 shadow-md flex items-center justify-center text-neutral-700">
-            <div className="w-2.5 h-2.5 rounded-full bg-neutral-800" />
+        {/* Courier in Transit */}
+        <div className="absolute left-[52%] top-[38%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20">
+          <div className="w-9 h-9 rounded-full bg-brand-maroon text-white shadow-md flex items-center justify-center border-2 border-white">
+            <Truck className="w-4 h-4" />
           </div>
-          <div className="mt-1.5 bg-white border border-neutral-300 shadow-sm px-2 py-0.5 rounded-md text-center">
-            <p className="text-[10px] font-semibold text-neutral-800">Bilaspur Sort Hub</p>
-          </div>
-        </div>
-
-        {/* Courier Van Location */}
-        <div className="absolute left-[66%] top-[36%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20">
-          <div className="w-10 h-10 rounded-full bg-brand-maroon text-white shadow-lg flex items-center justify-center border-2 border-white">
-            <Truck className="w-5 h-5" />
-          </div>
-          <div className="mt-1.5 bg-neutral-900 text-white px-2.5 py-1 rounded-lg shadow-md text-center">
-            <p className="text-[10px] font-bold">In Transit (48 km/h)</p>
-            <p className="text-[9px] text-neutral-300 font-mono">{vehicleNumber}</p>
+          <div className="mt-1.5 bg-neutral-900 text-white px-2.5 py-0.5 rounded-md shadow-xs text-center">
+            <p className="text-[10px] font-medium">In Transit via Delhivery</p>
           </div>
         </div>
 
-        {/* Destination Pin (Customer City & Pincode) */}
-        <div className="absolute left-[88%] top-[48%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
+        {/* Destination Pin */}
+        <div className="absolute left-[85%] top-[48%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
           <div className="w-8 h-8 rounded-full bg-white border-2 border-red-600 shadow-md flex items-center justify-center text-red-600">
             <MapPin className="w-4 h-4" />
           </div>
-          <div className="mt-1.5 bg-white border border-neutral-300 shadow-sm px-2.5 py-1 rounded-lg text-center">
+          <div className="mt-1.5 bg-white border border-neutral-300 shadow-xs px-2.5 py-1 rounded-lg text-center">
             <p className="text-[11px] font-bold text-neutral-900">{destinationCity}</p>
             <p className="text-[9px] text-neutral-500">Pincode: {destinationPincode}</p>
           </div>
         </div>
-
-        {/* Route Info Badge */}
-        <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-xs border border-neutral-200 rounded-lg px-3 py-1.5 text-xs text-neutral-700 shadow-xs flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span>Live Tracking Active</span>
-          <span>•</span>
-          <span className="text-neutral-500 font-mono">{lastUpdated}</span>
-        </div>
       </div>
 
-      {/* Standard Clean Courier Metadata Grid */}
-      <div className="p-5 sm:p-6 bg-white grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-neutral-700">
-        <div className="p-3.5 bg-neutral-50 rounded-xl border border-neutral-200 space-y-1">
+      {/* Transit Route Details */}
+      <div className="p-4 sm:p-5 bg-neutral-50 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-neutral-700">
+        <div>
           <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 block">
-            Courier Executive
+            Origin Facility
           </span>
-          <p className="font-bold text-neutral-900 text-sm">{riderName}</p>
-          <p className="text-neutral-600 text-[11px] flex items-center space-x-1">
-            <Phone className="w-3 h-3 text-brand-maroon" />
-            <span>{riderPhone}</span>
-          </p>
+          <p className="font-semibold text-neutral-900 mt-0.5">{originLocation}</p>
         </div>
 
-        <div className="p-3.5 bg-neutral-50 rounded-xl border border-neutral-200 space-y-1">
+        <div>
           <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 block">
-            Package Details
+            Destination Address
           </span>
-          <p className="font-semibold text-neutral-900">Weight: {packageWeight}</p>
-          <p className="text-neutral-500 text-[11px]">E-Way Bill: <strong className="font-mono text-neutral-800">{ewayBill}</strong></p>
+          <p className="font-semibold text-neutral-900 mt-0.5">{destinationCity} - {destinationPincode}</p>
         </div>
 
-        <div className="p-3.5 bg-neutral-50 rounded-xl border border-neutral-200 space-y-1">
+        <div>
           <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 block">
-            Delivery Partner
+            Official Delhivery Portal
           </span>
-          <p className="font-semibold text-neutral-900">Delhivery Express Surface</p>
           <a
             href={`https://www.delhivery.com/track/package/${cleanAWB}`}
             target="_blank"
             rel="noreferrer"
-            className="text-brand-maroon hover:underline font-semibold text-[11px] inline-flex items-center space-x-1 pt-0.5"
+            className="text-brand-maroon hover:underline font-semibold text-xs inline-flex items-center space-x-1 mt-0.5"
           >
-            <span>Open on Delhivery.com</span>
+            <span>Track on Delhivery.com</span>
             <ExternalLink className="w-3 h-3" />
           </a>
         </div>

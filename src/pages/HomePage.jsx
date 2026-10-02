@@ -69,7 +69,7 @@ export function HomePage() {
 
                 <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-[1.15] tracking-tight">
                   Timeless <br />
-                  <span className="gold-gradient-text italic font-normal">Ethnic Elegance</span>
+                  <span className="gold-gradient-text font-extrabold">Ethnic Elegance</span>
                 </h1>
 
                 <p className="text-neutral-600 text-sm sm:text-base max-w-md leading-relaxed font-light">

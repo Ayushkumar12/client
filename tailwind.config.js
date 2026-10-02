@@ -23,8 +23,8 @@ export default {
         }
       },
       fontFamily: {
-        serif: ['"Playfair Display"', 'Georgia', 'serif'],
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        serif: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', '"Inter"', 'sans-serif'],
       },
       boxShadow: {
         'luxury': '0 10px 30px -5px rgba(20, 20, 20, 0.08), 0 4px 6px -2px rgba(20, 20, 20, 0.03)',

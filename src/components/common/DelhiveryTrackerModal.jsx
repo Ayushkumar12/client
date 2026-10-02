@@ -161,7 +161,7 @@ export function DelhiveryTrackerModal({ waybill, isOpen, onClose, destinationCit
                       Checkpoint Updates
                     </h4>
                     <div className="relative pl-6 space-y-5 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-neutral-200">
-                      {(data.timeline || []).map((step, idx) => (
+                      {(data.milestone_checkpoints || data.scans || data.timeline || []).map((step, idx) => (
                         <div key={idx} className="relative">
                           <div
                             className={`absolute -left-6 top-0.5 w-5 h-5 rounded-full flex items-center justify-center ${
@@ -174,12 +174,17 @@ export function DelhiveryTrackerModal({ waybill, isOpen, onClose, destinationCit
                           </div>
 
                           <div className="pl-1">
-                            <p className="text-xs font-semibold text-neutral-900">{step.title || step.status}</p>
-                            <p className="text-[11px] text-neutral-500 flex items-center space-x-1 mt-0.5">
-                              <MapPin className="w-3 h-3 text-neutral-400 shrink-0" />
-                              <span>{step.location}</span>
-                            </p>
-                            <span className="text-[10px] text-neutral-400 mt-0.5 block">{step.time}</span>
+                            <p className="text-xs font-semibold text-neutral-900">{step.activity || step.title || step.status}</p>
+                            {step.location && (
+                              <p className="text-[11px] text-neutral-600 flex items-center space-x-1 mt-0.5">
+                                <MapPin className="w-3 h-3 text-red-500 shrink-0" />
+                                <span>{step.location}</span>
+                              </p>
+                            )}
+                            <span className="text-[10px] text-neutral-500 mt-0.5 block">{step.timestamp || step.time}</span>
+                            {step.status && step.status !== step.activity && (
+                              <p className="text-[10px] text-neutral-400 mt-0.5">{step.status}</p>
+                            )}
                           </div>
                         </div>
                       ))}

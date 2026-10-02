@@ -164,75 +164,78 @@ export function DelhiveryLiveMap({
         </div>
       </div>
 
-      {/* Clean Route Visualizer */}
-      <div className="relative w-full h-64 sm:h-72 bg-[#F4F3F0] overflow-hidden select-none border-b border-neutral-200">
-        {/* Road Map Grid */}
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage: `linear-gradient(#E5E3DF 1px, transparent 1px), linear-gradient(to right, #E5E3DF 1px, #F4F3F0 1px)`,
-            backgroundSize: '40px 40px'
-          }}
-        />
 
-        {/* Route Highway */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none">
-          <path
-            d="M -20 200 C 200 210, 340 120, 520 110 C 700 100, 850 160, 1100 150"
-            fill="none"
-            stroke="#FFFFFF"
-            strokeWidth="12"
-            strokeLinecap="round"
-          />
-          <path
-            d="M -20 200 C 200 210, 340 120, 520 110 C 700 100, 850 160, 1100 150"
-            fill="none"
-            stroke="#D5D1CB"
-            strokeWidth="8"
-            strokeLinecap="round"
-          />
-          <path
-            d="M 120 190 C 260 180, 380 125, 520 110 C 650 100, 780 145, 880 150"
-            fill="none"
-            stroke="#6E1A24"
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeDasharray="6 4"
-          />
-        </svg>
 
-        {/* Origin Hub */}
-        <div className="absolute left-[15%] top-[55%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
-          <div className="w-8 h-8 rounded-full bg-white border-2 border-emerald-600 shadow-md flex items-center justify-center text-emerald-700">
-            <Package className="w-4 h-4" />
+      {/* Milestone Checkpoints (Scan Locations, Timestamps, and Status Updates) */}
+      {apiData?.milestone_checkpoints && apiData.milestone_checkpoints.length > 0 && (
+        <div className="p-5 sm:p-6 bg-white border-b border-neutral-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-2">
+              <MapPin className="w-4 h-4 text-brand-maroon" />
+              <h4 className="font-serif font-bold text-sm text-neutral-900">
+                Milestone Checkpoints (Scan Locations)
+              </h4>
+            </div>
+            <span className="text-[11px] text-neutral-500 font-medium">
+              Delhivery Logistics Telemetry
+            </span>
           </div>
-          <div className="mt-1.5 bg-white border border-neutral-300 shadow-xs px-2.5 py-1 rounded-lg text-center">
-            <p className="text-[11px] font-bold text-neutral-900">OCT9 Central Hub</p>
-            <p className="text-[9px] text-neutral-500">New Delhi (110020)</p>
+
+          <div className="space-y-4 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-neutral-200">
+            {apiData.milestone_checkpoints.map((cp, idx) => {
+              const isDone = cp.completed !== undefined ? cp.completed : (idx === 0);
+              const isCurr = cp.current;
+
+              return (
+                <div key={idx} className="relative flex items-start space-x-3.5 pl-1">
+                  {/* Status Indicator Icon */}
+                  <div
+                    className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 border-2 transition-all ${
+                      isDone
+                        ? 'bg-emerald-600 border-emerald-600 text-white'
+                        : isCurr
+                        ? 'bg-brand-maroon border-brand-maroon text-white animate-pulse'
+                        : 'bg-white border-neutral-300 text-neutral-400'
+                    }`}
+                  >
+                    {isDone ? '✓' : idx + 1}
+                  </div>
+
+                  {/* Checkpoint Details */}
+                  <div className="flex-1 bg-[#FAF7F2] p-3 sm:p-3.5 rounded-xl border border-brand-border/70 space-y-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                      <p className="font-bold text-xs text-neutral-900">
+                        {cp.activity || cp.title || cp.status}
+                      </p>
+                      {cp.timestamp && (
+                        <div className="flex items-center space-x-1 text-[11px] text-neutral-500 shrink-0 font-medium">
+                          <Clock className="w-3 h-3 text-neutral-400" />
+                          <span>{cp.timestamp}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Scan Location */}
+                    {cp.location && (
+                      <div className="flex items-center space-x-1.5 text-xs text-neutral-700">
+                        <MapPin className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                        <span className="font-semibold text-neutral-800">{cp.location}</span>
+                      </div>
+                    )}
+
+                    {/* Operational Status Update */}
+                    {cp.status && cp.status !== cp.activity && (
+                      <p className="text-[11px] text-neutral-600 pt-0.5 border-t border-neutral-200/60 leading-relaxed">
+                        {cp.status}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-
-        {/* Courier in Transit */}
-        <div className="absolute left-[52%] top-[38%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20">
-          <div className="w-9 h-9 rounded-full bg-brand-maroon text-white shadow-md flex items-center justify-center border-2 border-white">
-            <Truck className="w-4 h-4" />
-          </div>
-          <div className="mt-1.5 bg-neutral-900 text-white px-2.5 py-0.5 rounded-md shadow-xs text-center">
-            <p className="text-[10px] font-medium">In Transit via Delhivery</p>
-          </div>
-        </div>
-
-        {/* Destination Pin */}
-        <div className="absolute left-[85%] top-[48%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
-          <div className="w-8 h-8 rounded-full bg-white border-2 border-red-600 shadow-md flex items-center justify-center text-red-600">
-            <MapPin className="w-4 h-4" />
-          </div>
-          <div className="mt-1.5 bg-white border border-neutral-300 shadow-xs px-2.5 py-1 rounded-lg text-center">
-            <p className="text-[11px] font-bold text-neutral-900">{destinationCity}</p>
-            <p className="text-[9px] text-neutral-500">PIN: {destinationPincode}</p>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Transit Route Details */}
       <div className="p-4 sm:p-5 bg-neutral-50 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-neutral-700">

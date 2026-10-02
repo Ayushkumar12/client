@@ -38,7 +38,10 @@ export const api = {
   login: (credentials) => request('/auth/login', { method: 'POST', body: JSON.stringify(credentials) }),
   register: (userData) => request('/auth/register', { method: 'POST', body: JSON.stringify(userData) }),
   getProfile: () => request('/auth/profile'),
+  updateProfile: (profileData) => request('/auth/profile', { method: 'PUT', body: JSON.stringify(profileData) }),
   saveAddress: (address) => request('/auth/address', { method: 'POST', body: JSON.stringify(address) }),
+  updateAddress: (id, address) => request(`/auth/address/${id}`, { method: 'PUT', body: JSON.stringify(address) }),
+  setDefaultAddress: (id) => request(`/auth/address/${id}/default`, { method: 'PUT' }),
   deleteAddress: (id) => request(`/auth/address/${id}`, { method: 'DELETE' }),
 
   // Products

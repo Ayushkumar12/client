@@ -65,8 +65,41 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const updateProfile = async (profileData) => {
+    const res = await api.updateProfile(profileData);
+    if (res.success && user) {
+      setUser(prev => ({
+        ...prev,
+        ...res.user
+      }));
+    }
+    return res;
+  };
+
   const saveAddress = async (addressData) => {
     const res = await api.saveAddress(addressData);
+    if (res.success && user) {
+      setUser(prev => ({
+        ...prev,
+        addresses: res.addresses
+      }));
+    }
+    return res;
+  };
+
+  const updateAddress = async (addressId, addressData) => {
+    const res = await api.updateAddress(addressId, addressData);
+    if (res.success && user) {
+      setUser(prev => ({
+        ...prev,
+        addresses: res.addresses
+      }));
+    }
+    return res;
+  };
+
+  const setDefaultAddress = async (addressId) => {
+    const res = await api.setDefaultAddress(addressId);
     if (res.success && user) {
       setUser(prev => ({
         ...prev,
@@ -101,7 +134,10 @@ export function AuthProvider({ children }) {
         register,
         logout,
         refreshProfile,
+        updateProfile,
         saveAddress,
+        updateAddress,
+        setDefaultAddress,
         deleteAddress,
       }}
     >

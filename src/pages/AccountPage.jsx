@@ -435,8 +435,6 @@ export function AccountPage() {
           onClose={() => setSelectedWaybill(null)}
         />
       )}
-
-      </div>
     </div>
   );
 }

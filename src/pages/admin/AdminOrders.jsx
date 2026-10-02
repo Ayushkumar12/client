@@ -14,7 +14,7 @@ import {
   FileText
 } from 'lucide-react';
 import { DelhiveryTrackerModal } from '../../components/common/DelhiveryTrackerModal.jsx';
-import { TaxInvoiceModal } from '../../components/common/TaxInvoiceModal.jsx';
+import { downloadOrderInvoicePdf } from '../../utils/invoicePdf.js';
 import { api } from '../../services/api.js';
 
 export function AdminOrders() {
@@ -23,7 +23,7 @@ export function AdminOrders() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [invoiceOrder, setInvoiceOrder] = useState(null);
+  const [downloadingInvoiceId, setDownloadingInvoiceId] = useState(null);
   const [trackingWaybill, setTrackingWaybill] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionMessage, setActionMessage] = useState('');
@@ -247,9 +247,14 @@ export function AdminOrders() {
                         </button>
 
                         <button
-                          onClick={() => setInvoiceOrder(o)}
-                          className="p-1.5 bg-neutral-100 hover:bg-neutral-200 text-brand-maroon rounded-lg"
-                          title="View / Print Tax Invoice"
+                          onClick={async () => {
+                            setDownloadingInvoiceId(o.id);
+                            await downloadOrderInvoicePdf(o);
+                            setDownloadingInvoiceId(null);
+                          }}
+                          disabled={downloadingInvoiceId === o.id}
+                          className="p-1.5 bg-neutral-100 hover:bg-neutral-200 text-brand-maroon rounded-lg cursor-pointer disabled:opacity-50"
+                          title="Download Tax Invoice PDF"
                         >
                           <FileText className="w-4 h-4" />
                         </button>
@@ -355,11 +360,16 @@ export function AdminOrders() {
                 ) : (
                   <>
                     <button
-                      onClick={() => setInvoiceOrder(selectedOrder)}
-                      className="px-3 py-2 bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-bold rounded-lg flex items-center space-x-1"
+                      onClick={async () => {
+                        setDownloadingInvoiceId(selectedOrder.id);
+                        await downloadOrderInvoicePdf(selectedOrder);
+                        setDownloadingInvoiceId(null);
+                      }}
+                      disabled={downloadingInvoiceId === selectedOrder.id}
+                      className="px-3 py-2 bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-bold rounded-lg flex items-center space-x-1 cursor-pointer disabled:opacity-50"
                     >
                       <FileText className="w-3.5 h-3.5" />
-                      <span>Tax Invoice</span>
+                      <span>{downloadingInvoiceId === selectedOrder.id ? 'Downloading...' : 'Download Invoice (PDF)'}</span>
                     </button>
 
                     <a
@@ -384,15 +394,6 @@ export function AdminOrders() {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Tax Invoice Modal for Admin */}
-      {invoiceOrder && (
-        <TaxInvoiceModal
-          order={invoiceOrder}
-          isOpen={Boolean(invoiceOrder)}
-          onClose={() => setInvoiceOrder(null)}
-        />
       )}
 
       {/* Live Delhivery Tracking Modal */}

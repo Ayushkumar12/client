@@ -236,8 +236,6 @@ export function TrackOrderPage() {
           </div>
         )}
       </div>
-
-      </div>
     </div>
   );
 }

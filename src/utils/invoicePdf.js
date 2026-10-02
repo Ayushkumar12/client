@@ -1,8 +1,19 @@
-/**
- * Utility to directly generate and trigger PDF download for Tax Invoices
- * Matching the exact official Delhivery / Indian E-Commerce standard layout
- * WITHOUT opening any on-screen modal preview.
- */
+function loadHtml2PdfScript() {
+  if (window.html2pdf) return Promise.resolve(window.html2pdf);
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[src*="html2pdf"]');
+    if (existing) {
+      existing.addEventListener('load', () => resolve(window.html2pdf));
+      existing.addEventListener('error', reject);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+    script.onload = () => resolve(window.html2pdf);
+    script.onerror = () => reject(new Error('Failed to load html2pdf library'));
+    document.head.appendChild(script);
+  });
+}
 
 export async function downloadOrderInvoicePdf(order) {
   if (!order) {
@@ -168,7 +179,8 @@ export async function downloadOrderInvoicePdf(order) {
 
   const filename = `Tax_Invoice_${order.order_number}.pdf`;
 
-  if (window.html2pdf) {
+  try {
+    const html2pdf = await loadHtml2PdfScript();
     const opt = {
       margin: [6, 6, 6, 6],
       filename: filename,
@@ -177,16 +189,13 @@ export async function downloadOrderInvoicePdf(order) {
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    try {
-      await window.html2pdf().set(opt).from(container).save();
-    } catch (e) {
-      console.error('html2pdf download error:', e);
-      window.open(`/api/orders/${order.order_number}/invoice`, '_blank');
-    } finally {
+    await html2pdf().set(opt).from(container).save();
+  } catch (e) {
+    console.error('Invoice PDF generation error:', e);
+    alert('Could not download PDF automatically: ' + (e.message || 'Unknown error'));
+  } finally {
+    if (container.parentNode) {
       document.body.removeChild(container);
     }
-  } else {
-    document.body.removeChild(container);
-    window.open(`/api/orders/${order.order_number}/invoice`, '_blank');
   }
 }

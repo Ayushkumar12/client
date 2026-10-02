@@ -11,8 +11,7 @@ import {
   ShieldCheck,
   AlertCircle,
   Loader2,
-  FileText,
-  Navigation
+  FileText
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO.jsx';
 import { DelhiveryLiveMap } from '../components/common/DelhiveryLiveMap.jsx';
@@ -87,38 +86,38 @@ export function TrackOrderPage() {
     : null;
 
   return (
-    <div className="bg-[#FAF7F2] min-h-screen py-12">
+    <div className="bg-[#FAF7F2] min-h-screen py-10">
       <SEO
-        title="Live Delhivery Tracking & Map | OCT9 Luxury Ethnic Wear"
-        description="Track your OCT9 order in real time with our live GPS telemetry and Delhivery One logistics integration."
+        title="Track Order | OCT9 Luxury Ethnic Wear"
+        description="Track your OCT9 order with live Delhivery express shipping updates."
       />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
         {/* Header Hero */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center space-x-2 bg-brand-maroon/10 border border-brand-maroon/20 px-3 py-1 rounded-full text-brand-maroon text-xs font-bold uppercase tracking-wider">
-            <Truck className="w-3.5 h-3.5" />
-            <span>Delhivery One Logistics Integration</span>
+        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-neutral-200 shadow-xs text-center space-y-3">
+          <div className="inline-flex items-center space-x-1.5 bg-neutral-100 text-neutral-700 px-3 py-1 rounded-full text-xs font-medium">
+            <Truck className="w-3.5 h-3.5 text-brand-maroon" />
+            <span>Delhivery Express Logistics</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-900">
-            Live GPS Order Tracking
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+            Track Your Shipment
           </h1>
 
           <p className="text-xs sm:text-sm text-neutral-600 max-w-md mx-auto">
-            Enter your <strong>OCT9 Order Number</strong> (e.g. OCT-2026-98214) or <strong>Delhivery AWB No.</strong> (e.g. DLV98328471928) for real-time scans.
+            Enter your <strong>Order ID</strong> (e.g. OCT-2026-98214) or <strong>Delhivery AWB</strong> (e.g. DLV98328471928).
           </p>
 
           {/* Search Box */}
-          <form onSubmit={handleSubmit} className="max-w-lg mx-auto flex gap-2 pt-2">
+          <form onSubmit={handleSubmit} className="max-w-md mx-auto flex gap-2 pt-2">
             <div className="relative flex-1">
               <input
                 type="text"
                 required
                 value={queryInput}
                 onChange={(e) => setQueryInput(e.target.value)}
-                placeholder="Enter Order # or Delhivery AWB..."
-                className="w-full text-xs sm:text-sm pl-9 pr-3 py-3 bg-white border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon shadow-sm uppercase font-mono font-bold"
+                placeholder="Enter Order # or AWB..."
+                className="w-full text-xs sm:text-sm pl-9 pr-3 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon uppercase font-mono font-semibold text-neutral-900"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
             </div>
@@ -126,22 +125,22 @@ export function TrackOrderPage() {
             <button
               type="submit"
               disabled={loading || !queryInput.trim()}
-              className="px-6 py-3 bg-brand-maroon hover:bg-brand-maroon-hover disabled:bg-neutral-400 text-white text-xs font-bold rounded-xl shadow-md transition-colors flex items-center space-x-1.5 shrink-0 cursor-pointer"
+              className="px-5 py-2.5 bg-brand-maroon hover:bg-brand-maroon-hover disabled:bg-neutral-400 text-white text-xs font-semibold rounded-xl transition-colors flex items-center space-x-1.5 shrink-0 cursor-pointer shadow-xs"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Track Package'}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Track'}
             </button>
           </form>
 
           {/* Quick Demo links */}
           <div className="flex items-center justify-center space-x-2 text-[11px] text-neutral-500 pt-1">
-            <span>Try sample:</span>
+            <span>Sample:</span>
             <button
               type="button"
               onClick={() => {
                 setQueryInput('OCT-2026-98214');
                 performTrack('OCT-2026-98214');
               }}
-              className="text-brand-maroon underline font-semibold cursor-pointer"
+              className="text-brand-maroon underline font-medium cursor-pointer"
             >
               OCT-2026-98214
             </button>
@@ -152,7 +151,7 @@ export function TrackOrderPage() {
                 setQueryInput('DLV98328471928');
                 performTrack('DLV98328471928');
               }}
-              className="text-brand-maroon underline font-semibold cursor-pointer"
+              className="text-brand-maroon underline font-medium cursor-pointer"
             >
               DLV98328471928
             </button>
@@ -170,20 +169,19 @@ export function TrackOrderPage() {
         {/* Tracking Details Display */}
         {(trackingData || orderDetails) && (
           <div className="space-y-6 animate-fadeIn">
-            {/* Live GPS Map Visualizer */}
-            <div className="space-y-2">
+            {/* Delivery Map & Stepper */}
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-serif font-bold text-lg text-neutral-900 flex items-center space-x-2">
-                  <Navigation className="w-4 h-4 text-brand-maroon" />
-                  <span>Real-Time GPS Location Map</span>
+                <h3 className="font-serif font-bold text-lg text-neutral-900">
+                  Shipment Progress
                 </h3>
                 {orderDetails && (
                   <button
                     onClick={() => setShowInvoiceModal(true)}
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded-lg text-xs font-bold shadow cursor-pointer transition-colors"
+                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
                   >
-                    <FileText className="w-3.5 h-3.5 text-brand-gold" />
-                    <span>View GST Tax Invoice</span>
+                    <FileText className="w-3.5 h-3.5 text-neutral-600" />
+                    <span>Download Invoice</span>
                   </button>
                 )}
               </div>
@@ -198,59 +196,59 @@ export function TrackOrderPage() {
             </div>
 
             {/* Tracking Journey Timeline */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-brand-border shadow-sm space-y-6">
+            <div className="bg-white rounded-2xl p-6 border border-neutral-200 shadow-xs space-y-5">
               <h3 className="font-serif font-bold text-base text-neutral-900">
-                Detailed Scan Timeline
+                Tracking History
               </h3>
 
-              <div className="relative pl-8 space-y-8 before:absolute before:left-[15px] before:top-2 before:bottom-2 before:w-0.5 before:bg-neutral-200">
+              <div className="relative pl-7 space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-neutral-200">
                 {(trackingData?.timeline || [
-                  { status: 'Manifest Created', location: 'OCT9 Central Atelier Hub, New Delhi', time: 'Oct 02, 2026 • 09:30 AM', completed: true },
-                  { status: 'Picked up by Delhivery Courier', location: 'Delhi Sort Facility (NH48)', time: 'Oct 02, 2026 • 01:15 PM', completed: true },
-                  { status: 'In Transit Linehaul', location: 'Express Corridor en route to Destination', time: 'Oct 02, 2026 • 03:00 PM', completed: true },
+                  { status: 'Order Manifested', location: 'OCT9 Central Atelier Hub, New Delhi', time: 'Oct 02, 2026 • 09:30 AM', completed: true },
+                  { status: 'Picked Up by Courier', location: 'Delhi Sort Facility (NH48)', time: 'Oct 02, 2026 • 01:15 PM', completed: true },
+                  { status: 'In Transit', location: 'Express Corridor to Destination', time: 'Oct 02, 2026 • 03:00 PM', completed: true },
                   { status: 'Out for Delivery', location: 'Destination Regional Center', time: 'Expected Soon', completed: false },
-                  { status: 'Delivered', location: 'Doorstep Handover with OTP', time: 'Pending', completed: false }
+                  { status: 'Delivered', location: 'Doorstep Handover', time: 'Pending Delivery', completed: false }
                 ]).map((step, idx) => (
                   <div key={idx} className="relative">
                     <div
-                      className={`absolute -left-8 top-0.5 w-7 h-7 rounded-full flex items-center justify-center border-2 ${
+                      className={`absolute -left-7 top-0.5 w-5 h-5 rounded-full flex items-center justify-center ${
                         step.completed
-                          ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm'
-                          : 'bg-white border-neutral-300 text-neutral-400'
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-neutral-200 text-neutral-400'
                       }`}
                     >
-                      {step.completed ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+                      {step.completed ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Clock className="w-3 h-3" />}
                     </div>
 
-                    <div>
+                    <div className="pl-2">
                       <div className="flex items-center space-x-2">
-                        <span className="text-xs font-bold text-neutral-900">{step.title || step.status}</span>
+                        <span className="text-xs font-semibold text-neutral-900">{step.title || step.status}</span>
                         {step.completed && (
-                          <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">
+                          <span className="text-[9px] bg-emerald-50 text-emerald-700 font-semibold px-1.5 py-0.2 rounded border border-emerald-200">
                             Completed
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-neutral-500 flex items-center space-x-1 mt-1">
-                        <MapPin className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                      <p className="text-xs text-neutral-500 flex items-center space-x-1 mt-0.5">
+                        <MapPin className="w-3 h-3 text-neutral-400 shrink-0" />
                         <span>{step.location}</span>
                       </p>
-                      <span className="text-[11px] text-neutral-400 mt-0.5 block">{step.time}</span>
+                      <span className="text-[10px] text-neutral-400 mt-0.5 block">{step.time}</span>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* Official Delhivery Link */}
-              <div className="pt-4 border-t border-neutral-100 text-center">
+              <div className="pt-3 border-t border-neutral-100 text-center">
                 <a
                   href={`https://www.delhivery.com/track/package/${currentWaybill}`}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center space-x-1.5 text-xs text-brand-maroon hover:underline font-semibold"
                 >
-                  <span>Open Tracking on Official Delhivery Portal</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>View on official Delhivery website</span>
+                  <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
             </div>

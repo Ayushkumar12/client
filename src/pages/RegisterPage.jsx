@@ -39,7 +39,7 @@ export function RegisterPage() {
       <div className="max-w-md w-full bg-white rounded-3xl p-8 border border-brand-border shadow-luxury space-y-6">
         <div className="text-center space-y-2">
           <Link to="/" className="inline-block">
-            <img src="/logo-gold.svg" alt="OCT9" className="w-12 h-12 mx-auto" />
+            <img src="/oct9-logo.jpg" alt="OCT9 - Luxury Without Noise" className="h-14 w-auto mx-auto rounded-xl object-contain shadow-xs border border-neutral-200" />
           </Link>
           <h1 className="font-serif text-2xl font-bold text-neutral-900">Join the OCT9 Circle</h1>
           <p className="text-xs text-neutral-500">Create an account for personalized styling, order tracking, and fast checkout</p>

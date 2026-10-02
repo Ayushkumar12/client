@@ -53,10 +53,10 @@ export function AdminLayout() {
           {/* Logo & Header */}
           <div className="p-5 border-b border-neutral-800 flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2.5">
-              <img src="/logo-gold.svg" alt="OCT9" className="w-8 h-8" />
+              <img src="/oct9-logo.jpg" alt="OCT9" className="h-8 w-auto rounded object-contain" />
               <div>
                 <span className="font-serif text-lg font-bold tracking-widest text-white block leading-tight">OCT9</span>
-                <span className="text-[9px] uppercase tracking-widest text-brand-gold font-bold">Admin Panel</span>
+                <span className="text-[8px] uppercase tracking-widest text-brand-gold font-bold">Admin Panel</span>
               </div>
             </Link>
             <span className="bg-brand-maroon text-white text-[9px] font-bold px-1.5 py-0.5 rounded">

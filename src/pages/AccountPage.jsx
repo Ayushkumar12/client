@@ -49,7 +49,6 @@ import { DelhiveryTrackerModal } from '../components/common/DelhiveryTrackerModa
 import { OrderMilestoneTracker } from '../components/common/OrderMilestoneTracker.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
-import { getOrderMilestones } from '../utils/orderMilestones.js';
 import { api } from '../services/api.js';
 
 export function AccountPage() {
@@ -1105,8 +1104,6 @@ export function AccountPage() {
                       const isShipped = o.order_status === 'shipped' || o.delhivery_status === 'in_transit' || o.delhivery_status === 'manifested';
                       const isProcessing = o.order_status === 'processing' || o.order_status === 'confirmed';
                       const isCancelled = o.order_status === 'cancelled';
-                      const milestones = getOrderMilestones(o);
-                      const isExpanded = expandedMilestones[o.id] !== undefined ? expandedMilestones[o.id] : true;
 
                       return (
                         <div
@@ -1228,92 +1225,6 @@ export function AccountPage() {
                             <div className="pt-3 border-t border-neutral-100 space-y-3">
                               {/* 5-Step Visual Tracker Bar with Milestone Locations & Timestamps */}
                               <OrderMilestoneTracker order={o} />
-
-                              {/* Milestone Checkpoints (Scan Locations, Timestamps & Operational Telemetry) */}
-                              <div className="mt-3 bg-[#FAF7F2] rounded-xl p-3.5 sm:p-4 border border-brand-border/70 space-y-3">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center space-x-2">
-                                    <MapPin className="w-3.5 h-3.5 text-brand-maroon" />
-                                    <span className="font-bold text-xs text-neutral-900">
-                                      Milestone Checkpoints (Scan Locations)
-                                    </span>
-                                    <span className="hidden sm:inline-block text-[10px] font-semibold px-2 py-0.2 rounded-full bg-[#FBF1F3] text-brand-maroon border border-brand-maroon/20">
-                                      Delhivery Telemetry
-                                    </span>
-                                  </div>
-
-                                  <button
-                                    onClick={() => toggleOrderMilestones(o.id)}
-                                    className="text-[11px] font-semibold text-brand-maroon hover:underline flex items-center space-x-1 cursor-pointer"
-                                  >
-                                    <span>
-                                      {isExpanded
-                                        ? 'Collapse Checkpoints'
-                                        : `View All Checkpoints (${milestones.length})`}
-                                    </span>
-                                    {isExpanded ? (
-                                      <ChevronUp className="w-3.5 h-3.5" />
-                                    ) : (
-                                      <ChevronDown className="w-3.5 h-3.5" />
-                                    )}
-                                  </button>
-                                </div>
-
-                                {/* Milestone Checkpoints List */}
-                                <div className="space-y-3 relative pl-1 before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-neutral-200">
-                                  {(isExpanded ? milestones : milestones.slice(0, 1)).map((cp, idx) => {
-                                    const isDone = cp.completed;
-                                    const isCurr = cp.current;
-
-                                    return (
-                                      <div key={idx} className="relative flex items-start space-x-3 pl-0.5">
-                                        {/* Status Indicator Circle */}
-                                        <div
-                                          className={`relative z-10 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 border transition-all ${
-                                            isDone
-                                              ? 'bg-emerald-600 border-emerald-600 text-white'
-                                              : isCurr
-                                              ? 'bg-[#5A1827] border-[#5A1827] ring-3 ring-[#5A1827]/20 text-white animate-pulse'
-                                              : 'bg-white border-neutral-300 text-neutral-400'
-                                          }`}
-                                        >
-                                          {isDone ? '✓' : isCurr ? '●' : idx + 1}
-                                        </div>
-
-                                        {/* Checkpoint Details Card */}
-                                        <div className="flex-1 bg-white p-2.5 sm:p-3 rounded-lg border border-neutral-200/80 shadow-2xs space-y-1">
-                                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5">
-                                            <p className="font-bold text-xs text-neutral-900">
-                                              {cp.activity || cp.title || cp.status}
-                                            </p>
-                                            {cp.timestamp && (
-                                              <div className="flex items-center space-x-1 text-[10px] text-neutral-500 font-medium shrink-0">
-                                                <Clock className="w-3 h-3 text-neutral-400" />
-                                                <span>{cp.timestamp}</span>
-                                              </div>
-                                            )}
-                                          </div>
-
-                                          {/* Scan Location */}
-                                          {cp.location && (
-                                            <div className="flex items-center space-x-1 text-[11px] text-neutral-700">
-                                              <MapPin className="w-3 h-3 text-red-500 shrink-0" />
-                                              <span className="font-semibold text-neutral-800">{cp.location}</span>
-                                            </div>
-                                          )}
-
-                                          {/* Operational Status Description */}
-                                          {cp.status && cp.status !== cp.activity && (
-                                            <p className="text-[10px] text-neutral-500 pt-0.5 border-t border-neutral-100 leading-relaxed">
-                                              {cp.status}
-                                            </p>
-                                          )}
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
 
                               {/* Logistics Footer with Live GPS Tracking Button */}
                               {o.delhivery_waybill && (

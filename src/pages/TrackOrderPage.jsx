@@ -150,26 +150,13 @@ export function TrackOrderPage() {
                   Shipment Progress
                 </h3>
                 <div className="flex items-center space-x-2">
-                  {currentWaybill && (
-                    <a
-                      href={api.getPackingSlipUrl(currentWaybill)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-brand-gold rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs border border-neutral-700"
-                    >
-                      <Truck className="w-3.5 h-3.5 text-brand-gold" />
-                      <span>Delhivery Packing Slip</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-
                   {orderDetails && (
                     <button
                       onClick={() => setShowInvoiceModal(true)}
-                      className="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
+                      className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
                     >
-                      <FileText className="w-3.5 h-3.5 text-neutral-600" />
-                      <span>Tax Invoice</span>
+                      <FileText className="w-3.5 h-3.5 text-brand-gold-light" />
+                      <span>Download Tax Invoice</span>
                     </button>
                   )}
                 </div>

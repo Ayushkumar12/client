@@ -108,37 +108,41 @@ export function Header() {
     { label: 'Jutti', path: '/category/jutti' },
   ];
 
+  const userInitials = user?.name
+    ? user.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
+    : 'U';
+
   return (
-    <header className="sticky top-0 z-40 bg-[#161616] text-white shadow-xl">
-      {/* Main Header Row */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 bg-white text-neutral-900 border-b border-neutral-200/90 shadow-2xs transition-all">
+      {/* Main Header Row - Compact Height */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between gap-3 sm:gap-4">
         {/* Mobile menu toggle button */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden p-1.5 text-neutral-300 hover:text-brand-gold focus:outline-none"
+          className="lg:hidden p-1.5 text-neutral-700 hover:text-brand-maroon focus:outline-none cursor-pointer"
           aria-label="Toggle menu"
         >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Brand Logo matching user upload */}
-        <Link to="/" className="flex items-center space-x-3 group">
+        {/* Brand Logo matching user specifications */}
+        <Link to="/" className="flex items-center space-x-2.5 sm:space-x-3 group shrink-0">
           <img
             src="/oct9-logo.jpg"
             alt="OCT9 - Luxury Without Noise"
-            className="h-10 sm:h-11 w-auto rounded-lg object-contain border border-neutral-700/60 transition-transform duration-300 group-hover:scale-105 shadow-xs"
+            className="h-8 sm:h-9 w-auto rounded-lg object-contain border border-neutral-200 shadow-2xs transition-transform duration-300 group-hover:scale-105"
           />
           <div className="flex flex-col">
-            <span className="font-serif text-xl sm:text-2xl font-bold tracking-[0.2em] text-white group-hover:text-brand-gold transition-colors leading-tight">
-              OCT<span className="text-brand-gold">9</span>
+            <span className="font-serif text-lg sm:text-xl font-bold tracking-[0.18em] text-neutral-900 group-hover:text-brand-maroon transition-colors leading-tight">
+              OCT<span className="text-brand-maroon">9</span>
             </span>
-            <span className="text-[8px] tracking-[0.25em] uppercase text-neutral-300 font-medium hidden sm:block">
+            <span className="text-[7.5px] tracking-[0.22em] uppercase text-neutral-500 font-medium hidden sm:block">
               Luxury Without Noise
             </span>
           </div>
         </Link>
 
-        {/* Search Bar matching screenshot */}
+        {/* Search Bar - Sleek & Compact */}
         <div ref={searchContainerRef} className="relative flex-1 max-w-xl mx-2 sm:mx-6 hidden sm:block">
           <form onSubmit={handleSearchSubmit} className="relative">
             <input
@@ -146,12 +150,12 @@ export function Header() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for suits, salwar sets, sarees, festive wear, accessories..."
-              className="w-full bg-[#242424] text-white placeholder-neutral-400 text-xs sm:text-sm pl-11 pr-24 py-2.5 rounded-full border border-neutral-700/60 focus:border-brand-gold focus:outline-none focus:ring-1 focus:ring-brand-gold transition-all"
+              className="w-full bg-[#FAF7F2] text-neutral-900 placeholder-neutral-400 text-xs pl-9 pr-20 py-1.5 sm:py-2 rounded-full border border-neutral-300/90 focus:border-brand-maroon focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-maroon shadow-2xs font-medium transition-all"
             />
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
             <button
               type="submit"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs px-3.5 py-1.5 rounded-full font-medium transition-colors"
+              className="absolute right-1 top-1/2 -translate-y-1/2 bg-[#5A1827] hover:bg-[#43121D] text-white text-[11px] px-3 py-1 rounded-full font-bold transition-colors cursor-pointer shadow-2xs"
             >
               Search
             </button>
@@ -159,27 +163,27 @@ export function Header() {
 
           {/* Live Search Auto-complete dropdown */}
           {showSearchDropdown && searchResults.length > 0 && (
-            <div className="absolute left-0 right-0 top-full mt-2 bg-[#1C1C1C] border border-neutral-700 rounded-xl shadow-2xl overflow-hidden z-50 animate-fadeIn">
-              <div className="p-2 border-b border-neutral-800 text-[11px] text-neutral-400 uppercase tracking-wider font-semibold">
+            <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-neutral-200/90 rounded-xl shadow-2xl overflow-hidden z-50 animate-fadeIn">
+              <div className="p-2 border-b border-neutral-100 text-[10px] text-neutral-500 uppercase tracking-wider font-bold bg-[#FAF7F2]">
                 Suggested Products
               </div>
-              <div className="max-h-80 overflow-y-auto divide-y divide-neutral-800">
+              <div className="max-h-80 overflow-y-auto divide-y divide-neutral-100">
                 {searchResults.map((product) => {
                   const img = Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : '';
                   return (
                     <Link
                       key={product.id}
                       to={`/product/${product.slug}`}
-                      className="flex items-center space-x-3 p-2.5 hover:bg-neutral-800/80 transition-colors"
+                      className="flex items-center space-x-3 p-2.5 hover:bg-neutral-50 transition-colors"
                       onClick={() => setShowSearchDropdown(false)}
                     >
-                      <img src={img} alt={product.title} className="w-12 h-14 object-cover rounded" />
+                      <img src={img} alt={product.title} className="w-10 h-12 object-cover rounded border border-neutral-200" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">{product.title}</p>
-                        <p className="text-xs text-neutral-400 capitalize">{product.sub_category || product.category_slug}</p>
+                        <p className="text-xs font-bold text-neutral-900 truncate">{product.title}</p>
+                        <p className="text-[10px] text-neutral-500 capitalize">{product.sub_category || product.category_slug}</p>
                         <div className="flex items-center space-x-2 mt-0.5">
-                          <span className="text-sm font-semibold text-brand-gold">₹{product.price}</span>
-                          <span className="text-xs text-neutral-500 line-through">₹{product.original_price}</span>
+                          <span className="text-xs font-bold text-brand-maroon">₹{product.price}</span>
+                          <span className="text-[10px] text-neutral-400 line-through">₹{product.original_price}</span>
                         </div>
                       </div>
                     </Link>
@@ -188,7 +192,7 @@ export function Header() {
               </div>
               <button
                 onClick={handleSearchSubmit}
-                className="w-full py-2 bg-neutral-900 text-brand-gold text-xs text-center font-medium hover:bg-neutral-800 transition-colors"
+                className="w-full py-2 bg-[#FAF7F2] text-brand-maroon text-xs text-center font-bold hover:bg-neutral-100 transition-colors"
               >
                 View all results for "{searchQuery}"
               </button>
@@ -197,80 +201,96 @@ export function Header() {
         </div>
 
         {/* Right Actions: Account, Wishlist, Cart */}
-        <div className="flex items-center space-x-3 sm:space-x-5">
+        <div className="flex items-center space-x-2.5 sm:space-x-4">
           {/* Account Menu */}
           <div ref={accountMenuRef} className="relative">
             <button
               onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
-              className="flex items-center space-x-1.5 text-neutral-200 hover:text-brand-gold transition-colors focus:outline-none"
+              className="flex items-center space-x-1.5 text-neutral-800 hover:text-brand-maroon transition-colors focus:outline-none cursor-pointer py-1"
             >
-              <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center border border-neutral-700">
-                <User className="w-4 h-4 text-brand-gold" />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F5EBE1] text-[#5A1827] flex items-center justify-center border border-[#E8DCCF] font-serif font-bold text-xs shrink-0 shadow-2xs">
+                {isAuthenticated ? userInitials : <User className="w-3.5 h-3.5 text-brand-maroon" />}
               </div>
-              <span className="text-xs font-medium hidden md:inline-block">
+              <span className="text-xs font-semibold hidden md:inline-block">
                 {isAuthenticated ? (user.name.split(' ')[0]) : 'Account'}
               </span>
-              <ChevronDown className="w-3.5 h-3.5 text-neutral-400 hidden md:block" />
+              <ChevronDown className="w-3 h-3 text-neutral-400 hidden md:block" />
             </button>
 
             {/* Account Dropdown */}
             {isAccountMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-56 bg-[#1E1E1E] border border-neutral-700/80 rounded-xl shadow-2xl py-2 z-50 text-xs animate-fadeIn">
+              <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-neutral-200/90 rounded-xl shadow-2xl py-2 z-50 text-xs animate-fadeIn">
                 {isAuthenticated ? (
                   <>
-                    <div className="px-4 py-2 border-b border-neutral-800">
-                      <p className="text-white font-semibold truncate">{user.name}</p>
-                      <p className="text-neutral-400 text-[11px] truncate">{user.email}</p>
+                    <div className="px-4 py-2 border-b border-neutral-100 bg-[#FAF7F2]">
+                      <p className="text-neutral-900 font-bold truncate">{user.name}</p>
+                      <p className="text-neutral-500 text-[11px] truncate">{user.email}</p>
                     </div>
 
                     <Link
-                      to="/account"
-                      className="flex items-center space-x-2 px-4 py-2.5 text-neutral-200 hover:bg-neutral-800 hover:text-brand-gold"
+                      to="/account?tab=profile"
+                      className="flex items-center space-x-2 px-4 py-2 text-neutral-700 hover:bg-neutral-50 hover:text-brand-maroon transition-colors"
                     >
-                      <User className="w-4 h-4" />
-                      <span>My Profile & Addresses</span>
+                      <User className="w-3.5 h-3.5" />
+                      <span>My Profile</span>
                     </Link>
 
                     <Link
                       to="/account?tab=orders"
-                      className="flex items-center space-x-2 px-4 py-2.5 text-neutral-200 hover:bg-neutral-800 hover:text-brand-gold"
+                      className="flex items-center space-x-2 px-4 py-2 text-neutral-700 hover:bg-neutral-50 hover:text-brand-maroon transition-colors"
                     >
-                      <Package className="w-4 h-4" />
+                      <Package className="w-3.5 h-3.5" />
                       <span>My Orders & Tracking</span>
+                    </Link>
+
+                    <Link
+                      to="/account?tab=wishlist"
+                      className="flex items-center space-x-2 px-4 py-2 text-neutral-700 hover:bg-neutral-50 hover:text-brand-maroon transition-colors"
+                    >
+                      <Heart className="w-3.5 h-3.5" />
+                      <span>Wishlist</span>
+                    </Link>
+
+                    <Link
+                      to="/account?tab=addresses"
+                      className="flex items-center space-x-2 px-4 py-2 text-neutral-700 hover:bg-neutral-50 hover:text-brand-maroon transition-colors"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>Saved Addresses</span>
                     </Link>
 
                     {isAdmin && (
                       <Link
                         to="/admin"
-                        className="flex items-center space-x-2 px-4 py-2.5 text-brand-gold bg-brand-maroon/20 hover:bg-brand-maroon/30 font-medium"
+                        className="flex items-center space-x-2 px-4 py-2 text-brand-maroon bg-[#FBF1F3] hover:bg-[#F8E5E9] font-bold"
                       >
-                        <ShieldCheck className="w-4 h-4 text-brand-gold" />
+                        <ShieldCheck className="w-3.5 h-3.5 text-brand-maroon" />
                         <span>Admin Control Center</span>
                       </Link>
                     )}
 
-                    <div className="border-t border-neutral-800 my-1"></div>
+                    <div className="border-t border-neutral-100 my-1"></div>
 
                     <button
                       onClick={logout}
-                      className="w-full flex items-center space-x-2 px-4 py-2 text-red-400 hover:bg-neutral-800 text-left"
+                      className="w-full flex items-center space-x-2 px-4 py-2 text-rose-700 hover:bg-rose-50 text-left cursor-pointer transition-colors"
                     >
-                      <LogOut className="w-4 h-4" />
+                      <LogOut className="w-3.5 h-3.5" />
                       <span>Sign Out</span>
                     </button>
                   </>
                 ) : (
-                  <div className="p-3 text-center">
-                    <p className="text-neutral-300 font-medium mb-2">Welcome to OCT9</p>
+                  <div className="p-3 text-center space-y-2">
+                    <p className="text-neutral-700 font-bold text-xs">Welcome to OCT9</p>
                     <Link
                       to="/login"
-                      className="block w-full py-2 bg-brand-maroon text-white font-semibold rounded-lg hover:bg-brand-maroon-hover transition-colors mb-2"
+                      className="block w-full py-2 bg-[#5A1827] text-white font-bold rounded-lg hover:bg-[#43121D] transition-colors text-xs shadow-2xs"
                     >
                       Sign In
                     </Link>
                     <Link
                       to="/register"
-                      className="block text-brand-gold hover:underline text-[11px]"
+                      className="block text-brand-maroon font-semibold hover:underline text-[11px]"
                     >
                       New customer? Create account
                     </Link>
@@ -283,12 +303,12 @@ export function Header() {
           {/* Wishlist Icon */}
           <Link
             to="/wishlist"
-            className="relative p-1.5 text-neutral-200 hover:text-brand-gold transition-colors"
+            className="relative p-1.5 text-neutral-700 hover:text-brand-maroon transition-colors"
             aria-label="Wishlist"
           >
             <Heart className="w-5 h-5" />
             {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-brand-gold text-neutral-900 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow">
+              <span className="absolute -top-0.5 -right-0.5 bg-[#5A1827] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-2xs">
                 {wishlistCount}
               </span>
             )}
@@ -297,13 +317,13 @@ export function Header() {
           {/* Cart Icon with Drawer Trigger */}
           <button
             onClick={openCart}
-            className="relative flex items-center space-x-2 bg-brand-maroon hover:bg-brand-maroon-hover text-white px-3.5 py-1.5 rounded-full transition-all duration-200 shadow-md group"
+            className="relative flex items-center space-x-1.5 bg-[#5A1827] hover:bg-[#43121D] text-white px-3 py-1.5 rounded-full transition-all duration-200 shadow-2xs group cursor-pointer"
             aria-label="Shopping Cart"
           >
-            <ShoppingBag className="w-4 h-4 text-brand-gold group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-semibold hidden sm:inline">Cart</span>
+            <ShoppingBag className="w-3.5 h-3.5 text-white group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-bold hidden sm:inline">Cart</span>
             {totalItems > 0 && (
-              <span className="bg-white text-brand-maroon text-[11px] font-bold px-1.5 py-0.2 rounded-full min-w-[18px] text-center">
+              <span className="bg-white text-[#5A1827] text-[10px] font-bold px-1.5 py-0.2 rounded-full min-w-[16px] text-center">
                 {totalItems}
               </span>
             )}
@@ -312,27 +332,27 @@ export function Header() {
       </div>
 
       {/* Mobile Search Bar Row (visible on small screens) */}
-      <div className="sm:hidden px-4 pb-3">
+      <div className="sm:hidden px-4 pb-2.5">
         <form onSubmit={handleSearchSubmit} className="relative">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search suits, sarees, festive wear..."
-            className="w-full bg-[#242424] text-white text-xs pl-9 pr-16 py-2 rounded-full border border-neutral-700 focus:outline-none focus:border-brand-gold"
+            className="w-full bg-[#FAF7F2] text-neutral-900 text-xs pl-8 pr-14 py-1.5 rounded-full border border-neutral-300 focus:outline-none focus:border-brand-maroon focus:bg-white font-medium"
           />
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
           <button
             type="submit"
-            className="absolute right-1 top-1/2 -translate-y-1/2 bg-brand-maroon text-white text-[11px] px-2.5 py-1 rounded-full"
+            className="absolute right-1 top-1/2 -translate-y-1/2 bg-[#5A1827] text-white text-[10px] font-bold px-2.5 py-1 rounded-full"
           >
             Go
           </button>
         </form>
       </div>
 
-      {/* Category Navigation Bar (Desktop) matching screenshots */}
-      <nav className="hidden lg:block bg-[#121212] border-t border-neutral-800/80">
+      {/* Category Navigation Bar (Desktop) - White & Compact */}
+      <nav className="hidden lg:block bg-white border-t border-neutral-100">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-center space-x-1">
           {navLinks.map((link) => {
             const isActive = location.pathname === link.path || (link.path !== '/' && location.pathname.startsWith(link.path));
@@ -347,29 +367,29 @@ export function Header() {
               >
                 <Link
                   to={link.path}
-                  className={`flex items-center space-x-1 px-4 py-2.5 text-xs font-medium tracking-wider uppercase transition-colors ${
+                  className={`flex items-center space-x-1 px-3.5 py-2 text-[11px] font-bold tracking-wider uppercase transition-colors ${
                     isActive
-                      ? 'text-brand-gold border-b-2 border-brand-gold font-semibold'
-                      : 'text-neutral-300 hover:text-white hover:bg-neutral-800/50'
+                      ? 'text-[#5A1827] border-b-2 border-[#5A1827] font-bold'
+                      : 'text-neutral-700 hover:text-[#5A1827] hover:bg-[#FAF7F2]'
                   }`}
                 >
                   <span>{link.label}</span>
                   {link.badge && (
-                    <span className="bg-brand-maroon text-white text-[9px] px-1 py-0.2 rounded font-bold uppercase tracking-normal">
+                    <span className="bg-[#5A1827] text-white text-[8px] px-1 py-0.2 rounded font-bold uppercase tracking-normal">
                       {link.badge}
                     </span>
                   )}
-                  {hasChildren && <ChevronDown className="w-3 h-3 text-neutral-400 group-hover:text-brand-gold transition-transform group-hover:rotate-180" />}
+                  {hasChildren && <ChevronDown className="w-3 h-3 text-neutral-400 group-hover:text-brand-maroon transition-transform group-hover:rotate-180" />}
                 </Link>
 
                 {/* Subcategory dropdown menu */}
                 {hasChildren && (
-                  <div className="absolute left-0 top-full w-56 bg-[#1A1A1A] border border-neutral-800 shadow-2xl rounded-b-lg py-2 hidden group-hover:block z-50 animate-fadeIn">
+                  <div className="absolute left-0 top-full w-52 bg-white border border-neutral-200/90 shadow-xl rounded-b-xl py-1.5 hidden group-hover:block z-50 animate-fadeIn">
                     {link.children.map((sub) => (
                       <Link
                         key={sub.label}
                         to={sub.path}
-                        className="block px-4 py-2 text-xs text-neutral-300 hover:bg-neutral-800 hover:text-brand-gold transition-colors"
+                        className="block px-4 py-2 text-xs font-semibold text-neutral-700 hover:bg-[#FAF7F2] hover:text-brand-maroon transition-colors"
                       >
                         {sub.label}
                       </Link>
@@ -384,17 +404,17 @@ export function Header() {
 
       {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-[110px] bg-black/80 backdrop-blur-sm z-50 flex">
-          <div className="w-4/5 max-w-sm bg-[#181818] h-full overflow-y-auto p-5 border-r border-neutral-800 text-sm animate-slideRight">
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
+        <div className="lg:hidden fixed inset-0 top-[100px] bg-black/50 backdrop-blur-xs z-50 flex">
+          <div className="w-4/5 max-w-sm bg-white h-full overflow-y-auto p-5 border-r border-neutral-200 text-sm animate-slideRight">
+            <div className="flex items-center justify-between pb-4 border-b border-neutral-200">
               <div className="flex items-center space-x-2.5">
-                <img src="/oct9-logo.jpg" alt="OCT9" className="h-8 w-auto rounded object-contain" />
+                <img src="/oct9-logo.jpg" alt="OCT9" className="h-8 w-auto rounded object-contain border border-neutral-200" />
                 <div className="flex flex-col">
-                  <span className="font-serif font-bold text-white tracking-widest leading-none">OCT9</span>
-                  <span className="text-[7px] uppercase tracking-wider text-neutral-400">Luxury Without Noise</span>
+                  <span className="font-serif font-bold text-neutral-900 tracking-widest leading-none">OCT9</span>
+                  <span className="text-[7px] uppercase tracking-wider text-neutral-500">Luxury Without Noise</span>
                 </div>
               </div>
-              <button onClick={() => setIsMobileMenuOpen(false)} className="text-neutral-400">
+              <button onClick={() => setIsMobileMenuOpen(false)} className="text-neutral-500 hover:text-neutral-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -404,22 +424,22 @@ export function Header() {
                 <div key={link.label}>
                   <Link
                     to={link.path}
-                    className="flex items-center justify-between py-2.5 px-3 rounded-lg text-neutral-200 hover:bg-neutral-800 hover:text-brand-gold"
+                    className="flex items-center justify-between py-2 px-3 rounded-lg text-neutral-800 font-semibold hover:bg-[#FAF7F2] hover:text-brand-maroon"
                   >
                     <span>{link.label}</span>
                     {link.badge && (
-                      <span className="bg-brand-maroon text-white text-[10px] px-1.5 py-0.5 rounded font-bold">
+                      <span className="bg-[#5A1827] text-white text-[9px] px-1.5 py-0.5 rounded font-bold">
                         {link.badge}
                       </span>
                     )}
                   </Link>
                   {link.children && (
-                    <div className="pl-6 space-y-1 mt-1 border-l-2 border-neutral-800 ml-3">
+                    <div className="pl-6 space-y-1 mt-1 border-l-2 border-neutral-200 ml-3">
                       {link.children.map((sub) => (
                         <Link
                           key={sub.label}
                           to={sub.path}
-                          className="block py-1.5 text-xs text-neutral-400 hover:text-brand-gold"
+                          className="block py-1.5 text-xs text-neutral-600 hover:text-brand-maroon font-medium"
                         >
                           {sub.label}
                         </Link>
@@ -430,10 +450,10 @@ export function Header() {
               ))}
             </div>
 
-            <div className="border-t border-neutral-800 pt-4 space-y-2">
+            <div className="border-t border-neutral-200 pt-4 space-y-2 text-xs">
               <Link
                 to="/track-order"
-                className="flex items-center space-x-2 py-2 text-brand-gold"
+                className="flex items-center space-x-2 py-2 text-brand-maroon font-bold"
               >
                 <Package className="w-4 h-4" />
                 <span>Track Delhivery Order</span>
@@ -441,7 +461,7 @@ export function Header() {
               {isAdmin && (
                 <Link
                   to="/admin"
-                  className="flex items-center space-x-2 py-2 text-amber-400 font-semibold"
+                  className="flex items-center space-x-2 py-2 text-brand-maroon font-bold bg-[#FBF1F3] px-3 rounded-lg"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   <span>Admin Control Center</span>

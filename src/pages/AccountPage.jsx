@@ -17,8 +17,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { DelhiveryTrackerModal } from '../components/common/DelhiveryTrackerModal.jsx';
-import { TaxInvoiceModal } from '../components/common/TaxInvoiceModal.jsx';
 import { SEO } from '../components/common/SEO.jsx';
+import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
 import { api } from '../services/api.js';
 
 export function AccountPage() {
@@ -30,9 +30,9 @@ export function AccountPage() {
 
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [downloadingId, setDownloadingId] = useState(null);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [selectedWaybill, setSelectedWaybill] = useState(null);
-  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState(null);
 
   const [addressForm, setAddressForm] = useState({
     name: '',
@@ -304,11 +304,16 @@ export function AccountPage() {
 
                     <div className="flex flex-wrap items-center gap-2">
                       <button
-                        onClick={() => setSelectedInvoiceOrder(o)}
-                        className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg flex items-center space-x-1 cursor-pointer transition-colors shadow-2xs"
+                        onClick={async () => {
+                          setDownloadingId(o.id);
+                          await downloadOrderInvoicePdf(o);
+                          setDownloadingId(null);
+                        }}
+                        disabled={downloadingId === o.id}
+                        className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg flex items-center space-x-1 cursor-pointer transition-colors shadow-2xs disabled:opacity-75"
                       >
                         <FileText className="w-3.5 h-3.5 text-brand-gold" />
-                        <span>GST Tax Invoice</span>
+                        <span>{downloadingId === o.id ? 'Downloading PDF...' : 'Download Invoice (PDF)'}</span>
                       </button>
 
                       {o.delhivery_waybill && (
@@ -431,14 +436,7 @@ export function AccountPage() {
         />
       )}
 
-      {/* Official GST Tax Invoice Modal */}
-      {selectedInvoiceOrder && (
-        <TaxInvoiceModal
-          order={selectedInvoiceOrder}
-          isOpen={Boolean(selectedInvoiceOrder)}
-          onClose={() => setSelectedInvoiceOrder(null)}
-        />
-      )}
+      </div>
     </div>
   );
 }

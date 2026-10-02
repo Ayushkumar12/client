@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO.jsx';
 import { DelhiveryLiveMap } from '../components/common/DelhiveryLiveMap.jsx';
-import { TaxInvoiceModal } from '../components/common/TaxInvoiceModal.jsx';
+import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
 import { api } from '../services/api.js';
 
 export function TrackOrderPage() {
@@ -24,8 +24,8 @@ export function TrackOrderPage() {
   const [trackingData, setTrackingData] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState('');
-  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   useEffect(() => {
     const q = searchParams.get('awb') || searchParams.get('order');
@@ -152,11 +152,16 @@ export function TrackOrderPage() {
                 <div className="flex items-center space-x-2">
                   {orderDetails && (
                     <button
-                      onClick={() => setShowInvoiceModal(true)}
-                      className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
+                      onClick={async () => {
+                        setDownloading(true);
+                        await downloadOrderInvoicePdf(orderDetails);
+                        setDownloading(false);
+                      }}
+                      disabled={downloading}
+                      className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs disabled:opacity-75"
                     >
                       <FileText className="w-3.5 h-3.5 text-brand-gold-light" />
-                      <span>Download Tax Invoice</span>
+                      <span>{downloading ? 'Downloading PDF...' : 'Download Invoice (PDF)'}</span>
                     </button>
                   )}
                 </div>
@@ -232,14 +237,7 @@ export function TrackOrderPage() {
         )}
       </div>
 
-      {/* Tax Invoice Modal */}
-      {showInvoiceModal && orderDetails && (
-        <TaxInvoiceModal
-          order={orderDetails}
-          isOpen={showInvoiceModal}
-          onClose={() => setShowInvoiceModal(false)}
-        />
-      )}
+      </div>
     </div>
   );
 }

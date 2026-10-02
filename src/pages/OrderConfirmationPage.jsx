@@ -17,16 +17,16 @@ import {
 import confetti from 'canvas-confetti';
 import { DelhiveryTrackerModal } from '../components/common/DelhiveryTrackerModal.jsx';
 import { DelhiveryLiveMap } from '../components/common/DelhiveryLiveMap.jsx';
-import { TaxInvoiceModal } from '../components/common/TaxInvoiceModal.jsx';
 import { SEO } from '../components/common/SEO.jsx';
+import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
 import { api } from '../services/api.js';
 
 export function OrderConfirmationPage() {
   const { orderNumber } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
   const [showDelhiveryModal, setShowDelhiveryModal] = useState(false);
-  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   useEffect(() => {
     async function loadOrder() {
@@ -101,11 +101,16 @@ export function OrderConfirmationPage() {
             </div>
 
             <button
-              onClick={() => setShowInvoiceModal(true)}
-              className="inline-flex items-center space-x-1.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white px-5 py-2.5 rounded-full text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              onClick={async () => {
+                setDownloading(true);
+                await downloadOrderInvoicePdf(order);
+                setDownloading(false);
+              }}
+              disabled={downloading}
+              className="inline-flex items-center space-x-1.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white px-5 py-2.5 rounded-full text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-75"
             >
               <FileText className="w-4 h-4 text-brand-gold-light" />
-              <span>Download / Print Tax Invoice</span>
+              <span>{downloading ? 'Downloading PDF...' : 'Download Invoice (PDF)'}</span>
             </button>
           </div>
         </div>
@@ -178,11 +183,16 @@ export function OrderConfirmationPage() {
 
           <div className="flex items-center space-x-3">
             <button
-              onClick={() => setShowInvoiceModal(true)}
-              className="px-4 py-2 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold rounded-xl transition-colors flex items-center space-x-1.5 cursor-pointer"
+              onClick={async () => {
+                setDownloading(true);
+                await downloadOrderInvoicePdf(order);
+                setDownloading(false);
+              }}
+              disabled={downloading}
+              className="px-4 py-2 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold rounded-xl transition-colors flex items-center space-x-1.5 cursor-pointer disabled:opacity-75"
             >
               <FileText className="w-4 h-4 text-neutral-600" />
-              <span>Tax Invoice</span>
+              <span>{downloading ? 'Downloading...' : 'Download Invoice (PDF)'}</span>
             </button>
 
             <Link
@@ -195,15 +205,6 @@ export function OrderConfirmationPage() {
           </div>
         </div>
       </div>
-
-      {/* Official Tax Invoice Modal */}
-      {showInvoiceModal && (
-        <TaxInvoiceModal
-          order={order}
-          isOpen={showInvoiceModal}
-          onClose={() => setShowInvoiceModal(false)}
-        />
-      )}
 
       {/* Live Delhivery Tracker Modal */}
       {showDelhiveryModal && (

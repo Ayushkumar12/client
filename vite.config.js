@@ -9,19 +9,20 @@ export default defineConfig({
     react()
   ],
   server: {
+    host: '0.0.0.0',
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://192.168.0.143:5000',
         changeOrigin: true,
         secure: false,
       },
       '/sitemap.xml': {
-        target: 'http://localhost:5000',
+        target: 'http://192.168.0.143:5000',
         changeOrigin: true,
       },
       '/robots.txt': {
-        target: 'http://localhost:5000',
+        target: 'http://192.168.0.143:5000',
         changeOrigin: true,
       }
     }

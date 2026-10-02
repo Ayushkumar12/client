@@ -1,4 +1,8 @@
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || (
+  typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+    ? `http://${window.location.hostname}:5000/api`
+    : '/api'
+);
 
 function getAuthHeader() {
   const token = localStorage.getItem('oct9_token');
@@ -12,7 +16,8 @@ async function request(endpoint, options = {}) {
     ...options.headers,
   };
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
+  const url = `${API_BASE}${endpoint}`;
+  const response = await fetch(url, {
     ...options,
     headers,
   });

@@ -149,15 +149,30 @@ export function TrackOrderPage() {
                 <h3 className="font-serif font-bold text-lg text-neutral-900">
                   Shipment Progress
                 </h3>
-                {orderDetails && (
-                  <button
-                    onClick={() => setShowInvoiceModal(true)}
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
-                  >
-                    <FileText className="w-3.5 h-3.5 text-neutral-600" />
-                    <span>Download Invoice</span>
-                  </button>
-                )}
+                <div className="flex items-center space-x-2">
+                  {currentWaybill && (
+                    <a
+                      href={api.getPackingSlipUrl(currentWaybill)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-brand-gold rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs border border-neutral-700"
+                    >
+                      <Truck className="w-3.5 h-3.5 text-brand-gold" />
+                      <span>Delhivery Packing Slip</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+
+                  {orderDetails && (
+                    <button
+                      onClick={() => setShowInvoiceModal(true)}
+                      className="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-neutral-600" />
+                      <span>Tax Invoice</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
               <DelhiveryLiveMap

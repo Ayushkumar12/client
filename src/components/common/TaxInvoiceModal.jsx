@@ -8,6 +8,7 @@ import {
   ExternalLink,
   ShieldCheck
 } from 'lucide-react';
+import { api } from '../../services/api.js';
 
 export function TaxInvoiceModal({ order, isOpen, onClose }) {
   const invoiceRef = useRef(null);
@@ -79,12 +80,25 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
           </div>
 
           <div className="flex items-center space-x-2">
+            {waybill && (
+              <a
+                href={api.getPackingSlipUrl(waybill)}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center space-x-1.5 bg-neutral-800 hover:bg-neutral-700 text-brand-gold text-xs font-semibold px-3.5 py-1.5 rounded-lg border border-neutral-700 transition-colors"
+              >
+                <Truck className="w-3.5 h-3.5" />
+                <span>Delhivery Packing Slip</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            )}
+
             <button
               onClick={handlePrint}
               className="flex items-center space-x-1.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print / Save PDF</span>
+              <span>Print Invoice / PDF</span>
             </button>
 
             <button
@@ -144,22 +158,34 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
                 <Truck className="w-4 h-4 text-brand-maroon" />
                 <span className="font-semibold text-neutral-900">Logistics Partner: Delhivery Express Logistics</span>
                 <span className="text-[10px] bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded">
-                  Delhivery One Integrated
+                  Delhivery One API
                 </span>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <span className="text-neutral-500">Waybill AWB:</span>
-                <strong className="font-mono text-neutral-900">{waybill}</strong>
-                <button
-                  type="button"
-                  onClick={copyAWB}
-                  className="text-neutral-400 hover:text-neutral-800 print:hidden cursor-pointer"
-                  title="Copy Waybill"
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-1">
+                  <span className="text-neutral-500">AWB:</span>
+                  <strong className="font-mono text-neutral-900">{waybill}</strong>
+                  <button
+                    type="button"
+                    onClick={copyAWB}
+                    className="text-neutral-400 hover:text-neutral-800 print:hidden cursor-pointer"
+                    title="Copy Waybill"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </button>
+                  {copiedAWB && <span className="text-[10px] text-emerald-600 font-semibold">Copied</span>}
+                </div>
+
+                <a
+                  href={api.getPackingSlipUrl(waybill)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-brand-maroon hover:underline font-semibold text-xs inline-flex items-center space-x-1 print:hidden"
                 >
-                  <Copy className="w-3.5 h-3.5" />
-                </button>
-                {copiedAWB && <span className="text-[10px] text-emerald-600 font-semibold">Copied</span>}
+                  <span>Packing Slip</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
               </div>
             </div>
           )}

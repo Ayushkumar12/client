@@ -255,15 +255,26 @@ export function DelhiveryLiveMap({
             Official Delhivery Portal
           </span>
           {activeWaybill ? (
-            <a
-              href={`https://www.delhivery.com/track/package/${activeWaybill}`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-brand-maroon hover:underline font-semibold text-xs inline-flex items-center space-x-1 mt-0.5"
-            >
-              <span>Track on Delhivery.com</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
+            <div className="flex flex-col space-y-1 mt-0.5">
+              <a
+                href={`https://www.delhivery.com/track/package/${activeWaybill}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-brand-maroon hover:underline font-semibold text-xs inline-flex items-center space-x-1"
+              >
+                <span>Track on Delhivery.com</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+              <a
+                href={api.getPackingSlipUrl(activeWaybill)}
+                target="_blank"
+                rel="noreferrer"
+                className="text-neutral-700 hover:text-neutral-900 font-semibold text-xs inline-flex items-center space-x-1"
+              >
+                <span>🖨️ Printable Delhivery Slip</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           ) : (
             <span className="text-neutral-400 text-xs">Awaiting Waybill Generation</span>
           )}

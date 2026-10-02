@@ -107,6 +107,8 @@ export const api = {
     console.log('🚚 [Delhivery Shipping Rate Estimate Response]:', res);
     return res;
   },
+  getPackingSlipUrl: (waybill) => `${API_BASE}/delhivery/packing-slip/${waybill}`,
+  getShippingLabelUrl: (waybill) => `${API_BASE}/delhivery/shipping-label/${waybill}`,
   getLogisticsStats: () => request('/delhivery/admin/overview'),
 
   // Coupons

@@ -102,11 +102,24 @@ export function OrderConfirmationPage() {
 
             <button
               onClick={() => setShowInvoiceModal(true)}
-              className="inline-flex items-center space-x-1.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white px-5 py-2.5 rounded-full text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-1.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white px-4 py-2.5 rounded-full text-xs font-semibold shadow-xs transition-colors cursor-pointer"
             >
               <FileText className="w-4 h-4 text-brand-gold-light" />
-              <span>Download Tax Invoice</span>
+              <span>Tax Invoice</span>
             </button>
+
+            {order.delhivery_waybill && (
+              <a
+                href={api.getPackingSlipUrl(order.delhivery_waybill)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center space-x-1.5 bg-neutral-900 hover:bg-neutral-800 text-brand-gold px-4 py-2.5 rounded-full text-xs font-semibold shadow-xs transition-colors cursor-pointer border border-neutral-700"
+              >
+                <Truck className="w-4 h-4 text-brand-gold" />
+                <span>Delhivery Packing Slip</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            )}
           </div>
         </div>
 

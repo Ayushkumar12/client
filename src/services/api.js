@@ -1,26 +1,7 @@
+const LIVE_SERVER_API = 'https://5nbb03kw-5000.inc1.devtunnels.ms/api';
+
 function getApiBaseUrl() {
-  // 1. Explicit environment variable (highest priority)
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL.replace(/\/$/, '');
-  }
-
-  if (typeof window !== 'undefined') {
-    const { hostname, protocol } = window.location;
-
-    // 2. If on HTTPS or deployed on cloud (Vercel / Render / Netlify / custom domain),
-    // always use relative '/api' to avoid Mixed Content (HTTP on HTTPS) blocking!
-    if (protocol === 'https:' || hostname.includes('vercel.app') || hostname.includes('onrender.com') || hostname.includes('netlify.app')) {
-      return '/api';
-    }
-
-    // 3. Local network development (e.g. testing from a phone on http://192.168.0.143:5173)
-    if (hostname.startsWith('192.168.') || hostname.startsWith('10.') || hostname.startsWith('172.')) {
-      return `http://${hostname}:5000/api`;
-    }
-  }
-
-  // 4. Default for localhost development (uses Vite proxy)
-  return '/api';
+  return LIVE_SERVER_API;
 }
 
 const API_BASE = getApiBaseUrl();

@@ -13,16 +13,16 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://192.168.0.143:5000',
+        target: 'https://5nbb03kw-5000.inc1.devtunnels.ms',
         changeOrigin: true,
         secure: false,
       },
       '/sitemap.xml': {
-        target: 'http://192.168.0.143:5000',
+        target: 'https://5nbb03kw-5000.inc1.devtunnels.ms',
         changeOrigin: true,
       },
       '/robots.txt': {
-        target: 'http://192.168.0.143:5000',
+        target: 'https://5nbb03kw-5000.inc1.devtunnels.ms',
         changeOrigin: true,
       }
     }

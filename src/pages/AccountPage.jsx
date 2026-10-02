@@ -12,10 +12,12 @@ import {
   ShieldCheck,
   CheckCircle2,
   AlertCircle,
-  Loader2
+  Loader2,
+  FileText
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { DelhiveryTrackerModal } from '../components/common/DelhiveryTrackerModal.jsx';
+import { TaxInvoiceModal } from '../components/common/TaxInvoiceModal.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { api } from '../services/api.js';
 
@@ -30,6 +32,7 @@ export function AccountPage() {
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [selectedWaybill, setSelectedWaybill] = useState(null);
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState(null);
 
   const [addressForm, setAddressForm] = useState({
     name: '',
@@ -299,14 +302,22 @@ export function AccountPage() {
                       </span>
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => setSelectedInvoiceOrder(o)}
+                        className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg flex items-center space-x-1 cursor-pointer transition-colors shadow-2xs"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-brand-gold" />
+                        <span>GST Tax Invoice</span>
+                      </button>
+
                       {o.delhivery_waybill && (
                         <button
                           onClick={() => setSelectedWaybill(o.delhivery_waybill)}
-                          className="px-3.5 py-1.5 bg-brand-maroon text-white font-bold rounded-lg flex items-center space-x-1"
+                          className="px-3.5 py-1.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white font-bold rounded-lg flex items-center space-x-1 cursor-pointer transition-colors shadow-2xs"
                         >
                           <Truck className="w-3.5 h-3.5" />
-                          <span>Track Live Package</span>
+                          <span>Track Live GPS</span>
                         </button>
                       )}
                       <Link
@@ -417,6 +428,15 @@ export function AccountPage() {
           waybill={selectedWaybill}
           isOpen={Boolean(selectedWaybill)}
           onClose={() => setSelectedWaybill(null)}
+        />
+      )}
+
+      {/* Official GST Tax Invoice Modal */}
+      {selectedInvoiceOrder && (
+        <TaxInvoiceModal
+          order={selectedInvoiceOrder}
+          isOpen={Boolean(selectedInvoiceOrder)}
+          onClose={() => setSelectedInvoiceOrder(null)}
         />
       )}
     </div>

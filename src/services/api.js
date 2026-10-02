@@ -14,6 +14,8 @@ function getAuthHeader() {
 async function request(endpoint, options = {}) {
   const headers = {
     'Content-Type': 'application/json',
+    'X-Tunnel-Skip-AntiPhishing-Page': 'true',
+    'bypass-tunnel-reminder': 'true',
     ...getAuthHeader(),
     ...options.headers,
   };

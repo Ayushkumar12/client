@@ -10,9 +10,13 @@ import {
   ExternalLink,
   ShieldCheck,
   AlertCircle,
-  Loader2
+  Loader2,
+  FileText,
+  Navigation
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO.jsx';
+import { DelhiveryLiveMap } from '../components/common/DelhiveryLiveMap.jsx';
+import { TaxInvoiceModal } from '../components/common/TaxInvoiceModal.jsx';
 import { api } from '../services/api.js';
 
 export function TrackOrderPage() {
@@ -22,6 +26,7 @@ export function TrackOrderPage() {
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   useEffect(() => {
     const q = searchParams.get('awb') || searchParams.get('order');
@@ -76,23 +81,28 @@ export function TrackOrderPage() {
     performTrack(queryInput);
   };
 
+  const currentWaybill = trackingData?.waybill || orderDetails?.delhivery_waybill || 'DLV98328471928';
+  const shippingAddr = orderDetails?.shipping_address
+    ? (typeof orderDetails.shipping_address === 'string' ? JSON.parse(orderDetails.shipping_address) : orderDetails.shipping_address)
+    : null;
+
   return (
     <div className="bg-[#FAF7F2] min-h-screen py-12">
       <SEO
-        title="Live Delhivery Tracking | OCT9 Luxury Ethnic Wear"
-        description="Track your OCT9 ethnic wear order in real time with our live Delhivery One logistics integration."
+        title="Live Delhivery Tracking & Map | OCT9 Luxury Ethnic Wear"
+        description="Track your OCT9 order in real time with our live GPS telemetry and Delhivery One logistics integration."
       />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-8">
         {/* Header Hero */}
-        <div className="text-center space-y-3 mb-8">
+        <div className="text-center space-y-3">
           <div className="inline-flex items-center space-x-2 bg-brand-maroon/10 border border-brand-maroon/20 px-3 py-1 rounded-full text-brand-maroon text-xs font-bold uppercase tracking-wider">
             <Truck className="w-3.5 h-3.5" />
             <span>Delhivery One Logistics Integration</span>
           </div>
 
           <h1 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-900">
-            Track Your Order Live
+            Live GPS Order Tracking
           </h1>
 
           <p className="text-xs sm:text-sm text-neutral-600 max-w-md mx-auto">
@@ -100,7 +110,7 @@ export function TrackOrderPage() {
           </p>
 
           {/* Search Box */}
-          <form onSubmit={handleSubmit} className="max-w-lg mx-auto flex gap-2 pt-4">
+          <form onSubmit={handleSubmit} className="max-w-lg mx-auto flex gap-2 pt-2">
             <div className="relative flex-1">
               <input
                 type="text"
@@ -116,7 +126,7 @@ export function TrackOrderPage() {
             <button
               type="submit"
               disabled={loading || !queryInput.trim()}
-              className="px-6 py-3 bg-brand-maroon hover:bg-brand-maroon-hover disabled:bg-neutral-400 text-white text-xs font-bold rounded-xl shadow-md transition-colors flex items-center space-x-1.5 shrink-0"
+              className="px-6 py-3 bg-brand-maroon hover:bg-brand-maroon-hover disabled:bg-neutral-400 text-white text-xs font-bold rounded-xl shadow-md transition-colors flex items-center space-x-1.5 shrink-0 cursor-pointer"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Track Package'}
             </button>
@@ -131,7 +141,7 @@ export function TrackOrderPage() {
                 setQueryInput('OCT-2026-98214');
                 performTrack('OCT-2026-98214');
               }}
-              className="text-brand-maroon underline font-semibold"
+              className="text-brand-maroon underline font-semibold cursor-pointer"
             >
               OCT-2026-98214
             </button>
@@ -142,7 +152,7 @@ export function TrackOrderPage() {
                 setQueryInput('DLV98328471928');
                 performTrack('DLV98328471928');
               }}
-              className="text-brand-maroon underline font-semibold"
+              className="text-brand-maroon underline font-semibold cursor-pointer"
             >
               DLV98328471928
             </button>
@@ -151,48 +161,40 @@ export function TrackOrderPage() {
 
         {/* Error Alert */}
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs flex items-center space-x-2 max-w-lg mx-auto mb-6">
+          <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs flex items-center space-x-2 max-w-lg mx-auto">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Tracking Details Display */}
-        {trackingData && (
+        {(trackingData || orderDetails) && (
           <div className="space-y-6 animate-fadeIn">
-            {/* Top Status Card */}
-            <div className="bg-[#141414] text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-neutral-800">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800 pb-5">
-                <div>
-                  <span className="text-[10px] text-brand-gold uppercase tracking-widest font-bold block">
-                    Delhivery Express Surface & Air
-                  </span>
-                  <p className="font-mono text-base font-bold text-white mt-0.5">
-                    AWB: {trackingData.waybill || orderDetails?.delhivery_waybill}
-                  </p>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    {trackingData.current_status || 'In Transit'}
-                  </span>
-                </div>
+            {/* Live GPS Map Visualizer */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h3 className="font-serif font-bold text-lg text-neutral-900 flex items-center space-x-2">
+                  <Navigation className="w-4 h-4 text-brand-maroon" />
+                  <span>Real-Time GPS Location Map</span>
+                </h3>
+                {orderDetails && (
+                  <button
+                    onClick={() => setShowInvoiceModal(true)}
+                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded-lg text-xs font-bold shadow cursor-pointer transition-colors"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-brand-gold" />
+                    <span>View GST Tax Invoice</span>
+                  </button>
+                )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-5 text-xs">
-                <div>
-                  <span className="text-neutral-400 block text-[11px]">Origin Facility:</span>
-                  <span className="font-semibold text-white mt-0.5 block">{trackingData.origin || 'OCT9 Central Hub, New Delhi'}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400 block text-[11px]">Expected Delivery Date:</span>
-                  <span className="font-semibold text-emerald-400 mt-0.5 block">{trackingData.expected_delivery || 'Within 2-3 Days'}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400 block text-[11px]">Logistics Partner:</span>
-                  <span className="font-semibold text-white mt-0.5 block">Delhivery One Express</span>
-                </div>
-              </div>
+              <DelhiveryLiveMap
+                waybill={currentWaybill}
+                destinationCity={shippingAddr?.city || 'New Delhi'}
+                destinationPincode={shippingAddr?.pincode || '110001'}
+                currentStatus={trackingData?.current_status || orderDetails?.shipping_status || 'in_transit'}
+                expectedDelivery={trackingData?.expected_delivery || orderDetails?.delhivery_expected_date || 'Within 2-3 Days'}
+              />
             </div>
 
             {/* Tracking Journey Timeline */}
@@ -202,7 +204,13 @@ export function TrackOrderPage() {
               </h3>
 
               <div className="relative pl-8 space-y-8 before:absolute before:left-[15px] before:top-2 before:bottom-2 before:w-0.5 before:bg-neutral-200">
-                {(trackingData.timeline || []).map((step, idx) => (
+                {(trackingData?.timeline || [
+                  { status: 'Manifest Created', location: 'OCT9 Central Atelier Hub, New Delhi', time: 'Oct 02, 2026 • 09:30 AM', completed: true },
+                  { status: 'Picked up by Delhivery Courier', location: 'Delhi Sort Facility (NH48)', time: 'Oct 02, 2026 • 01:15 PM', completed: true },
+                  { status: 'In Transit Linehaul', location: 'Express Corridor en route to Destination', time: 'Oct 02, 2026 • 03:00 PM', completed: true },
+                  { status: 'Out for Delivery', location: 'Destination Regional Center', time: 'Expected Soon', completed: false },
+                  { status: 'Delivered', location: 'Doorstep Handover with OTP', time: 'Pending', completed: false }
+                ]).map((step, idx) => (
                   <div key={idx} className="relative">
                     <div
                       className={`absolute -left-8 top-0.5 w-7 h-7 rounded-full flex items-center justify-center border-2 ${
@@ -236,7 +244,7 @@ export function TrackOrderPage() {
               {/* Official Delhivery Link */}
               <div className="pt-4 border-t border-neutral-100 text-center">
                 <a
-                  href={`https://www.delhivery.com/track/package/${trackingData.waybill || orderDetails?.delhivery_waybill}`}
+                  href={`https://www.delhivery.com/track/package/${currentWaybill}`}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center space-x-1.5 text-xs text-brand-maroon hover:underline font-semibold"
@@ -249,6 +257,15 @@ export function TrackOrderPage() {
           </div>
         )}
       </div>
+
+      {/* Tax Invoice Modal */}
+      {showInvoiceModal && orderDetails && (
+        <TaxInvoiceModal
+          order={orderDetails}
+          isOpen={showInvoiceModal}
+          onClose={() => setShowInvoiceModal(false)}
+        />
+      )}
     </div>
   );
 }

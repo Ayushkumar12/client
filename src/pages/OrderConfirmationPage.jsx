@@ -122,10 +122,10 @@ export function OrderConfirmationPage() {
           </div>
 
           <DelhiveryLiveMap
-            waybill={order.delhivery_waybill || 'DLV98328471928'}
+            waybill={order.delhivery_waybill}
             destinationCity={addr.city || 'Delhi'}
             destinationPincode={addr.pincode || '110001'}
-            currentStatus={order.shipping_status || 'in_transit'}
+            currentStatus={order.delhivery_status || order.shipping_status || 'manifested'}
             expectedDelivery={order.delhivery_expected_date || 'In 2-3 Days'}
           />
         </div>
@@ -208,7 +208,7 @@ export function OrderConfirmationPage() {
       {/* Live Delhivery Tracker Modal */}
       {showDelhiveryModal && (
         <DelhiveryTrackerModal
-          waybill={order.delhivery_waybill || 'DLV98328471928'}
+          waybill={order.delhivery_waybill}
           isOpen={showDelhiveryModal}
           onClose={() => setShowDelhiveryModal(false)}
         />

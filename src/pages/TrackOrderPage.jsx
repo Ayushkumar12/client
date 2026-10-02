@@ -80,7 +80,7 @@ export function TrackOrderPage() {
     performTrack(queryInput);
   };
 
-  const currentWaybill = trackingData?.waybill || orderDetails?.delhivery_waybill || 'DLV98328471928';
+  const currentWaybill = trackingData?.waybill || orderDetails?.delhivery_waybill || queryInput;
   const shippingAddr = orderDetails?.shipping_address
     ? (typeof orderDetails.shipping_address === 'string' ? JSON.parse(orderDetails.shipping_address) : orderDetails.shipping_address)
     : null;
@@ -105,7 +105,7 @@ export function TrackOrderPage() {
           </h1>
 
           <p className="text-xs sm:text-sm text-neutral-600 max-w-md mx-auto">
-            Enter your <strong>Order ID</strong> (e.g. OCT-2026-98214) or <strong>Delhivery AWB</strong> (e.g. DLV98328471928).
+            Enter your <strong>Order ID</strong> (e.g. OCT9-2026-XXXXXX) or <strong>Delhivery Waybill / AWB</strong> number.
           </p>
 
           {/* Search Box */}
@@ -116,7 +116,7 @@ export function TrackOrderPage() {
                 required
                 value={queryInput}
                 onChange={(e) => setQueryInput(e.target.value)}
-                placeholder="Enter Order # or AWB..."
+                placeholder="Enter Order # or AWB Number..."
                 className="w-full text-xs sm:text-sm pl-9 pr-3 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon uppercase font-mono font-semibold text-neutral-900"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -130,32 +130,6 @@ export function TrackOrderPage() {
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Track'}
             </button>
           </form>
-
-          {/* Quick Demo links */}
-          <div className="flex items-center justify-center space-x-2 text-[11px] text-neutral-500 pt-1">
-            <span>Sample:</span>
-            <button
-              type="button"
-              onClick={() => {
-                setQueryInput('OCT-2026-98214');
-                performTrack('OCT-2026-98214');
-              }}
-              className="text-brand-maroon underline font-medium cursor-pointer"
-            >
-              OCT-2026-98214
-            </button>
-            <span>or</span>
-            <button
-              type="button"
-              onClick={() => {
-                setQueryInput('DLV98328471928');
-                performTrack('DLV98328471928');
-              }}
-              className="text-brand-maroon underline font-medium cursor-pointer"
-            >
-              DLV98328471928
-            </button>
-          </div>
         </div>
 
         {/* Error Alert */}

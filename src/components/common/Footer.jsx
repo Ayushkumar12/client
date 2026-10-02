@@ -58,11 +58,16 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 py-12">
           {/* Brand Col */}
           <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center space-x-2.5">
-              <img src="/logo-gold.svg" alt="OCT9" className="w-10 h-10" />
-              <span className="font-serif text-2xl font-bold tracking-[0.2em] text-white">
-                OCT<span className="text-brand-gold">9</span>
-              </span>
+            <Link to="/" className="flex items-center space-x-3 group">
+              <img src="/oct9-logo.jpg" alt="OCT9 - Luxury Without Noise" className="h-12 w-auto rounded-lg object-contain border border-neutral-700 shadow-md transition-transform group-hover:scale-105" />
+              <div className="flex flex-col">
+                <span className="font-serif text-2xl font-bold tracking-[0.2em] text-white">
+                  OCT<span className="text-brand-gold">9</span>
+                </span>
+                <span className="text-[9px] tracking-[0.25em] uppercase text-neutral-400 font-medium">
+                  Luxury Without Noise
+                </span>
+              </div>
             </Link>
 
             <p className="text-xs text-neutral-400 leading-relaxed pr-6">

@@ -121,19 +121,19 @@ export function Header() {
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
 
-        {/* Brand Logo matching Screenshots */}
-        <Link to="/" className="flex items-center space-x-2.5 group">
+        {/* Brand Logo matching user upload */}
+        <Link to="/" className="flex items-center space-x-3 group">
           <img
-            src="/logo-gold.svg"
-            alt="OCT9 Logo"
-            className="w-9 h-9 sm:w-10 sm:h-10 transition-transform duration-300 group-hover:rotate-12"
+            src="/oct9-logo.jpg"
+            alt="OCT9 - Luxury Without Noise"
+            className="h-10 sm:h-11 w-auto rounded-lg object-contain border border-neutral-700/60 transition-transform duration-300 group-hover:scale-105 shadow-xs"
           />
           <div className="flex flex-col">
-            <span className="font-serif text-xl sm:text-2xl font-bold tracking-[0.2em] text-white group-hover:text-brand-gold transition-colors">
+            <span className="font-serif text-xl sm:text-2xl font-bold tracking-[0.2em] text-white group-hover:text-brand-gold transition-colors leading-tight">
               OCT<span className="text-brand-gold">9</span>
             </span>
-            <span className="text-[8px] tracking-[0.3em] uppercase text-neutral-400 font-light -mt-1 hidden sm:block">
-              Ethnic Elegance
+            <span className="text-[8px] tracking-[0.25em] uppercase text-neutral-300 font-medium hidden sm:block">
+              Luxury Without Noise
             </span>
           </div>
         </Link>
@@ -387,9 +387,12 @@ export function Header() {
         <div className="lg:hidden fixed inset-0 top-[110px] bg-black/80 backdrop-blur-sm z-50 flex">
           <div className="w-4/5 max-w-sm bg-[#181818] h-full overflow-y-auto p-5 border-r border-neutral-800 text-sm animate-slideRight">
             <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
-              <div className="flex items-center space-x-2">
-                <img src="/logo-gold.svg" alt="OCT9" className="w-7 h-7" />
-                <span className="font-serif font-bold text-white tracking-widest">OCT9</span>
+              <div className="flex items-center space-x-2.5">
+                <img src="/oct9-logo.jpg" alt="OCT9" className="h-8 w-auto rounded object-contain" />
+                <div className="flex flex-col">
+                  <span className="font-serif font-bold text-white tracking-widest leading-none">OCT9</span>
+                  <span className="text-[7px] uppercase tracking-wider text-neutral-400">Luxury Without Noise</span>
+                </div>
               </div>
               <button onClick={() => setIsMobileMenuOpen(false)} className="text-neutral-400">
                 <X className="w-5 h-5" />

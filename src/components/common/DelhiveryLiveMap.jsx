@@ -12,10 +12,10 @@ import {
 import { api } from '../../services/api.js';
 
 export function DelhiveryLiveMap({
-  waybill = 'DLV349312857849',
+  waybill,
   destinationCity = 'New Delhi',
   destinationPincode = '110001',
-  currentStatus = 'in_transit',
+  currentStatus = 'manifested',
   expectedDelivery = 'In 2-3 Days'
 }) {
   const [copiedAWB, setCopiedAWB] = useState(false);
@@ -37,23 +37,25 @@ export function DelhiveryLiveMap({
     loadWaybillData();
   }, [waybill]);
 
-  const cleanAWB = waybill || apiData?.waybill || 'DLV349312857849';
+  const activeWaybill = waybill || apiData?.waybill || '';
   const courierPartner = apiData?.courier || 'Delhivery Express';
-  const serviceType = apiData?.service_type || 'Delhivery Express (Door-to-Door)';
-  const originLocation = apiData?.origin || 'New Delhi (110001)';
-  const deliveryStatusText = apiData?.current_status || (currentStatus === 'manifested' ? 'Manifest Created' : 'In Transit');
+  const serviceType = apiData?.service_type || 'Delhivery Surface & Air Express (Door-to-Door)';
+  const originLocation = apiData?.origin || 'OCT9 Central Hub, New Delhi (110020)';
+  const deliveryStatusText = apiData?.current_status || (currentStatus === 'manifested' ? 'Manifested & Assigned' : 'In Transit');
   const estDeliveryDate = apiData?.expected_delivery || expectedDelivery || 'Within 2-3 Days';
 
   const copyAWB = () => {
-    navigator.clipboard.writeText(cleanAWB);
+    if (!activeWaybill) return;
+    navigator.clipboard.writeText(activeWaybill);
     setCopiedAWB(true);
     setTimeout(() => setCopiedAWB(false), 2000);
   };
 
   const handleRefresh = async () => {
+    if (!activeWaybill) return;
     setRefreshing(true);
     try {
-      const res = await api.trackWaybill(cleanAWB);
+      const res = await api.trackWaybill(activeWaybill);
       if (res && res.success) {
         setApiData(res);
       }
@@ -64,12 +66,16 @@ export function DelhiveryLiveMap({
     }
   };
 
+  const isDelivered = currentStatus === 'delivered';
+  const isOutForDelivery = currentStatus === 'out_for_delivery' || isDelivered;
+  const isInTransit = currentStatus === 'in_transit' || isOutForDelivery;
+
   const steps = [
-    { label: 'Order Manifested', done: true },
-    { label: 'Picked Up by Delhivery', done: true },
-    { label: 'In Transit', done: currentStatus === 'in_transit' || currentStatus === 'out_for_delivery' || currentStatus === 'delivered', current: currentStatus === 'in_transit' },
-    { label: 'Out for Delivery', done: currentStatus === 'delivered', current: currentStatus === 'out_for_delivery' },
-    { label: 'Delivered', done: currentStatus === 'delivered' }
+    { label: 'Order Manifested', done: true, current: !isInTransit },
+    { label: 'Dispatched from Hub', done: isInTransit, current: isInTransit && !isOutForDelivery },
+    { label: 'In Transit', done: isInTransit, current: false },
+    { label: 'Out for Delivery', done: isOutForDelivery, current: currentStatus === 'out_for_delivery' },
+    { label: 'Delivered', done: isDelivered, current: isDelivered }
   ];
 
   return (
@@ -90,16 +96,22 @@ export function DelhiveryLiveMap({
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-600 mt-1">
-              <span>AWB: <strong className="font-mono text-neutral-900">{cleanAWB}</strong></span>
-              <button
-                onClick={copyAWB}
-                className="text-neutral-400 hover:text-neutral-700 p-0.5 transition-colors cursor-pointer"
-                title="Copy AWB"
-              >
-                <Copy className="w-3.5 h-3.5" />
-              </button>
-              {copiedAWB && <span className="text-[10px] text-emerald-600 font-semibold">Copied</span>}
-              <span>•</span>
+              {activeWaybill ? (
+                <>
+                  <span>AWB: <strong className="font-mono text-neutral-900">{activeWaybill}</strong></span>
+                  <button
+                    onClick={copyAWB}
+                    className="text-neutral-400 hover:text-neutral-700 p-0.5 transition-colors cursor-pointer"
+                    title="Copy AWB"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </button>
+                  {copiedAWB && <span className="text-[10px] text-emerald-600 font-semibold">Copied</span>}
+                  <span>•</span>
+                </>
+              ) : (
+                <span className="text-amber-700 font-medium">Manifesting Waybill...</span>
+              )}
               <span className="text-neutral-500">{serviceType}</span>
             </div>
           </div>
@@ -112,14 +124,16 @@ export function DelhiveryLiveMap({
             <span className="text-sm font-bold text-neutral-900">{estDeliveryDate}</span>
           </div>
 
-          <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="p-2 border border-neutral-300 hover:bg-neutral-100 rounded-xl text-neutral-600 transition-colors cursor-pointer"
-            title="Refresh Delhivery tracking"
-          >
-            <RotateCcw className={`w-4 h-4 ${refreshing ? 'animate-spin text-brand-maroon' : ''}`} />
-          </button>
+          {activeWaybill && (
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="p-2 border border-neutral-300 hover:bg-neutral-100 rounded-xl text-neutral-600 transition-colors cursor-pointer"
+              title="Refresh Delhivery tracking"
+            >
+              <RotateCcw className={`w-4 h-4 ${refreshing ? 'animate-spin text-brand-maroon' : ''}`} />
+            </button>
+          )}
         </div>
       </div>
 
@@ -150,7 +164,7 @@ export function DelhiveryLiveMap({
         </div>
       </div>
 
-      {/* Clean Route Map */}
+      {/* Clean Route Visualizer */}
       <div className="relative w-full h-64 sm:h-72 bg-[#F4F3F0] overflow-hidden select-none border-b border-neutral-200">
         {/* Road Map Grid */}
         <div
@@ -194,7 +208,7 @@ export function DelhiveryLiveMap({
           </div>
           <div className="mt-1.5 bg-white border border-neutral-300 shadow-xs px-2.5 py-1 rounded-lg text-center">
             <p className="text-[11px] font-bold text-neutral-900">OCT9 Central Hub</p>
-            <p className="text-[9px] text-neutral-500">New Delhi (110001)</p>
+            <p className="text-[9px] text-neutral-500">New Delhi (110020)</p>
           </div>
         </div>
 
@@ -215,7 +229,7 @@ export function DelhiveryLiveMap({
           </div>
           <div className="mt-1.5 bg-white border border-neutral-300 shadow-xs px-2.5 py-1 rounded-lg text-center">
             <p className="text-[11px] font-bold text-neutral-900">{destinationCity}</p>
-            <p className="text-[9px] text-neutral-500">Pincode: {destinationPincode}</p>
+            <p className="text-[9px] text-neutral-500">PIN: {destinationPincode}</p>
           </div>
         </div>
       </div>
@@ -240,15 +254,19 @@ export function DelhiveryLiveMap({
           <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 block">
             Official Delhivery Portal
           </span>
-          <a
-            href={`https://www.delhivery.com/track/package/${cleanAWB}`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-brand-maroon hover:underline font-semibold text-xs inline-flex items-center space-x-1 mt-0.5"
-          >
-            <span>Track on Delhivery.com</span>
-            <ExternalLink className="w-3 h-3" />
-          </a>
+          {activeWaybill ? (
+            <a
+              href={`https://www.delhivery.com/track/package/${activeWaybill}`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-brand-maroon hover:underline font-semibold text-xs inline-flex items-center space-x-1 mt-0.5"
+            >
+              <span>Track on Delhivery.com</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          ) : (
+            <span className="text-neutral-400 text-xs">Awaiting Waybill Generation</span>
+          )}
         </div>
       </div>
     </div>

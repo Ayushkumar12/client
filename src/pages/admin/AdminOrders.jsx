@@ -247,11 +247,11 @@ export function AdminOrders() {
                         {o.delhivery_waybill && (
                           <>
                             <a
-                              href={`/api/delhivery/shipping-label/${o.delhivery_waybill}`}
+                              href={api.getPackingSlipUrl(o.delhivery_waybill)}
                               target="_blank"
                               rel="noreferrer"
                               className="inline-block p-1.5 bg-brand-cream hover:bg-brand-sand text-brand-maroon rounded-lg"
-                              title="Print Delhivery Label"
+                              title="Print Delhivery Packing Slip"
                             >
                               <Printer className="w-4 h-4" />
                             </a>
@@ -345,7 +345,7 @@ export function AdminOrders() {
                 ) : (
                   <>
                     <a
-                      href={`/api/delhivery/shipping-label/${selectedOrder.delhivery_waybill}`}
+                      href={api.getPackingSlipUrl(selectedOrder.delhivery_waybill)}
                       target="_blank"
                       rel="noreferrer"
                       className="px-3 py-2 bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs font-bold rounded-lg flex items-center space-x-1"

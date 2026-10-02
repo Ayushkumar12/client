@@ -37,7 +37,9 @@ import {
   Home,
   Star,
   Check,
-  Copy
+  Copy,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext.jsx';
@@ -46,6 +48,7 @@ import { useCart } from '../context/CartContext.jsx';
 import { DelhiveryTrackerModal } from '../components/common/DelhiveryTrackerModal.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
+import { getOrderMilestones } from '../utils/orderMilestones.js';
 import { api } from '../services/api.js';
 
 export function AccountPage() {
@@ -76,6 +79,14 @@ export function AccountPage() {
   const [selectedWaybill, setSelectedWaybill] = useState(null);
   const [downloadingInvoiceId, setDownloadingInvoiceId] = useState(null);
   const [activeOrderMenu, setActiveOrderMenu] = useState(null);
+  const [expandedMilestones, setExpandedMilestones] = useState({});
+
+  const toggleOrderMilestones = (orderId) => {
+    setExpandedMilestones(prev => ({
+      ...prev,
+      [orderId]: prev[orderId] === false ? true : false
+    }));
+  };
 
   // Profile Form State
   const [profileForm, setProfileForm] = useState({
@@ -1091,7 +1102,10 @@ export function AccountPage() {
 
                       const isDelivered = o.order_status === 'delivered';
                       const isShipped = o.order_status === 'shipped' || o.delhivery_status === 'in_transit' || o.delhivery_status === 'manifested';
+                      const isProcessing = o.order_status === 'processing' || o.order_status === 'confirmed';
                       const isCancelled = o.order_status === 'cancelled';
+                      const milestones = getOrderMilestones(o);
+                      const isExpanded = expandedMilestones[o.id] !== undefined ? expandedMilestones[o.id] : true;
 
                       return (
                         <div
@@ -1132,6 +1146,11 @@ export function AccountPage() {
                                   {isShipped && !isDelivered && (
                                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                                       ● Shipped
+                                    </span>
+                                  )}
+                                  {isProcessing && !isShipped && !isDelivered && !isCancelled && (
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                                      ● Processing
                                     </span>
                                   )}
                                   {isCancelled && (
@@ -1203,50 +1222,200 @@ export function AccountPage() {
                             </div>
                           </div>
 
-                          {/* Stepped Tracker (Only for Shipped / In-Transit orders) */}
-                          {isShipped && !isDelivered && (
+                          {/* Stepped Tracker (For active / completed orders) */}
+                          {!isCancelled && (
                             <div className="pt-3 border-t border-neutral-100 space-y-3">
-                              <div className="grid grid-cols-5 text-center text-[11px] font-semibold text-neutral-500 relative">
-                                <div className="flex flex-col items-center space-y-1">
-                                  <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[9px]">
-                                    ✓
+                              {/* 5-Step Visual Tracker Bar */}
+                              <div className="relative">
+                                {/* Connector Background Track */}
+                                <div className="absolute top-2 left-[10%] right-[10%] h-0.5 bg-neutral-200 -z-0" />
+                                <div
+                                  className="absolute top-2 left-[10%] h-0.5 bg-emerald-600 transition-all duration-500 -z-0"
+                                  style={{
+                                    width: isDelivered ? '80%' : isShipped ? '40%' : '15%'
+                                  }}
+                                />
+
+                                <div className="grid grid-cols-5 text-center text-[11px] font-semibold text-neutral-500 relative z-10">
+                                  {/* 1. Confirmed */}
+                                  <div className="flex flex-col items-center space-y-1">
+                                    <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[9px] shadow-2xs">
+                                      ✓
+                                    </div>
+                                    <span className="text-neutral-900 font-bold">Confirmed</span>
                                   </div>
-                                  <span className="text-neutral-900 font-bold">Confirmed</span>
-                                </div>
-                                <div className="flex flex-col items-center space-y-1">
-                                  <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[9px]">
-                                    ✓
+
+                                  {/* 2. Packed */}
+                                  <div className="flex flex-col items-center space-y-1">
+                                    <div
+                                      className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] shadow-2xs ${
+                                        isDelivered || isShipped
+                                          ? 'bg-emerald-600 text-white'
+                                          : isProcessing
+                                          ? 'bg-[#5A1827] ring-4 ring-[#5A1827]/20 text-white font-bold'
+                                          : 'border-2 border-neutral-300 bg-white text-neutral-400'
+                                      }`}
+                                    >
+                                      {isDelivered || isShipped ? '✓' : isProcessing ? '●' : ''}
+                                    </div>
+                                    <span className={isDelivered || isShipped || isProcessing ? 'text-neutral-900 font-bold' : ''}>
+                                      Packed
+                                    </span>
                                   </div>
-                                  <span className="text-neutral-900 font-bold">Packed</span>
-                                </div>
-                                <div className="flex flex-col items-center space-y-1">
-                                  <div className="w-4 h-4 rounded-full bg-[#5A1827] ring-4 ring-[#5A1827]/20 text-white flex items-center justify-center text-[9px]">
-                                    ●
+
+                                  {/* 3. Shipped */}
+                                  <div className="flex flex-col items-center space-y-1">
+                                    <div
+                                      className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] shadow-2xs ${
+                                        isDelivered
+                                          ? 'bg-emerald-600 text-white'
+                                          : isShipped
+                                          ? 'bg-[#5A1827] ring-4 ring-[#5A1827]/20 text-white font-bold'
+                                          : 'border-2 border-neutral-300 bg-white text-neutral-400'
+                                      }`}
+                                    >
+                                      {isDelivered ? '✓' : isShipped ? '●' : ''}
+                                    </div>
+                                    <span className={isDelivered ? 'text-neutral-900 font-bold' : isShipped ? 'text-[#5A1827] font-bold' : ''}>
+                                      Shipped
+                                    </span>
                                   </div>
-                                  <span className="text-[#5A1827] font-bold">Shipped</span>
-                                </div>
-                                <div className="flex flex-col items-center space-y-1">
-                                  <div className="w-4 h-4 rounded-full border-2 border-neutral-300 bg-white" />
-                                  <span>Out for Delivery</span>
-                                </div>
-                                <div className="flex flex-col items-center space-y-1">
-                                  <div className="w-4 h-4 rounded-full border-2 border-neutral-300 bg-white" />
-                                  <span>Delivered</span>
+
+                                  {/* 4. Out for Delivery */}
+                                  <div className="flex flex-col items-center space-y-1">
+                                    <div
+                                      className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] shadow-2xs ${
+                                        isDelivered
+                                          ? 'bg-emerald-600 text-white'
+                                          : 'border-2 border-neutral-300 bg-white text-neutral-400'
+                                      }`}
+                                    >
+                                      {isDelivered ? '✓' : ''}
+                                    </div>
+                                    <span className={isDelivered ? 'text-neutral-900 font-bold' : ''}>
+                                      Out for Delivery
+                                    </span>
+                                  </div>
+
+                                  {/* 5. Delivered */}
+                                  <div className="flex flex-col items-center space-y-1">
+                                    <div
+                                      className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] shadow-2xs ${
+                                        isDelivered
+                                          ? 'bg-emerald-600 text-white'
+                                          : 'border-2 border-neutral-300 bg-white text-neutral-400'
+                                      }`}
+                                    >
+                                      {isDelivered ? '✓' : ''}
+                                    </div>
+                                    <span className={isDelivered ? 'text-emerald-700 font-bold' : ''}>
+                                      Delivered
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
 
-                              {o.delhivery_waybill && (
-                                <div className="flex items-center justify-between text-xs pt-1">
-                                  <span className="text-neutral-500 font-mono text-[11px]">
-                                    Delhivery AWB: <strong>{o.delhivery_waybill}</strong>
-                                  </span>
+                              {/* Milestone Checkpoints (Scan Locations, Timestamps & Operational Telemetry) */}
+                              <div className="mt-3 bg-[#FAF7F2] rounded-xl p-3.5 sm:p-4 border border-brand-border/70 space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-2">
+                                    <MapPin className="w-3.5 h-3.5 text-brand-maroon" />
+                                    <span className="font-bold text-xs text-neutral-900">
+                                      Milestone Checkpoints (Scan Locations)
+                                    </span>
+                                    <span className="hidden sm:inline-block text-[10px] font-semibold px-2 py-0.2 rounded-full bg-[#FBF1F3] text-brand-maroon border border-brand-maroon/20">
+                                      Delhivery Telemetry
+                                    </span>
+                                  </div>
+
                                   <button
-                                    onClick={() => setSelectedWaybill(o.delhivery_waybill)}
-                                    className="text-brand-maroon font-bold text-xs hover:underline flex items-center space-x-1 cursor-pointer"
+                                    onClick={() => toggleOrderMilestones(o.id)}
+                                    className="text-[11px] font-semibold text-brand-maroon hover:underline flex items-center space-x-1 cursor-pointer"
                                   >
-                                    <Truck className="w-3.5 h-3.5" />
-                                    <span>Track Live GPS</span>
+                                    <span>
+                                      {isExpanded
+                                        ? 'Collapse Checkpoints'
+                                        : `View All Checkpoints (${milestones.length})`}
+                                    </span>
+                                    {isExpanded ? (
+                                      <ChevronUp className="w-3.5 h-3.5" />
+                                    ) : (
+                                      <ChevronDown className="w-3.5 h-3.5" />
+                                    )}
                                   </button>
+                                </div>
+
+                                {/* Milestone Checkpoints List */}
+                                <div className="space-y-3 relative pl-1 before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-neutral-200">
+                                  {(isExpanded ? milestones : milestones.slice(0, 1)).map((cp, idx) => {
+                                    const isDone = cp.completed;
+                                    const isCurr = cp.current;
+
+                                    return (
+                                      <div key={idx} className="relative flex items-start space-x-3 pl-0.5">
+                                        {/* Status Indicator Circle */}
+                                        <div
+                                          className={`relative z-10 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 border transition-all ${
+                                            isDone
+                                              ? 'bg-emerald-600 border-emerald-600 text-white'
+                                              : isCurr
+                                              ? 'bg-[#5A1827] border-[#5A1827] ring-3 ring-[#5A1827]/20 text-white animate-pulse'
+                                              : 'bg-white border-neutral-300 text-neutral-400'
+                                          }`}
+                                        >
+                                          {isDone ? '✓' : isCurr ? '●' : idx + 1}
+                                        </div>
+
+                                        {/* Checkpoint Details Card */}
+                                        <div className="flex-1 bg-white p-2.5 sm:p-3 rounded-lg border border-neutral-200/80 shadow-2xs space-y-1">
+                                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5">
+                                            <p className="font-bold text-xs text-neutral-900">
+                                              {cp.activity || cp.title || cp.status}
+                                            </p>
+                                            {cp.timestamp && (
+                                              <div className="flex items-center space-x-1 text-[10px] text-neutral-500 font-medium shrink-0">
+                                                <Clock className="w-3 h-3 text-neutral-400" />
+                                                <span>{cp.timestamp}</span>
+                                              </div>
+                                            )}
+                                          </div>
+
+                                          {/* Scan Location */}
+                                          {cp.location && (
+                                            <div className="flex items-center space-x-1 text-[11px] text-neutral-700">
+                                              <MapPin className="w-3 h-3 text-red-500 shrink-0" />
+                                              <span className="font-semibold text-neutral-800">{cp.location}</span>
+                                            </div>
+                                          )}
+
+                                          {/* Operational Status Description */}
+                                          {cp.status && cp.status !== cp.activity && (
+                                            <p className="text-[10px] text-neutral-500 pt-0.5 border-t border-neutral-100 leading-relaxed">
+                                              {cp.status}
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Logistics Footer with Live GPS Tracking Button */}
+                              {o.delhivery_waybill && (
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs pt-2 border-t border-neutral-100">
+                                  <span className="text-neutral-500 font-mono text-[11px]">
+                                    Delhivery AWB: <strong className="text-neutral-900">{o.delhivery_waybill}</strong>
+                                  </span>
+                                  <div className="flex items-center space-x-3">
+                                    <button
+                                      onClick={() => setSelectedWaybill(o.delhivery_waybill)}
+                                      className="text-brand-maroon font-bold text-xs hover:underline flex items-center space-x-1 cursor-pointer"
+                                    >
+                                      <Truck className="w-3.5 h-3.5" />
+                                      <span>Track Live GPS</span>
+                                    </button>
+                                  </div>
                                 </div>
                               )}
                             </div>

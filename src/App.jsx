@@ -27,6 +27,7 @@ import { RegisterPage } from './pages/RegisterPage.jsx';
 // Admin Pages
 import { AdminLayout } from './pages/admin/AdminLayout.jsx';
 import { AdminDashboard } from './pages/admin/AdminDashboard.jsx';
+import { AdminAnalytics } from './pages/admin/AdminAnalytics.jsx';
 import { AdminOrders } from './pages/admin/AdminOrders.jsx';
 import { AdminShiprocket } from './pages/admin/AdminShiprocket.jsx';
 import { AdminProducts } from './pages/admin/AdminProducts.jsx';
@@ -79,6 +80,7 @@ export default function App() {
                 {/* Admin Routes */}
                 <Route path="/admin" element={<AdminLayout />}>
                   <Route index element={<AdminDashboard />} />
+                  <Route path="analytics" element={<AdminAnalytics />} />
                   <Route path="orders" element={<AdminOrders />} />
                   <Route path="shiprocket" element={<AdminShiprocket />} />
                   <Route path="delhivery" element={<AdminShiprocket />} />

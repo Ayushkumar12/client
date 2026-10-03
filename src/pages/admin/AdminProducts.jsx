@@ -9,13 +9,18 @@ import {
   Star,
   Sparkles,
   Loader2,
+  Eye,
+  EyeOff,
   X
 } from 'lucide-react';
 import { api } from '../../services/api.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 export function AdminProducts() {
+  const { showPublicRatings, refreshSettings } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [togglingRatings, setTogglingRatings] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showModal, setShowModal] = useState(false);
@@ -139,8 +144,72 @@ export function AdminProducts() {
     }
   };
 
+  const handleToggleRatings = async () => {
+    setTogglingRatings(true);
+    try {
+      const nextVal = !showPublicRatings;
+      const res = await api.togglePublicRatings(nextVal);
+      if (res.success) {
+        await refreshSettings();
+        await fetchProducts();
+      }
+    } catch (e) {
+      alert('Failed to toggle ratings: ' + e.message);
+    } finally {
+      setTogglingRatings(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* 1-Click Storefront Ratings Control Bar */}
+      <div className="bg-neutral-900 text-white p-4 sm:p-5 rounded-2xl border border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
+        <div className="flex items-center space-x-3 text-left">
+          <div className="p-2.5 bg-amber-400/10 text-amber-400 rounded-xl">
+            <Star className="w-5 h-5 fill-amber-400" />
+          </div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="font-serif font-bold text-sm text-white">Storefront Customer Ratings</span>
+              <span className={`text-[10px] font-bold px-2 py-0.2 rounded-full ${
+                showPublicRatings ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-red-500/20 text-red-300 border border-red-500/40'
+              }`}>
+                {showPublicRatings ? 'PUBLICLY VISIBLE' : 'HIDDEN FROM CUSTOMERS'}
+              </span>
+            </div>
+            <p className="text-[11px] text-neutral-400">
+              {showPublicRatings
+                ? 'Storefront visitors can view stars and review counts on product cards.'
+                : 'Ratings are hidden on storefront for all customers until you enable them. (Always visible to admin below)'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={handleToggleRatings}
+          disabled={togglingRatings}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shrink-0 cursor-pointer shadow ${
+            showPublicRatings
+              ? 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200'
+              : 'bg-emerald-600 hover:bg-emerald-700 text-white ring-2 ring-emerald-400/30'
+          }`}
+        >
+          {togglingRatings ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : showPublicRatings ? (
+            <>
+              <EyeOff className="w-3.5 h-3.5" />
+              <span>Hide Ratings (1-Click)</span>
+            </>
+          ) : (
+            <>
+              <Eye className="w-3.5 h-3.5" />
+              <span>Show Ratings to Users (1-Click)</span>
+            </>
+          )}
+        </button>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -148,7 +217,7 @@ export function AdminProducts() {
             Product Catalog Management
           </h1>
           <p className="text-xs text-neutral-500 mt-1">
-            Manage your ethnic collection, inventory stock, sizes, colors and pricing.
+            Manage your ethnic collection, inventory stock, sizes, colors, ratings and pricing.
           </p>
         </div>
 
@@ -208,7 +277,7 @@ export function AdminProducts() {
                   <th className="p-4">Category & Sub</th>
                   <th className="p-4">Price / Discount</th>
                   <th className="p-4">Stock</th>
-                  <th className="p-4">Badges</th>
+                  <th className="p-4">Admin Ratings</th>
                   <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -250,10 +319,12 @@ export function AdminProducts() {
                         </span>
                       </td>
 
-                      <td className="p-4 space-x-1">
-                        {p.is_new_arrival && <span className="bg-teal-100 text-teal-800 text-[9px] font-bold px-1.5 py-0.2 rounded">NEW</span>}
-                        {p.is_featured && <span className="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.2 rounded">FEATURED</span>}
-                        {p.is_bestseller && <span className="bg-purple-100 text-purple-800 text-[9px] font-bold px-1.5 py-0.2 rounded">BEST</span>}
+                      <td className="p-4">
+                        <div className="flex items-center space-x-1 text-amber-600 font-bold">
+                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          <span>{p.rating || 4.8}</span>
+                          <span className="text-[10px] text-neutral-400 font-normal">({p.reviews_count || 12})</span>
+                        </div>
                       </td>
 
                       <td className="p-4 text-right space-x-2">

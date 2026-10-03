@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { Heart, Star, ShoppingBag, Eye, Check } from 'lucide-react';
 import { useCart } from '../../context/CartContext.jsx';
 import { useWishlist } from '../../context/WishlistContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 export function ProductCard({ product }) {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { isAdmin, showPublicRatings } = useAuth() || {};
 
   const [selectedColor, setSelectedColor] = useState(() => {
     if (product.colors && product.colors.length > 0) {
@@ -61,24 +63,14 @@ export function ProductCard({ product }) {
           />
         )}
 
-        {/* Badges top left */}
-        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
-          {product.is_new_arrival && (
-            <span className="bg-[#0F766E] text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-sm">
-              NEW
-            </span>
-          )}
-          {product.is_bestseller && (
-            <span className="bg-[#B45309] text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-sm">
-              BESTSELLER
-            </span>
-          )}
-          {product.discount_percent > 0 && !product.is_new_arrival && !product.is_bestseller && (
-            <span className="bg-brand-maroon text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
+        {/* Discount badge only (NEW & BESTSELLER badges removed) */}
+        {product.discount_percent > 0 && (
+          <div className="absolute top-2.5 left-2.5 z-10">
+            <span className="bg-brand-maroon/95 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm backdrop-blur-xs">
               {product.discount_percent}% OFF
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Wishlist Heart Button top right */}
         <button
@@ -109,12 +101,14 @@ export function ProductCard({ product }) {
             <span className="uppercase tracking-wider truncate font-medium">
               {product.sub_category || product.category_slug}
             </span>
-            {/* Rating */}
-            <div className="flex items-center space-x-1 text-amber-600 font-semibold">
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              <span>{product.rating}</span>
-              <span className="text-neutral-400 font-normal">({product.reviews_count})</span>
-            </div>
+            {/* Rating: Hidden from users until admin allows; always visible to admin */}
+            {(isAdmin || showPublicRatings) && (
+              <div className="flex items-center space-x-1 text-amber-600 font-semibold text-[11px]">
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                <span>{product.rating}</span>
+                <span className="text-neutral-400 font-normal">({product.reviews_count})</span>
+              </div>
+            )}
           </div>
 
           {/* Product Title */}

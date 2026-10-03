@@ -7,6 +7,7 @@ import {
   Truck,
   Tag,
   Users,
+  BarChart3,
   ArrowLeft,
   ShieldCheck,
   LogOut,
@@ -38,6 +39,7 @@ export function AdminLayout() {
 
   const navItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
+    { label: 'Full Analytics & Ratings', path: '/admin/analytics', icon: BarChart3 },
     { label: 'Orders & Fulfillment', path: '/admin/orders', icon: Package },
     { label: 'Shiprocket Logistics', path: '/admin/shiprocket', icon: Truck, badge: 'SANDBOX' },
     { label: 'Product Catalog', path: '/admin/products', icon: ShoppingBag },

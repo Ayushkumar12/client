@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext.jsx';
 import { useWishlist } from '../context/WishlistContext.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 import { ShiprocketPincodeChecker } from '../components/common/ShiprocketPincodeChecker.jsx';
 import { ProductCard } from '../components/common/ProductCard.jsx';
 import { SEO } from '../components/common/SEO.jsx';
@@ -27,6 +28,7 @@ export function ProductDetailPage() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { isAdmin, showPublicRatings } = useAuth() || {};
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -202,19 +204,14 @@ export function ProductDetailPage() {
                 <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
               </button>
 
-              {/* Badges */}
-              <div className="absolute top-4 left-4 flex flex-col gap-1.5">
-                {product.is_new_arrival && (
-                  <span className="bg-[#0F766E] text-white text-[11px] font-bold px-2.5 py-1 rounded shadow-sm uppercase">
-                    NEW ARRIVAL
-                  </span>
-                )}
-                {product.discount_percent > 0 && (
+              {/* Badges - Only discount badge, NEW/BESTSELLER removed */}
+              {product.discount_percent > 0 && (
+                <div className="absolute top-4 left-4 z-10">
                   <span className="bg-brand-maroon text-white text-[11px] font-bold px-2.5 py-1 rounded shadow-sm">
                     {product.discount_percent}% OFF
                   </span>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
             {/* Thumbnail selector */}
@@ -257,16 +254,23 @@ export function ProductDetailPage() {
                 {product.title}
               </h1>
 
-              {/* Rating & Reviews */}
-              <div className="flex items-center space-x-3 mt-2">
-                <div className="flex items-center space-x-1 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-xs font-bold text-amber-900">
-                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  <span>{product.rating}</span>
+              {/* Rating & Reviews - Only visible if admin allows or if current user is admin */}
+              {(isAdmin || showPublicRatings) && (
+                <div className="flex items-center space-x-3 mt-2">
+                  <div className="flex items-center space-x-1 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-xs font-bold text-amber-900">
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    <span>{product.rating}</span>
+                  </div>
+                  <span className="text-xs text-neutral-500">
+                    Based on <strong>{product.reviews_count}</strong> verified customer reviews
+                  </span>
+                  {isAdmin && !showPublicRatings && (
+                    <span className="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full font-semibold border border-amber-300">
+                      Admin Only (Storefront Hidden)
+                    </span>
+                  )}
                 </div>
-                <span className="text-xs text-neutral-500">
-                  Based on <strong>{product.reviews_count}</strong> verified customer reviews
-                </span>
-              </div>
+              )}
             </div>
 
             {/* Price section matching screenshots */}
@@ -405,46 +409,53 @@ export function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Reviews Section */}
-            <div className="bg-white rounded-xl border border-brand-border p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-serif font-bold text-sm text-neutral-900">Customer Reviews ({product.reviews?.length || 0})</h3>
-                  <div className="flex items-center space-x-1 text-xs text-amber-600 font-bold mt-0.5">
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                    <span>{product.rating} out of 5 stars</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowReviewModal(true)}
-                  className="px-3 py-1.5 bg-neutral-900 text-white text-xs font-semibold rounded-lg flex items-center space-x-1"
-                >
-                  <MessageSquarePlus className="w-3.5 h-3.5" />
-                  <span>Write Review</span>
-                </button>
-              </div>
-
-              {/* Reviews List */}
-              <div className="divide-y divide-neutral-100 max-h-60 overflow-y-auto space-y-3 pt-2">
-                {product.reviews && product.reviews.length > 0 ? (
-                  product.reviews.map((rev) => (
-                    <div key={rev.id} className="pt-3 first:pt-0 space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-neutral-900">{rev.user_name}</span>
-                        <div className="flex text-amber-400">
-                          {Array.from({ length: rev.rating }).map((_, i) => (
-                            <Star key={i} className="w-3 h-3 fill-amber-400" />
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-xs text-neutral-600">{rev.comment}</p>
+            {/* Reviews Section - Only visible if admin allows or if current user is admin */}
+            {(isAdmin || showPublicRatings) && (
+              <div className="bg-white rounded-xl border border-brand-border p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-serif font-bold text-sm text-neutral-900">Customer Reviews ({product.reviews?.length || 0})</h3>
+                    <div className="flex items-center space-x-1 text-xs text-amber-600 font-bold mt-0.5">
+                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      <span>{product.rating} out of 5 stars</span>
+                      {isAdmin && !showPublicRatings && (
+                        <span className="text-[10px] ml-1 px-1.5 py-0.2 bg-amber-100 text-amber-800 rounded font-normal">
+                          Admin View Only
+                        </span>
+                      )}
                     </div>
-                  ))
-                ) : (
-                  <p className="text-xs text-neutral-400 italic">No reviews yet. Be the first to share your experience!</p>
-                )}
+                  </div>
+                  <button
+                    onClick={() => setShowReviewModal(true)}
+                    className="px-3 py-1.5 bg-neutral-900 text-white text-xs font-semibold rounded-lg flex items-center space-x-1"
+                  >
+                    <MessageSquarePlus className="w-3.5 h-3.5" />
+                    <span>Write Review</span>
+                  </button>
+                </div>
+
+                {/* Reviews List */}
+                <div className="divide-y divide-neutral-100 max-h-60 overflow-y-auto space-y-3 pt-2">
+                  {product.reviews && product.reviews.length > 0 ? (
+                    product.reviews.map((rev) => (
+                      <div key={rev.id} className="pt-3 first:pt-0 space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-neutral-900">{rev.user_name}</span>
+                          <div className="flex text-amber-400">
+                            {Array.from({ length: rev.rating }).map((_, i) => (
+                              <Star key={i} className="w-3 h-3 fill-amber-400" />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-xs text-neutral-600">{rev.comment}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-neutral-400 italic">No reviews yet. Be the first to share your experience!</p>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 

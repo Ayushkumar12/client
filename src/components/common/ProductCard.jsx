@@ -84,13 +84,6 @@ export function ProductCard({ product }) {
             }`}
           />
         </button>
-
-        {/* Fabric Tag overlay at bottom of image */}
-        {product.fabric && (
-          <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-xs text-[#E8D5B5] text-[10px] px-2 py-0.5 rounded tracking-wider">
-            {product.fabric}
-          </div>
-        )}
       </Link>
 
       {/* Product Content Details */}

@@ -59,7 +59,7 @@ export function AdminDashboard() {
             Store Overview & Analytics
           </h1>
           <p className="text-xs text-neutral-500 mt-1">
-            Real-time tracking of Razorpay revenue and Delhivery One logistics fulfillment.
+            Real-time tracking of Razorpay revenue and Shiprocket logistics fulfillment.
           </p>
         </div>
 
@@ -116,15 +116,15 @@ export function AdminDashboard() {
         {/* Shipments In Transit */}
         <div className="bg-white p-6 rounded-2xl border border-brand-border shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">In Transit (Delhivery)</span>
-            <div className="w-8 h-8 rounded-full bg-red-100 text-red-700 flex items-center justify-center">
+            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">In Transit (Shiprocket)</span>
+            <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center">
               <Truck className="w-4 h-4" />
             </div>
           </div>
           <p className="font-serif text-2xl font-bold text-neutral-900">
             {metrics?.shipments_in_transit || 0}
           </p>
-          <span className="text-[11px] text-red-700 font-semibold">
+          <span className="text-[11px] text-purple-700 font-semibold">
             Live AWB Synced
           </span>
         </div>
@@ -186,7 +186,7 @@ export function AdminDashboard() {
                   <th className="pb-3 font-bold">Customer</th>
                   <th className="pb-3 font-bold">Amount</th>
                   <th className="pb-3 font-bold">Payment</th>
-                  <th className="pb-3 font-bold">Delhivery AWB</th>
+                  <th className="pb-3 font-bold">Shiprocket AWB</th>
                   <th className="pb-3 font-bold">Status</th>
                 </tr>
               </thead>

@@ -3,8 +3,8 @@ import { Helmet } from 'react-helmet-async';
 
 export function SEO({
   title = 'OCT9 | Timeless Ethnic Elegance - Luxury Suits & Sarees',
-  description = 'Discover premium Indian ethnic wear, designer suits, anarkalis, festive lehengas & bridal sarees at OCT9 with fast delivery via Delhivery and 100% secure Razorpay payments.',
-  keywords = 'OCT9, ethnic wear, designer suits, salwar suits, anarkali suits, sarees, festive wear, wedding suits, indian fashion, delhivery express tracking',
+  description = 'Discover premium Indian ethnic wear, designer suits, anarkalis, festive lehengas & bridal sarees at OCT9 with fast delivery via Shiprocket and 100% secure Razorpay payments.',
+  keywords = 'OCT9, ethnic wear, designer suits, salwar suits, anarkali suits, sarees, festive wear, wedding suits, indian fashion, shiprocket express tracking',
   canonicalUrl,
   image = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
   type = 'website',

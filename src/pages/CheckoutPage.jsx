@@ -50,7 +50,7 @@ export function CheckoutPage() {
   const [couponInput, setCouponInput] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponMsg, setCouponMsg] = useState('');
-  const [delhiveryInfo, setDelhiveryInfo] = useState(null);
+  const [shiprocketInfo, setShiprocketInfo] = useState(null);
   const [pincodeLoading, setPincodeLoading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -72,19 +72,19 @@ export function CheckoutPage() {
     }
   }, [user]);
 
-  // Check Delhivery Serviceability when pincode changes
+  // Check Shiprocket Serviceability when pincode changes
   useEffect(() => {
     if (/^\d{6}$/.test(formData.pincode)) {
-      verifyDelhiveryPincode(formData.pincode);
+      verifyShiprocketPincode(formData.pincode);
     }
   }, [formData.pincode]);
 
-  const verifyDelhiveryPincode = async (pin) => {
+  const verifyShiprocketPincode = async (pin) => {
     setPincodeLoading(true);
     try {
       const res = await api.checkPincode(pin);
       if (res.serviceable) {
-        setDelhiveryInfo(res);
+        setShiprocketInfo(res);
         if (res.city && res.state) {
           setFormData(prev => ({
             ...prev,
@@ -93,7 +93,7 @@ export function CheckoutPage() {
           }));
         }
       } else {
-        setDelhiveryInfo(null);
+        setShiprocketInfo(null);
       }
     } catch (e) {
       // ignore
@@ -327,8 +327,8 @@ export function CheckoutPage() {
                   <h2 className="font-serif font-bold text-base text-neutral-900">
                     2. Delivery Address
                   </h2>
-                  <span className="text-[10px] bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded">
-                    Delhivery Surface & Air
+                  <span className="text-[10px] bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded">
+                    Shiprocket Express
                   </span>
                 </div>
 
@@ -403,12 +403,12 @@ export function CheckoutPage() {
                     </div>
                   </div>
 
-                  {/* Delhivery Live Pincode Verification Badge */}
-                  {delhiveryInfo && (
+                  {/* Shiprocket Live Pincode Verification Badge */}
+                  {shiprocketInfo && (
                     <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs flex items-center space-x-2 text-emerald-800">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>
-                        Delhivery Express delivers to <strong>{delhiveryInfo.city}</strong>. Expected delivery by <strong>{delhiveryInfo.delivery_date || '2-3 Days'}</strong>.
+                        Shiprocket delivers to <strong>{shiprocketInfo.city}</strong>. Expected delivery by <strong>{shiprocketInfo.delivery_date || '2-3 Days'}</strong>.
                       </span>
                     </div>
                   )}

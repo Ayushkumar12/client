@@ -13,7 +13,7 @@ import {
   Loader2,
   FileText
 } from 'lucide-react';
-import { DelhiveryTrackerModal } from '../../components/common/DelhiveryTrackerModal.jsx';
+import { ShiprocketTrackerModal } from '../../components/common/ShiprocketTrackerModal.jsx';
 import { downloadOrderInvoicePdf } from '../../utils/invoicePdf.js';
 import { api } from '../../services/api.js';
 
@@ -51,14 +51,14 @@ export function AdminOrders() {
     fetchOrders();
   };
 
-  // 1-Click Generate Delhivery Waybill
-  const handleGenerateDelhivery = async (orderId) => {
+  // 1-Click Generate Shiprocket Waybill
+  const handleGenerateShiprocket = async (orderId) => {
     setActionLoading(true);
     setActionMessage('');
     try {
-      const res = await api.adminGenerateDelhiveryWaybill(orderId);
+      const res = await api.adminGenerateShiprocketWaybill(orderId);
       if (res.success) {
-        setActionMessage(`Delhivery Waybill Generated: ${res.waybill}`);
+        setActionMessage(`Shiprocket AWB Generated: ${res.waybill}`);
         fetchOrders();
         if (selectedOrder && selectedOrder.id === orderId) {
           setSelectedOrder(prev => ({
@@ -69,7 +69,7 @@ export function AdminOrders() {
         }
       }
     } catch (e) {
-      alert('Error generating Delhivery waybill: ' + e.message);
+      alert('Error generating Shiprocket AWB: ' + e.message);
     } finally {
       setActionLoading(false);
     }
@@ -99,7 +99,7 @@ export function AdminOrders() {
             Order Management & Fulfillment
           </h1>
           <p className="text-xs text-neutral-500 mt-1">
-            Fulfill orders with 1-click Delhivery One Waybill creation, generate shipping labels & track shipments.
+            Fulfill orders with 1-click Shiprocket AWB creation, generate shipping labels & track shipments.
           </p>
         </div>
 
@@ -199,11 +199,11 @@ export function AdminOrders() {
                         </span>
                       </td>
 
-                      {/* Delhivery AWB & Status */}
+                      {/* Shiprocket AWB & Status */}
                       <td className="p-4">
                         {o.delhivery_waybill ? (
                           <div>
-                            <span className="font-mono font-bold text-brand-maroon block">
+                            <span className="font-mono font-bold text-purple-700 block">
                               {o.delhivery_waybill}
                             </span>
                             <span className="text-[10px] text-emerald-700 font-semibold capitalize">
@@ -212,12 +212,12 @@ export function AdminOrders() {
                           </div>
                         ) : (
                           <button
-                            onClick={() => handleGenerateDelhivery(o.id)}
+                            onClick={() => handleGenerateShiprocket(o.id)}
                             disabled={actionLoading}
-                            className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold rounded flex items-center space-x-1"
+                            className="px-2.5 py-1 bg-purple-700 hover:bg-purple-800 text-white text-[10px] font-bold rounded flex items-center space-x-1 cursor-pointer"
                           >
                             <Truck className="w-3 h-3" />
-                            <span>1-Click Delhivery AWB</span>
+                            <span>1-Click Shiprocket AWB</span>
                           </button>
                         )}
                       </td>
@@ -265,15 +265,15 @@ export function AdminOrders() {
                               href={api.getPackingSlipUrl(o.delhivery_waybill)}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-block p-1.5 bg-brand-cream hover:bg-brand-sand text-brand-maroon rounded-lg"
-                              title="Print Delhivery Packing Slip"
+                              className="inline-block p-1.5 bg-brand-cream hover:bg-brand-sand text-brand-maroon rounded-lg cursor-pointer"
+                              title="Print Shiprocket Packing Slip"
                             >
                               <Printer className="w-4 h-4" />
                             </a>
 
                             <button
                               onClick={() => setTrackingWaybill(o.delhivery_waybill)}
-                              className="p-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg"
+                              className="p-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg cursor-pointer"
                               title="Track Live"
                             >
                               <Truck className="w-4 h-4" />
@@ -340,10 +340,10 @@ export function AdminOrders() {
               </div>
             </div>
 
-            {/* Delhivery Actions inside modal */}
+            {/* Shiprocket Actions inside modal */}
             <div className="p-4 bg-[#141414] text-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span className="text-[10px] text-brand-gold uppercase tracking-wider font-bold">Delhivery Logistics Status</span>
+                <span className="text-[10px] text-brand-gold uppercase tracking-wider font-bold">Shiprocket Logistics Status</span>
                 <p className="font-mono text-sm font-bold">
                   {selectedOrder.delhivery_waybill ? `AWB: ${selectedOrder.delhivery_waybill}` : 'Shipment not generated yet'}
                 </p>
@@ -352,8 +352,8 @@ export function AdminOrders() {
               <div className="flex gap-2">
                 {!selectedOrder.delhivery_waybill ? (
                   <button
-                    onClick={() => handleGenerateDelhivery(selectedOrder.id)}
-                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg"
+                    onClick={() => handleGenerateShiprocket(selectedOrder.id)}
+                    className="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg cursor-pointer"
                   >
                     Generate AWB
                   </button>
@@ -396,9 +396,9 @@ export function AdminOrders() {
         </div>
       )}
 
-      {/* Live Delhivery Tracking Modal */}
+      {/* Live Shiprocket Tracking Modal */}
       {trackingWaybill && (
-        <DelhiveryTrackerModal
+        <ShiprocketTrackerModal
           waybill={trackingWaybill}
           isOpen={Boolean(trackingWaybill)}
           onClose={() => setTrackingWaybill(null)}

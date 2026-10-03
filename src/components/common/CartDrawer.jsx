@@ -88,7 +88,7 @@ export function CartDrawer() {
                 <Truck className="w-4 h-4 text-brand-maroon" />
                 <span>
                   {freeShippingRemaining > 0 ? (
-                    <>Add <strong className="text-brand-maroon">₹{freeShippingRemaining}</strong> more for <strong>Free Delhivery Shipping</strong></>
+                    <>Add <strong className="text-brand-maroon">₹{freeShippingRemaining}</strong> more for <strong>Free Shiprocket Shipping</strong></>
                   ) : (
                     <strong className="text-emerald-700 flex items-center">
                       <Check className="w-3.5 h-3.5 mr-1 inline" /> You have unlocked FREE Express Shipping!
@@ -253,7 +253,7 @@ export function CartDrawer() {
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span>Delhivery Express Shipping</span>
+                  <span>Shiprocket Express Shipping</span>
                   <span>{shippingFee === 0 ? <strong className="text-emerald-700">FREE</strong> : `₹${shippingFee}`}</span>
                 </div>
                 <div className="flex justify-between text-sm font-bold text-neutral-900 pt-2 border-t border-brand-border">

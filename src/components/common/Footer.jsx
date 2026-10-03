@@ -38,7 +38,7 @@ export function Footer() {
           <div className="flex flex-col items-center space-y-2 p-4 sm:p-5 rounded-2xl bg-[#FAF7F2] border border-neutral-200/80 shadow-2xs hover:shadow-xs transition-shadow">
             <RotateCcw className="w-6 h-6 text-brand-maroon" />
             <h4 className="font-serif font-bold text-sm text-neutral-900">7 Days Easy Return</h4>
-            <p className="text-xs text-neutral-500">Hassle-free doorstep pickup via Delhivery</p>
+            <p className="text-xs text-neutral-500">Hassle-free doorstep pickup via Shiprocket</p>
           </div>
 
           <div className="flex flex-col items-center space-y-2 p-4 sm:p-5 rounded-2xl bg-[#FAF7F2] border border-neutral-200/80 shadow-2xs hover:shadow-xs transition-shadow">
@@ -105,9 +105,9 @@ export function Footer() {
           <div className="space-y-3">
             <h4 className="font-serif text-xs font-bold text-neutral-900 uppercase tracking-wider">Customer Care</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link to="/track-order" className="text-brand-maroon font-bold hover:underline">Track Delhivery Order</Link></li>
+              <li><Link to="/track-order" className="text-brand-maroon font-bold hover:underline">Track Shiprocket Order</Link></li>
               <li><Link to="/contact" className="text-neutral-600 hover:text-brand-maroon transition-colors">Contact Us</Link></li>
-              <li><Link to="/shipping-policy" className="text-neutral-600 hover:text-brand-maroon transition-colors">Shipping Policy (Delhivery)</Link></li>
+              <li><Link to="/shipping-policy" className="text-neutral-600 hover:text-brand-maroon transition-colors">Shipping Policy (Shiprocket)</Link></li>
               <li><Link to="/returns" className="text-neutral-600 hover:text-brand-maroon transition-colors">Returns & Exchanges</Link></li>
               <li><Link to="/size-guide" className="text-neutral-600 hover:text-brand-maroon transition-colors">Size Guide & Tailoring</Link></li>
               <li><Link to="/faq" className="text-neutral-600 hover:text-brand-maroon transition-colors">FAQs</Link></li>
@@ -184,7 +184,7 @@ export function Footer() {
             <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-[10px] font-bold">Visa</span>
             <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-[10px] font-bold">Mastercard</span>
             <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-[10px] font-bold">RuPay</span>
-            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-[10px] font-bold">Delhivery COD</span>
+            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-[10px] font-bold">Shiprocket COD</span>
           </div>
         </div>
       </div>

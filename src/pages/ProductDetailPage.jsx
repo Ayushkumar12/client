@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext.jsx';
 import { useWishlist } from '../context/WishlistContext.jsx';
-import { DelhiveryPincodeChecker } from '../components/common/DelhiveryPincodeChecker.jsx';
+import { ShiprocketPincodeChecker } from '../components/common/ShiprocketPincodeChecker.jsx';
 import { ProductCard } from '../components/common/ProductCard.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { api } from '../services/api.js';
@@ -366,7 +366,7 @@ export function ProductDetailPage() {
                 </button>
               </div>
               <span className="text-xs text-emerald-700 font-semibold">
-                ✓ In Stock (Ships via Delhivery)
+                ✓ In Stock (Ships via Shiprocket)
               </span>
             </div>
 
@@ -389,8 +389,8 @@ export function ProductDetailPage() {
               </button>
             </div>
 
-            {/* DELHIVERY ONE LIVE PINCODE CHECKER WIDGET */}
-            <DelhiveryPincodeChecker />
+            {/* SHIPROCKET LIVE PINCODE CHECKER WIDGET */}
+            <ShiprocketPincodeChecker />
 
             {/* Fabric & Product Details Accordion */}
             <div className="bg-white rounded-xl border border-brand-border p-5 space-y-3 text-xs">

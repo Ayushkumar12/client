@@ -410,76 +410,38 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         description={config.description}
       />
 
-      {/* 1. HERO BANNER - Exact Match to Screenshots */}
-      <section className="relative overflow-hidden border-b border-brand-border/60">
-        <div
-          className={`py-8 sm:py-12 px-4 sm:px-6 lg:px-8 ${
-            isDarkGala
-              ? 'bg-gradient-to-r from-[#1C1613] via-[#241C18] to-[#161210] text-white border-b border-neutral-800'
-              : isDarkBurgundy
-              ? 'bg-gradient-to-r from-[#2A0C12] via-[#3B1119] to-[#1D080D] text-white border-b border-[#521722]'
-              : isMaroonGold
-              ? 'bg-gradient-to-r from-[#3D0A11] via-[#52111A] to-[#2B050B] text-white border-b border-[#6E1C27]'
-              : 'bg-gradient-to-r from-[#FBF6F0] via-[#F4ECE1] to-[#EBE0CF] text-neutral-900'
-          }`}
-        >
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="max-w-xl space-y-3">
-              {/* Breadcrumbs */}
-              <div className="flex items-center space-x-2 text-xs font-medium tracking-wide opacity-80">
-                <Link to="/" className="hover:underline">Home</Link>
-                <span>/</span>
-                <span className="capitalize font-semibold">{config.heading}</span>
-              </div>
+      {/* Clean Category Header (Hero section removed in favor of sleek catalog header) */}
+      <section className="border-b border-brand-border/60 bg-white/70 backdrop-blur-xs py-5 sm:py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            {/* Breadcrumbs */}
+            <div className="flex items-center space-x-2 text-xs font-medium tracking-wide text-neutral-500">
+              <Link to="/" className="hover:text-brand-maroon transition-colors">Home</Link>
+              <span>/</span>
+              <span className="capitalize font-semibold text-neutral-900">{config.heading}</span>
+            </div>
 
-              {/* Tagline */}
-              <span className={`text-[11px] font-bold uppercase tracking-widest flex items-center space-x-1.5 ${
-                isDarkGala ? 'text-[#D4AF37]' : isMaroonGold || isDarkBurgundy ? 'text-amber-300' : 'text-brand-maroon'
-              }`}>
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{config.tagline}</span>
-              </span>
-
-              {/* Heading */}
-              <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight">
+            <div className="flex items-baseline space-x-3">
+              <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
                 {config.heading}
               </h1>
-
-              {/* Description */}
-              <p className={`text-xs sm:text-sm font-light leading-relaxed max-w-lg ${
-                isDarkGala ? 'text-neutral-300' : isMaroonGold || isDarkBurgundy ? 'text-rose-100' : 'text-neutral-600'
-              }`}>
-                {config.description}
-              </p>
-
-              {/* 3 Gold / Maroon Feature Badges */}
-              <div className="pt-3 flex flex-wrap gap-4 text-xs font-medium">
-                {config.badges.map((badge, idx) => (
-                  <div key={idx} className="flex items-center space-x-1.5 opacity-90">
-                    <Award className={`w-4 h-4 ${isDarkGala || isMaroonGold || isDarkBurgundy ? 'text-amber-400' : 'text-brand-maroon'}`} />
-                    <span>{badge}</span>
-                  </div>
-                ))}
-              </div>
+              <span className="text-xs text-neutral-500 font-medium">
+                ({pagination.total} {pagination.total === 1 ? 'Style' : 'Styles'})
+              </span>
             </div>
+            
+            <p className="text-xs text-neutral-500 font-light max-w-xl line-clamp-1">
+              {config.description}
+            </p>
+          </div>
 
-            {/* Right Hero Image Frame */}
-            <div className="relative w-full md:w-80 h-48 sm:h-56 rounded-2xl overflow-hidden shadow-2xl border border-white/20">
-              <img
-                src={config.heroImage}
-                alt={config.heading}
-                className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700"
-              />
-              {/* Gold seal overlay for Designer Suits & Festive Wear */}
-              {(isDesignerSuits || isFestiveWear || isSuits) && (
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                  <div className="border border-amber-300/80 rounded-full px-3 py-1 bg-black/40 backdrop-blur-xs flex items-center space-x-1.5 text-[11px] text-amber-200">
-                    <Crown className="w-3 h-3 text-amber-300" />
-                    <span>OCT9 Atelier Collection</span>
-                  </div>
-                </div>
-              )}
-            </div>
+          {/* Quick Filters / Summary Badges */}
+          <div className="flex items-center space-x-2 text-xs">
+            {config.badges.slice(0, 2).map((badge, idx) => (
+              <span key={idx} className="bg-brand-cream/90 text-brand-maroon font-semibold px-3 py-1 rounded-full border border-brand-border text-[11px]">
+                {badge}
+              </span>
+            ))}
           </div>
         </div>
       </section>

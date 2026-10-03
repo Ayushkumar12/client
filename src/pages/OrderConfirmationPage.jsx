@@ -15,8 +15,8 @@ import {
   Navigation
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { DelhiveryTrackerModal } from '../components/common/DelhiveryTrackerModal.jsx';
-import { DelhiveryLiveMap } from '../components/common/DelhiveryLiveMap.jsx';
+import { ShiprocketTrackerModal } from '../components/common/ShiprocketTrackerModal.jsx';
+import { ShiprocketLiveMap } from '../components/common/ShiprocketLiveMap.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
 import { api } from '../services/api.js';
@@ -26,7 +26,7 @@ export function OrderConfirmationPage() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
-  const [showDelhiveryModal, setShowDelhiveryModal] = useState(false);
+  const [showShiprocketModal, setShowShiprocketModal] = useState(false);
 
   useEffect(() => {
     async function loadOrder() {
@@ -126,7 +126,7 @@ export function OrderConfirmationPage() {
             </div>
           </div>
 
-          <DelhiveryLiveMap
+          <ShiprocketLiveMap
             waybill={order.delhivery_waybill}
             destinationCity={addr.city || 'Delhi'}
             destinationPincode={addr.pincode || '110001'}
@@ -178,7 +178,7 @@ export function OrderConfirmationPage() {
         <div className="bg-white rounded-2xl p-5 border border-neutral-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center space-x-2 text-xs text-neutral-500">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>100% Authentic Handcrafted Luxury Apparel • Verified Delhivery Logistics</span>
+            <span>100% Authentic Handcrafted Luxury Apparel • Verified Shiprocket Logistics</span>
           </div>
 
           <div className="flex items-center space-x-3">
@@ -206,12 +206,12 @@ export function OrderConfirmationPage() {
         </div>
       </div>
 
-      {/* Live Delhivery Tracker Modal */}
-      {showDelhiveryModal && (
-        <DelhiveryTrackerModal
+      {/* Live Shiprocket Tracker Modal */}
+      {showShiprocketModal && (
+        <ShiprocketTrackerModal
           waybill={order.delhivery_waybill}
-          isOpen={showDelhiveryModal}
-          onClose={() => setShowDelhiveryModal(false)}
+          isOpen={showShiprocketModal}
+          onClose={() => setShowShiprocketModal(false)}
         />
       )}
     </div>

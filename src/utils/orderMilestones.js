@@ -1,5 +1,5 @@
 /**
- * Order Milestones & Delhivery Scan Locations Helper
+ * Order Milestones & Shiprocket Scan Locations Helper
  * Formats live or lifecycle milestone checkpoints for orders across the customer dashboard.
  */
 
@@ -184,7 +184,7 @@ export function getOrderMilestones(order) {
   if (Array.isArray(serverHistory) && serverHistory.length > 0) {
     return serverHistory.map((item, idx) => ({
       activity: item.activity || item.title || item.status || 'Checkpoint Update',
-      location: item.location || 'Delhivery Logistics Hub',
+      location: item.location || 'Shiprocket Logistics Hub',
       timestamp: item.timestamp || item.time || new Date().toLocaleString('en-IN'),
       status: item.status || item.activity || 'Scan processed',
       completed: item.completed !== undefined ? item.completed : idx === 0,
@@ -255,7 +255,7 @@ export function getOrderMilestones(order) {
         activity: 'Dispatched from Fulfillment Facility',
         location: 'Delhi Central Logistics Hub (110020)',
         timestamp: t2,
-        status: 'In transit via Delhivery Express Surface & Air Corridor',
+        status: 'In transit via Shiprocket Express Multi-Courier Corridor',
         completed: true,
         current: false
       },
@@ -263,7 +263,7 @@ export function getOrderMilestones(order) {
         activity: 'Order Manifested & Waybill Assigned',
         location: 'OCT9 Central Hub, New Delhi (110020)',
         timestamp: t1,
-        status: 'Shipment data electronically submitted to Delhivery Logistics Network',
+        status: 'Shipment data electronically submitted to Shiprocket Logistics Network',
         completed: true,
         current: false
       }
@@ -274,9 +274,9 @@ export function getOrderMilestones(order) {
     return [
       {
         activity: 'In Transit to Destination Sorting Facility',
-        location: 'Delhivery National Express Corridor, Gurugram Hub',
+        location: 'Shiprocket National Express Corridor, Regional Hub',
         timestamp: t3,
-        status: `In transit to ${destCity} Delivery Center via Delhivery Surface Express`,
+        status: `In transit to ${destCity} Delivery Center via Shiprocket Express`,
         completed: false,
         current: true
       },
@@ -284,7 +284,7 @@ export function getOrderMilestones(order) {
         activity: 'Dispatched from Fulfillment Facility',
         location: 'Delhi Central Logistics Hub (110020)',
         timestamp: t2,
-        status: 'Inbound scan completed at Delhi Central Sort Hub',
+        status: 'Inbound scan completed at Central Sort Hub',
         completed: true,
         current: false
       },
@@ -292,7 +292,7 @@ export function getOrderMilestones(order) {
         activity: 'Order Manifested & Waybill Assigned',
         location: 'OCT9 Central Hub, New Delhi (110020)',
         timestamp: t1,
-        status: 'Shipment data electronically submitted to Delhivery Logistics Network',
+        status: 'Shipment data electronically submitted to Shiprocket Logistics Network',
         completed: true,
         current: false
       }
@@ -305,7 +305,7 @@ export function getOrderMilestones(order) {
         activity: 'Packing & Quality Inspection In Progress',
         location: 'OCT9 Fulfillment Facility, New Delhi (110020)',
         timestamp: t2,
-        status: 'Garment undergoing luxury finishing, barcode labeling & Delhivery packaging',
+        status: 'Garment undergoing luxury finishing, barcode labeling & packaging',
         completed: false,
         current: true
       },
@@ -313,7 +313,7 @@ export function getOrderMilestones(order) {
         activity: 'Order Confirmed & Payment Verified',
         location: 'OCT9 Central Hub, New Delhi (110020)',
         timestamp: t1,
-        status: 'Order verified and queued for Delhivery logistics dispatch',
+        status: 'Order verified and queued for Shiprocket logistics dispatch',
         completed: true,
         current: false
       }

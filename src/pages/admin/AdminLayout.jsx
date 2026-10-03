@@ -39,7 +39,7 @@ export function AdminLayout() {
   const navItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
     { label: 'Orders & Fulfillment', path: '/admin/orders', icon: Package },
-    { label: 'Delhivery Logistics', path: '/admin/delhivery', icon: Truck, badge: 'API' },
+    { label: 'Shiprocket Logistics', path: '/admin/shiprocket', icon: Truck, badge: 'SANDBOX' },
     { label: 'Product Catalog', path: '/admin/products', icon: ShoppingBag },
     { label: 'Coupons & Promos', path: '/admin/coupons', icon: Tag },
     { label: 'Customers', path: '/admin/customers', icon: Users },

@@ -28,7 +28,7 @@ import { RegisterPage } from './pages/RegisterPage.jsx';
 import { AdminLayout } from './pages/admin/AdminLayout.jsx';
 import { AdminDashboard } from './pages/admin/AdminDashboard.jsx';
 import { AdminOrders } from './pages/admin/AdminOrders.jsx';
-import { AdminDelhivery } from './pages/admin/AdminDelhivery.jsx';
+import { AdminShiprocket } from './pages/admin/AdminShiprocket.jsx';
 import { AdminProducts } from './pages/admin/AdminProducts.jsx';
 import { AdminCoupons } from './pages/admin/AdminCoupons.jsx';
 import { AdminCustomers } from './pages/admin/AdminCustomers.jsx';
@@ -80,7 +80,8 @@ export default function App() {
                 <Route path="/admin" element={<AdminLayout />}>
                   <Route index element={<AdminDashboard />} />
                   <Route path="orders" element={<AdminOrders />} />
-                  <Route path="delhivery" element={<AdminDelhivery />} />
+                  <Route path="shiprocket" element={<AdminShiprocket />} />
+                  <Route path="delhivery" element={<AdminShiprocket />} />
                   <Route path="products" element={<AdminProducts />} />
                   <Route path="coupons" element={<AdminCoupons />} />
                   <Route path="customers" element={<AdminCustomers />} />

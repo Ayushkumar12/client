@@ -456,7 +456,7 @@ export function Header() {
                 className="flex items-center space-x-2 py-2 text-brand-maroon font-bold"
               >
                 <Package className="w-4 h-4" />
-                <span>Track Delhivery Order</span>
+                <span>Track Shiprocket Order</span>
               </Link>
               {isAdmin && (
                 <Link

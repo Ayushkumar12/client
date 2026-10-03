@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { ProductCard } from '../components/common/ProductCard.jsx';
 import { SEO } from '../components/common/SEO.jsx';
+import { HeroSlideshow } from '../components/home/HeroSlideshow.jsx';
+import { JharokhaCategories } from '../components/home/JharokhaCategories.jsx';
 import { api } from '../services/api.js';
 
 export function HomePage() {
@@ -38,82 +40,15 @@ export function HomePage() {
     fetchData();
   }, []);
 
-  const categories = [
-    { name: 'Suits', slug: 'suits', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=400&q=80' },
-    { name: 'Salwar Sets', slug: 'salwar-sets', image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=400&q=80' },
-    { name: 'Festive Wear', slug: 'festive-wear', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=400&q=80' },
-    { name: 'Party Wear', slug: 'party-wear', image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=400&q=80' },
-    { name: 'Sarees', slug: 'sarees', image: 'https://images.unsplash.com/photo-1610030469668-9655ecbbdd13?auto=format&fit=crop&w=400&q=80' },
-    { name: 'Accessories', slug: 'accessories', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=400&q=80' },
-    { name: 'Jutti', slug: 'jutti', image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=400&q=80' }
-  ];
-
   return (
-    <div className="space-y-12 sm:space-y-16 pb-16">
+    <div className="space-y-10 sm:space-y-14 pb-16">
       <SEO
         title="OCT9 | Timeless Ethnic Elegance - Luxury Suits, Sarees & Festive Wear"
-        description="Shop exclusive Indian ethnic wear, designer suits, anarkalis, sarees and festive outfits at OCT9. Enjoy Fast Express Delivery via Delhivery and 100% Secure Razorpay Checkout."
+        description="Shop exclusive Indian ethnic wear, designer suits, anarkalis, sarees and festive outfits at OCT9. Enjoy Fast Express Delivery via Shiprocket and 100% Secure Razorpay Checkout."
       />
 
-      {/* 1. Hero Banner matching Screenshot 1 */}
-      <section className="relative bg-[#FAF7F2] overflow-hidden border-b border-brand-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14">
-          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#F7EFE5] via-[#EFE5D6] to-[#E5D7C2] border border-brand-border shadow-luxury">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center min-h-[480px]">
-              {/* Hero Left Content */}
-              <div className="lg:col-span-6 p-8 sm:p-12 lg:p-16 space-y-5">
-                <div className="inline-flex items-center space-x-2 bg-brand-maroon/10 border border-brand-maroon/20 px-3 py-1 rounded-full text-brand-maroon text-xs font-bold uppercase tracking-widest">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>TRADITION MEETS TODAY</span>
-                </div>
-
-                <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-[1.15] tracking-tight">
-                  Timeless <br />
-                  <span className="gold-gradient-text font-extrabold">Ethnic Elegance</span>
-                </h1>
-
-                <p className="text-neutral-600 text-sm sm:text-base max-w-md leading-relaxed font-light">
-                  Premium Suits, Sarees & Festive Styles for Every Occasion. Tailored with royal fabrics, intricate zardozi, and modern silhouettes.
-                </p>
-
-                <div className="pt-2 flex items-center space-x-4">
-                  <Link
-                    to="/new-arrivals"
-                    className="inline-flex items-center space-x-2 bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs sm:text-sm font-semibold px-6 py-3.5 rounded-full shadow-lg transition-transform active:scale-95 group"
-                  >
-                    <span>SHOP NEW ARRIVALS</span>
-                    <ArrowRight className="w-4 h-4 text-brand-gold-light group-hover:translate-x-1 transition-transform" />
-                  </Link>
-
-                  <Link
-                    to="/category/suits"
-                    className="inline-flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-neutral-800 hover:text-brand-maroon transition-colors py-3 px-4 border border-neutral-400/40 rounded-full bg-white/60 hover:bg-white"
-                  >
-                    <span>View Collection</span>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Hero Right Image matching screenshot */}
-              <div className="lg:col-span-6 relative h-full min-h-[380px] lg:min-h-[500px]">
-                <img
-                  src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=90"
-                  alt="OCT9 Luxury Indian Ethnic Elegance"
-                  className="w-full h-full object-cover object-center lg:rounded-r-3xl"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent lg:hidden" />
-                <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md text-white p-3 rounded-xl border border-brand-gold/40 hidden sm:flex items-center space-x-3">
-                  <img src="/logo-gold.svg" alt="OCT9" className="w-8 h-8" />
-                  <div>
-                    <p className="text-[10px] text-brand-gold uppercase tracking-widest">Atelier Exclusive</p>
-                    <p className="text-xs font-serif font-bold">Royal Zari Collection</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 1. Dynamic Luxury Slideshow Hero Section matching screenshot */}
+      <HeroSlideshow />
 
       {/* 2. Value Proposition Strip matching Screenshot 1 */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -170,39 +105,8 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 3. Shop by Category (Circular Icons matching Screenshot 1) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
-            Shop by Category
-          </h2>
-          <p className="text-xs sm:text-sm text-neutral-500 mt-1 font-light">
-            Explore our artisanal ethnic collection
-          </p>
-          <div className="w-16 h-0.5 bg-brand-gold mx-auto mt-2.5"></div>
-        </div>
-
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-4 sm:gap-6 text-center">
-          {categories.map((cat) => (
-            <Link
-              key={cat.slug}
-              to={`/category/${cat.slug}`}
-              className="group flex flex-col items-center space-y-2.5"
-            >
-              <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-2 border-brand-border group-hover:border-brand-maroon shadow-sm group-hover:shadow-md transition-all duration-300">
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-115"
-                />
-              </div>
-              <span className="font-medium text-xs sm:text-sm text-neutral-800 group-hover:text-brand-maroon transition-colors">
-                {cat.name}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/* 3. Shop by Silhouette - Royal Mughal Jharokha Arch Category Section matching screenshot */}
+      <JharokhaCategories />
 
       {/* 4. Double Promotional Banners (Festive Collection + Wedding Edit matching Screenshot 1) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -3,7 +3,7 @@ import autoTable from 'jspdf-autotable';
 
 /**
  * Native Vector Tax Invoice PDF Generator & Direct Downloader
- * Generates official A4 Tax Invoices adhering to Indian GST & Delhivery Logistics Standards.
+ * Generates official A4 Tax Invoices adhering to Indian GST & Shiprocket Logistics Standards.
  * Triggers direct browser download as a valid, non-corrupt .pdf file with 0 preview modals.
  */
 export async function downloadOrderInvoicePdf(order) {
@@ -53,7 +53,7 @@ export async function downloadOrderInvoicePdf(order) {
     const grandTotal = Number(order.grand_total || 0);
     const subtotal = Number(order.subtotal || grandTotal + discountAmount);
     const isCOD = order.payment_method === 'cod';
-    const waybill = order.delhivery_waybill || 'Pending Delhivery Dispatch';
+    const waybill = order.delhivery_waybill || 'Pending Shiprocket Dispatch';
 
     // =========================================================================
     // 1. BRAND HEADER & TAX INVOICE BADGE
@@ -159,7 +159,7 @@ export async function downloadOrderInvoicePdf(order) {
     doc.text(shipContact, rightCol, 80);
 
     // =========================================================================
-    // 4. ORDER & LOGISTICS DETAILS (DELHIVERY ONE METADATA)
+    // 4. ORDER & LOGISTICS DETAILS (SHIPROCKET LOGISTICS METADATA)
     // =========================================================================
     doc.line(14, 85, 196, 85);
 
@@ -171,7 +171,7 @@ export async function downloadOrderInvoicePdf(order) {
     doc.setFontSize(8);
     doc.setTextColor(80, 80, 80);
     doc.text('SALES ORDER NO', 18, 93);
-    doc.text('DELHIVERY AWB NO', 68, 93);
+    doc.text('SHIPROCKET AWB NO', 68, 93);
     doc.text('PAYMENT MODE', 125, 93);
     doc.text('PLACE OF SUPPLY', 165, 93);
 
@@ -285,7 +285,7 @@ export async function downloadOrderInvoicePdf(order) {
     doc.setTextColor(90, 90, 90);
     doc.text('• We declare that this invoice shows the actual price of the goods described.', 14, finalY + 12);
     doc.text('• Goods once sold can be exchanged/returned within 7 days as per OCT9 return policy.', 14, finalY + 16);
-    doc.text('• Logistics fulfillment and delivery handled via Delhivery Surface & Air Express Network.', 14, finalY + 20);
+    doc.text('• Logistics fulfillment and delivery handled via Shiprocket Express Multi-Courier Network.', 14, finalY + 20);
 
     // Right summary totals
     const rightLabelX = 145;
@@ -330,7 +330,7 @@ export async function downloadOrderInvoicePdf(order) {
     doc.setFontSize(7.5);
     doc.setTextColor(110, 110, 110);
     doc.text('This is a computer-generated tax invoice and requires no physical signature.', 14, footerY + 6);
-    doc.text('OCT9 Luxury Without Noise  •  Logistics by Delhivery One', 14, footerY + 10);
+    doc.text('OCT9 Luxury Without Noise  •  Logistics by Shiprocket', 14, footerY + 10);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);

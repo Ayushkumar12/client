@@ -14,7 +14,7 @@ import {
   FileText
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO.jsx';
-import { DelhiveryLiveMap } from '../components/common/DelhiveryLiveMap.jsx';
+import { ShiprocketLiveMap } from '../components/common/ShiprocketLiveMap.jsx';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
 import { api } from '../services/api.js';
 
@@ -45,13 +45,13 @@ export function TrackOrderPage() {
     setOrderDetails(null);
 
     try {
-      if (clean.toUpperCase().startsWith('DLV') || /^\d{10,14}$/.test(clean)) {
-        // Direct Delhivery AWB Track
+      if (clean.toUpperCase().startsWith('SR') || /^\d{10,14}$/.test(clean)) {
+        // Direct Shiprocket AWB Track
         const res = await api.trackWaybill(clean);
         if (res.success) {
           setTrackingData(res);
         } else {
-          setError(res.message || 'Tracking details not found for this Waybill.');
+          setError(res.message || 'Tracking details not found for this Waybill / AWB.');
         }
       } else {
         // Order Number lookup
@@ -89,15 +89,15 @@ export function TrackOrderPage() {
     <div className="bg-[#FAF7F2] min-h-screen py-10">
       <SEO
         title="Track Order | OCT9 Luxury Ethnic Wear"
-        description="Track your OCT9 order with live Delhivery express shipping updates."
+        description="Track your OCT9 order with live Shiprocket express shipping updates."
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
         {/* Header Hero */}
         <div className="bg-white rounded-2xl p-6 sm:p-8 border border-neutral-200 shadow-xs text-center space-y-3">
-          <div className="inline-flex items-center space-x-1.5 bg-neutral-100 text-neutral-700 px-3 py-1 rounded-full text-xs font-medium">
-            <Truck className="w-3.5 h-3.5 text-brand-maroon" />
-            <span>Delhivery Express Logistics</span>
+          <div className="inline-flex items-center space-x-1.5 bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-xs font-medium border border-purple-100">
+            <Truck className="w-3.5 h-3.5 text-purple-600" />
+            <span>Shiprocket Express Logistics</span>
           </div>
 
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
@@ -105,7 +105,7 @@ export function TrackOrderPage() {
           </h1>
 
           <p className="text-xs sm:text-sm text-neutral-600 max-w-md mx-auto">
-            Enter your <strong>Order ID</strong> (e.g. OCT9-2026-XXXXXX) or <strong>Delhivery Waybill / AWB</strong> number.
+            Enter your <strong>Order ID</strong> (e.g. OCT9-2026-XXXXXX) or <strong>Shiprocket AWB</strong> number.
           </p>
 
           {/* Search Box */}
@@ -167,7 +167,7 @@ export function TrackOrderPage() {
                 </div>
               </div>
 
-              <DelhiveryLiveMap
+              <ShiprocketLiveMap
                 waybill={currentWaybill}
                 destinationCity={shippingAddr?.city || 'New Delhi'}
                 destinationPincode={shippingAddr?.pincode || '110001'}
@@ -220,15 +220,15 @@ export function TrackOrderPage() {
                 ))}
               </div>
 
-              {/* Official Delhivery Link */}
+              {/* Official Shiprocket Link */}
               <div className="pt-3 border-t border-neutral-100 text-center">
                 <a
-                  href={`https://www.delhivery.com/track/package/${currentWaybill}`}
+                  href={`https://shiprocket.co/tracking/${currentWaybill}`}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center space-x-1.5 text-xs text-brand-maroon hover:underline font-semibold"
                 >
-                  <span>View on official Delhivery website</span>
+                  <span>View on official Shiprocket portal</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>

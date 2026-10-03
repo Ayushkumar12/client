@@ -1,7 +1,10 @@
 const LIVE_SERVER_API = 'https://5nbb03kw-5000.inc1.devtunnels.ms/api';
 
 function getApiBaseUrl() {
-  return LIVE_SERVER_API;
+  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
+  }
+  return LIVE_SERVER_API.replace(/\/+$/, '');
 }
 
 const API_BASE = getApiBaseUrl();
@@ -20,7 +23,8 @@ async function request(endpoint, options = {}) {
     ...options.headers,
   };
 
-  const url = `${API_BASE}${endpoint}`;
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = `${API_BASE}${cleanEndpoint}`;
   const response = await fetch(url, {
     ...options,
     headers,
@@ -61,7 +65,7 @@ export const api = {
   updateProduct: (id, product) => request(`/products/${id}`, { method: 'PUT', body: JSON.stringify(product) }),
   deleteProduct: (id) => request(`/products/${id}`, { method: 'DELETE' }),
 
-  // Orders & Payments (Razorpay + Delhivery)
+  // Orders & Payments (Razorpay + Shiprocket)
   createOrder: async (orderData) => {
     console.log('🛍️ [Frontend API] createOrder request:', orderData);
     const res = await request('/orders/create', { method: 'POST', body: JSON.stringify(orderData) });
@@ -71,13 +75,13 @@ export const api = {
   verifyPayment: async (paymentData) => {
     console.log('💳 [Frontend API] verifyPayment request payload:', paymentData);
     const res = await request('/orders/verify-payment', { method: 'POST', body: JSON.stringify(paymentData) });
-    console.log('💳 [Razorpay Signature & Delhivery Manifest Response]:', res);
+    console.log('💳 [Razorpay Signature & Shiprocket Manifest Response]:', res);
     return res;
   },
   getUserOrders: () => request('/orders/my-orders'),
   getOrderDetails: async (orderIdentifier) => {
     const res = await request(`/orders/track/${orderIdentifier}`);
-    console.log(`📦 [Order Details & Delhivery Info for #${orderIdentifier}]:`, res);
+    console.log(`📦 [Order Details & Shiprocket Info for #${orderIdentifier}]:`, res);
     return res;
   },
   adminGetAllOrders: (params = {}) => {
@@ -85,34 +89,41 @@ export const api = {
     return request(`/orders/admin/all?${query.toString()}`);
   },
   adminUpdateOrderStatus: (id, statusData) => request(`/orders/admin/${id}/status`, { method: 'PUT', body: JSON.stringify(statusData) }),
+  adminGenerateShiprocketWaybill: async (id) => {
+    const res = await request(`/orders/admin/${id}/generate-waybill`, { method: 'POST' });
+    console.log(`🚀 [Shiprocket Admin AWB Generation Response for Order ${id}]:`, res);
+    return res;
+  },
   adminGenerateDelhiveryWaybill: async (id) => {
     const res = await request(`/orders/admin/${id}/generate-waybill`, { method: 'POST' });
-    console.log(`🚚 [Delhivery Admin Waybill Generation Response for Order ${id}]:`, res);
+    console.log(`🚀 [Shiprocket Admin AWB Generation Response for Order ${id}]:`, res);
     return res;
   },
 
-  // Delhivery Logistics
-  checkPincode: async (pincode) => {
-    console.log(`🚚 [Delhivery API] Checking serviceability for PIN: ${pincode}`);
-    const res = await request(`/delhivery/pincode/${pincode}`);
-    console.log(`🚚 [Delhivery Pincode Response for ${pincode}]:`, res);
+  // Shiprocket Logistics
+  checkPincode: async (pincode, options = {}) => {
+    console.log(`🚀 [Shiprocket API] Checking serviceability for PIN: ${pincode}`);
+    const query = new URLSearchParams(options);
+    const qStr = query.toString() ? `?${query.toString()}` : '';
+    const res = await request(`/shiprocket/pincode/${pincode}${qStr}`);
+    console.log(`🚀 [Shiprocket Pincode Response for ${pincode}]:`, res);
     return res;
   },
   trackWaybill: async (waybill) => {
-    console.log(`🚚 [Delhivery API] Tracking Waybill: ${waybill}`);
-    const res = await request(`/delhivery/track/${waybill}`);
-    console.log(`🚚 [Delhivery Live Tracking Response for ${waybill}]:`, res);
+    console.log(`🚀 [Shiprocket API] Tracking Waybill / AWB: ${waybill}`);
+    const res = await request(`/shiprocket/track/${waybill}`);
+    console.log(`🚀 [Shiprocket Live Tracking Response for ${waybill}]:`, res);
     return res;
   },
   getShippingRate: async (params) => {
     const query = new URLSearchParams(params);
-    const res = await request(`/delhivery/rate-estimate?${query.toString()}`);
-    console.log('🚚 [Delhivery Shipping Rate Estimate Response]:', res);
+    const res = await request(`/shiprocket/rate-estimate?${query.toString()}`);
+    console.log('🚀 [Shiprocket Shipping Rate Estimate Response]:', res);
     return res;
   },
-  getPackingSlipUrl: (waybill) => `${API_BASE}/delhivery/packing-slip/${waybill}`,
-  getShippingLabelUrl: (waybill) => `${API_BASE}/delhivery/shipping-label/${waybill}`,
-  getLogisticsStats: () => request('/delhivery/admin/overview'),
+  getPackingSlipUrl: (waybill) => `${API_BASE}/shiprocket/packing-slip/${waybill}`,
+  getShippingLabelUrl: (waybill) => `${API_BASE}/shiprocket/shipping-label/${waybill}`,
+  getLogisticsStats: () => request('/shiprocket/admin/overview'),
 
   // Coupons
   validateCoupon: (code, cartTotal) => request('/coupons/validate', {

@@ -107,7 +107,7 @@ export function LoginPage() {
             >
               <div>
                 <strong className="text-neutral-900 block text-xs">Admin Management Console</strong>
-                <span className="text-[11px] text-neutral-500">admin@oct9.com (Delhivery Logistics & Razorpay Admin)</span>
+                <span className="text-[11px] text-neutral-500">admin@oct9.com (Shiprocket Logistics & Razorpay Admin)</span>
               </div>
               <span className="text-[11px] text-brand-maroon font-bold bg-[#FBF1F3] px-2 py-0.5 rounded">Autofill</span>
             </button>

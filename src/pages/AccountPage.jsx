@@ -45,7 +45,7 @@ import {
 import { useAuth } from '../context/AuthContext.jsx';
 import { useWishlist } from '../context/WishlistContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
-import { DelhiveryTrackerModal } from '../components/common/DelhiveryTrackerModal.jsx';
+import { ShiprocketTrackerModal } from '../components/common/ShiprocketTrackerModal.jsx';
 import { OrderMilestoneTracker } from '../components/common/OrderMilestoneTracker.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
@@ -489,7 +489,7 @@ export function AccountPage() {
       if (!matchSearch) return false;
       if (orderStatusFilter === 'all') return true;
       if (orderStatusFilter === 'processing') return o.order_status === 'processing' || o.order_status === 'confirmed';
-      if (orderStatusFilter === 'shipped') return o.order_status === 'shipped' || o.delhivery_status === 'in_transit';
+      if (orderStatusFilter === 'shipped') return o.order_status === 'shipped' || (o.shiprocket_status || o.delhivery_status) === 'in_transit' || (o.shiprocket_status || o.delhivery_status) === 'manifested';
       if (orderStatusFilter === 'delivered') return o.order_status === 'delivered';
       if (orderStatusFilter === 'cancelled') return o.order_status === 'cancelled';
       return true;
@@ -501,7 +501,7 @@ export function AccountPage() {
     return {
       all: orders.length,
       processing: orders.filter(o => o.order_status === 'processing' || o.order_status === 'confirmed').length,
-      shipped: orders.filter(o => o.order_status === 'shipped' || o.delhivery_status === 'in_transit').length,
+      shipped: orders.filter(o => o.order_status === 'shipped' || (o.shiprocket_status || o.delhivery_status) === 'in_transit' || (o.shiprocket_status || o.delhivery_status) === 'manifested').length,
       delivered: orders.filter(o => o.order_status === 'delivered').length,
       cancelled: orders.filter(o => o.order_status === 'cancelled').length
     };
@@ -1101,7 +1101,7 @@ export function AccountPage() {
                       };
 
                       const isDelivered = o.order_status === 'delivered';
-                      const isShipped = o.order_status === 'shipped' || o.delhivery_status === 'in_transit' || o.delhivery_status === 'manifested';
+                      const isShipped = o.order_status === 'shipped' || (o.shiprocket_status || o.delhivery_status) === 'in_transit' || (o.shiprocket_status || o.delhivery_status) === 'manifested';
                       const isProcessing = o.order_status === 'processing' || o.order_status === 'confirmed';
                       const isCancelled = o.order_status === 'cancelled';
 
@@ -1227,14 +1227,14 @@ export function AccountPage() {
                               <OrderMilestoneTracker order={o} />
 
                               {/* Logistics Footer with Live GPS Tracking Button */}
-                              {o.delhivery_waybill && (
+                              {(o.shiprocket_awb || o.delhivery_waybill) && (
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs pt-2 border-t border-neutral-100">
                                   <span className="text-neutral-500 font-mono text-[11px]">
-                                    Delhivery AWB: <strong className="text-neutral-900">{o.delhivery_waybill}</strong>
+                                    Shiprocket AWB: <strong className="text-neutral-900">{o.shiprocket_awb || o.delhivery_waybill}</strong>
                                   </span>
                                   <div className="flex items-center space-x-3">
                                     <button
-                                      onClick={() => setSelectedWaybill(o.delhivery_waybill)}
+                                      onClick={() => setSelectedWaybill(o.shiprocket_awb || o.delhivery_waybill)}
                                       className="text-brand-maroon font-bold text-xs hover:underline flex items-center space-x-1 cursor-pointer"
                                     >
                                       <Truck className="w-3.5 h-3.5" />
@@ -2490,9 +2490,9 @@ export function AccountPage() {
         </div>
       )}
 
-      {/* Delhivery Live Tracking Modal */}
+      {/* Shiprocket Live Tracking Modal */}
       {selectedWaybill && (
-        <DelhiveryTrackerModal
+        <ShiprocketTrackerModal
           waybill={selectedWaybill}
           isOpen={Boolean(selectedWaybill)}
           onClose={() => setSelectedWaybill(null)}
@@ -2510,11 +2510,13 @@ function getInitialSampleOrders(user) {
       order_number: 'OCT9123456',
       grand_total: 1799,
       order_status: 'delivered',
+      shiprocket_status: 'delivered',
       delhivery_status: 'delivered',
       payment_status: 'paid',
       payment_method: 'upi',
       created_at: '2026-09-12T10:24:00.000Z',
-      delhivery_waybill: '68386110000091',
+      shiprocket_awb: 'SR8492019482',
+      delhivery_waybill: 'SR8492019482',
       customer_name: user?.name || 'Arijit Singh',
       customer_email: user?.email || 'arijit.singh@example.com',
       customer_phone: user?.phone || '9876543210',
@@ -2542,11 +2544,13 @@ function getInitialSampleOrders(user) {
       order_number: 'OCT9123401',
       grand_total: 899,
       order_status: 'shipped',
+      shiprocket_status: 'in_transit',
       delhivery_status: 'in_transit',
       payment_status: 'paid',
       payment_method: 'card',
       created_at: '2026-09-08T16:15:00.000Z',
-      delhivery_waybill: '68386110000092',
+      shiprocket_awb: 'SR8492019483',
+      delhivery_waybill: 'SR8492019483',
       customer_name: user?.name || 'Arijit Singh',
       customer_email: user?.email || 'arijit.singh@example.com',
       customer_phone: user?.phone || '9876543210',

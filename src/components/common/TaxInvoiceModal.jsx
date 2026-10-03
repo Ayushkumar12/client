@@ -66,7 +66,7 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
           </div>
         </div>
 
-        {/* Official Delhivery E-Commerce Tax Invoice Container */}
+        {/* Official Shiprocket E-Commerce Tax Invoice Container */}
         <div ref={invoiceRef} className="p-6 sm:p-8 bg-white text-neutral-900 text-xs font-sans space-y-4">
           {/* Header */}
           <div>
@@ -111,7 +111,7 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
           <div>
             <p className="font-bold text-xs uppercase text-neutral-900 mb-1">ORDER DETAILS</p>
             <p className="text-neutral-700">Sales Number: <strong className="text-neutral-900">{salesNum}</strong></p>
-            <p className="text-neutral-700">AWB Number: <strong className="text-neutral-900 font-mono">{waybill || 'Pending Delhivery Allocation'}</strong></p>
+            <p className="text-neutral-700">AWB Number: <strong className="text-neutral-900 font-mono">{waybill || 'Pending Shiprocket Allocation'}</strong></p>
             <p className="text-neutral-700">Sale Date: {formattedDate}</p>
           </div>
 
@@ -181,9 +181,9 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Footer Powered By Delhivery */}
+          {/* Footer Powered By Shiprocket */}
           <div className="text-center pt-8 pb-2 text-xs text-neutral-500 font-semibold border-t border-neutral-100 mt-6">
-            Powered by Delhivery
+            Powered by Shiprocket Logistics & OCT9
           </div>
         </div>
       </div>

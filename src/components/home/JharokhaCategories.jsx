@@ -49,10 +49,10 @@ const CATEGORIES = [
     brandSub: 'by label OCT9'
   },
   {
-    id: 'new-arrivals',
-    name: 'New Arrivals',
-    slug: 'new-arrivals',
-    link: '/new-arrivals',
+    id: 'sharara-set',
+    name: 'Sharara Set',
+    slug: 'suits',
+    link: '/category/suits?sub_category=Sharara+Suit',
     image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=600&q=85'
   },
   {

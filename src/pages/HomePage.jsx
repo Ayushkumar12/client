@@ -1,20 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  ArrowRight,
-  Truck,
-  Tag,
-  RotateCcw,
-  ShieldCheck,
-  Award,
-  ChevronRight,
-  Sparkles,
-  ShoppingBag
-} from 'lucide-react';
-import { ProductCard } from '../components/common/ProductCard.jsx';
+import { ChevronRight } from 'lucide-react';
 import { SEO } from '../components/common/SEO.jsx';
 import { HeroSlideshow } from '../components/home/HeroSlideshow.jsx';
 import { JharokhaCategories } from '../components/home/JharokhaCategories.jsx';
+import { NewArrivalsSection } from '../components/home/NewArrivalsSection.jsx';
 import { api } from '../services/api.js';
 
 export function HomePage() {
@@ -47,65 +37,10 @@ export function HomePage() {
         description="Shop exclusive Indian ethnic wear, designer suits, anarkalis, sarees and festive outfits at OCT9. Enjoy Fast Express Delivery via Shiprocket and 100% Secure Razorpay Checkout."
       />
 
-      {/* 1. Dynamic Luxury Slideshow Hero Section matching screenshot */}
+      {/* 1. Dynamic Luxury Slideshow Hero Section */}
       <HeroSlideshow />
 
-      {/* 2. Value Proposition Strip matching Screenshot 1 */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
-          <div className="bg-white p-4 rounded-xl border border-brand-border/80 flex items-center space-x-3 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-brand-cream flex items-center justify-center shrink-0">
-              <Truck className="w-5 h-5 text-brand-maroon" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-neutral-900">Free Shipping</h4>
-              <p className="text-[11px] text-neutral-500">On Orders Above ₹1,999</p>
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-xl border border-brand-border/80 flex items-center space-x-3 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-brand-cream flex items-center justify-center shrink-0">
-              <Tag className="w-5 h-5 text-brand-maroon" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-neutral-900">15% Off Prepaid</h4>
-              <p className="text-[11px] text-neutral-500">Use Code: <strong>OCT15</strong></p>
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-xl border border-brand-border/80 flex items-center space-x-3 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-brand-cream flex items-center justify-center shrink-0">
-              <RotateCcw className="w-5 h-5 text-brand-maroon" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-neutral-900">Easy Returns</h4>
-              <p className="text-[11px] text-neutral-500">7 Days Return Policy</p>
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-xl border border-brand-border/80 flex items-center space-x-3 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-brand-cream flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-5 h-5 text-brand-maroon" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-neutral-900">Secure Payments</h4>
-              <p className="text-[11px] text-neutral-500">100% Safe via Razorpay</p>
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-xl border border-brand-border/80 col-span-2 md:col-span-1 flex items-center space-x-3 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-brand-cream flex items-center justify-center shrink-0">
-              <Award className="w-5 h-5 text-brand-maroon" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-neutral-900">Premium Quality</h4>
-              <p className="text-[11px] text-neutral-500">Crafted with Pure Care</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Shop by Silhouette - Royal Mughal Jharokha Arch Category Section matching screenshot */}
+      {/* 2. Shop by Silhouette - Royal Mughal Jharokha Arch Category Section */}
       <JharokhaCategories />
 
       {/* 4. Double Promotional Banners (Festive Collection + Wedding Edit matching Screenshot 1) */}
@@ -173,41 +108,8 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 5. New Arrivals Product Grid matching Screenshot 1 */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
-              New Arrivals
-            </h2>
-            <p className="text-xs text-neutral-500 font-light mt-0.5">
-              Fresh from our atelier, handcrafted for the season
-            </p>
-          </div>
-
-          <Link
-            to="/new-arrivals"
-            className="flex items-center space-x-1 text-xs sm:text-sm font-semibold text-brand-maroon hover:text-brand-maroon-hover group"
-          >
-            <span>View All</span>
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="bg-white rounded-xl h-80 animate-pulse border border-neutral-200" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            {newArrivals.slice(0, 8).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
-      </section>
+      {/* 5. Dedicated New Arrivals Showcase Section with Category Filters & CTA */}
+      <NewArrivalsSection products={newArrivals} loading={loading} />
 
       {/* 6. Secondary Double Promo Banners ("Designer Sarees" & "Complete Your Look" matching Screenshot 1) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

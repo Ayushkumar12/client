@@ -84,8 +84,8 @@ export function HeroSlideshow() {
       onTouchEnd={handleTouchEnd}
       aria-label="OCT9 Luxury Hero Poster Slideshow"
     >
-      {/* 16:9 Aspect Ratio Responsive Slideshow Canvas */}
-      <div className="relative w-full aspect-[16/9] min-h-[260px] sm:min-h-[380px] md:min-h-[460px] lg:min-h-[560px] xl:min-h-[640px] max-h-[820px] overflow-hidden">
+      {/* Compact Panoramic Slideshow Canvas */}
+      <div className="relative w-full h-[200px] sm:h-[280px] md:h-[360px] lg:h-[420px] xl:h-[460px] overflow-hidden">
         {POSTER_SLIDES.map((slide, idx) => {
           const isActive = idx === currentSlide;
           return (

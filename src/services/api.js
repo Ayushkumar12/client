@@ -134,7 +134,17 @@ export const api = {
   createCoupon: (coupon) => request('/coupons/admin/create', { method: 'POST', body: JSON.stringify(coupon) }),
   deleteCoupon: (id) => request(`/coupons/admin/${id}`, { method: 'DELETE' }),
 
-  // Admin Analytics
+  // Admin Analytics & Storefront Settings
+  getPublicSettings: () => request('/admin/settings/public'),
+  getFullAnalytics: () => request('/admin/analytics'),
+  togglePublicRatings: (show_public_ratings) => request('/admin/settings/toggle-ratings', {
+    method: 'POST',
+    body: JSON.stringify({ show_public_ratings }),
+  }),
+  togglePublicBadges: (show_product_badges) => request('/admin/settings/toggle-badges', {
+    method: 'POST',
+    body: JSON.stringify({ show_product_badges }),
+  }),
   getDashboardMetrics: () => request('/admin/dashboard'),
   getCustomers: () => request('/admin/customers'),
 };

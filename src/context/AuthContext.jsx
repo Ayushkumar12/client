@@ -7,6 +7,24 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('oct9_token'));
   const [loading, setLoading] = useState(true);
+  const [showPublicRatings, setShowPublicRatings] = useState(false);
+  const [showProductBadges, setShowProductBadges] = useState(false);
+
+  const refreshSettings = async () => {
+    try {
+      const res = await api.getPublicSettings();
+      if (res.success && res.settings) {
+        setShowPublicRatings(Boolean(res.settings.show_public_ratings));
+        setShowProductBadges(Boolean(res.settings.show_product_badges));
+      }
+    } catch (e) {
+      console.warn('Failed to load store display settings:', e.message);
+    }
+  };
+
+  useEffect(() => {
+    refreshSettings();
+  }, []);
 
   useEffect(() => {
     async function loadUser() {
@@ -130,6 +148,9 @@ export function AuthProvider({ children }) {
         loading,
         isAuthenticated: Boolean(user),
         isAdmin,
+        showPublicRatings,
+        showProductBadges,
+        refreshSettings,
         login,
         register,
         logout,

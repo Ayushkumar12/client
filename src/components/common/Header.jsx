@@ -89,22 +89,40 @@ export function Header() {
     { label: 'Home', path: '/' },
     { label: 'New Arrivals', path: '/new-arrivals', badge: 'NEW' },
     {
-      label: 'Suits',
-      path: '/category/suits',
+      label: 'Stitched Suits',
+      path: '/category/stitched-suits',
       children: [
-        { label: 'All Suits', path: '/category/suits' },
-        { label: 'Anarkali Suits', path: '/category/suits?sub_category=Anarkali+Suits' },
-        { label: 'Straight Suits', path: '/category/suits?sub_category=Straight+Suits' },
-        { label: 'Palazzo Suits', path: '/category/suits?sub_category=Palazzo+Suits' },
-        { label: 'Sharara Suits', path: '/category/suits?sub_category=Sharara+Suits' },
-        { label: 'Cotton Suits', path: '/category/suits?sub_category=Cotton+Suits' },
+        { label: 'All Stitched Suits', path: '/category/stitched-suits' },
+        { label: 'Farshi Salwar Suits', path: '/category/stitched-suits?sub_category=Farshi+Salwar+Suit' },
+        { label: 'Palazzo Suits', path: '/category/stitched-suits?sub_category=Palazzo+Suit' },
+        { label: 'Sharara Suits', path: '/category/stitched-suits?sub_category=Sharara+Suit' },
+        { label: 'Anarkali Suits', path: '/category/stitched-suits?sub_category=Anarkali+Suits' },
+      ]
+    },
+    {
+      label: 'Unstitched Suits',
+      path: '/category/unstitched-suits',
+      children: [
+        { label: 'All Unstitched Suits', path: '/category/unstitched-suits' },
+        { label: 'Cotton Suits', path: '/category/unstitched-suits?sub_category=Cotton+Suit' },
+        { label: 'Mulberry Silk Suits', path: '/category/unstitched-suits?sub_category=Mulberry+Suit' },
+        { label: 'Roman Silk Suits', path: '/category/unstitched-suits?sub_category=Roman+Suit' },
       ]
     },
     { label: 'Designer Suits', path: '/category/designer-suits' },
     { label: 'Festive Wear', path: '/category/festive-wear' },
     { label: 'Party Wear', path: '/category/party-wear' },
     { label: 'Sarees', path: '/category/sarees' },
-    { label: 'Accessories', path: '/category/accessories' },
+    {
+      label: 'Accessories',
+      path: '/category/accessories',
+      children: [
+        { label: 'All Accessories', path: '/category/accessories' },
+        { label: 'Rings', path: '/category/accessories?sub_category=Ring' },
+        { label: 'Earrings', path: '/category/accessories?sub_category=Earrings' },
+        { label: 'Necklaces', path: '/category/accessories?sub_category=Necklace' },
+      ]
+    },
     { label: 'Jutti', path: '/category/jutti' },
   ];
 
@@ -367,11 +385,10 @@ export function Header() {
               >
                 <Link
                   to={link.path}
-                  className={`flex items-center space-x-1 px-3.5 py-2 text-[11px] font-bold tracking-wider uppercase transition-colors ${
-                    isActive
+                  className={`flex items-center space-x-1 px-3.5 py-2 text-[11px] font-bold tracking-wider uppercase transition-colors ${isActive
                       ? 'text-[#5A1827] border-b-2 border-[#5A1827] font-bold'
                       : 'text-neutral-700 hover:text-[#5A1827] hover:bg-[#FAF7F2]'
-                  }`}
+                    }`}
                 >
                   <span>{link.label}</span>
                   {link.badge && (

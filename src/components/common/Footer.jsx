@@ -158,7 +158,8 @@ export function Footer() {
             <h4 className="font-serif text-xs font-bold text-neutral-900 uppercase tracking-wider">Shop</h4>
             <ul className="space-y-2 text-xs">
               <li><Link to="/new-arrivals" className="text-neutral-600 hover:text-brand-maroon transition-colors">New Arrivals</Link></li>
-              <li><Link to="/category/suits" className="text-neutral-600 hover:text-brand-maroon transition-colors">Suits & Salwars</Link></li>
+              <li><Link to="/category/stitched-suits" className="text-neutral-600 hover:text-brand-maroon transition-colors">Stitched Suits</Link></li>
+              <li><Link to="/category/unstitched-suits" className="text-neutral-600 hover:text-brand-maroon transition-colors">Unstitched Suits</Link></li>
               <li><Link to="/category/designer-suits" className="text-neutral-600 hover:text-brand-maroon transition-colors">Designer Suits</Link></li>
               <li><Link to="/category/festive-wear" className="text-neutral-600 hover:text-brand-maroon transition-colors">Festive Wear</Link></li>
               <li><Link to="/category/party-wear" className="text-neutral-600 hover:text-brand-maroon transition-colors">Party Wear</Link></li>

@@ -233,7 +233,7 @@ export function AdminProducts() {
       {/* Filter Row */}
       <div className="bg-white p-4 rounded-2xl border border-brand-border shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center space-x-1 overflow-x-auto no-scrollbar w-full sm:w-auto">
-          {['all', 'suits', 'designer-suits', 'sarees', 'festive-wear', 'party-wear', 'accessories', 'jutti'].map((cat) => (
+          {['all', 'stitched-suits', 'unstitched-suits', 'designer-suits', 'sarees', 'festive-wear', 'party-wear', 'accessories', 'jutti'].map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
@@ -384,7 +384,8 @@ export function AdminProducts() {
                     onChange={(e) => setFormData({ ...formData, category_slug: e.target.value })}
                     className="w-full p-2.5 border rounded-lg capitalize"
                   >
-                    <option value="suits">Suits</option>
+                    <option value="stitched-suits">Stitched Suits</option>
+                    <option value="unstitched-suits">Unstitched Suits</option>
                     <option value="designer-suits">Designer Suits</option>
                     <option value="sarees">Sarees</option>
                     <option value="salwar-sets">Salwar Sets</option>

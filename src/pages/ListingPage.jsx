@@ -70,7 +70,8 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
 
   // Specific Category Flags
   const isDesignerSuits = currentCategory === 'designer-suits';
-  const isSuits = currentCategory === 'suits';
+  const isStitchedSuits = currentCategory === 'stitched-suits' || currentCategory === 'suits';
+  const isUnstitchedSuits = currentCategory === 'unstitched-suits';
   const isNewArrivalsPage = isNewArrivals || currentCategory === 'new-arrivals';
   const isPartyWear = currentCategory === 'party-wear';
   const isFestiveWear = currentCategory === 'festive-wear';
@@ -108,30 +109,56 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
       };
     }
 
-    if (isSuits) {
+    if (isUnstitchedSuits) {
       return {
-        title: 'Suits',
-        heading: 'Suits',
-        tagline: 'TIMELESS INDIAN DRAPES',
-        description: 'A perfect blend of tradition and contemporary elegance.',
+        title: 'Unstitched Suits',
+        heading: 'Unstitched Suits',
+        tagline: 'PURE FABRIC FOR BESPOKE FIT',
+        description: 'Premium unstitched 3-piece suit fabrics in rich cotton, mulberry silk, and roman silk.',
+        heroImage: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=1200&q=85',
+        badges: ['100% Pure Fabrics', 'Custom Fit Freedom', 'Unstitched 3-Piece Sets'],
+        theme: 'cream_luxury',
+        hasSuitPromoBanner: true,
+        circularSubcategories: [
+          { name: 'Cotton Suits', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Mulberry Silk Suits', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Roman Silk Suits', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Chanderi Unstitched', image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Georgette Unstitched', image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=300&q=80' }
+        ],
+        typeFilterTitle: 'Fabric Type',
+        typeOptions: ['Cotton Suits', 'Mulberry Silk Suits', 'Roman Silk Suits', 'Chanderi Unstitched', 'Georgette Unstitched', 'Organza Unstitched'],
+        sizeOptions: ['Unstitched (Free Size)'],
+        fabricOptions: ['Pure Cotton', 'Mulberry Silk', 'Roman Silk', 'Chanderi Silk', 'Pure Georgette', 'Modal Silk'],
+        occasionOptions: ['Daily Wear', 'Festive', 'Office Wear', 'Party Wear', 'Casual'],
+        hasAvailabilityFilter: true,
+        priceMin: 799,
+        priceMax: 9999
+      };
+    }
+
+    if (isStitchedSuits) {
+      return {
+        title: 'Stitched Suits',
+        heading: 'Stitched Suits',
+        tagline: 'READY-TO-WEAR BESPOKE SUITS',
+        description: 'Perfectly tailored ethnic suits ready for your grand celebrations and everyday charm.',
         heroImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
-        badges: ['Premium Fabrics', 'Handcrafted Detail', 'Wide Range of Sizes'],
+        badges: ['Ready to Wear', 'Precision Tailoring', 'Wide Range of Sizes'],
         theme: 'dark_burgundy',
         hasSuitPromoBanner: true,
         circularSubcategories: [
-          { name: 'Anarkali Suits', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Straight Suits', image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Sharara Suits', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Gharara Suits', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Farshi Salwar Suits', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
           { name: 'Palazzo Suits', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Unstitched Suits', image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Cotton Suits', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Sharara Suits', image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Straight Suits', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Anarkali Suits', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
           { name: 'Pakistani Suits', image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=300&q=80' }
         ],
-        typeFilterTitle: 'Category',
-        typeOptions: ['Anarkali Suits', 'Straight Suits', 'Palazzo Suits', 'Sharara Suits', 'Pakistani Suits', 'Unstitched Suits', 'Cotton Suits'],
+        typeFilterTitle: 'Suit Style',
+        typeOptions: ['Farshi Salwar Suits', 'Palazzo Suits', 'Sharara Suits', 'Straight Suits', 'Anarkali Suits', 'Pakistani Suits'],
         sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-        fabricOptions: ['Georgette', 'Chanderi', 'Silk', 'Cotton', 'Rayon', 'Velvet'],
+        fabricOptions: ['Georgette', 'Chanderi', 'Silk', 'Cotton', 'Rayon', 'Velvet', 'Organza'],
         occasionOptions: ['Festive', 'Daily Wear', 'Party Wear', 'Wedding', 'Casual'],
         hasAvailabilityFilter: true,
         priceMin: 999,
@@ -149,7 +176,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         badges: ['Latest Designs', 'Bespoke Drapes', 'Limited Stock'],
         theme: 'cream_luxury',
         typeFilterTitle: 'Category',
-        typeOptions: ['Anarkali Suits', 'Straight Suits', 'Sharara Suits', 'Palazzo Suits', 'Sarees', 'Accessories', 'Jutti', 'Party Wear'],
+        typeOptions: ['Farshi Salwar Suits', 'Palazzo Suits', 'Sharara Suits', 'Straight Suits', 'Anarkali Suits', 'Cotton Suits', 'Sarees', 'Accessories', 'Jutti', 'Party Wear'],
         sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
         fabricOptions: ['Georgette', 'Chanderi', 'Silk', 'Cotton', 'Rayon', 'Velvet'],
         occasionOptions: ['Wedding', 'Festive', 'Party Wear', 'Casual'],
@@ -169,13 +196,14 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         badges: ['Handcrafted Designs', 'Premium Quality', 'Free Shipping Above ₹1,999'],
         theme: 'cream_luxury',
         circularSubcategories: [
+          { name: 'Rings', image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=300&q=80' },
           { name: 'Earrings & Jhumkas', image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Bangles & Kadas', image: 'https://images.unsplash.com/photo-1611591475155-4286fa7c2e7f?auto=format&fit=crop&w=300&q=80' },
           { name: 'Necklace Sets', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Bangles & Kadas', image: 'https://images.unsplash.com/photo-1611591475155-4286fa7c2e7f?auto=format&fit=crop&w=300&q=80' },
           { name: 'Potlis & Bags', image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=300&q=80' }
         ],
         typeFilterTitle: 'Accessory Type',
-        typeOptions: ['Earrings & Jhumkas', 'Bangles & Kadas', 'Necklace Sets', 'Potlis & Bags'],
+        typeOptions: ['Rings', 'Earrings & Jhumkas', 'Necklace Sets', 'Bangles & Kadas', 'Potlis & Bags'],
         sizeOptions: [],
         fabricOptions: ['Brass & Kundan Polki', 'Meenakari & Brass', 'Raw Silk & Pearl', 'Freshwater Pearl', 'Brocade & Zari'],
         priceMin: 499,
@@ -216,12 +244,15 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1610030469668-9655ecbbdd13?auto=format&fit=crop&w=1200&q=85',
         badges: ['Employed Fabrics', 'Free Shipping Above ₹1,999', 'Easy Returns 7 Days Free Return'],
         theme: 'cream_luxury',
-        featuredCards: [
-          { title: 'Stitched Sarees', pills: ['Party Wear', 'Daily Wear'], sub: 'Silk Sarees' },
-          { title: 'Unstitched Sarees', pills: ['Designer Suits & Sarees'], sub: 'Organza Sarees' }
+        circularSubcategories: [
+          { name: 'Silk Sarees', image: 'https://images.unsplash.com/photo-1610030469668-9655ecbbdd13?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Organza Sarees', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Banarasi Sarees', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Chiffon Sarees', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Party Wear', image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=300&q=80' }
         ],
         typeFilterTitle: 'Saree Type',
-        typeOptions: ['Silk Sarees', 'Organza Sarees', 'Chiffon Sarees', 'Linen Sarees', 'Party Wear', 'Designer Sarees'],
+        typeOptions: ['Silk Sarees', 'Organza Sarees', 'Banarasi Sarees', 'Chiffon Sarees', 'Linen Sarees', 'Party Wear', 'Designer Sarees'],
         sizeOptions: ['Free Size'],
         fabricOptions: ['Kanjivaram Silk', 'Chiffon', 'Silk', 'Banarasi Silk', 'Georgette', 'Cotton/Linen', 'Organza', 'Crepe'],
         hasNewsletterBanner: true,
@@ -489,36 +520,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         </section>
       )}
 
-      {/* 2B. SAREE FEATURED SHOWCASE CARDS (Screenshot 3) */}
-      {isSaree && config.featuredCards && (
-        <section className="py-6 border-b border-brand-border/60 bg-[#F7F2EB]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {config.featuredCards.map((card, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => handleTypeToggle(card.sub)}
-                  className="relative rounded-2xl overflow-hidden bg-white border border-brand-border p-5 flex items-center justify-between shadow-xs hover:shadow-md cursor-pointer group transition-all"
-                >
-                  <div className="space-y-2">
-                    <h3 className="font-serif text-lg font-bold text-neutral-900 group-hover:text-brand-maroon transition-colors">
-                      {card.title}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {card.pills.map((pill, pIdx) => (
-                        <span key={pIdx} className="bg-[#FAF7F2] text-neutral-700 border border-neutral-300 text-[11px] font-semibold px-2.5 py-1 rounded-full">
-                          {pill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-neutral-400 group-hover:text-brand-maroon group-hover:translate-x-1 transition-all" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* 3. MAIN CONTENT: SIDEBAR FILTERS + PRODUCT GRID */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">

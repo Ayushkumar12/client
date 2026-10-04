@@ -25,7 +25,7 @@ export function PwaBottomNav() {
       </NavLink>
 
       <NavLink
-        to="/category/suits"
+        to="/category/stitched-suits"
         className={({ isActive }) =>
           `flex flex-col items-center py-1 px-3 transition-colors ${
             isActive ? 'text-brand-maroon font-bold' : 'text-neutral-500 hover:text-neutral-900'

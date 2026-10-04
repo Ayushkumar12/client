@@ -52,6 +52,14 @@ export function HeroSlideshow() {
     setCurrentSlide((prev) => (prev - 1 + POSTER_SLIDES.length) % POSTER_SLIDES.length);
   }, []);
 
+  // Preload all banner images so transitions never stall or stutter
+  useEffect(() => {
+    POSTER_SLIDES.forEach((slide) => {
+      const img = new Image();
+      img.src = slide.image;
+    });
+  }, []);
+
   // Automatic uninterrupted slide rotation every 4.5 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -109,7 +117,7 @@ export function HeroSlideshow() {
                   onError={(e) => {
                     e.target.src = slide.fallbackImage;
                   }}
-                  loading={idx === 0 ? 'eager' : 'lazy'}
+                  loading="eager"
                 />
 
                 {/* Subtle bottom gradient to ensure dots visibility */}

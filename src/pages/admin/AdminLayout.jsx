@@ -11,7 +11,8 @@ import {
   ArrowLeft,
   ShieldCheck,
   LogOut,
-  ExternalLink
+  ExternalLink,
+  Palette
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 
@@ -39,6 +40,7 @@ export function AdminLayout() {
 
   const navItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
+    { label: 'Page Content & CMS', path: '/admin/content', icon: Palette, badge: 'CMS' },
     { label: 'Full Analytics & Ratings', path: '/admin/analytics', icon: BarChart3 },
     { label: 'Orders & Fulfillment', path: '/admin/orders', icon: Package },
     { label: 'Shiprocket Logistics', path: '/admin/shiprocket', icon: Truck, badge: 'SANDBOX' },

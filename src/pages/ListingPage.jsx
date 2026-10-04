@@ -23,14 +23,18 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { ProductCard } from '../components/common/ProductCard.jsx';
+import { ComingSoonPage } from '../components/common/ComingSoonPage.jsx';
 import { SEO } from '../components/common/SEO.jsx';
+import { useContent } from '../context/ContentContext.jsx';
 import { api } from '../services/api.js';
 
 export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   const { categorySlug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { isComingSoon, isMaintenance, getPageAvailability } = useContent();
 
   const currentCategory = isNewArrivals ? 'new-arrivals' : (categorySlug || defaultCategory || 'all');
+  const pageAvailability = getPageAvailability(currentCategory);
   const searchParam = searchParams.get('search') || '';
   const subCategoryParam = searchParams.get('sub_category') || '';
   const fabricParam = searchParams.get('fabric') || '';
@@ -434,6 +438,10 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
     ? 'bg-[#1D1916] border-neutral-800 text-neutral-200'
     : 'bg-white border-brand-border text-neutral-800';
 
+  if (isComingSoon(currentCategory) || isMaintenance(currentCategory)) {
+    return <ComingSoonPage categorySlug={currentCategory} pageInfo={pageAvailability} />;
+  }
+
   return (
     <div className={`min-h-screen ${pageBgClass} pb-16 transition-colors duration-300`}>
       <SEO
@@ -737,9 +745,9 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
           {/* PRODUCT GRID */}
           <main className="lg:col-span-3">
             {loading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                  <div key={n} className={`rounded-xl h-88 animate-pulse border ${isDarkGala ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200'}`} />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <div key={n} className={`rounded-2xl h-96 animate-pulse border ${isDarkGala ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200'}`} />
                 ))}
               </div>
             ) : products.length === 0 ? (
@@ -760,8 +768,8 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
               </div>
             ) : (
               <div className="space-y-12">
-                {/* Products 4-Column Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                {/* Products 3-Column Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
                   {products.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}

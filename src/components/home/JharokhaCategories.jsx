@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useContent } from '../../context/ContentContext.jsx';
 
 // Exact 4-Point Royal Mughal Jharokha Arch SVG Path
 const JHAROKHA_PATH = `
@@ -37,143 +38,99 @@ const JHAROKHA_INNER_PATH = `
   Z
 `.replace(/\s+/g, ' ').trim();
 
-const CATEGORIES = [
-  {
-    id: 'zewar',
-    name: 'Zewar',
-    slug: 'accessories',
-    link: '/category/accessories',
-    image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=85'
-  },
-  {
-    id: 'sharara-set',
-    name: 'Sharara Set',
-    slug: 'suits',
-    link: '/category/suits?sub_category=Sharara+Suit',
-    image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=600&q=85'
-  },
-  {
-    id: 'farshi-salwaar',
-    name: 'Farshi Salwaar Set',
-    slug: 'suits',
-    link: '/category/suits?sub_category=Punjabi+Suit',
-    image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=85'
-  },
-  {
-    id: 'a-line',
-    name: 'A Line Set',
-    slug: 'suits',
-    link: '/category/suits?sub_category=Straight+Suit',
-    image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=600&q=85'
-  },
-  {
-    id: 'straight-fit',
-    name: 'Straight Fit',
-    slug: 'designer-suits',
-    link: '/category/designer-suits',
-    image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=600&q=85'
-  },
-  {
-    id: 'anarkali-set',
-    name: 'Anarkali Set',
-    slug: 'festive-wear',
-    link: '/category/festive-wear',
-    image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=85'
-  },
-  {
-    id: 'sarees',
-    name: 'Designer Sarees',
-    slug: 'sarees',
-    link: '/category/sarees',
-    image: 'https://images.unsplash.com/photo-1610030469668-9655ecbbdd13?auto=format&fit=crop&w=600&q=85'
-  }
-];
-
 export function JharokhaCategories() {
+  const { getJharokhaCategories } = useContent();
+  const categories = getJharokhaCategories();
+
+  if (!categories || categories.length === 0) return null;
+
   return (
     <section className="relative w-full py-2 sm:py-4 overflow-hidden">
       <div className="w-full px-[10px]">
         {/* Categories Row - Full width with 10px margin, category names only */}
         <div className="flex items-center justify-between sm:justify-center gap-2.5 sm:gap-4 md:gap-6 overflow-x-auto py-2 no-scrollbar">
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.id}
-              to={cat.link}
-              className="group flex flex-col items-center space-y-2 shrink-0 focus:outline-none transition-transform duration-300 hover:-translate-y-1.5"
-              aria-label={cat.name}
-            >
-              {/* Jharokha SVG Frame Card with Double Border */}
-              <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.07)] group-hover:drop-shadow-[0_10px_22px_rgba(90,24,39,0.16)] transition-all duration-300">
-                <svg
-                  viewBox="0 0 160 160"
-                  className="w-full h-full transform transition-transform duration-500 group-hover:scale-[1.03]"
-                >
-                  <defs>
-                    <clipPath id={`jharokha-clip-${cat.id}`}>
-                      <path d={JHAROKHA_INNER_PATH} />
-                    </clipPath>
-                  </defs>
+          {categories.map((cat, idx) => {
+            const catId = cat.id || cat.slug || `jharokha-${idx}`;
+            return (
+              <Link
+                key={catId}
+                to={cat.link || `/category/${cat.slug}`}
+                className="group flex flex-col items-center space-y-2 shrink-0 focus:outline-none transition-transform duration-300 hover:-translate-y-1.5"
+                aria-label={cat.name}
+              >
+                {/* Jharokha SVG Frame Card with Double Border */}
+                <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.07)] group-hover:drop-shadow-[0_10px_22px_rgba(90,24,39,0.16)] transition-all duration-300">
+                  <svg
+                    viewBox="0 0 160 160"
+                    className="w-full h-full transform transition-transform duration-500 group-hover:scale-[1.03]"
+                  >
+                    <defs>
+                      <clipPath id={`jharokha-clip-${catId}`}>
+                        <path d={JHAROKHA_INNER_PATH} />
+                      </clipPath>
+                    </defs>
 
-                  {/* Outer Background Layer (Cream/Ivory Fill) */}
-                  <path
-                    d={JHAROKHA_PATH}
-                    fill="#FAF7F2"
-                    stroke="#8C6339"
-                    strokeWidth="1.2"
-                    strokeOpacity="0.75"
-                  />
-
-                  {/* Outer Fine Double Line Trim */}
-                  <path
-                    d={JHAROKHA_PATH}
-                    fill="none"
-                    stroke="#D4B68A"
-                    strokeWidth="0.8"
-                    strokeDasharray="3 1.5"
-                    transform="scale(0.96) translate(3.2, 3.2)"
-                    opacity="0.9"
-                  />
-
-                  {/* Inner Clipped Image */}
-                  <g clipPath={`url(#jharokha-clip-${cat.id})`}>
-                    <image
-                      href={cat.image}
-                      x="0"
-                      y="0"
-                      width="160"
-                      height="160"
-                      preserveAspectRatio="xMidYMid slice"
-                      className="transition-transform duration-700 ease-out group-hover:scale-115 origin-center"
+                    {/* Outer Background Layer (Cream/Ivory Fill) */}
+                    <path
+                      d={JHAROKHA_PATH}
+                      fill="#FAF7F2"
+                      stroke="#8C6339"
+                      strokeWidth="1.2"
+                      strokeOpacity="0.75"
                     />
 
-                    {/* Subtle warm lighting vignette */}
+                    {/* Outer Fine Double Line Trim */}
+                    <path
+                      d={JHAROKHA_PATH}
+                      fill="none"
+                      stroke="#D4B68A"
+                      strokeWidth="0.8"
+                      strokeDasharray="3 1.5"
+                      transform="scale(0.96) translate(3.2, 3.2)"
+                      opacity="0.9"
+                    />
+
+                    {/* Inner Clipped Image */}
+                    <g clipPath={`url(#jharokha-clip-${catId})`}>
+                      <image
+                        href={cat.image}
+                        x="0"
+                        y="0"
+                        width="160"
+                        height="160"
+                        preserveAspectRatio="xMidYMid slice"
+                        className="transition-transform duration-700 ease-out group-hover:scale-115 origin-center"
+                      />
+
+                      {/* Subtle warm lighting vignette */}
+                      <path
+                        d={JHAROKHA_INNER_PATH}
+                        fill="none"
+                        stroke="rgba(0,0,0,0.15)"
+                        strokeWidth="2"
+                      />
+                    </g>
+
+                    {/* Inner Fine Gold Border Line */}
                     <path
                       d={JHAROKHA_INNER_PATH}
                       fill="none"
-                      stroke="rgba(0,0,0,0.15)"
-                      strokeWidth="2"
+                      stroke="#A87B4F"
+                      strokeWidth="1.2"
+                      className="transition-colors duration-300 group-hover:stroke-[#5A1827]"
                     />
-                  </g>
+                  </svg>
+                </div>
 
-                  {/* Inner Fine Gold Border Line */}
-                  <path
-                    d={JHAROKHA_INNER_PATH}
-                    fill="none"
-                    stroke="#A87B4F"
-                    strokeWidth="1.2"
-                    className="transition-colors duration-300 group-hover:stroke-[#5A1827]"
-                  />
-                </svg>
-              </div>
-
-              {/* Category Name Label */}
-              <div className="text-center px-1">
-                <span className="font-serif sm:font-sans text-xs sm:text-sm font-semibold tracking-wide text-neutral-800 group-hover:text-brand-maroon transition-colors block">
-                  {cat.name}
-                </span>
-              </div>
-            </Link>
-          ))}
+                {/* Category Name Label */}
+                <div className="text-center px-1">
+                  <span className="font-serif sm:font-sans text-xs sm:text-sm font-semibold tracking-wide text-neutral-800 group-hover:text-brand-maroon transition-colors block">
+                    {cat.name}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

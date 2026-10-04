@@ -14,6 +14,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext.jsx';
+import { getProductUrl } from '../../utils/productUrl.js';
 
 export function CartDrawer() {
   const {
@@ -139,7 +140,7 @@ export function CartDrawer() {
                     <div>
                       <div className="flex justify-between items-start">
                         <Link
-                          to={`/product/${item.slug}`}
+                          to={getProductUrl(item)}
                           onClick={closeCart}
                           className="font-serif text-xs sm:text-sm font-semibold text-neutral-900 line-clamp-1 hover:text-brand-maroon"
                         >

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ChevronRight } from 'lucide-react';
 import { ProductCard } from '../common/ProductCard.jsx';
+import { useContent } from '../../context/ContentContext.jsx';
 
 const FILTER_TABS = [
   { id: 'all', label: 'All New In' },
@@ -12,6 +13,9 @@ const FILTER_TABS = [
 ];
 
 export function NewArrivalsSection({ products = [], loading = false }) {
+  const { getSection } = useContent();
+  const sec = getSection('new_arrivals') || {};
+
   const [activeTab, setActiveTab] = useState('all');
 
   const filteredProducts = useMemo(() => {
@@ -35,15 +39,15 @@ export function NewArrivalsSection({ products = [], loading = false }) {
           {/* Golden Badge */}
           <div className="inline-flex items-center space-x-2 bg-[#FAF3EA] border border-[#E5D7C2] px-3.5 py-1 rounded-full text-[11px] font-bold tracking-widest text-[#8C6339] uppercase">
             <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-            <span>JUST DROPPED • ATELIER 2026</span>
+            <span>{sec.badge || 'JUST DROPPED • ATELIER 2026'}</span>
           </div>
 
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
-            New Arrivals
+            {sec.title || 'New Arrivals'}
           </h2>
 
           <p className="text-xs sm:text-sm text-neutral-500 font-light max-w-xl">
-            Freshly tailored royal silhouettes, intricate zardozi embroidery, and rich artisanal drapes.
+            {sec.subtitle || 'Freshly tailored royal silhouettes, intricate zardozi embroidery, and rich artisanal drapes.'}
           </p>
         </div>
 
@@ -52,7 +56,7 @@ export function NewArrivalsSection({ products = [], loading = false }) {
           to="/new-arrivals"
           className="inline-flex items-center space-x-2 text-xs sm:text-sm font-bold text-brand-maroon hover:text-brand-maroon-hover group self-start md:self-auto py-1"
         >
-          <span>View All 50+ New Styles</span>
+          <span>{sec.cta_text || 'View All 50+ New Styles'}</span>
           <ChevronRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
         </Link>
       </div>

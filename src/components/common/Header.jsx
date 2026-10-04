@@ -17,6 +17,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { useCart } from '../../context/CartContext.jsx';
 import { useWishlist } from '../../context/WishlistContext.jsx';
 import { api } from '../../services/api.js';
+import { getProductUrl } from '../../utils/productUrl.js';
 
 export function Header() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -191,7 +192,7 @@ export function Header() {
                   return (
                     <Link
                       key={product.id}
-                      to={`/product/${product.slug}`}
+                      to={getProductUrl(product)}
                       className="flex items-center space-x-3 p-2.5 hover:bg-neutral-50 transition-colors"
                       onClick={() => setShowSearchDropdown(false)}
                     >

@@ -48,6 +48,7 @@ import { useCart } from '../context/CartContext.jsx';
 import { ShiprocketTrackerModal } from '../components/common/ShiprocketTrackerModal.jsx';
 import { OrderMilestoneTracker } from '../components/common/OrderMilestoneTracker.jsx';
 import { SEO } from '../components/common/SEO.jsx';
+import { getProductUrl } from '../utils/productUrl.js';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
 import { api } from '../services/api.js';
 
@@ -1317,7 +1318,7 @@ export function AccountPage() {
                         className="bg-white rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs flex flex-col justify-between group hover:shadow-xs transition-shadow"
                       >
                         <div className="relative aspect-[3/4] bg-neutral-100 overflow-hidden">
-                          <Link to={`/product/${item.slug || 'luxury-ethnic'}`}>
+                          <Link to={getProductUrl(item)}>
                             <img
                               src={item.image}
                               alt={item.title}

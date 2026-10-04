@@ -5,6 +5,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { CartProvider } from './context/CartContext.jsx';
 import { WishlistProvider } from './context/WishlistContext.jsx';
+import { ContentProvider } from './context/ContentContext.jsx';
 
 import { TopAnnouncementBar } from './components/common/TopAnnouncementBar.jsx';
 import { Header } from './components/common/Header.jsx';
@@ -33,6 +34,7 @@ import { AdminShiprocket } from './pages/admin/AdminShiprocket.jsx';
 import { AdminProducts } from './pages/admin/AdminProducts.jsx';
 import { AdminCoupons } from './pages/admin/AdminCoupons.jsx';
 import { AdminCustomers } from './pages/admin/AdminCustomers.jsx';
+import { AdminContentManager } from './pages/admin/AdminContentManager.jsx';
 
 function MainLayout({ children }) {
   const location = useLocation();
@@ -62,37 +64,40 @@ export default function App() {
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
-            <MainLayout>
-              <Routes>
-                {/* Storefront Routes */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/new-arrivals" element={<ListingPage isNewArrivals={true} />} />
-                <Route path="/category/:categorySlug" element={<ListingPage />} />
-                <Route path="/product/:slug" element={<ProductDetailPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/order-success/:orderNumber" element={<OrderConfirmationPage />} />
-                <Route path="/track-order" element={<TrackOrderPage />} />
-                <Route path="/wishlist" element={<WishlistPage />} />
-                <Route path="/account" element={<AccountPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
+            <ContentProvider>
+              <MainLayout>
+                <Routes>
+                  {/* Storefront Routes */}
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/new-arrivals" element={<ListingPage isNewArrivals={true} />} />
+                  <Route path="/category/:categorySlug" element={<ListingPage />} />
+                  <Route path="/product/:slug" element={<ProductDetailPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/order-success/:orderNumber" element={<OrderConfirmationPage />} />
+                  <Route path="/track-order" element={<TrackOrderPage />} />
+                  <Route path="/wishlist" element={<WishlistPage />} />
+                  <Route path="/account" element={<AccountPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
 
-                {/* Admin Routes */}
-                <Route path="/admin" element={<AdminLayout />}>
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="analytics" element={<AdminAnalytics />} />
-                  <Route path="orders" element={<AdminOrders />} />
-                  <Route path="shiprocket" element={<AdminShiprocket />} />
-                  <Route path="delhivery" element={<AdminShiprocket />} />
-                  <Route path="products" element={<AdminProducts />} />
-                  <Route path="coupons" element={<AdminCoupons />} />
-                  <Route path="customers" element={<AdminCustomers />} />
-                </Route>
+                  {/* Admin Routes */}
+                  <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="analytics" element={<AdminAnalytics />} />
+                    <Route path="orders" element={<AdminOrders />} />
+                    <Route path="shiprocket" element={<AdminShiprocket />} />
+                    <Route path="delhivery" element={<AdminShiprocket />} />
+                    <Route path="products" element={<AdminProducts />} />
+                    <Route path="coupons" element={<AdminCoupons />} />
+                    <Route path="customers" element={<AdminCustomers />} />
+                    <Route path="content" element={<AdminContentManager />} />
+                  </Route>
 
-                {/* 404 Fallback */}
-                <Route path="*" element={<HomePage />} />
-              </Routes>
-            </MainLayout>
+                  {/* 404 Fallback */}
+                  <Route path="*" element={<HomePage />} />
+                </Routes>
+              </MainLayout>
+            </ContentProvider>
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>

@@ -43,10 +43,7 @@ const CATEGORIES = [
     name: 'Zewar',
     slug: 'accessories',
     link: '/category/accessories',
-    image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=85',
-    isBrandCard: true,
-    brandText: 'Zewar',
-    brandSub: 'by label OCT9'
+    image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=85'
   },
   {
     id: 'sharara-set',
@@ -94,38 +91,19 @@ const CATEGORIES = [
 
 export function JharokhaCategories() {
   return (
-    <section className="relative py-10 sm:py-14 bg-gradient-to-b from-[#FDFBF7] via-[#FAF7F2] to-[#FDFBF7] border-y border-[#EFE8DD] overflow-hidden">
-      {/* Background Decorative Floral / Damask Subtle Ambient Texture */}
-      <div
-        className="absolute inset-0 opacity-15 pointer-events-none mix-blend-multiply"
-        style={{
-          backgroundImage: `radial-gradient(circle at 50% 50%, rgba(139,94,60,0.12) 1.5px, transparent 1.5px)`,
-          backgroundSize: '32px 32px'
-        }}
-      />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Subtle section header */}
-        <div className="text-center mb-8 sm:mb-10">
-          <span className="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-brand-maroon uppercase">
-            Curated Silhouettes
-          </span>
-          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 mt-1">
-            Shop by Silhouette
-          </h2>
-          <div className="w-12 h-0.5 bg-[#C5A880] mx-auto mt-2" />
-        </div>
-
-        {/* Categories Row / Grid matching screenshot exactly */}
-        <div className="flex items-center justify-start lg:justify-center gap-4 sm:gap-6 md:gap-8 overflow-x-auto pb-4 pt-2 no-scrollbar px-2">
+    <section className="relative w-full py-2 sm:py-4 overflow-hidden">
+      <div className="w-full px-[10px]">
+        {/* Categories Row - Full width with 10px margin, no text */}
+        <div className="flex items-center justify-between sm:justify-center gap-2.5 sm:gap-4 md:gap-6 overflow-x-auto py-2 no-scrollbar">
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.id}
               to={cat.link}
-              className="group flex flex-col items-center space-y-3 shrink-0 focus:outline-none transition-transform duration-300 hover:-translate-y-1.5"
+              className="group shrink-0 focus:outline-none transition-transform duration-300 hover:-translate-y-1.5"
+              aria-label={cat.name}
             >
               {/* Jharokha SVG Frame Card with Double Border */}
-              <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 flex items-center justify-center filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.08)] group-hover:drop-shadow-[0_12px_24px_rgba(90,24,39,0.15)] transition-all duration-300">
+              <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.07)] group-hover:drop-shadow-[0_10px_22px_rgba(90,24,39,0.16)] transition-all duration-300">
                 <svg
                   viewBox="0 0 160 160"
                   className="w-full h-full transform transition-transform duration-500 group-hover:scale-[1.03]"
@@ -156,7 +134,7 @@ export function JharokhaCategories() {
                     opacity="0.9"
                   />
 
-                  {/* Inner Clipped Image / Brand Card */}
+                  {/* Inner Clipped Image */}
                   <g clipPath={`url(#jharokha-clip-${cat.id})`}>
                     <image
                       href={cat.image}
@@ -167,37 +145,6 @@ export function JharokhaCategories() {
                       preserveAspectRatio="xMidYMid slice"
                       className="transition-transform duration-700 ease-out group-hover:scale-115 origin-center"
                     />
-
-                    {/* If Brand Card (like Zewar in screenshot) show elegant overlay */}
-                    {cat.isBrandCard && (
-                      <g>
-                        <rect width="160" height="160" fill="#FAF5ED" fillOpacity="0.88" />
-                        <text
-                          x="80"
-                          y="78"
-                          textAnchor="middle"
-                          fill="#5A1827"
-                          fontFamily="'Playfair Display', Georgia, serif"
-                          fontSize="21"
-                          fontWeight="bold"
-                          letterSpacing="0.5"
-                        >
-                          {cat.brandText}
-                        </text>
-                        <text
-                          x="80"
-                          y="94"
-                          textAnchor="middle"
-                          fill="#8C6339"
-                          fontFamily="sans-serif"
-                          fontSize="7"
-                          fontStyle="italic"
-                          letterSpacing="1"
-                        >
-                          {cat.brandSub}
-                        </text>
-                      </g>
-                    )}
 
                     {/* Subtle warm lighting vignette */}
                     <path
@@ -217,13 +164,6 @@ export function JharokhaCategories() {
                     className="transition-colors duration-300 group-hover:stroke-[#5A1827]"
                   />
                 </svg>
-              </div>
-
-              {/* Category Name Label */}
-              <div className="text-center px-1">
-                <span className="font-serif sm:font-sans text-xs sm:text-sm font-semibold tracking-wide text-neutral-800 group-hover:text-brand-maroon transition-colors block">
-                  {cat.name}
-                </span>
               </div>
             </Link>
           ))}

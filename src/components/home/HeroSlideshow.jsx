@@ -3,21 +3,21 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 const POSTER_SLIDES = [
   {
     id: 1,
-    image: '/banners/hero_banner_1.png',
-    fallbackImage: '/banners/hero_banner_1.png',
-    title: 'Our Exclusive Salwar Suits'
-  },
-  {
-    id: 2,
     image: '/banners/hero_banner_2.png',
     fallbackImage: '/banners/hero_banner_2.png',
     title: 'Timeless Ethnic Elegance'
   },
   {
+    id: 2,
+    image: '/banners/hero_banner_5.png',
+    fallbackImage: '/banners/hero_banner_5.png',
+    title: 'Beautiful Salwar Suits for Every You'
+  },
+  {
     id: 3,
-    image: '/banners/hero_banner_3.png',
-    fallbackImage: '/banners/hero_banner_3.png',
-    title: 'Authentic Punjabi Juttis'
+    image: '/banners/hero_banner_1.png',
+    fallbackImage: '/banners/hero_banner_1.png',
+    title: 'Our Exclusive Salwar Suits'
   },
   {
     id: 4,
@@ -27,15 +27,15 @@ const POSTER_SLIDES = [
   },
   {
     id: 5,
-    image: '/banners/hero_banner_5.png',
-    fallbackImage: '/banners/hero_banner_5.png',
-    title: 'Beautiful Salwar Suits for Every You'
-  },
-  {
-    id: 6,
     image: '/banners/hero_banner_6.png',
     fallbackImage: '/banners/hero_banner_6.png',
     title: 'Elegant Accessories'
+  },
+  {
+    id: 6,
+    image: '/banners/hero_banner_3.png',
+    fallbackImage: '/banners/hero_banner_3.png',
+    title: 'Authentic Punjabi Juttis'
   }
 ];
 

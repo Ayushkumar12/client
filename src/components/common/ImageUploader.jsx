@@ -34,12 +34,12 @@ export function ImageUploader({
 
   const fileInputRef = useRef(null);
 
-  // Normalize images array
-  const currentImages = Array.isArray(images)
+  // Normalize images array and filter out empty strings
+  const currentImages = (Array.isArray(images)
     ? images
     : images
     ? [images]
-    : [];
+    : []).filter((img) => typeof img === 'string' && img.trim().length > 0);
 
   const handleFileChange = async (e) => {
     const files = e.target.files;

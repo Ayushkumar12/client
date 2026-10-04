@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { api } from '../services/api.js';
 
 const ContentContext = createContext(null);
 
@@ -283,18 +284,15 @@ export function ContentProvider({ children }) {
   // Fetch Public Content
   const fetchContent = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/public`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.success && data.content) {
-          setContent((prev) => ({
-            ...DEFAULT_SITE_CONTENT,
-            ...data.content,
-            brand: { ...DEFAULT_SITE_CONTENT.brand, ...(data.content.brand || {}) },
-            sections: { ...DEFAULT_SITE_CONTENT.sections, ...(data.content.sections || {}) },
-            page_availability: { ...DEFAULT_SITE_CONTENT.page_availability, ...(data.content.page_availability || {}) }
-          }));
-        }
+      const data = await api.getPublicContent();
+      if (data && data.success && data.content) {
+        setContent((prev) => ({
+          ...DEFAULT_SITE_CONTENT,
+          ...data.content,
+          brand: { ...DEFAULT_SITE_CONTENT.brand, ...(data.content.brand || {}) },
+          sections: { ...DEFAULT_SITE_CONTENT.sections, ...(data.content.sections || {}) },
+          page_availability: { ...DEFAULT_SITE_CONTENT.page_availability, ...(data.content.page_availability || {}) }
+        }));
       }
     } catch (e) {
       console.warn('Failed to fetch CMS content, using default fallbacks:', e);
@@ -309,17 +307,8 @@ export function ContentProvider({ children }) {
 
   // Admin Update Content
   const updateContent = async (updates) => {
-    const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`${API_BASE}/admin`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify(updates)
-      });
-      const data = await res.json();
+      const data = await api.updateAdminContent(updates);
       if (data && data.success && data.content) {
         setContent(data.content);
         return { success: true, message: data.message };
@@ -332,17 +321,8 @@ export function ContentProvider({ children }) {
 
   // Admin Reset Section
   const resetSection = async (section) => {
-    const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`${API_BASE}/admin/reset`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ section })
-      });
-      const data = await res.json();
+      const data = await api.resetAdminContent(section);
       if (data && data.success && data.content) {
         setContent(data.content);
         return { success: true, message: data.message };

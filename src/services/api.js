@@ -177,6 +177,18 @@ export const api = {
   },
   deleteMedia: (id) => request(`/upload/media/${id}`, { method: 'DELETE' }),
 
+  // CMS & Site Content
+  getPublicContent: () => request('/content/public'),
+  getAdminContent: () => request('/content/admin'),
+  updateAdminContent: (contentData) => request('/content/admin', {
+    method: 'PUT',
+    body: JSON.stringify(contentData)
+  }),
+  resetAdminContent: (section) => request('/content/admin/reset', {
+    method: 'POST',
+    body: JSON.stringify({ section })
+  }),
+
   // Admin Analytics & Storefront Settings
   getPublicSettings: () => request('/admin/settings/public'),
   getFullAnalytics: () => request('/admin/analytics'),

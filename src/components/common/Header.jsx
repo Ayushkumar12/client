@@ -188,7 +188,9 @@ export function Header() {
               </div>
               <div className="max-h-80 overflow-y-auto divide-y divide-neutral-100">
                 {searchResults.map((product) => {
-                  const img = Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : '';
+                  const img = (Array.isArray(product.images) && product.images.length > 0 && product.images[0])
+                    ? product.images[0]
+                    : (product.image || '/oct9-logo.jpg');
                   return (
                     <Link
                       key={product.id}
@@ -196,7 +198,7 @@ export function Header() {
                       className="flex items-center space-x-3 p-2.5 hover:bg-neutral-50 transition-colors"
                       onClick={() => setShowSearchDropdown(false)}
                     >
-                      <img src={img} alt={product.title} className="w-10 h-12 object-cover rounded border border-neutral-200" />
+                      <img src={img} alt={product.title} className="w-10 h-12 object-cover rounded border border-neutral-200 bg-neutral-100" />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-bold text-neutral-900 truncate">{product.title}</p>
                         <p className="text-[10px] text-neutral-500 capitalize">{product.sub_category || product.category_slug}</p>

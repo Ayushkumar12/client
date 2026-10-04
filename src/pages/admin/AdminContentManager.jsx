@@ -20,6 +20,7 @@ import {
   ToggleRight
 } from 'lucide-react';
 import { useContent, DEFAULT_SITE_CONTENT } from '../../context/ContentContext.jsx';
+import { ImageUploader } from '../../components/common/ImageUploader.jsx';
 
 export function AdminContentManager() {
   const { content, updateContent, resetSection, refreshContent } = useContent();
@@ -469,8 +470,8 @@ export function AdminContentManager() {
                 {/* Preview Thumbnail */}
                 <div className="lg:col-span-3 aspect-[1024/374] rounded-xl overflow-hidden bg-neutral-900 relative border border-neutral-300">
                   <img
-                    src={slide.image}
-                    alt={slide.title}
+                    src={slide.image || '/banners/hero_banner_2.png'}
+                    alt={slide.title || `Slide ${idx + 1}`}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.target.src = '/banners/hero_banner_2.png';
@@ -483,14 +484,14 @@ export function AdminContentManager() {
 
                 {/* Form Inputs */}
                 <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <label className="font-bold text-neutral-600 block mb-1">Banner Image URL:</label>
-                    <input
-                      type="text"
-                      value={slide.image || ''}
-                      onChange={(e) => handleSlideChange(idx, 'image', e.target.value)}
-                      placeholder="/banners/hero_banner_1.png or https://..."
-                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
+                  <div className="sm:col-span-2">
+                    <ImageUploader
+                      images={slide.image}
+                      onChange={(newUrl) => handleSlideChange(idx, 'image', newUrl)}
+                      multiple={false}
+                      label={`Slide #${idx + 1} Banner Image (Saved to SQL DB)`}
+                      helperText="Upload wide banner image. Stored directly in the database."
+                      aspectRatio="aspect-[1024/374]"
                     />
                   </div>
 
@@ -586,7 +587,12 @@ export function AdminContentManager() {
               <div key={cat.id || idx} className="bg-white rounded-2xl border border-neutral-200 p-4 space-y-3 shadow-xs">
                 {/* Arch Preview Thumbnail */}
                 <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border-2 border-amber-300/80 p-0.5 shadow-sm bg-neutral-950">
-                  <img src={cat.image} alt={cat.name} className="w-full h-full object-cover rounded-full" />
+                  <img
+                    src={cat.image || '/banners/hero_banner_1.png'}
+                    alt={cat.name || 'Category'}
+                    className="w-full h-full object-cover rounded-full"
+                    onError={(e) => { e.target.src = '/banners/hero_banner_1.png'; }}
+                  />
                 </div>
 
                 <div className="space-y-2 text-xs">
@@ -611,12 +617,13 @@ export function AdminContentManager() {
                   </div>
 
                   <div>
-                    <label className="font-bold text-neutral-600 block">Image URL:</label>
-                    <input
-                      type="text"
-                      value={cat.image || ''}
-                      onChange={(e) => handleJharokhaChange(idx, 'image', e.target.value)}
-                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
+                    <ImageUploader
+                      images={cat.image}
+                      onChange={(newUrl) => handleJharokhaChange(idx, 'image', newUrl)}
+                      multiple={false}
+                      label="Arch Photo (Upload File)"
+                      helperText="Saved to SQL Database."
+                      aspectRatio="aspect-square"
                     />
                   </div>
 
@@ -725,7 +732,12 @@ export function AdminContentManager() {
                 {(formData.sections?.inside_brand?.arches || []).map((arch, idx) => (
                   <div key={idx} className="bg-[#FAF7F2] p-4 rounded-xl border border-amber-200/80 space-y-2.5 text-xs">
                     <div className="aspect-[3/4] rounded-t-[50px] rounded-b-xl overflow-hidden bg-neutral-900 border border-amber-300/50">
-                      <img src={arch.image} alt={arch.title} className="w-full h-full object-cover" />
+                      <img
+                        src={arch.image || '/banners/hero_banner_1.png'}
+                        alt={arch.title || 'Arch'}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.src = '/banners/hero_banner_1.png'; }}
+                      />
                     </div>
 
                     <div>
@@ -759,12 +771,13 @@ export function AdminContentManager() {
                     </div>
 
                     <div>
-                      <label className="font-bold text-neutral-600 block">Image URL:</label>
-                      <input
-                        type="text"
-                        value={arch.image || ''}
-                        onChange={(e) => handleInsideArchChange(idx, 'image', e.target.value)}
-                        className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
+                      <ImageUploader
+                        images={arch.image}
+                        onChange={(newUrl) => handleInsideArchChange(idx, 'image', newUrl)}
+                        multiple={false}
+                        label="Arch Image (Upload File)"
+                        helperText="Saved to SQL Database."
+                        aspectRatio="aspect-[3/4]"
                       />
                     </div>
 
@@ -848,12 +861,10 @@ export function AdminContentManager() {
                   />
                 </div>
 
-                <div>
-                  <label className="font-bold text-neutral-700 block mb-1">Image URL:</label>
-                  <input
-                    type="text"
-                    value={formData.sections?.bento_mosaic?.zewar_card?.image || ''}
-                    onChange={(e) =>
+                <div className="sm:col-span-2">
+                  <ImageUploader
+                    images={formData.sections?.bento_mosaic?.zewar_card?.image || ''}
+                    onChange={(newUrl) =>
                       setFormData((prev) => ({
                         ...prev,
                         sections: {
@@ -862,13 +873,16 @@ export function AdminContentManager() {
                             ...prev.sections?.bento_mosaic,
                             zewar_card: {
                               ...prev.sections?.bento_mosaic?.zewar_card,
-                              image: e.target.value
+                              image: newUrl
                             }
                           }
                         }
                       }))
                     }
-                    className="w-full p-2 rounded-lg border border-neutral-300 bg-white font-mono text-[11px]"
+                    multiple={false}
+                    label="Zewar Feature Photo (Direct File Upload)"
+                    helperText="Saved to SQL Database."
+                    aspectRatio="aspect-[4/3]"
                   />
                 </div>
 
@@ -931,7 +945,12 @@ export function AdminContentManager() {
                 {(formData.sections?.bento_mosaic?.categories || []).map((cat, idx) => (
                   <div key={idx} className="bg-white p-3.5 rounded-xl border border-neutral-200 space-y-2 text-xs">
                     <div className="h-28 rounded-lg overflow-hidden bg-neutral-900">
-                      <img src={cat.image} alt={cat.title} className="w-full h-full object-cover" />
+                      <img
+                        src={cat.image || '/banners/hero_banner_1.png'}
+                        alt={cat.title || 'Category'}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.src = '/banners/hero_banner_1.png'; }}
+                      />
                     </div>
 
                     <div>
@@ -955,12 +974,13 @@ export function AdminContentManager() {
                     </div>
 
                     <div>
-                      <label className="font-bold text-neutral-600 block">Image URL:</label>
-                      <input
-                        type="text"
-                        value={cat.image || ''}
-                        onChange={(e) => handleBentoCategoryChange(idx, 'image', e.target.value)}
-                        className="w-full p-1.5 rounded border border-neutral-300 font-mono text-[11px]"
+                      <ImageUploader
+                        images={cat.image}
+                        onChange={(newUrl) => handleBentoCategoryChange(idx, 'image', newUrl)}
+                        multiple={false}
+                        label="Card Image (Upload File)"
+                        helperText="Saved to SQL DB."
+                        aspectRatio="aspect-[4/3]"
                       />
                     </div>
                   </div>

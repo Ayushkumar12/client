@@ -93,13 +93,13 @@ export function JharokhaCategories() {
   return (
     <section className="relative w-full py-2 sm:py-4 overflow-hidden">
       <div className="w-full px-[10px]">
-        {/* Categories Row - Full width with 10px margin, no text */}
+        {/* Categories Row - Full width with 10px margin, category names only */}
         <div className="flex items-center justify-between sm:justify-center gap-2.5 sm:gap-4 md:gap-6 overflow-x-auto py-2 no-scrollbar">
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.id}
               to={cat.link}
-              className="group shrink-0 focus:outline-none transition-transform duration-300 hover:-translate-y-1.5"
+              className="group flex flex-col items-center space-y-2 shrink-0 focus:outline-none transition-transform duration-300 hover:-translate-y-1.5"
               aria-label={cat.name}
             >
               {/* Jharokha SVG Frame Card with Double Border */}
@@ -164,6 +164,13 @@ export function JharokhaCategories() {
                     className="transition-colors duration-300 group-hover:stroke-[#5A1827]"
                   />
                 </svg>
+              </div>
+
+              {/* Category Name Label */}
+              <div className="text-center px-1">
+                <span className="font-serif sm:font-sans text-xs sm:text-sm font-semibold tracking-wide text-neutral-800 group-hover:text-brand-maroon transition-colors block">
+                  {cat.name}
+                </span>
               </div>
             </Link>
           ))}

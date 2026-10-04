@@ -11,30 +11,71 @@ import {
   Sparkles
 } from 'lucide-react';
 
-const TRUST_BADGES = [
+const BRAND_PILLARS = [
   {
-    icon: Truck,
-    title: 'Free Express Shipping',
-    desc: 'On all orders above ₹1,999 across India',
-    tag: 'Express 48H'
+    id: 1,
+    title: 'Artisan Made',
+    desc: 'Handcrafted heritage & bespoke embroidery',
+    icon: (
+      <svg className="w-9 h-9" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        {/* Needle */}
+        <path d="M38 8L18 28" />
+        <path d="M38 8C39.5 6.5 42 7 43 8C44 9 44.5 11.5 43 13L36 20" />
+        <circle cx="39.5" cy="9.5" r="1" fill="currentColor" />
+        {/* Elegant flowing thread loop */}
+        <path d="M18 28C13 33 9 36 7 33C5 30 9 25 15 23C22 21 24 26 21 31C18 36 11 41 7 43" />
+      </svg>
+    )
   },
   {
-    icon: RotateCcw,
-    title: '7 Days Easy Return',
-    desc: 'Hassle-free doorstep pickup via Shiprocket',
-    tag: 'Doorstep Pickup'
+    id: 2,
+    title: 'Weekly Launches',
+    desc: 'Curated festive edits & fresh designer drops',
+    icon: (
+      <svg className="w-9 h-9" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        {/* Box */}
+        <path d="M24 7L38 14.5V29.5L24 37L10 29.5V14.5L24 7Z" />
+        <path d="M24 7V22M38 14.5L24 22L10 14.5" />
+        <path d="M24 22V37" />
+        {/* Radiance spark rays */}
+        <path d="M24 2V4M41 9.5L39.5 11M7 9.5L8.5 11M44 22H42M4 22H6" />
+        {/* Gentle caring hand outline */}
+        <path d="M8 38C12 37 18 36 24 39.5L35 36C37 35.3 39 37 37.5 39L33 43C30 45 22 45 16 43L8 41V38Z" />
+      </svg>
+    )
   },
   {
-    icon: ShieldCheck,
-    title: '100% Secure Payments',
-    desc: 'Encrypted checkout powered by Razorpay',
-    tag: '256-Bit SSL'
+    id: 3,
+    title: 'Premium Fabrics',
+    desc: 'Pure silks, fine chanderi & royal weaves',
+    icon: (
+      <svg className="w-9 h-9" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        {/* Luxury Diamond */}
+        <path d="M12 16L24 6L36 16L24 42L12 16Z" />
+        <path d="M12 16H36" />
+        <path d="M17 16L24 42L31 16" />
+        <path d="M20 6L17 16M28 6L31 16" />
+        {/* Sparkles */}
+        <path d="M38 8L39 11L42 12L39 13L38 16L37 13L34 12L37 11L38 8Z" fill="currentColor" stroke="none" />
+        <path d="M9 32L10 34.5L12.5 35.5L10 36.5L9 39L8 36.5L5.5 35.5L8 34.5L9 32Z" fill="currentColor" stroke="none" />
+      </svg>
+    )
   },
   {
-    icon: Sparkles,
-    title: 'Handcrafted Luxury',
-    desc: 'Artisanal weaves & bespoke embroidery',
-    tag: 'Master Artisans'
+    id: 4,
+    title: 'Quality Stitching',
+    desc: 'Master craftsmanship & precision tailoring',
+    icon: (
+      <svg className="w-9 h-9" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        {/* Sewing machine */}
+        <path d="M6 38H42" />
+        <path d="M8 38V16C8 13.8 9.8 12 12 12H32C34.2 12 36 13.8 36 16V38" />
+        <path d="M36 21H22C19.8 21 18 22.8 18 25V30C18 32.2 19.8 34 22 34H36" />
+        <path d="M14 24V32" />
+        <circle cx="36" cy="22" r="3.5" />
+        <path d="M22 8V12M26 8V12" />
+      </svg>
+    )
   }
 ];
 
@@ -54,37 +95,29 @@ export function Footer() {
   return (
     <footer className="bg-white text-neutral-700 border-t border-neutral-200/80 pt-12 pb-8 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top Trust Badges Strip (Modern Luxury Cards) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 pb-12 border-b border-neutral-200/80">
-          {TRUST_BADGES.map((badge, idx) => {
-            const Icon = badge.icon;
-            return (
-              <div
-                key={idx}
-                className="group relative bg-gradient-to-b from-white via-[#FAF7F2]/60 to-[#F5EFE6]/30 hover:from-white hover:to-white border border-neutral-200/80 hover:border-brand-maroon/30 rounded-2xl p-5 sm:p-6 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-8px_rgba(114,24,37,0.12)] overflow-hidden cursor-default"
-              >
-                {/* Subtle top ambient glow */}
-                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-brand-maroon/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                {/* Floating Modern Icon Emblem */}
-                <div className="relative mb-3 flex items-center justify-center">
-                  <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-brand-maroon/5 border border-brand-maroon/10 text-brand-maroon flex items-center justify-center shadow-xs group-hover:bg-brand-maroon group-hover:text-[#F6D389] group-hover:scale-110 group-hover:rotate-2 transition-all duration-300">
-                    <Icon className="w-6 h-6 stroke-[1.8]" />
-                  </div>
-                  <span className="absolute -top-1 -right-1 text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-brand-gold/15 text-brand-maroon border border-brand-gold/30 opacity-90 group-hover:bg-[#F6D389] group-hover:text-brand-maroon transition-colors">
-                    {badge.tag}
-                  </span>
-                </div>
-
-                <h4 className="font-serif font-bold text-sm sm:text-base text-neutral-900 group-hover:text-brand-maroon transition-colors duration-200 tracking-tight mb-1">
-                  {badge.title}
-                </h4>
-                <p className="text-xs text-neutral-500 leading-relaxed max-w-[210px]">
-                  {badge.desc}
-                </p>
+        {/* Minimalist Haute-Couture Brand Pillars */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 pb-12 border-b border-neutral-200/70">
+          {BRAND_PILLARS.map((pillar) => (
+            <div
+              key={pillar.id}
+              className="group flex flex-col items-center text-center p-3 sm:p-4 rounded-2xl transition-all duration-300 hover:bg-[#FAF7F2]/50 cursor-default"
+            >
+              {/* Minimal Line Icon Container with Brand Hover Delight */}
+              <div className="mb-3 text-neutral-800 group-hover:text-brand-maroon transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-300 ease-out flex items-center justify-center">
+                {pillar.icon}
               </div>
-            );
-          })}
+
+              {/* Title */}
+              <h4 className="font-serif font-bold text-sm sm:text-base text-neutral-900 group-hover:text-brand-maroon transition-colors tracking-wide mb-1">
+                {pillar.title}
+              </h4>
+
+              {/* Refined Subtitle */}
+              <p className="text-xs text-neutral-500 font-sans leading-relaxed max-w-[200px]">
+                {pillar.desc}
+              </p>
+            </div>
+          ))}
         </div>
 
         {/* Main Footer Links Grid */}

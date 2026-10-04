@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import {
   User,
@@ -39,7 +39,8 @@ import {
   Check,
   Copy,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Loader2
 } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext.jsx';
@@ -101,6 +102,32 @@ export function AccountPage() {
   });
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [profileSaveSuccess, setProfileSaveSuccess] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(() => user?.avatar || localStorage.getItem('oct9_avatar') || '');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef(null);
+
+  const handleAvatarFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    try {
+      const res = await api.uploadImage(file);
+      if (res.success && res.url) {
+        setAvatarUrl(res.url);
+        localStorage.setItem('oct9_avatar', res.url);
+      }
+    } catch (err) {
+      console.error('Avatar upload failed:', err);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAvatarUrl(e.target.result);
+        localStorage.setItem('oct9_avatar', e.target.result);
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   // Address Modal State
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -805,15 +832,29 @@ export function AccountPage() {
                 <div className="bg-white rounded-2xl p-6 sm:p-7 border border-neutral-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center space-x-5">
                     <div className="relative shrink-0">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#F5EBE1] text-[#2A2A2A] font-serif font-bold text-2xl flex items-center justify-center border-2 border-[#E8DCCF]">
-                        {initials}
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#F5EBE1] text-[#2A2A2A] font-serif font-bold text-2xl flex items-center justify-center border-2 border-[#E8DCCF] overflow-hidden">
+                        {avatarUrl ? (
+                          <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                          initials
+                        )}
                       </div>
                       <button
+                        type="button"
+                        onClick={() => avatarInputRef.current?.click()}
+                        disabled={uploadingAvatar}
                         className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#2A2A2A] hover:bg-[#111] text-white flex items-center justify-center border-2 border-white shadow cursor-pointer transition-colors"
                         title="Upload Photo"
                       >
-                        <Camera className="w-3 h-3" />
+                        {uploadingAvatar ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
                       </button>
+                      <input
+                        ref={avatarInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleAvatarFileChange}
+                      />
                     </div>
 
                     <div className="space-y-1">

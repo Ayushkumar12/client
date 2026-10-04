@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../services/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { MultiImageUploadField } from '../../components/admin/MultiImageUploadField.jsx';
 
 export function AdminProducts() {
   const { showPublicRatings, refreshSettings } = useAuth();
@@ -474,13 +475,11 @@ export function AdminProducts() {
               </div>
 
               <div>
-                <label className="block font-bold text-neutral-700 mb-1">Image URL(s)</label>
-                <input
-                  type="text"
-                  value={formData.images[0] || ''}
-                  onChange={(e) => setFormData({ ...formData, images: [e.target.value] })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full p-2.5 border rounded-lg"
+                <MultiImageUploadField
+                  images={formData.images || []}
+                  onChange={(newImages) => setFormData({ ...formData, images: newImages })}
+                  label="Product Photos (File Upload)"
+                  maxImages={10}
                 />
               </div>
 

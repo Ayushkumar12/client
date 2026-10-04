@@ -20,7 +20,6 @@ import {
   ToggleRight
 } from 'lucide-react';
 import { useContent, DEFAULT_SITE_CONTENT } from '../../context/ContentContext.jsx';
-import { ImageUploadField } from '../../components/admin/ImageUploadField.jsx';
 
 export function AdminContentManager() {
   const { content, updateContent, resetSection, refreshContent } = useContent();
@@ -430,17 +429,6 @@ export function AdminContentManager() {
                       className="w-full text-xs p-2 rounded-xl border border-neutral-200 focus:outline-none focus:border-brand-maroon bg-white"
                     />
                   </div>
-
-                  {/* Teaser Preview Image Upload */}
-                  <div className="pt-2 border-t border-neutral-100">
-                    <ImageUploadField
-                      value={page.teaser_image || ''}
-                      onChange={(url) => updatePageField(slug, 'teaser_image', url)}
-                      label="Teaser Poster Image"
-                      aspectRatio="aspect-[16/9]"
-                      recommendedSize="Recommended: 1200 x 675px"
-                    />
-                  </div>
                 </div>
               );
             })}
@@ -478,19 +466,34 @@ export function AdminContentManager() {
                 key={slide.id || idx}
                 className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-5 items-center"
               >
-                {/* Image Upload Preview & Selector */}
-                <div className="lg:col-span-4">
-                  <ImageUploadField
-                    value={slide.image || ''}
-                    onChange={(url) => handleSlideChange(idx, 'image', url)}
-                    label={`Slide #${idx + 1} Image (Upload File)`}
-                    aspectRatio="aspect-[1024/374]"
-                    recommendedSize="1920 x 700px (Desktop Full-Bleed)"
+                {/* Preview Thumbnail */}
+                <div className="lg:col-span-3 aspect-[1024/374] rounded-xl overflow-hidden bg-neutral-900 relative border border-neutral-300">
+                  <img
+                    src={slide.image}
+                    alt={slide.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = '/banners/hero_banner_2.png';
+                    }}
                   />
+                  <span className="absolute top-2 left-2 bg-black/60 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                    Slide #{idx + 1}
+                  </span>
                 </div>
 
                 {/* Form Inputs */}
-                <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <label className="font-bold text-neutral-600 block mb-1">Banner Image URL:</label>
+                    <input
+                      type="text"
+                      value={slide.image || ''}
+                      onChange={(e) => handleSlideChange(idx, 'image', e.target.value)}
+                      placeholder="/banners/hero_banner_1.png or https://..."
+                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
+                    />
+                  </div>
+
                   <div>
                     <label className="font-bold text-neutral-600 block mb-1">Slide Title:</label>
                     <input
@@ -498,7 +501,7 @@ export function AdminContentManager() {
                       value={slide.title || ''}
                       onChange={(e) => handleSlideChange(idx, 'title', e.target.value)}
                       placeholder="e.g. Royal Heritage Drapes"
-                      className="w-full p-2.5 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-semibold"
+                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-semibold"
                     />
                   </div>
 
@@ -509,18 +512,18 @@ export function AdminContentManager() {
                       value={slide.subtitle || ''}
                       onChange={(e) => handleSlideChange(idx, 'subtitle', e.target.value)}
                       placeholder="e.g. Festive & Bridal Atelier 2026"
-                      className="w-full p-2.5 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon"
+                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon"
                     />
                   </div>
 
-                  <div className="sm:col-span-2">
+                  <div>
                     <label className="font-bold text-neutral-600 block mb-1">Click Link Destination:</label>
                     <input
                       type="text"
                       value={slide.link || ''}
                       onChange={(e) => handleSlideChange(idx, 'link', e.target.value)}
                       placeholder="/category/stitched-suits"
-                      className="w-full p-2.5 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
+                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
                     />
                   </div>
 
@@ -581,14 +584,9 @@ export function AdminContentManager() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {(formData.jharokha_categories || []).map((cat, idx) => (
               <div key={cat.id || idx} className="bg-white rounded-2xl border border-neutral-200 p-4 space-y-3 shadow-xs">
-                <div>
-                  <ImageUploadField
-                    value={cat.image || ''}
-                    onChange={(url) => handleJharokhaChange(idx, 'image', url)}
-                    label="Arch Image"
-                    aspectRatio="aspect-square"
-                    recommendedSize="600 x 600px (JPG, PNG, WEBP)"
-                  />
+                {/* Arch Preview Thumbnail */}
+                <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border-2 border-amber-300/80 p-0.5 shadow-sm bg-neutral-950">
+                  <img src={cat.image} alt={cat.name} className="w-full h-full object-cover rounded-full" />
                 </div>
 
                 <div className="space-y-2 text-xs">
@@ -608,6 +606,16 @@ export function AdminContentManager() {
                       type="text"
                       value={cat.link || ''}
                       onChange={(e) => handleJharokhaChange(idx, 'link', e.target.value)}
+                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-neutral-600 block">Image URL:</label>
+                    <input
+                      type="text"
+                      value={cat.image || ''}
+                      onChange={(e) => handleJharokhaChange(idx, 'image', e.target.value)}
                       className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
                     />
                   </div>
@@ -716,14 +724,8 @@ export function AdminContentManager() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {(formData.sections?.inside_brand?.arches || []).map((arch, idx) => (
                   <div key={idx} className="bg-[#FAF7F2] p-4 rounded-xl border border-amber-200/80 space-y-2.5 text-xs">
-                    <div>
-                      <ImageUploadField
-                        value={arch.image || ''}
-                        onChange={(url) => handleInsideArchChange(idx, 'image', url)}
-                        label={`Arch #${idx + 1} Image`}
-                        aspectRatio="aspect-[3/4]"
-                        recommendedSize="600 x 800px"
-                      />
+                    <div className="aspect-[3/4] rounded-t-[50px] rounded-b-xl overflow-hidden bg-neutral-900 border border-amber-300/50">
+                      <img src={arch.image} alt={arch.title} className="w-full h-full object-cover" />
                     </div>
 
                     <div>
@@ -753,6 +755,16 @@ export function AdminContentManager() {
                         value={arch.badge || ''}
                         onChange={(e) => handleInsideArchChange(idx, 'badge', e.target.value)}
                         className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="font-bold text-neutral-600 block">Image URL:</label>
+                      <input
+                        type="text"
+                        value={arch.image || ''}
+                        onChange={(e) => handleInsideArchChange(idx, 'image', e.target.value)}
+                        className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
                       />
                     </div>
 
@@ -836,10 +848,12 @@ export function AdminContentManager() {
                   />
                 </div>
 
-                <div className="sm:col-span-2">
-                  <ImageUploadField
+                <div>
+                  <label className="font-bold text-neutral-700 block mb-1">Image URL:</label>
+                  <input
+                    type="text"
                     value={formData.sections?.bento_mosaic?.zewar_card?.image || ''}
-                    onChange={(url) =>
+                    onChange={(e) =>
                       setFormData((prev) => ({
                         ...prev,
                         sections: {
@@ -848,15 +862,13 @@ export function AdminContentManager() {
                             ...prev.sections?.bento_mosaic,
                             zewar_card: {
                               ...prev.sections?.bento_mosaic?.zewar_card,
-                              image: url
+                              image: e.target.value
                             }
                           }
                         }
                       }))
                     }
-                    label="Zewar Card Hero Image"
-                    aspectRatio="aspect-[3/4]"
-                    recommendedSize="800 x 1000px"
+                    className="w-full p-2 rounded-lg border border-neutral-300 bg-white font-mono text-[11px]"
                   />
                 </div>
 
@@ -917,15 +929,9 @@ export function AdminContentManager() {
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {(formData.sections?.bento_mosaic?.categories || []).map((cat, idx) => (
-                  <div key={idx} className="bg-white p-3.5 rounded-xl border border-neutral-200 space-y-2.5 text-xs">
-                    <div>
-                      <ImageUploadField
-                        value={cat.image || ''}
-                        onChange={(url) => handleBentoCategoryChange(idx, 'image', url)}
-                        label={`Bento Tile #${idx + 1}`}
-                        aspectRatio="aspect-[4/3]"
-                        recommendedSize="600 x 450px"
-                      />
+                  <div key={idx} className="bg-white p-3.5 rounded-xl border border-neutral-200 space-y-2 text-xs">
+                    <div className="h-28 rounded-lg overflow-hidden bg-neutral-900">
+                      <img src={cat.image} alt={cat.title} className="w-full h-full object-cover" />
                     </div>
 
                     <div>
@@ -944,6 +950,16 @@ export function AdminContentManager() {
                         type="text"
                         value={cat.link || ''}
                         onChange={(e) => handleBentoCategoryChange(idx, 'link', e.target.value)}
+                        className="w-full p-1.5 rounded border border-neutral-300 font-mono text-[11px]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="font-bold text-neutral-600 block">Image URL:</label>
+                      <input
+                        type="text"
+                        value={cat.image || ''}
+                        onChange={(e) => handleBentoCategoryChange(idx, 'image', e.target.value)}
                         className="w-full p-1.5 rounded border border-neutral-300 font-mono text-[11px]"
                       />
                     </div>
@@ -1131,26 +1147,6 @@ export function AdminContentManager() {
                   value={formData.brand?.tagline || ''}
                   onChange={(e) => updateBrandField('tagline', e.target.value)}
                   className="w-full p-2.5 rounded-xl border border-neutral-300"
-                />
-              </div>
-
-              <div>
-                <ImageUploadField
-                  value={formData.brand?.logo || ''}
-                  onChange={(url) => updateBrandField('logo', url)}
-                  label="Brand Logo (File Upload)"
-                  aspectRatio="aspect-[3/1]"
-                  recommendedSize="PNG or SVG with transparent background"
-                />
-              </div>
-
-              <div>
-                <ImageUploadField
-                  value={formData.brand?.favicon || ''}
-                  onChange={(url) => updateBrandField('favicon', url)}
-                  label="Browser Favicon / Icon"
-                  aspectRatio="aspect-square"
-                  recommendedSize="64 x 64px (PNG, ICO, SVG)"
                 />
               </div>
 

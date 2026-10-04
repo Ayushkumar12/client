@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../services/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { MultiImageUploadField } from '../../components/admin/MultiImageUploadField.jsx';
+import { ImageUploader } from '../../components/common/ImageUploader.jsx';
 
 export function AdminProducts() {
   const { showPublicRatings, refreshSettings } = useAuth();
@@ -474,12 +474,15 @@ export function AdminProducts() {
                 </div>
               </div>
 
+              {/* Direct Image File Upload to SQL Database */}
               <div>
-                <MultiImageUploadField
-                  images={formData.images || []}
+                <ImageUploader
+                  images={formData.images}
                   onChange={(newImages) => setFormData({ ...formData, images: newImages })}
-                  label="Product Photos (File Upload)"
-                  maxImages={10}
+                  multiple={true}
+                  maxFiles={8}
+                  label="Product Photos (Direct SQL Database Upload)"
+                  helperText="Upload multi-angle photos from your device. Files are saved directly to SQL Database."
                 />
               </div>
 

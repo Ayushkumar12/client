@@ -37,6 +37,28 @@ async function request(endpoint, options = {}) {
   return data;
 }
 
+async function uploadRequest(endpoint, formData) {
+  const headers = {
+    'X-Tunnel-Skip-AntiPhishing-Page': 'true',
+    'bypass-tunnel-reminder': 'true',
+    ...getAuthHeader(),
+  };
+
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = `${API_BASE}${cleanEndpoint}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    body: formData,
+    headers,
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.message || `Upload failed with status ${response.status}`);
+  }
+  return data;
+}
+
 export const api = {
   // Auth
   login: (credentials) => request('/auth/login', { method: 'POST', body: JSON.stringify(credentials) }),
@@ -134,6 +156,27 @@ export const api = {
   createCoupon: (coupon) => request('/coupons/admin/create', { method: 'POST', body: JSON.stringify(coupon) }),
   deleteCoupon: (id) => request(`/coupons/admin/${id}`, { method: 'DELETE' }),
 
+  // Media & Image Upload to SQL Database
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return uploadRequest('/upload/image', formData);
+  },
+  uploadMultipleImages: async (files) => {
+    const formData = new FormData();
+    Array.from(files).forEach((f) => formData.append('images', f));
+    return uploadRequest('/upload/multiple', formData);
+  },
+  uploadBase64Image: (base64Data, filename = '', originalName = '') => request('/upload/base64', {
+    method: 'POST',
+    body: JSON.stringify({ base64Data, filename, originalName })
+  }),
+  getMediaLibrary: (params = {}) => {
+    const query = new URLSearchParams(params);
+    return request(`/upload/media?${query.toString()}`);
+  },
+  deleteMedia: (id) => request(`/upload/media/${id}`, { method: 'DELETE' }),
+
   // Admin Analytics & Storefront Settings
   getPublicSettings: () => request('/admin/settings/public'),
   getFullAnalytics: () => request('/admin/analytics'),
@@ -147,48 +190,4 @@ export const api = {
   }),
   getDashboardMetrics: () => request('/admin/dashboard'),
   getCustomers: () => request('/admin/customers'),
-
-  // Image File Uploads (Single & Multiple)
-  uploadImage: async (file) => {
-    const formData = new FormData();
-    formData.append('image', file);
-    const token = localStorage.getItem('oct9_token');
-    const headers = {
-      'X-Tunnel-Skip-AntiPhishing-Page': 'true',
-      'bypass-tunnel-reminder': 'true',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-    const response = await fetch(`${API_BASE}/upload/single`, {
-      method: 'POST',
-      headers,
-      body: formData
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || !data.success) {
-      throw new Error(data.message || 'Image upload failed');
-    }
-    return data;
-  },
-
-  uploadMultipleImages: async (files) => {
-    const formData = new FormData();
-    Array.from(files).forEach((f) => formData.append('images', f));
-    const token = localStorage.getItem('oct9_token');
-    const headers = {
-      'X-Tunnel-Skip-AntiPhishing-Page': 'true',
-      'bypass-tunnel-reminder': 'true',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-    const response = await fetch(`${API_BASE}/upload/multiple`, {
-      method: 'POST',
-      headers,
-      body: formData
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || !data.success) {
-      throw new Error(data.message || 'Multiple images upload failed');
-    }
-    return data;
-  }
 };
-

@@ -465,102 +465,117 @@ export function AdminContentManager() {
             {(formData.hero_slides || []).map((slide, idx) => (
               <div
                 key={slide.id || idx}
-                className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-5 items-center"
+                className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-xs space-y-4"
               >
-                {/* Preview Thumbnail */}
-                <div className="lg:col-span-3 aspect-[1024/374] rounded-xl overflow-hidden bg-neutral-900 relative border border-neutral-300">
-                  <img
-                    src={slide.image || '/banners/hero_banner_2.png'}
-                    alt={slide.title || `Slide ${idx + 1}`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.src = '/banners/hero_banner_2.png';
-                    }}
-                  />
-                  <span className="absolute top-2 left-2 bg-black/60 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                    Slide #{idx + 1}
-                  </span>
-                </div>
-
-                {/* Form Inputs */}
-                <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div className="sm:col-span-2">
-                    <ImageUploader
-                      images={slide.image}
-                      onChange={(newUrl) => handleSlideChange(idx, 'image', newUrl)}
-                      multiple={false}
-                      label={`Slide #${idx + 1} Banner Image (Saved to SQL DB)`}
-                      helperText="Upload wide banner image. Stored directly in the database."
-                      aspectRatio="aspect-[1024/374]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-neutral-600 block mb-1">Slide Title:</label>
-                    <input
-                      type="text"
-                      value={slide.title || ''}
-                      onChange={(e) => handleSlideChange(idx, 'title', e.target.value)}
-                      placeholder="e.g. Royal Heritage Drapes"
-                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-semibold"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-neutral-600 block mb-1">Subtitle / Tagline:</label>
-                    <input
-                      type="text"
-                      value={slide.subtitle || ''}
-                      onChange={(e) => handleSlideChange(idx, 'subtitle', e.target.value)}
-                      placeholder="e.g. Festive & Bridal Atelier 2026"
-                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-neutral-600 block mb-1">Click Link Destination:</label>
-                    <input
-                      type="text"
-                      value={slide.link || ''}
-                      onChange={(e) => handleSlideChange(idx, 'link', e.target.value)}
-                      placeholder="/category/stitched-suits"
-                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-4 pt-1 sm:col-span-2">
-                    <label className="flex items-center space-x-2 font-semibold cursor-pointer">
+                {/* Header Row: Slide #, Order, Active Toggle, Delete Button */}
+                <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+                  <div className="flex items-center space-x-3">
+                    <span className="bg-neutral-900 text-white text-xs font-bold px-3 py-1 rounded-full shadow-xs">
+                      Slide #{idx + 1}
+                    </span>
+                    <label className="flex items-center space-x-1.5 text-xs font-semibold cursor-pointer">
                       <input
                         type="checkbox"
                         checked={slide.active !== false}
                         onChange={(e) => handleSlideChange(idx, 'active', e.target.checked)}
                         className="rounded text-brand-maroon focus:ring-brand-maroon"
                       />
-                      <span>Active Slide in Rotation</span>
+                      <span>Active in Slideshow</span>
                     </label>
+                  </div>
 
-                    <div className="flex items-center space-x-2">
-                      <span className="text-neutral-500 font-medium">Display Order:</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-1.5 text-xs">
+                      <span className="text-neutral-500 font-medium">Order:</span>
                       <input
                         type="number"
                         value={slide.order || idx + 1}
                         onChange={(e) => handleSlideChange(idx, 'order', Number(e.target.value))}
-                        className="w-14 p-1 text-center border border-neutral-300 rounded font-bold"
+                        className="w-12 p-1 text-center border border-neutral-300 rounded-lg font-bold text-xs"
                       />
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteSlide(idx)}
+                      className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                      title="Delete Slide"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
 
-                {/* Delete Slide Button */}
-                <div className="lg:col-span-1 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteSlide(idx)}
-                    className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
-                    title="Delete Slide"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                {/* Main Content Grid: Left Banner Image Uploader Canvas (5 cols) + Right Inputs (7 cols) */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                  <div className="lg:col-span-5">
+                    <ImageUploader
+                      images={slide.image}
+                      onChange={(newUrl) => handleSlideChange(idx, 'image', newUrl)}
+                      multiple={false}
+                      label="Banner Image (Saved to SQL DB)"
+                      helperText="Click or drop wide banner image to upload."
+                      aspectRatio="aspect-[16/7]"
+                      rounded="rounded-xl"
+                      fallbackImage="/banners/hero_banner_2.png"
+                    />
+                  </div>
+
+                  <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <label className="font-bold text-neutral-700 block mb-1">Slide Title:</label>
+                      <input
+                        type="text"
+                        value={slide.title || ''}
+                        onChange={(e) => handleSlideChange(idx, 'title', e.target.value)}
+                        placeholder="e.g. Royal Heritage Drapes"
+                        className="w-full p-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon font-serif font-bold text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="font-bold text-neutral-700 block mb-1">Subtitle / Tagline:</label>
+                      <input
+                        type="text"
+                        value={slide.subtitle || ''}
+                        onChange={(e) => handleSlideChange(idx, 'subtitle', e.target.value)}
+                        placeholder="e.g. Festive & Bridal Atelier 2026"
+                        className="w-full p-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="font-bold text-neutral-700 block mb-1">Click Destination / Category Link:</label>
+                      <div className="flex gap-2">
+                        <select
+                          value={['/category/stitched-suits', '/category/unstitched-suits', '/category/sarees', '/category/designer-suits', '/category/festive-wear', '/category/party-wear', '/category/accessories', '/category/jutti', '/new-arrivals'].includes(slide.link) ? slide.link : 'custom'}
+                          onChange={(e) => {
+                            if (e.target.value !== 'custom') {
+                              handleSlideChange(idx, 'link', e.target.value);
+                            }
+                          }}
+                          className="p-2 rounded-xl border border-neutral-300 bg-white font-medium text-xs shrink-0"
+                        >
+                          <option value="/category/stitched-suits">Stitched Suits</option>
+                          <option value="/category/unstitched-suits">Unstitched Suits</option>
+                          <option value="/category/sarees">Sarees</option>
+                          <option value="/category/designer-suits">Designer Suits</option>
+                          <option value="/category/festive-wear">Festive Wear</option>
+                          <option value="/category/party-wear">Party Wear</option>
+                          <option value="/category/accessories">Accessories</option>
+                          <option value="/category/jutti">Jutti</option>
+                          <option value="/new-arrivals">New Arrivals</option>
+                          <option value="custom">Custom Link →</option>
+                        </select>
+                        <input
+                          type="text"
+                          value={slide.link || ''}
+                          onChange={(e) => handleSlideChange(idx, 'link', e.target.value)}
+                          placeholder="/category/stitched-suits"
+                          className="flex-1 p-2 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -584,69 +599,64 @@ export function AdminContentManager() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {(formData.jharokha_categories || []).map((cat, idx) => (
-              <div key={cat.id || idx} className="bg-white rounded-2xl border border-neutral-200 p-4 space-y-3 shadow-xs">
-                {/* Arch Preview Thumbnail */}
-                <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border-2 border-amber-300/80 p-0.5 shadow-sm bg-neutral-950">
-                  <img
-                    src={cat.image || '/banners/hero_banner_1.png'}
-                    alt={cat.name || 'Category'}
-                    className="w-full h-full object-cover rounded-full"
-                    onError={(e) => { e.target.src = '/banners/hero_banner_1.png'; }}
-                  />
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <div>
-                    <label className="font-bold text-neutral-600 block">Category Name:</label>
-                    <input
-                      type="text"
-                      value={cat.name || ''}
-                      onChange={(e) => handleJharokhaChange(idx, 'name', e.target.value)}
-                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-semibold"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-neutral-600 block">Link Target:</label>
-                    <input
-                      type="text"
-                      value={cat.link || ''}
-                      onChange={(e) => handleJharokhaChange(idx, 'link', e.target.value)}
-                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
-                    />
-                  </div>
-
-                  <div>
+              <div key={cat.id || idx} className="bg-white rounded-2xl border border-neutral-200 p-4 space-y-3 shadow-xs flex flex-col justify-between">
+                <div className="space-y-3">
+                  {/* Circular Interactive Arch Uploader */}
+                  <div className="w-24 h-24 mx-auto">
                     <ImageUploader
                       images={cat.image}
                       onChange={(newUrl) => handleJharokhaChange(idx, 'image', newUrl)}
                       multiple={false}
-                      label="Arch Photo (Upload File)"
-                      helperText="Saved to SQL Database."
                       aspectRatio="aspect-square"
+                      rounded="rounded-full"
+                      fallbackImage="/banners/hero_banner_1.png"
+                      showLibraryButton={false}
                     />
                   </div>
 
-                  <div>
-                    <label className="font-bold text-neutral-600 block">Tagline Badge:</label>
-                    <input
-                      type="text"
-                      value={cat.tagline || ''}
-                      onChange={(e) => handleJharokhaChange(idx, 'tagline', e.target.value)}
-                      className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon"
-                    />
-                  </div>
+                  <div className="space-y-2 text-xs">
+                    <div>
+                      <label className="font-bold text-neutral-700 block mb-0.5">Category Name:</label>
+                      <input
+                        type="text"
+                        value={cat.name || ''}
+                        onChange={(e) => handleJharokhaChange(idx, 'name', e.target.value)}
+                        className="w-full p-2 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon font-semibold"
+                      />
+                    </div>
 
-                  <label className="flex items-center space-x-2 font-semibold pt-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={cat.active !== false}
-                      onChange={(e) => handleJharokhaChange(idx, 'active', e.target.checked)}
-                      className="rounded text-brand-maroon focus:ring-brand-maroon"
-                    />
-                    <span>Show on Homepage</span>
-                  </label>
+                    <div>
+                      <label className="font-bold text-neutral-700 block mb-0.5">Tagline / Subtitle:</label>
+                      <input
+                        type="text"
+                        value={cat.tagline || ''}
+                        onChange={(e) => handleJharokhaChange(idx, 'tagline', e.target.value)}
+                        placeholder="e.g. Pure Heritage Weaves"
+                        className="w-full p-2 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="font-bold text-neutral-700 block mb-0.5">Link Target:</label>
+                      <input
+                        type="text"
+                        value={cat.link || ''}
+                        onChange={(e) => handleJharokhaChange(idx, 'link', e.target.value)}
+                        className="w-full p-2 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
+                      />
+                    </div>
+                  </div>
                 </div>
+
+                <label className="flex items-center space-x-2 text-xs font-semibold pt-2 border-t border-neutral-100 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={cat.active !== false}
+                    onChange={(e) => handleJharokhaChange(idx, 'active', e.target.checked)}
+                    className="rounded text-brand-maroon focus:ring-brand-maroon"
+                  />
+                  <span>Show on Homepage</span>
+                </label>
               </div>
             ))}
           </div>
@@ -730,65 +740,60 @@ export function AdminContentManager() {
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {(formData.sections?.inside_brand?.arches || []).map((arch, idx) => (
-                  <div key={idx} className="bg-[#FAF7F2] p-4 rounded-xl border border-amber-200/80 space-y-2.5 text-xs">
-                    <div className="aspect-[3/4] rounded-t-[50px] rounded-b-xl overflow-hidden bg-neutral-900 border border-amber-300/50">
-                      <img
-                        src={arch.image || '/banners/hero_banner_1.png'}
-                        alt={arch.title || 'Arch'}
-                        className="w-full h-full object-cover"
-                        onError={(e) => { e.target.src = '/banners/hero_banner_1.png'; }}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="font-bold text-neutral-600 block">Arch Title:</label>
-                      <input
-                        type="text"
-                        value={arch.title || ''}
-                        onChange={(e) => handleInsideArchChange(idx, 'title', e.target.value)}
-                        className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-semibold"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="font-bold text-neutral-600 block">Subtitle:</label>
-                      <input
-                        type="text"
-                        value={arch.subtitle || ''}
-                        onChange={(e) => handleInsideArchChange(idx, 'subtitle', e.target.value)}
-                        className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="font-bold text-neutral-600 block">Badge:</label>
-                      <input
-                        type="text"
-                        value={arch.badge || ''}
-                        onChange={(e) => handleInsideArchChange(idx, 'badge', e.target.value)}
-                        className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon"
-                      />
-                    </div>
-
-                    <div>
+                  <div key={idx} className="bg-[#FAF7F2] p-4 rounded-2xl border border-amber-200/80 space-y-3 text-xs flex flex-col justify-between">
+                    <div className="space-y-3">
+                      {/* Arch-shaped Interactive Image Uploader */}
                       <ImageUploader
                         images={arch.image}
                         onChange={(newUrl) => handleInsideArchChange(idx, 'image', newUrl)}
                         multiple={false}
-                        label="Arch Image (Upload File)"
-                        helperText="Saved to SQL Database."
                         aspectRatio="aspect-[3/4]"
+                        rounded="rounded-t-[40px] rounded-b-xl"
+                        fallbackImage="/banners/hero_banner_1.png"
+                        helperText="Saved directly to SQL Database."
                       />
-                    </div>
 
-                    <div>
-                      <label className="font-bold text-neutral-600 block">Link:</label>
-                      <input
-                        type="text"
-                        value={arch.link || ''}
-                        onChange={(e) => handleInsideArchChange(idx, 'link', e.target.value)}
-                        className="w-full p-2 rounded-lg border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
-                      />
+                      <div className="space-y-2">
+                        <div>
+                          <label className="font-bold text-neutral-700 block mb-0.5">Arch Title:</label>
+                          <input
+                            type="text"
+                            value={arch.title || ''}
+                            onChange={(e) => handleInsideArchChange(idx, 'title', e.target.value)}
+                            className="w-full p-2 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon font-semibold"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="font-bold text-neutral-700 block mb-0.5">Subtitle:</label>
+                          <input
+                            type="text"
+                            value={arch.subtitle || ''}
+                            onChange={(e) => handleInsideArchChange(idx, 'subtitle', e.target.value)}
+                            className="w-full p-2 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="font-bold text-neutral-700 block mb-0.5">Badge:</label>
+                          <input
+                            type="text"
+                            value={arch.badge || ''}
+                            onChange={(e) => handleInsideArchChange(idx, 'badge', e.target.value)}
+                            className="w-full p-2 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="font-bold text-neutral-700 block mb-0.5">Link Destination:</label>
+                          <input
+                            type="text"
+                            value={arch.link || ''}
+                            onChange={(e) => handleInsideArchChange(idx, 'link', e.target.value)}
+                            className="w-full p-2 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon font-mono text-[11px]"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -943,45 +948,37 @@ export function AdminContentManager() {
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {(formData.sections?.bento_mosaic?.categories || []).map((cat, idx) => (
-                  <div key={idx} className="bg-white p-3.5 rounded-xl border border-neutral-200 space-y-2 text-xs">
-                    <div className="h-28 rounded-lg overflow-hidden bg-neutral-900">
-                      <img
-                        src={cat.image || '/banners/hero_banner_1.png'}
-                        alt={cat.title || 'Category'}
-                        className="w-full h-full object-cover"
-                        onError={(e) => { e.target.src = '/banners/hero_banner_1.png'; }}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="font-bold text-neutral-600 block">Card Title:</label>
-                      <input
-                        type="text"
-                        value={cat.title || ''}
-                        onChange={(e) => handleBentoCategoryChange(idx, 'title', e.target.value)}
-                        className="w-full p-1.5 rounded border border-neutral-300 font-semibold"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="font-bold text-neutral-600 block">Link:</label>
-                      <input
-                        type="text"
-                        value={cat.link || ''}
-                        onChange={(e) => handleBentoCategoryChange(idx, 'link', e.target.value)}
-                        className="w-full p-1.5 rounded border border-neutral-300 font-mono text-[11px]"
-                      />
-                    </div>
-
-                    <div>
+                  <div key={idx} className="bg-white p-4 rounded-2xl border border-neutral-200 space-y-3 text-xs flex flex-col justify-between shadow-2xs">
+                    <div className="space-y-2.5">
                       <ImageUploader
                         images={cat.image}
                         onChange={(newUrl) => handleBentoCategoryChange(idx, 'image', newUrl)}
                         multiple={false}
-                        label="Card Image (Upload File)"
-                        helperText="Saved to SQL DB."
-                        aspectRatio="aspect-[4/3]"
+                        aspectRatio="aspect-[16/10]"
+                        rounded="rounded-xl"
+                        fallbackImage="/banners/hero_banner_1.png"
+                        helperText="Saved directly to SQL Database."
                       />
+
+                      <div>
+                        <label className="font-bold text-neutral-700 block mb-0.5">Card Title:</label>
+                        <input
+                          type="text"
+                          value={cat.title || ''}
+                          onChange={(e) => handleBentoCategoryChange(idx, 'title', e.target.value)}
+                          className="w-full p-2 rounded-xl border border-neutral-300 font-semibold"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="font-bold text-neutral-700 block mb-0.5">Link Destination:</label>
+                        <input
+                          type="text"
+                          value={cat.link || ''}
+                          onChange={(e) => handleBentoCategoryChange(idx, 'link', e.target.value)}
+                          className="w-full p-2 rounded-xl border border-neutral-300 font-mono text-[11px]"
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}

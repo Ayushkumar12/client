@@ -17,6 +17,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/uploads': {
+        target: 'https://5nbb03kw-5000.inc1.devtunnels.ms/',
+        changeOrigin: true,
+        secure: false,
+      },
       '/sitemap.xml': {
         target: 'https://5nbb03kw-5000.inc1.devtunnels.ms/',
         changeOrigin: true,

@@ -9,6 +9,21 @@ function getApiBaseUrl() {
 
 const API_BASE = getApiBaseUrl();
 
+export function formatImageUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+    return trimmed;
+  }
+  if (trimmed.startsWith('/uploads/')) {
+    return `${API_BASE.replace(/\/api\/?$/, '')}${trimmed}`;
+  }
+  if (trimmed.startsWith('uploads/')) {
+    return `${API_BASE.replace(/\/api\/?$/, '')}/${trimmed}`;
+  }
+  return trimmed;
+}
+
 function getAuthHeader() {
   const token = localStorage.getItem('oct9_token');
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -202,4 +217,5 @@ export const api = {
   }),
   getDashboardMetrics: () => request('/admin/dashboard'),
   getCustomers: () => request('/admin/customers'),
+  formatImageUrl,
 };

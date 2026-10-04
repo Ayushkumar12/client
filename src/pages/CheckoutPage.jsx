@@ -179,14 +179,10 @@ export function CheckoutPage() {
         navigate(`/order-success/${createdOrder.order_number}`);
         return;
       }
-
       // Handle Razorpay Payment Modal
       if (formData.payment_method === 'razorpay') {
-        console.log('💳 [Razorpay Checkout] Initializing payment with Key:', createdOrder.razorpay_key_id);
-        console.log('💳 [Razorpay Checkout] Order ID:', createdOrder.razorpay_order_id, 'Amount (₹):', grandTotal);
-
         const options = {
-          key: createdOrder.razorpay_key_id || 'rzp_test_oct9DemoKey123',
+          key: createdOrder.razorpay_key_id,
           amount: Math.round(grandTotal * 100),
           currency: 'INR',
           name: 'OCT9 Luxury Ethnic Wear',
@@ -195,7 +191,6 @@ export function CheckoutPage() {
           order_id: createdOrder.razorpay_order_id,
           handler: async function (response) {
             try {
-              // Verify Signature on backend
               const verifyPayload = {
                 order_id: createdOrder.id,
                 order_number: createdOrder.order_number,
@@ -215,7 +210,6 @@ export function CheckoutPage() {
                 setIsProcessing(false);
               }
             } catch (verErr) {
-              console.error('Payment Verification Error:', verErr);
               setErrorMsg('Error verifying payment: ' + (verErr.message || 'Network error'));
               setIsProcessing(false);
             }
@@ -225,9 +219,7 @@ export function CheckoutPage() {
             email: formData.email,
             contact: formData.phone
           },
-          theme: {
-            color: '#5A1827'
-          },
+          theme: { color: '#5A1827' },
           modal: {
             ondismiss: function () {
               setIsProcessing(false);

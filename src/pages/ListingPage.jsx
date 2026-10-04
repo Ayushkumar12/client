@@ -23,7 +23,6 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { ProductCard } from '../components/common/ProductCard.jsx';
-import { ComingSoonPage } from '../components/common/ComingSoonPage.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { useContent } from '../context/ContentContext.jsx';
 import { api } from '../services/api.js';
@@ -31,7 +30,7 @@ import { api } from '../services/api.js';
 export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   const { categorySlug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isComingSoon, isMaintenance, getPageAvailability } = useContent();
+  const { getPageAvailability } = useContent();
 
   const currentCategory = isNewArrivals ? 'new-arrivals' : (categorySlug || defaultCategory || 'all');
   const pageAvailability = getPageAvailability(currentCategory);
@@ -438,9 +437,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
     ? 'bg-[#1D1916] border-neutral-800 text-neutral-200'
     : 'bg-white border-brand-border text-neutral-800';
 
-  if (isComingSoon(currentCategory) || isMaintenance(currentCategory)) {
-    return <ComingSoonPage categorySlug={currentCategory} pageInfo={pageAvailability} />;
-  }
 
   return (
     <div className={`min-h-screen ${pageBgClass} pb-16 transition-colors duration-300`}>

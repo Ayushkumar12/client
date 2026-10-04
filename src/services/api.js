@@ -1,18 +1,18 @@
-const LIVE_SERVER_API = 'https://5nbb03kw-5000.inc1.devtunnels.ms/api';
+const SERVER_API = import.meta.env?.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace(/\/+$/, '')
+  : `${window.location.protocol}//${window.location.hostname}:5000/api`;
 
-function getApiBaseUrl() {
-  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
-  }
-  return LIVE_SERVER_API.replace(/\/+$/, '');
-}
-
-const API_BASE = getApiBaseUrl();
+const API_BASE = SERVER_API;
 
 export function formatImageUrl(url) {
   if (!url || typeof url !== 'string') return '';
   const trimmed = url.trim();
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+  if (
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('data:') ||
+    trimmed.startsWith('blob:')
+  ) {
     return trimmed;
   }
   if (trimmed.startsWith('/uploads/')) {
@@ -32,18 +32,13 @@ function getAuthHeader() {
 async function request(endpoint, options = {}) {
   const headers = {
     'Content-Type': 'application/json',
-    'X-Tunnel-Skip-AntiPhishing-Page': 'true',
-    'bypass-tunnel-reminder': 'true',
     ...getAuthHeader(),
     ...options.headers,
   };
 
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   const url = `${API_BASE}${cleanEndpoint}`;
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  const response = await fetch(url, { ...options, headers });
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -53,11 +48,7 @@ async function request(endpoint, options = {}) {
 }
 
 async function uploadRequest(endpoint, formData) {
-  const headers = {
-    'X-Tunnel-Skip-AntiPhishing-Page': 'true',
-    'bypass-tunnel-reminder': 'true',
-    ...getAuthHeader(),
-  };
+  const headers = getAuthHeader();
 
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   const url = `${API_BASE}${cleanEndpoint}`;
@@ -89,9 +80,7 @@ export const api = {
   getProducts: (params = {}) => {
     const query = new URLSearchParams();
     Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== '') {
-        query.append(k, v);
-      }
+      if (v !== undefined && v !== null && v !== '') query.append(k, v);
     });
     return request(`/products?${query.toString()}`);
   },
@@ -102,61 +91,29 @@ export const api = {
   updateProduct: (id, product) => request(`/products/${id}`, { method: 'PUT', body: JSON.stringify(product) }),
   deleteProduct: (id) => request(`/products/${id}`, { method: 'DELETE' }),
 
-  // Orders & Payments (Razorpay + Shiprocket)
-  createOrder: async (orderData) => {
-    console.log('🛍️ [Frontend API] createOrder request:', orderData);
-    const res = await request('/orders/create', { method: 'POST', body: JSON.stringify(orderData) });
-    console.log('💳 [Razorpay / Order API Response]:', res);
-    return res;
-  },
-  verifyPayment: async (paymentData) => {
-    console.log('💳 [Frontend API] verifyPayment request payload:', paymentData);
-    const res = await request('/orders/verify-payment', { method: 'POST', body: JSON.stringify(paymentData) });
-    console.log('💳 [Razorpay Signature & Shiprocket Manifest Response]:', res);
-    return res;
-  },
+  // Orders & Payments
+  createOrder: (orderData) => request('/orders/create', { method: 'POST', body: JSON.stringify(orderData) }),
+  verifyPayment: (paymentData) => request('/orders/verify-payment', { method: 'POST', body: JSON.stringify(paymentData) }),
   getUserOrders: () => request('/orders/my-orders'),
-  getOrderDetails: async (orderIdentifier) => {
-    const res = await request(`/orders/track/${orderIdentifier}`);
-    console.log(`📦 [Order Details & Shiprocket Info for #${orderIdentifier}]:`, res);
-    return res;
-  },
+  getOrderDetails: (orderIdentifier) => request(`/orders/track/${orderIdentifier}`),
   adminGetAllOrders: (params = {}) => {
     const query = new URLSearchParams(params);
     return request(`/orders/admin/all?${query.toString()}`);
   },
   adminUpdateOrderStatus: (id, statusData) => request(`/orders/admin/${id}/status`, { method: 'PUT', body: JSON.stringify(statusData) }),
-  adminGenerateShiprocketWaybill: async (id) => {
-    const res = await request(`/orders/admin/${id}/generate-waybill`, { method: 'POST' });
-    console.log(`🚀 [Shiprocket Admin AWB Generation Response for Order ${id}]:`, res);
-    return res;
-  },
-  adminGenerateDelhiveryWaybill: async (id) => {
-    const res = await request(`/orders/admin/${id}/generate-waybill`, { method: 'POST' });
-    console.log(`🚀 [Shiprocket Admin AWB Generation Response for Order ${id}]:`, res);
-    return res;
-  },
+  adminGenerateShiprocketWaybill: (id) => request(`/orders/admin/${id}/generate-waybill`, { method: 'POST' }),
+  adminGenerateDelhiveryWaybill: (id) => request(`/orders/admin/${id}/generate-waybill`, { method: 'POST' }),
 
-  // Shiprocket Logistics
-  checkPincode: async (pincode, options = {}) => {
-    console.log(`🚀 [Shiprocket API] Checking serviceability for PIN: ${pincode}`);
+  // Logistics
+  checkPincode: (pincode, options = {}) => {
     const query = new URLSearchParams(options);
     const qStr = query.toString() ? `?${query.toString()}` : '';
-    const res = await request(`/shiprocket/pincode/${pincode}${qStr}`);
-    console.log(`🚀 [Shiprocket Pincode Response for ${pincode}]:`, res);
-    return res;
+    return request(`/shiprocket/pincode/${pincode}${qStr}`);
   },
-  trackWaybill: async (waybill) => {
-    console.log(`🚀 [Shiprocket API] Tracking Waybill / AWB: ${waybill}`);
-    const res = await request(`/shiprocket/track/${waybill}`);
-    console.log(`🚀 [Shiprocket Live Tracking Response for ${waybill}]:`, res);
-    return res;
-  },
-  getShippingRate: async (params) => {
+  trackWaybill: (waybill) => request(`/shiprocket/track/${waybill}`),
+  getShippingRate: (params) => {
     const query = new URLSearchParams(params);
-    const res = await request(`/shiprocket/rate-estimate?${query.toString()}`);
-    console.log('🚀 [Shiprocket Shipping Rate Estimate Response]:', res);
-    return res;
+    return request(`/shiprocket/rate-estimate?${query.toString()}`);
   },
   getPackingSlipUrl: (waybill) => `${API_BASE}/shiprocket/packing-slip/${waybill}`,
   getShippingLabelUrl: (waybill) => `${API_BASE}/shiprocket/shipping-label/${waybill}`,
@@ -171,7 +128,7 @@ export const api = {
   createCoupon: (coupon) => request('/coupons/admin/create', { method: 'POST', body: JSON.stringify(coupon) }),
   deleteCoupon: (id) => request(`/coupons/admin/${id}`, { method: 'DELETE' }),
 
-  // Media & Image Upload to SQL Database
+  // Media & Image Upload
   uploadImage: async (file) => {
     const formData = new FormData();
     formData.append('image', file);
@@ -204,7 +161,7 @@ export const api = {
     body: JSON.stringify({ section })
   }),
 
-  // Admin Analytics & Storefront Settings
+  // Admin & Analytics
   getPublicSettings: () => request('/admin/settings/public'),
   getFullAnalytics: () => request('/admin/analytics'),
   togglePublicRatings: (show_public_ratings) => request('/admin/settings/toggle-ratings', {
@@ -217,5 +174,6 @@ export const api = {
   }),
   getDashboardMetrics: () => request('/admin/dashboard'),
   getCustomers: () => request('/admin/customers'),
+
   formatImageUrl,
 };

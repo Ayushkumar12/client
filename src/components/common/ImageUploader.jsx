@@ -302,7 +302,7 @@ export function ImageUploader({
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-bold text-neutral-800">
-                  {uploading ? 'Uploading to SQL Database...' : 'Click to Upload Image'}
+                  {uploading ? 'Uploading...' : 'Click to Upload Image'}
                 </p>
                 <p className="text-[11px] text-neutral-500">Drag & drop or browse from device</p>
               </div>
@@ -320,7 +320,7 @@ export function ImageUploader({
           {uploading && (
             <div className="absolute inset-0 bg-black/75 backdrop-blur-xs flex flex-col items-center justify-center text-white z-20 space-y-2">
               <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
-              <p className="text-xs font-bold tracking-wide">Saving to SQL Database...</p>
+              <p className="text-xs font-bold tracking-wide">Saving image...</p>
             </div>
           )}
         </div>
@@ -358,8 +358,8 @@ export function ImageUploader({
             <div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl space-y-4">
               <div className="flex justify-between items-center border-b pb-3">
                 <div>
-                  <h3 className="font-serif font-bold text-lg text-neutral-900">SQL Database Media Library</h3>
-                  <p className="text-xs text-neutral-500">Pick any previously uploaded image from your database.</p>
+                  <h3 className="font-serif font-bold text-lg text-neutral-900">Media Library</h3>
+                  <p className="text-xs text-neutral-500">Pick any previously uploaded image.</p>
                 </div>
                 <button
                   onClick={() => setShowMediaLibrary(false)}
@@ -377,7 +377,7 @@ export function ImageUploader({
                 ) : mediaList.length === 0 ? (
                   <div className="text-center py-12 text-xs text-neutral-500 space-y-2">
                     <ImageIcon className="w-10 h-10 mx-auto text-neutral-400" />
-                    <p>No images uploaded yet in SQL database.</p>
+                    <p>No images uploaded yet.</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
@@ -434,7 +434,7 @@ export function ImageUploader({
       <div className="flex items-center justify-between">
         <div>
           <label className="block text-xs font-bold text-neutral-800 uppercase tracking-wider">
-            {label || 'Product Photos (Direct SQL Database Upload)'} ({currentImages.length}/{maxFiles})
+            {label || 'Product Photos'} ({currentImages.length}/{maxFiles})
           </label>
           {helperText && <p className="text-[11px] text-neutral-500 mt-0.5">{helperText}</p>}
         </div>
@@ -576,8 +576,8 @@ export function ImageUploader({
           <div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b pb-3">
               <div>
-                <h3 className="font-serif font-bold text-lg text-neutral-900">SQL Database Media Library</h3>
-                <p className="text-xs text-neutral-500">Pick any previously uploaded image from your database.</p>
+                <h3 className="font-serif font-bold text-lg text-neutral-900">Media Library</h3>
+                <p className="text-xs text-neutral-500">Pick any previously uploaded image.</p>
               </div>
               <button
                 onClick={() => setShowMediaLibrary(false)}

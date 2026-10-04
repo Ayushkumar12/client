@@ -474,15 +474,15 @@ export function AdminProducts() {
                 </div>
               </div>
 
-              {/* Direct Image File Upload to SQL Database */}
+              {/* Product Images */}
               <div>
                 <ImageUploader
                   images={formData.images}
                   onChange={(newImages) => setFormData({ ...formData, images: newImages })}
                   multiple={true}
                   maxFiles={8}
-                  label="Product Photos (Direct SQL Database Upload)"
-                  helperText="Upload multi-angle photos from your device. Files are saved directly to SQL Database."
+                  label="Product Photos"
+                  helperText="Upload multi-angle photos from your device."
                 />
               </div>
 

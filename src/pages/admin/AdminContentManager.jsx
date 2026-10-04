@@ -512,7 +512,7 @@ export function AdminContentManager() {
                       images={slide.image}
                       onChange={(newUrl) => handleSlideChange(idx, 'image', newUrl)}
                       multiple={false}
-                      label="Banner Image (Saved to SQL DB)"
+                      label="Banner Image"
                       helperText="Click or drop wide banner image to upload."
                       aspectRatio="aspect-[16/7]"
                       rounded="rounded-xl"
@@ -750,7 +750,7 @@ export function AdminContentManager() {
                         aspectRatio="aspect-[3/4]"
                         rounded="rounded-t-[40px] rounded-b-xl"
                         fallbackImage="/banners/hero_banner_1.png"
-                        helperText="Saved directly to SQL Database."
+                        helperText="Click or drop an image to upload."
                       />
 
                       <div className="space-y-2">
@@ -886,7 +886,7 @@ export function AdminContentManager() {
                     }
                     multiple={false}
                     label="Zewar Feature Photo (Direct File Upload)"
-                    helperText="Saved to SQL Database."
+                    helperText="Click or drop an image to upload."
                     aspectRatio="aspect-[4/3]"
                   />
                 </div>
@@ -957,7 +957,7 @@ export function AdminContentManager() {
                         aspectRatio="aspect-[16/10]"
                         rounded="rounded-xl"
                         fallbackImage="/banners/hero_banner_1.png"
-                        helperText="Saved directly to SQL Database."
+                        helperText="Click or drop an image to upload."
                       />
 
                       <div>

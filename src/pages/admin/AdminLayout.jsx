@@ -43,7 +43,7 @@ export function AdminLayout() {
     { label: 'Page Content & CMS', path: '/admin/content', icon: Palette, badge: 'CMS' },
     { label: 'Full Analytics & Ratings', path: '/admin/analytics', icon: BarChart3 },
     { label: 'Orders & Fulfillment', path: '/admin/orders', icon: Package },
-    { label: 'Shiprocket Logistics', path: '/admin/shiprocket', icon: Truck, badge: 'SANDBOX' },
+    { label: 'Shiprocket Logistics', path: '/admin/shiprocket', icon: Truck },
     { label: 'Product Catalog', path: '/admin/products', icon: ShoppingBag },
     { label: 'Coupons & Promos', path: '/admin/coupons', icon: Tag },
     { label: 'Customers', path: '/admin/customers', icon: Users },

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, ChevronRight } from 'lucide-react';
+import { Sparkles, ChevronRight } from 'lucide-react';
 import { ProductCard } from '../common/ProductCard.jsx';
 
 const FILTER_TABS = [
@@ -111,29 +111,6 @@ export function NewArrivalsSection({ products = [], loading = false }) {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Bottom CTA Banner Strip */}
-      <div className="mt-10 sm:mt-12 rounded-2xl bg-gradient-to-r from-[#5A1827] via-[#43121D] to-[#2B0A12] text-white p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-luxury">
-        <div className="space-y-1 max-w-lg">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-[#F6D389]">
-            LIMITED EDITION RELEASES
-          </span>
-          <h3 className="font-serif text-xl sm:text-2xl font-bold">
-            Looking for something extraordinary?
-          </h3>
-          <p className="text-xs text-rose-100/80">
-            Browse through our freshest seasonal drops crafted with pure handloom fabrics.
-          </p>
-        </div>
-
-        <Link
-          to="/new-arrivals"
-          className="inline-flex items-center space-x-2 bg-gradient-to-r from-[#F6D389] to-[#E5BE6C] hover:from-[#FFF0BE] hover:to-[#F6D389] text-neutral-950 text-xs sm:text-sm font-bold px-6 py-3 rounded-full shadow-lg transition-transform active:scale-95 group shrink-0"
-        >
-          <span>EXPLORE ALL NEW ARRIVALS</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </Link>
       </div>
     </section>
   );

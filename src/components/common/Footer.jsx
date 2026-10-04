@@ -11,6 +11,33 @@ import {
   Sparkles
 } from 'lucide-react';
 
+const TRUST_BADGES = [
+  {
+    icon: Truck,
+    title: 'Free Express Shipping',
+    desc: 'On all orders above ₹1,999 across India',
+    tag: 'Express 48H'
+  },
+  {
+    icon: RotateCcw,
+    title: '7 Days Easy Return',
+    desc: 'Hassle-free doorstep pickup via Shiprocket',
+    tag: 'Doorstep Pickup'
+  },
+  {
+    icon: ShieldCheck,
+    title: '100% Secure Payments',
+    desc: 'Encrypted checkout powered by Razorpay',
+    tag: '256-Bit SSL'
+  },
+  {
+    icon: Sparkles,
+    title: 'Handcrafted Luxury',
+    desc: 'Artisanal weaves & bespoke embroidery',
+    tag: 'Master Artisans'
+  }
+];
+
 export function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -27,31 +54,37 @@ export function Footer() {
   return (
     <footer className="bg-white text-neutral-700 border-t border-neutral-200/80 pt-12 pb-8 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top Trust Badges Strip (White / Cream Luxury Cards) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pb-12 border-b border-neutral-200/80 text-center">
-          <div className="flex flex-col items-center space-y-2 p-4 sm:p-5 rounded-2xl bg-[#FAF7F2] border border-neutral-200/80 shadow-2xs hover:shadow-xs transition-shadow">
-            <Truck className="w-6 h-6 text-brand-maroon" />
-            <h4 className="font-serif font-bold text-sm text-neutral-900">Free Express Shipping</h4>
-            <p className="text-xs text-neutral-500">On all orders above ₹1,999 across India</p>
-          </div>
+        {/* Top Trust Badges Strip (Modern Luxury Cards) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 pb-12 border-b border-neutral-200/80">
+          {TRUST_BADGES.map((badge, idx) => {
+            const Icon = badge.icon;
+            return (
+              <div
+                key={idx}
+                className="group relative bg-gradient-to-b from-white via-[#FAF7F2]/60 to-[#F5EFE6]/30 hover:from-white hover:to-white border border-neutral-200/80 hover:border-brand-maroon/30 rounded-2xl p-5 sm:p-6 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-8px_rgba(114,24,37,0.12)] overflow-hidden cursor-default"
+              >
+                {/* Subtle top ambient glow */}
+                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-brand-maroon/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-          <div className="flex flex-col items-center space-y-2 p-4 sm:p-5 rounded-2xl bg-[#FAF7F2] border border-neutral-200/80 shadow-2xs hover:shadow-xs transition-shadow">
-            <RotateCcw className="w-6 h-6 text-brand-maroon" />
-            <h4 className="font-serif font-bold text-sm text-neutral-900">7 Days Easy Return</h4>
-            <p className="text-xs text-neutral-500">Hassle-free doorstep pickup via Shiprocket</p>
-          </div>
+                {/* Floating Modern Icon Emblem */}
+                <div className="relative mb-3 flex items-center justify-center">
+                  <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-brand-maroon/5 border border-brand-maroon/10 text-brand-maroon flex items-center justify-center shadow-xs group-hover:bg-brand-maroon group-hover:text-[#F6D389] group-hover:scale-110 group-hover:rotate-2 transition-all duration-300">
+                    <Icon className="w-6 h-6 stroke-[1.8]" />
+                  </div>
+                  <span className="absolute -top-1 -right-1 text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-brand-gold/15 text-brand-maroon border border-brand-gold/30 opacity-90 group-hover:bg-[#F6D389] group-hover:text-brand-maroon transition-colors">
+                    {badge.tag}
+                  </span>
+                </div>
 
-          <div className="flex flex-col items-center space-y-2 p-4 sm:p-5 rounded-2xl bg-[#FAF7F2] border border-neutral-200/80 shadow-2xs hover:shadow-xs transition-shadow">
-            <ShieldCheck className="w-6 h-6 text-brand-maroon" />
-            <h4 className="font-serif font-bold text-sm text-neutral-900">100% Secure Payments</h4>
-            <p className="text-xs text-neutral-500">Encrypted checkout powered by Razorpay</p>
-          </div>
-
-          <div className="flex flex-col items-center space-y-2 p-4 sm:p-5 rounded-2xl bg-[#FAF7F2] border border-neutral-200/80 shadow-2xs hover:shadow-xs transition-shadow">
-            <Sparkles className="w-6 h-6 text-brand-maroon" />
-            <h4 className="font-serif font-bold text-sm text-neutral-900">Handcrafted Luxury</h4>
-            <p className="text-xs text-neutral-500">Artisanal weaves & bespoke embroidery</p>
-          </div>
+                <h4 className="font-serif font-bold text-sm sm:text-base text-neutral-900 group-hover:text-brand-maroon transition-colors duration-200 tracking-tight mb-1">
+                  {badge.title}
+                </h4>
+                <p className="text-xs text-neutral-500 leading-relaxed max-w-[210px]">
+                  {badge.desc}
+                </p>
+              </div>
+            );
+          })}
         </div>
 
         {/* Main Footer Links Grid */}

@@ -41,7 +41,6 @@ const POSTER_SLIDES = [
 
 export function HeroSlideshow() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
@@ -53,14 +52,14 @@ export function HeroSlideshow() {
     setCurrentSlide((prev) => (prev - 1 + POSTER_SLIDES.length) % POSTER_SLIDES.length);
   }, []);
 
-  // Automatic slide rotation every 5.5 seconds
+  // Automatic uninterrupted slide rotation every 4.5 seconds
   useEffect(() => {
-    if (isPaused) return;
-    const timer = setInterval(() => {
-      nextSlide();
-    }, 5500);
-    return () => clearInterval(timer);
-  }, [nextSlide, isPaused]);
+    const timer = setTimeout(() => {
+      setCurrentSlide((prev) => (prev + 1) % POSTER_SLIDES.length);
+    }, 4500);
+
+    return () => clearTimeout(timer);
+  }, [currentSlide]);
 
   // Touch handlers for mobile swipe
   const handleTouchStart = (e) => {
@@ -85,8 +84,6 @@ export function HeroSlideshow() {
   return (
     <section
       className="relative w-full overflow-hidden select-none bg-[#24130C]"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

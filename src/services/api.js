@@ -166,9 +166,10 @@ export const api = {
   getShiprocketWallet: () => request('/shiprocket/wallet/balance'),
   getShiprocketNDR: () => request('/shiprocket/ndr'),
   submitShiprocketNDRAction: (data) => request('/shiprocket/ndr/action', { method: 'POST', body: JSON.stringify(data) }),
-  requestShipmentPickup: (data) => request('/shiprocket/shipments/pickup', { method: 'POST', body: JSON.stringify(data) }),
   generateShippingManifest: (data) => request('/shiprocket/manifests/generate', { method: 'POST', body: JSON.stringify(data) }),
   printShippingManifest: (data) => request('/shiprocket/manifests/print', { method: 'POST', body: JSON.stringify(data) }),
+  generateShiprocketLabel: (data) => request('/shiprocket/shipments/label', { method: 'POST', body: JSON.stringify(data) }),
+  generateShiprocketInvoice: (data) => request('/shiprocket/orders/invoice', { method: 'POST', body: JSON.stringify(data) }),
 
   // Coupons
   validateCoupon: (code, cartTotal) => request('/coupons/validate', {

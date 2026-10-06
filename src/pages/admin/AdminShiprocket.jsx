@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import {
   Truck,
   Search,
@@ -7,21 +6,26 @@ import {
   AlertCircle,
   Calculator,
   Printer,
+  FileText,
   ExternalLink,
   ShieldCheck,
   RotateCcw,
   Loader2,
   Clock,
   Sparkles,
-  Settings
+  Settings,
+  FileCheck2
 } from 'lucide-react';
 import { ShiprocketTrackerModal } from '../../components/common/ShiprocketTrackerModal.jsx';
+import { downloadOrderInvoicePdf } from '../../utils/invoicePdf.js';
 import { api } from '../../services/api.js';
 
 export function AdminShiprocket() {
   const [stats, setStats] = useState(null);
   const [manifests, setManifests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [printingManifest, setPrintingManifest] = useState(false);
+  const [downloadingInvoiceId, setDownloadingInvoiceId] = useState(null);
 
   // Live Tracking Search
   const [awbQuery, setAwbQuery] = useState('');

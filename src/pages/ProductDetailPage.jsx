@@ -19,7 +19,9 @@ import {
   Sparkles,
   Scissors,
   CheckCircle2,
-  PackageCheck
+  PackageCheck,
+  XCircle,
+  AlertTriangle
 } from 'lucide-react';
 import { useCart } from '../context/CartContext.jsx';
 import { useWishlist } from '../context/WishlistContext.jsx';
@@ -389,7 +391,55 @@ export function ProductDetailPage() {
               </p>
             </div>
 
-            {/* 3. Dispatch Timeline, Color Accuracy & Ready to Ship Banner (Matching Reference) */}
+            {/* 3. Real-Time Stock Availability Indicator */}
+            {(() => {
+              const stockCount = Number(product.stock !== undefined ? product.stock : 50);
+              const isOutOfStock = stockCount <= 0;
+              const isLowStock = stockCount > 0 && stockCount <= 10;
+
+              if (isOutOfStock) {
+                return (
+                  <div className="p-4 bg-red-50/90 border border-red-200 rounded-2xl flex items-start space-x-3 text-red-900 shadow-2xs">
+                    <XCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-xs sm:text-sm">Currently Out of Stock</p>
+                      <p className="text-[11px] text-red-700 mt-0.5">
+                        This luxury piece is currently sold out. Save to your wishlist or contact customer care for bespoke restocking requests.
+                      </p>
+                    </div>
+                  </div>
+                );
+              }
+
+              if (isLowStock) {
+                return (
+                  <div className="p-3.5 bg-amber-50/90 border border-amber-200 rounded-2xl space-y-1.5 shadow-2xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-amber-950 flex items-center space-x-1.5">
+                        <AlertTriangle className="w-4 h-4 text-amber-600 animate-bounce" />
+                        <span>⚡ Low Stock: Only <strong>{stockCount} units</strong> available!</span>
+                      </span>
+                      <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">High Demand</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-amber-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-amber-500 rounded-full transition-all duration-500"
+                        style={{ width: `${Math.max(15, (stockCount / 10) * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="flex items-center space-x-2 text-xs font-bold text-emerald-800 bg-emerald-50 px-3.5 py-2 rounded-2xl border border-emerald-200 w-fit shadow-2xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span>In Stock — {stockCount} units available for instant dispatch</span>
+                </div>
+              );
+            })()}
+
+            {/* 4. Dispatch Timeline, Color Accuracy & Ready to Ship Banner (Matching Reference) */}
             <div className="space-y-2 text-xs text-neutral-600 leading-relaxed border-t border-b border-neutral-200/80 py-3.5">
               <p>
                 <strong className="text-neutral-800">Dispatch Timeline:</strong> This article is expected to be shipped in 2-4 working days.
@@ -403,7 +453,7 @@ export function ProductDetailPage() {
               </div>
             </div>
 
-            {/* 4. Color Selection (Our Feature Integration) */}
+            {/* 5. Color Selection (Our Feature Integration) */}
             {product.colors && product.colors.length > 0 && (
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
@@ -430,7 +480,7 @@ export function ProductDetailPage() {
               </div>
             )}
 
-            {/* 5. Size Selector (Matching Reference: Oval pills, S M L XXL active, XL 3XL 5XL disabled) */}
+            {/* 6. Size Selector (Matching Reference: Oval pills, S M L XXL active, XL 3XL 5XL disabled) */}
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-neutral-800 tracking-wide">Size</span>
@@ -438,7 +488,8 @@ export function ProductDetailPage() {
 
               <div className="flex flex-wrap items-center gap-2.5">
                 {allDisplaySizes.map((sz) => {
-                  const isAvailable = availableProductSizes.includes(sz);
+                  const stockNum = Number(product.stock !== undefined ? product.stock : 50);
+                  const isAvailable = availableProductSizes.includes(sz) && stockNum > 0;
                   const isSelected = selectedSize === sz;
 
                   if (!isAvailable) {
@@ -483,58 +534,89 @@ export function ProductDetailPage() {
               </button>
             </div>
 
-            {/* 6. Quantity Stepper */}
-            <div className="flex items-center space-x-4 pt-1">
-              <span className="text-xs font-bold text-neutral-800">Quantity:</span>
-              <div className="flex items-center border border-neutral-300 rounded-full bg-white overflow-hidden shadow-2xs">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 font-bold transition-colors cursor-pointer"
-                >
-                  -
-                </button>
-                <span className="px-4 text-xs font-bold text-neutral-900 min-w-[28px] text-center">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 font-bold transition-colors cursor-pointer"
-                >
-                  +
-                </button>
-              </div>
-              <span className="text-xs text-emerald-700 font-medium">
-                ✓ Ready for immediate dispatch
-              </span>
-            </div>
+            {/* 7. Quantity Stepper */}
+            {(() => {
+              const stockNum = Number(product.stock !== undefined ? product.stock : 50);
+              const isOut = stockNum <= 0;
 
-            {/* 7. Action Buttons (Matching Reference: White ADD TO CART + Black BUY NOW pills) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                className="w-full py-3.5 px-6 rounded-full border border-neutral-900 bg-white hover:bg-neutral-900 text-neutral-900 hover:text-white font-bold text-xs uppercase tracking-widest transition-all duration-300 shadow-2xs hover:shadow-md cursor-pointer flex items-center justify-center space-x-2"
-              >
-                {addedAnimation ? (
-                  <>
-                    <Check className="w-4 h-4 text-emerald-600" />
-                    <span>Added to Bag</span>
-                  </>
-                ) : (
-                  <>
-                    <ShoppingBag className="w-4 h-4" />
-                    <span>ADD TO CART</span>
-                  </>
-                )}
-              </button>
+              return (
+                <div className="flex items-center space-x-4 pt-1">
+                  <span className="text-xs font-bold text-neutral-800">Quantity:</span>
+                  <div className="flex items-center border border-neutral-300 rounded-full bg-white overflow-hidden shadow-2xs">
+                    <button
+                      disabled={isOut || quantity <= 1}
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 font-bold transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      -
+                    </button>
+                    <span className="px-4 text-xs font-bold text-neutral-900 min-w-[28px] text-center">{isOut ? 0 : quantity}</span>
+                    <button
+                      disabled={isOut || quantity >= stockNum}
+                      onClick={() => setQuantity(Math.min(stockNum, quantity + 1))}
+                      className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 font-bold transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span className={`text-xs font-medium ${isOut ? 'text-red-600' : 'text-emerald-700'}`}>
+                    {isOut ? '❌ Item Sold Out' : '✓ Ready for immediate dispatch'}
+                  </span>
+                </div>
+              );
+            })()}
 
-              <button
-                type="button"
-                onClick={handleBuyNow}
-                className="w-full py-3.5 px-6 rounded-full bg-neutral-900 hover:bg-neutral-800 active:scale-98 text-white font-bold text-xs uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center space-x-2"
-              >
-                <Zap className="w-4 h-4 text-amber-300" />
-                <span>BUY NOW</span>
-              </button>
-            </div>
+            {/* 8. Action Buttons (Matching Reference: White ADD TO CART + Black BUY NOW pills) */}
+            {(() => {
+              const stockNum = Number(product.stock !== undefined ? product.stock : 50);
+              const isOut = stockNum <= 0;
+
+              if (isOut) {
+                return (
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      disabled
+                      className="w-full py-3.5 px-6 rounded-full border border-neutral-300 bg-neutral-200 text-neutral-500 font-bold text-xs uppercase tracking-widest cursor-not-allowed flex items-center justify-center space-x-2"
+                    >
+                      <XCircle className="w-4 h-4 text-red-500" />
+                      <span>OUT OF STOCK / SOLD OUT</span>
+                    </button>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="w-full py-3.5 px-6 rounded-full border border-neutral-900 bg-white hover:bg-neutral-900 text-neutral-900 hover:text-white font-bold text-xs uppercase tracking-widest transition-all duration-300 shadow-2xs hover:shadow-md cursor-pointer flex items-center justify-center space-x-2"
+                  >
+                    {addedAnimation ? (
+                      <>
+                        <Check className="w-4 h-4 text-emerald-600" />
+                        <span>Added to Bag</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingBag className="w-4 h-4" />
+                        <span>ADD TO CART</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleBuyNow}
+                    className="w-full py-3.5 px-6 rounded-full bg-neutral-900 hover:bg-neutral-800 active:scale-98 text-white font-bold text-xs uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center space-x-2"
+                  >
+                    <Zap className="w-4 h-4 text-amber-300" />
+                    <span>BUY NOW</span>
+                  </button>
+                </div>
+              );
+            })()}
 
             {/* 8. Accordion Sections (Matching Reference: DESCRIPTION, PRODUCT CARE, SPECIFICATIONS, SHIPPING & RETURNS) */}
             <div className="border-t border-neutral-300/80 divide-y divide-neutral-200/90 pt-1">

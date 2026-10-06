@@ -161,6 +161,17 @@ export function CartDrawer() {
                         <span>Color: <strong className="text-neutral-800">{item.color}</strong></span>
                       </div>
 
+                      {/* Stock availability hint */}
+                      {item.stock !== undefined && item.stock <= 0 ? (
+                        <span className="text-[10px] font-bold text-red-600 block mt-0.5">
+                          ⚠️ Out of stock - Please remove to checkout
+                        </span>
+                      ) : item.stock !== undefined && item.stock <= 5 ? (
+                        <span className="text-[10px] font-bold text-amber-700 block mt-0.5">
+                          ⚡ Only {item.stock} left in stock
+                        </span>
+                      ) : null}
+
                       <div className="flex items-center space-x-2 mt-1">
                         <span className="text-sm font-bold text-neutral-900">
                           ₹{item.price.toLocaleString('en-IN')}
@@ -184,14 +195,16 @@ export function CartDrawer() {
                         </button>
                         <span className="px-3 text-xs font-semibold text-neutral-800">{item.quantity}</span>
                         <button
+                          disabled={item.stock !== undefined && item.quantity >= item.stock}
                           onClick={() => updateQuantity(item.product_id, item.size, item.color, item.quantity + 1)}
-                          className="p-1 text-neutral-600 hover:bg-neutral-200 rounded-r transition-colors"
+                          className="p-1 text-neutral-600 hover:bg-neutral-200 rounded-r transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                          title={item.stock !== undefined && item.quantity >= item.stock ? `Max available stock is ${item.stock}` : 'Increase quantity'}
                         >
                           <Plus className="w-3 h-3" />
                         </button>
                       </div>
 
-                      <span className="text-xs font-bold text-neutral-800">
+                      <span className="text-xs font-bold text-neutral-900">
                         Total: ₹{(item.price * item.quantity).toLocaleString('en-IN')}
                       </span>
                     </div>

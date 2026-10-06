@@ -83,15 +83,22 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
   const hasDiscount = product.discount_percent > 0 || (product.original_price && product.original_price > product.price);
   const discountPercent = product.discount_percent || (hasDiscount ? Math.round(((product.original_price - product.price) / product.original_price) * 100) : 0);
 
+  // Stock status checks
+  const stockCount = Number(product.stock !== undefined ? product.stock : 50);
+  const isOutOfStock = stockCount <= 0;
+  const isLowStock = stockCount > 0 && stockCount <= 10;
+
   const handleSizeClick = (sz, e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isOutOfStock) return;
     setSelectedSize(sz);
   };
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isOutOfStock) return;
     addToCart(product, selectedSize, 'Standard', 1);
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 1800);
@@ -100,6 +107,7 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
   const handleInstantBuy = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isOutOfStock) return;
     addToCart(product, selectedSize, 'Standard', 1);
     openCart();
   };
@@ -111,25 +119,38 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
   };
 
   return (
-    <div className="group relative bg-white rounded-[26px] sm:rounded-[28px] overflow-hidden border border-neutral-200/90 hover:border-brand-maroon/40 shadow-2xs hover:shadow-xl transition-all duration-500 flex flex-col justify-between p-2.5 sm:p-3">
+    <div className={`group relative bg-white rounded-[26px] sm:rounded-[28px] overflow-hidden border shadow-2xs hover:shadow-xl transition-all duration-500 flex flex-col justify-between p-2.5 sm:p-3 ${
+      isOutOfStock ? 'border-neutral-300 opacity-90' : 'border-neutral-200/90 hover:border-brand-maroon/40'
+    }`}>
       {/* Top Image Container with Notched Tab & Inverted Curves */}
       <div className="relative aspect-[3/3.8] sm:aspect-[3/4] w-full rounded-[20px] sm:rounded-[22px] overflow-hidden bg-neutral-100">
         <Link to={getProductUrl(product)} className="block w-full h-full">
           <img
             src={mainImage}
             alt={product.title}
-            className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-106"
+            className={`w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-106 ${
+              isOutOfStock ? 'grayscale-40' : ''
+            }`}
             loading="lazy"
           />
 
           {/* Hover Image Crossfade */}
-          {hoverImage !== mainImage && (
+          {hoverImage !== mainImage && !isOutOfStock && (
             <img
               src={hoverImage}
               alt={product.title}
               className="w-full h-full object-cover object-top absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out"
               loading="lazy"
             />
+          )}
+
+          {/* Out of Stock Overlay */}
+          {isOutOfStock && (
+            <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px] flex items-center justify-center p-3 z-20">
+              <span className="bg-red-600/95 text-white font-extrabold text-[11px] sm:text-xs tracking-widest uppercase px-3 py-1.5 rounded-full shadow-lg border border-red-400">
+                Out of Stock
+              </span>
+            </div>
           )}
         </Link>
 
@@ -146,7 +167,7 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
           </svg>
         </div>
 
-        {/* Top-Right Action Controls (Wishlist & Discount Badge) */}
+        {/* Top-Right Action Controls (Wishlist & Discount / Stock Badge) */}
         <div className="absolute top-2.5 right-2.5 z-20 flex flex-col items-end space-y-2">
           {/* Wishlist Heart Button */}
           <button
@@ -166,6 +187,13 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
           {hasDiscount && (
             <span className="bg-[#5A1827] text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs uppercase tracking-wider">
               {discountPercent}% OFF
+            </span>
+          )}
+
+          {/* Low Stock Urgency Pill */}
+          {isLowStock && (
+            <span className="bg-amber-500 text-neutral-950 text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-xs uppercase tracking-wider border border-amber-300 flex items-center space-x-1 animate-pulse">
+              <span>⚡ Only {stockCount} Left</span>
             </span>
           )}
         </div>
@@ -195,19 +223,42 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
             </p>
           )}
 
-          {/* Interactive Size Pill Buttons ("Tag A, Tag B, Tag C" style) */}
-          <div className="mt-2.5 flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-0.5">
+          {/* Real-time Available Stock Line */}
+          <div className="mt-1.5 flex items-center justify-between text-[10px] font-medium">
+            {isOutOfStock ? (
+              <span className="text-red-600 font-bold flex items-center space-x-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                <span>Out of Stock (0 available)</span>
+              </span>
+            ) : isLowStock ? (
+              <span className="text-amber-700 font-bold flex items-center space-x-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
+                <span>Low Stock: Only {stockCount} units left</span>
+              </span>
+            ) : (
+              <span className="text-emerald-700 font-semibold flex items-center space-x-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span>In Stock ({stockCount} units available)</span>
+              </span>
+            )}
+          </div>
+
+          {/* Interactive Size Pill Buttons */}
+          <div className="mt-2 flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-0.5">
             {availableSizes.map((sz) => {
               const isSelected = selectedSize === sz;
               return (
                 <button
                   key={sz}
                   type="button"
+                  disabled={isOutOfStock}
                   onClick={(e) => handleSizeClick(sz, e)}
-                  className={`px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer border whitespace-nowrap ${
-                    isSelected
-                      ? 'bg-[#FF7A59] text-white border-[#FF7A59] shadow-xs scale-105'
-                      : 'bg-[#FAF7F2] text-neutral-700 border-neutral-300/90 hover:border-neutral-700 hover:bg-neutral-100'
+                  className={`px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-bold transition-all border whitespace-nowrap ${
+                    isOutOfStock
+                      ? 'bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed line-through'
+                      : isSelected
+                      ? 'bg-[#FF7A59] text-white border-[#FF7A59] shadow-xs scale-105 cursor-pointer'
+                      : 'bg-[#FAF7F2] text-neutral-700 border-neutral-300/90 hover:border-neutral-700 hover:bg-neutral-100 cursor-pointer'
                   }`}
                 >
                   {sz}
@@ -222,10 +273,17 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
           {/* Add to Cart Pill Button (Primary) */}
           <button
             type="button"
+            disabled={isOutOfStock}
             onClick={handleAddToCart}
-            className="w-full py-2 sm:py-2.5 px-4 rounded-full bg-[#5A1827] hover:bg-[#43121D] active:scale-98 text-white text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 transition-all shadow-sm hover:shadow-md cursor-pointer"
+            className={`w-full py-2 sm:py-2.5 px-4 rounded-full text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 transition-all shadow-sm ${
+              isOutOfStock
+                ? 'bg-neutral-200 text-neutral-500 cursor-not-allowed shadow-none border border-neutral-300'
+                : 'bg-[#5A1827] hover:bg-[#43121D] active:scale-98 text-white hover:shadow-md cursor-pointer'
+            }`}
           >
-            {isAdded ? (
+            {isOutOfStock ? (
+              <span>Out of Stock</span>
+            ) : isAdded ? (
               <>
                 <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                 <span>Added to Bag</span>
@@ -239,7 +297,7 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
           </button>
 
           {/* Instant Buy (Secondary Ghost Button - Clear Hierarchy) */}
-          {showInstantBuy && (
+          {showInstantBuy && !isOutOfStock && (
             <button
               type="button"
               onClick={handleInstantBuy}
@@ -254,3 +312,4 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
     </div>
   );
 }
+

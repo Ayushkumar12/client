@@ -1,8 +1,25 @@
-const SERVER_API = import.meta.env?.VITE_API_URL
-  ? import.meta.env.VITE_API_URL.replace(/\/+$/, '')
-  : `${window.location.protocol}//${window.location.hostname}:5000/api`;
+// Configured Primary & Fallback API endpoints
+const DEVTUNNEL_API = 'https://5nbb03kw-5000.inc1.devtunnels.ms/api';
+const LOCALHOST_API = 'http://localhost:5000/api';
 
-const API_BASE = SERVER_API;
+// Resolve primary API based on current hostname / environment
+function resolveInitialBase() {
+  if (import.meta.env?.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return LOCALHOST_API;
+    }
+  }
+  return DEVTUNNEL_API;
+}
+
+let CURRENT_API_BASE = resolveInitialBase();
+const FALLBACK_API_BASE = CURRENT_API_BASE === LOCALHOST_API ? DEVTUNNEL_API : LOCALHOST_API;
+
+export const API_BASE = CURRENT_API_BASE;
 
 export function formatImageUrl(url) {
   if (!url || typeof url !== 'string') return '';
@@ -16,10 +33,10 @@ export function formatImageUrl(url) {
     return trimmed;
   }
   if (trimmed.startsWith('/uploads/')) {
-    return `${API_BASE.replace(/\/api\/?$/, '')}${trimmed}`;
+    return `${CURRENT_API_BASE.replace(/\/api\/?$/, '')}${trimmed}`;
   }
   if (trimmed.startsWith('uploads/')) {
-    return `${API_BASE.replace(/\/api\/?$/, '')}/${trimmed}`;
+    return `${CURRENT_API_BASE.replace(/\/api\/?$/, '')}/${trimmed}`;
   }
   return trimmed;
 }
@@ -29,6 +46,27 @@ function getAuthHeader() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+async function fetchWithFallback(endpoint, fetchOptions = {}) {
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  
+  // Try primary endpoint first
+  const primaryUrl = `${CURRENT_API_BASE}${cleanEndpoint}`;
+  try {
+    const response = await fetch(primaryUrl, fetchOptions);
+    return response;
+  } catch (err) {
+    // If primary network fetch fails (e.g. devtunnel down or localhost offline), try fallback
+    const fallbackUrl = `${FALLBACK_API_BASE}${cleanEndpoint}`;
+    try {
+      const fallbackResponse = await fetch(fallbackUrl, fetchOptions);
+      CURRENT_API_BASE = FALLBACK_API_BASE; // switch active base
+      return fallbackResponse;
+    } catch (fallbackErr) {
+      throw err; // throw original network error
+    }
+  }
+}
+
 async function request(endpoint, options = {}) {
   const headers = {
     'Content-Type': 'application/json',
@@ -36,10 +74,7 @@ async function request(endpoint, options = {}) {
     ...options.headers,
   };
 
-  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  const url = `${API_BASE}${cleanEndpoint}`;
-  const response = await fetch(url, { ...options, headers });
-
+  const response = await fetchWithFallback(endpoint, { ...options, headers });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(data.message || `Request failed with status ${response.status}`);
@@ -50,9 +85,7 @@ async function request(endpoint, options = {}) {
 async function uploadRequest(endpoint, formData) {
   const headers = getAuthHeader();
 
-  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  const url = `${API_BASE}${cleanEndpoint}`;
-  const response = await fetch(url, {
+  const response = await fetchWithFallback(endpoint, {
     method: 'POST',
     body: formData,
     headers,
@@ -64,6 +97,7 @@ async function uploadRequest(endpoint, formData) {
   }
   return data;
 }
+
 
 export const api = {
   // Auth

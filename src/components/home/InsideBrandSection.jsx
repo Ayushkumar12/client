@@ -110,7 +110,7 @@ export function InsideBrandSection() {
                         {item.title}
                       </h3>
                       {item.subtitle && (
-                        <p className="text-[11px] text-neutral-300 font-light truncate">
+                        <p className="text-xs text-neutral-300 font-light truncate">
                           {item.subtitle}
                         </p>
                       )}
@@ -118,10 +118,10 @@ export function InsideBrandSection() {
                   </div>
                 </Link>
 
-                {/* Refined CTA Link below each arch */}
+                {/* Refined CTA Link below each arch - Centered for balance */}
                 <Link
                   to={item.link || '/category/all'}
-                  className="mt-3.5 inline-flex items-center space-x-1.5 text-xs font-bold uppercase tracking-[0.14em] text-neutral-900 group-hover:text-brand-maroon transition-colors border-b-2 border-neutral-900 group-hover:border-brand-maroon pb-0.5"
+                  className="mt-3.5 inline-flex items-center justify-center space-x-1.5 text-xs font-bold uppercase tracking-[0.14em] text-neutral-900 group-hover:text-brand-maroon transition-colors border-b-2 border-neutral-900 group-hover:border-brand-maroon pb-0.5 text-center"
                 >
                   <span>Discover Now</span>
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />

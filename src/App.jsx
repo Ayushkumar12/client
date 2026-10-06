@@ -21,6 +21,7 @@ import { CheckoutPage } from './pages/CheckoutPage.jsx';
 import { OrderConfirmationPage } from './pages/OrderConfirmationPage.jsx';
 import { TrackOrderPage } from './pages/TrackOrderPage.jsx';
 import { AccountPage } from './pages/AccountPage.jsx';
+import { OrdersPage } from './pages/OrdersPage.jsx';
 import { WishlistPage } from './pages/WishlistPage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 import { RegisterPage } from './pages/RegisterPage.jsx';
@@ -30,11 +31,13 @@ import { AdminLayout } from './pages/admin/AdminLayout.jsx';
 import { AdminDashboard } from './pages/admin/AdminDashboard.jsx';
 import { AdminAnalytics } from './pages/admin/AdminAnalytics.jsx';
 import { AdminOrders } from './pages/admin/AdminOrders.jsx';
+import { AdminReturns } from './pages/admin/AdminReturns.jsx';
 import { AdminShiprocket } from './pages/admin/AdminShiprocket.jsx';
 import { AdminProducts } from './pages/admin/AdminProducts.jsx';
 import { AdminCoupons } from './pages/admin/AdminCoupons.jsx';
 import { AdminCustomers } from './pages/admin/AdminCustomers.jsx';
 import { AdminContentManager } from './pages/admin/AdminContentManager.jsx';
+import { AdminInventory } from './pages/admin/AdminInventory.jsx';
 
 function MainLayout({ children }) {
   const location = useLocation();
@@ -75,6 +78,8 @@ export default function App() {
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/order-success/:orderNumber" element={<OrderConfirmationPage />} />
                   <Route path="/track-order" element={<TrackOrderPage />} />
+                  <Route path="/orders" element={<OrdersPage />} />
+                  <Route path="/orders/:orderNumber" element={<OrdersPage />} />
                   <Route path="/wishlist" element={<WishlistPage />} />
                   <Route path="/account" element={<AccountPage />} />
                   <Route path="/login" element={<LoginPage />} />
@@ -83,8 +88,10 @@ export default function App() {
                   {/* Admin Routes */}
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<AdminDashboard />} />
+                    <Route path="inventory" element={<AdminInventory />} />
                     <Route path="analytics" element={<AdminAnalytics />} />
                     <Route path="orders" element={<AdminOrders />} />
+                    <Route path="returns" element={<AdminReturns />} />
                     <Route path="shiprocket" element={<AdminShiprocket />} />
                     <Route path="delhivery" element={<AdminShiprocket />} />
                     <Route path="products" element={<AdminProducts />} />
@@ -92,6 +99,7 @@ export default function App() {
                     <Route path="customers" element={<AdminCustomers />} />
                     <Route path="content" element={<AdminContentManager />} />
                   </Route>
+
 
                   {/* 404 Fallback */}
                   <Route path="*" element={<HomePage />} />

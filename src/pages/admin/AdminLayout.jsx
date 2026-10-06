@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   ShoppingBag,
   Package,
+  RotateCcw,
   Truck,
   Tag,
   Users,
@@ -12,7 +13,8 @@ import {
   ShieldCheck,
   LogOut,
   ExternalLink,
-  Palette
+  Palette,
+  Boxes
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 
@@ -40,14 +42,17 @@ export function AdminLayout() {
 
   const navItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
+    { label: 'Multi-Channel Inventory', path: '/admin/inventory', icon: Boxes, badge: '4-Ch' },
     { label: 'Page Content & CMS', path: '/admin/content', icon: Palette, badge: 'CMS' },
     { label: 'Full Analytics & Ratings', path: '/admin/analytics', icon: BarChart3 },
     { label: 'Orders & Fulfillment', path: '/admin/orders', icon: Package },
+    { label: 'Returns & Exchanges', path: '/admin/returns', icon: RotateCcw, badge: 'QA' },
     { label: 'Shiprocket Logistics', path: '/admin/shiprocket', icon: Truck },
     { label: 'Product Catalog', path: '/admin/products', icon: ShoppingBag },
     { label: 'Coupons & Promos', path: '/admin/coupons', icon: Tag },
     { label: 'Customers', path: '/admin/customers', icon: Users },
   ];
+
 
   return (
     <div className="min-h-screen bg-[#F4EFEA] flex flex-col md:flex-row">

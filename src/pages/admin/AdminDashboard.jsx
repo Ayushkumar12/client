@@ -65,6 +65,12 @@ export function AdminDashboard() {
 
         <div className="flex items-center space-x-2 flex-wrap gap-2">
           <Link
+            to="/admin/inventory"
+            className="px-4 py-2 bg-gradient-to-r from-blue-700 via-brand-maroon to-amber-700 text-white text-xs font-bold rounded-xl shadow-sm transition-all flex items-center space-x-1.5"
+          >
+            <span>📦 Multi-Channel Inventory</span>
+          </Link>
+          <Link
             to="/admin/analytics"
             className="px-4 py-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white text-xs font-bold rounded-xl shadow-sm transition-all flex items-center space-x-1.5"
           >
@@ -74,7 +80,7 @@ export function AdminDashboard() {
             to="/admin/products"
             className="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-bold rounded-xl shadow-sm transition-colors"
           >
-            + Add New Product
+            + Add Product
           </Link>
           <Link
             to="/admin/orders"

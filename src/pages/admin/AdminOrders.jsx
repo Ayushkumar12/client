@@ -170,7 +170,7 @@ export function AdminOrders() {
                   <th className="p-4">Order Details</th>
                   <th className="p-4">Customer & City</th>
                   <th className="p-4">Amount & Mode</th>
-                  <th className="p-4">Delhivery Status</th>
+                  <th className="p-4">Shiprocket Status</th>
                   <th className="p-4">Order Status</th>
                   <th className="p-4 text-right">Actions</th>
                 </tr>

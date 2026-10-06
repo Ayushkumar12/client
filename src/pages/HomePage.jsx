@@ -42,6 +42,9 @@ export function HomePage() {
         description="Shop exclusive Indian ethnic wear, designer suits, anarkalis, sarees and festive outfits at OCT9. Enjoy Fast Express Delivery via Shiprocket and 100% Secure Razorpay Checkout."
       />
 
+      {/* Semantic Top-Level H1 Heading for Accessibility & SEO */}
+      <h1 className="sr-only">OCT9 | Timeless Ethnic Elegance - Luxury Suits, Sarees & Festive Wear</h1>
+
       {/* 1. Dynamic Luxury Slideshow Hero Section */}
       <HeroSlideshow />
 

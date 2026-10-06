@@ -8,7 +8,7 @@ export function TopAnnouncementBar() {
   const brand = getBrand();
 
   return (
-    <div className="bg-[#FAF7F2] text-neutral-700 text-[11px] py-1.5 px-4 border-b border-neutral-200/80 transition-all font-sans">
+    <div className="bg-[#FAF7F2] text-neutral-700 text-xs py-1.5 px-4 border-b border-neutral-200/80 transition-all font-sans">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
         {/* Left Announcements */}
         <div className="flex items-center space-x-6 overflow-x-auto no-scrollbar py-0.5">
@@ -21,7 +21,7 @@ export function TopAnnouncementBar() {
 
           <div className="hidden md:flex items-center space-x-1.5 whitespace-nowrap">
             <Tag className="w-3.5 h-3.5 text-brand-maroon shrink-0" />
-            <span>15% Off on Prepaid Orders | Use Code: <strong className="text-white bg-brand-maroon px-1.5 py-0.2 rounded font-mono font-bold text-[10px]">OCT15</strong></span>
+            <span>15% Off on Prepaid Orders | Use Code: <strong className="text-white bg-brand-maroon px-1.5 py-0.5 rounded font-mono font-bold text-xs">OCT15</strong></span>
           </div>
 
           <div className="hidden lg:flex items-center space-x-1.5 whitespace-nowrap">
@@ -31,7 +31,7 @@ export function TopAnnouncementBar() {
         </div>
 
         {/* Right Quick Links & Social */}
-        <div className="flex items-center space-x-5 text-[11px] ml-auto">
+        <div className="flex items-center space-x-5 text-xs ml-auto">
           <Link
             to="/track-order"
             className="flex items-center space-x-1.5 text-brand-maroon hover:text-brand-maroon-hover font-bold transition-colors"

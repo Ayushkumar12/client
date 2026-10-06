@@ -214,13 +214,13 @@ export function Footer() {
 
           {/* Payment Gateways / Logos Strip */}
           <div className="flex items-center space-x-2.5 flex-wrap justify-center">
-            <span className="text-[10px] uppercase tracking-wider text-neutral-400 font-bold">100% Secure Payments:</span>
-            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-[10px] font-bold">Razorpay</span>
-            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-[10px] font-bold">UPI</span>
-            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-[10px] font-bold">Visa</span>
-            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-[10px] font-bold">Mastercard</span>
-            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-[10px] font-bold">RuPay</span>
-            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-[10px] font-bold">Shiprocket COD</span>
+            <span className="text-xs uppercase tracking-wider text-neutral-400 font-bold">100% Secure Payments:</span>
+            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-xs font-semibold">Razorpay</span>
+            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-xs font-semibold">UPI</span>
+            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-xs font-semibold">Visa</span>
+            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-xs font-semibold">Mastercard</span>
+            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-xs font-semibold">RuPay</span>
+            <span className="bg-[#FAF7F2] border border-neutral-200 text-neutral-700 px-2 py-0.5 rounded text-xs font-semibold">Shiprocket COD</span>
           </div>
         </div>
       </div>

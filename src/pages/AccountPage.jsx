@@ -46,6 +46,8 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useWishlist } from '../context/WishlistContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import { ShiprocketTrackerModal } from '../components/common/ShiprocketTrackerModal.jsx';
+import { CancelOrderModal } from '../components/common/CancelOrderModal.jsx';
+import { ReturnOrderModal } from '../components/common/ReturnOrderModal.jsx';
 import { OrderMilestoneTracker } from '../components/common/OrderMilestoneTracker.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { getProductUrl } from '../utils/productUrl.js';
@@ -79,6 +81,8 @@ export function AccountPage() {
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
   const [selectedWaybill, setSelectedWaybill] = useState(null);
   const [downloadingInvoiceId, setDownloadingInvoiceId] = useState(null);
+  const [cancellingOrder, setCancellingOrder] = useState(null);
+  const [returningOrder, setReturningOrder] = useState(null);
   const [activeOrderMenu, setActiveOrderMenu] = useState(null);
   const [expandedMilestones, setExpandedMilestones] = useState({});
 
@@ -1197,7 +1201,7 @@ export function AccountPage() {
                                 </span>
                               </div>
 
-                              <div className="flex items-center space-x-2">
+                              <div className="flex flex-wrap items-center gap-2">
                                 <Link
                                   to={`/order-success/${o.order_number}`}
                                   className="px-3.5 py-1.5 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold rounded-lg transition-colors"
@@ -1217,9 +1221,46 @@ export function AccountPage() {
                                 >
                                   <FileText className="w-3.5 h-3.5" />
                                 </button>
+
+                                {/* Cancel Order Button */}
+                                {['pending', 'confirmed', 'processing', 'manifested'].includes((o.order_status || '').toLowerCase()) && (o.order_status || '').toLowerCase() !== 'cancelled' && (
+                                  <button
+                                    onClick={() => setCancellingOrder(o)}
+                                    className="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                                  >
+                                    Cancel
+                                  </button>
+                                )}
+
+                                {/* Return Order Button */}
+                                {(o.order_status || '').toLowerCase() === 'delivered' && (!o.return_status || o.return_status === 'none') && (
+                                  <button
+                                    onClick={() => setReturningOrder(o)}
+                                    className="px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-300 text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                                  >
+                                    Return
+                                  </button>
+                                )}
                               </div>
                             </div>
                           </div>
+
+                          {/* Return details alert banner */}
+                          {o.return_status && o.return_status !== 'none' && (
+                            <div className="mx-4 mb-2 p-2.5 bg-purple-50 border border-purple-200 rounded-lg text-xs text-purple-900 flex items-center justify-between">
+                              <span className="font-semibold">
+                                Return: {o.return_status === 'return_approved' ? `Approved (AWB: ${o.return_awb || 'Pickup Scheduled'})` : o.return_status === 'return_rejected' ? 'Rejected' : 'Pending Admin Review'}
+                              </span>
+                              <span className="text-[11px] text-purple-700">{o.return_reason}</span>
+                            </div>
+                          )}
+
+                          {/* Cancellation reason banner */}
+                          {o.cancellation_reason && (
+                            <div className="mx-4 mb-2 p-2.5 bg-neutral-100 border border-neutral-200 rounded-lg text-xs text-neutral-700">
+                              <strong>Cancellation:</strong> {o.cancellation_reason}
+                            </div>
+                          )}
 
                           {/* Stepped Tracker (For active / completed orders) */}
                           {!isCancelled && (
@@ -2497,6 +2538,34 @@ export function AccountPage() {
           waybill={selectedWaybill}
           isOpen={Boolean(selectedWaybill)}
           onClose={() => setSelectedWaybill(null)}
+        />
+      )}
+
+      {/* Cancel Order Modal */}
+      {cancellingOrder && (
+        <CancelOrderModal
+          order={cancellingOrder}
+          isOpen={Boolean(cancellingOrder)}
+          onClose={() => setCancellingOrder(null)}
+          onCancelSuccess={(updated) => {
+            setOrders((prev) =>
+              prev.map((o) => (o.id === updated.id ? { ...o, order_status: 'cancelled', cancellation_reason: updated.cancellation_reason } : o))
+            );
+          }}
+        />
+      )}
+
+      {/* Return Order Modal */}
+      {returningOrder && (
+        <ReturnOrderModal
+          order={returningOrder}
+          isOpen={Boolean(returningOrder)}
+          onClose={() => setReturningOrder(null)}
+          onReturnSuccess={() => {
+            if (isAuthenticated) {
+              api.getUserOrders().then((r) => r.success && setOrders(r.orders));
+            }
+          }}
         />
       )}
     </div>

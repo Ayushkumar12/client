@@ -96,28 +96,45 @@ export const api = {
   verifyPayment: (paymentData) => request('/orders/verify-payment', { method: 'POST', body: JSON.stringify(paymentData) }),
   getUserOrders: () => request('/orders/my-orders'),
   getOrderDetails: (orderIdentifier) => request(`/orders/track/${orderIdentifier}`),
+  cancelOrder: (id, cancelData) => request(`/orders/${id}/cancel`, { method: 'POST', body: JSON.stringify(cancelData) }),
+  requestReturn: (id, returnData) => request(`/orders/${id}/return`, { method: 'POST', body: JSON.stringify(returnData) }),
   adminGetAllOrders: (params = {}) => {
     const query = new URLSearchParams(params);
     return request(`/orders/admin/all?${query.toString()}`);
   },
+  adminGetReturns: () => request('/orders/admin/returns'),
+  adminReviewReturn: (id, reviewData) => request(`/orders/admin/${id}/return-action`, { method: 'POST', body: JSON.stringify(reviewData) }),
   adminUpdateOrderStatus: (id, statusData) => request(`/orders/admin/${id}/status`, { method: 'PUT', body: JSON.stringify(statusData) }),
   adminGenerateShiprocketWaybill: (id) => request(`/orders/admin/${id}/generate-waybill`, { method: 'POST' }),
   adminGenerateDelhiveryWaybill: (id) => request(`/orders/admin/${id}/generate-waybill`, { method: 'POST' }),
 
-  // Logistics
+  // Logistics & Shiprocket API
   checkPincode: (pincode, options = {}) => {
     const query = new URLSearchParams(options);
     const qStr = query.toString() ? `?${query.toString()}` : '';
     return request(`/shiprocket/pincode/${pincode}${qStr}`);
   },
   trackWaybill: (waybill) => request(`/shiprocket/track/${waybill}`),
+  trackShipment: (shipmentId) => request(`/shiprocket/track/shipment/${shipmentId}`),
   getShippingRate: (params) => {
     const query = new URLSearchParams(params);
     return request(`/shiprocket/rate-estimate?${query.toString()}`);
   },
+  getCouriers: () => request('/shiprocket/couriers'),
+  getInternationalServiceability: (params = {}) => {
+    const query = new URLSearchParams(params);
+    return request(`/shiprocket/international-serviceability?${query.toString()}`);
+  },
   getPackingSlipUrl: (waybill) => `${API_BASE}/shiprocket/packing-slip/${waybill}`,
   getShippingLabelUrl: (waybill) => `${API_BASE}/shiprocket/shipping-label/${waybill}`,
   getLogisticsStats: () => request('/shiprocket/admin/overview'),
+  getShiprocketPickups: () => request('/shiprocket/pickup-locations'),
+  getShiprocketWallet: () => request('/shiprocket/wallet/balance'),
+  getShiprocketNDR: () => request('/shiprocket/ndr'),
+  submitShiprocketNDRAction: (data) => request('/shiprocket/ndr/action', { method: 'POST', body: JSON.stringify(data) }),
+  requestShipmentPickup: (data) => request('/shiprocket/shipments/pickup', { method: 'POST', body: JSON.stringify(data) }),
+  generateShippingManifest: (data) => request('/shiprocket/manifests/generate', { method: 'POST', body: JSON.stringify(data) }),
+  printShippingManifest: (data) => request('/shiprocket/manifests/print', { method: 'POST', body: JSON.stringify(data) }),
 
   // Coupons
   validateCoupon: (code, cartTotal) => request('/coupons/validate', {
@@ -161,6 +178,42 @@ export const api = {
     body: JSON.stringify({ section })
   }),
 
+  // Multi-Channel Inventory Management (Flipkart, Amazon, Meesho, Storefront)
+  getInventoryOverview: () => request('/inventory/overview'),
+  getInventoryProducts: (params = {}) => {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') query.append(k, v);
+    });
+    return request(`/inventory/products?${query.toString()}`);
+  },
+  updateMasterStock: (productId, data) => request(`/inventory/products/${productId}/stock`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
+  updateChannelListing: (productId, channelKey, data) => request(`/inventory/products/${productId}/channel/${channelKey}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
+  bulkSyncAllChannels: () => request('/inventory/sync-all', { method: 'POST' }),
+  syncSingleProduct: (productId) => request(`/inventory/products/${productId}/sync`, { method: 'POST' }),
+  getChannelConfigs: () => request('/inventory/channels'),
+  updateChannelConfig: (channelKey, data) => request(`/inventory/channels/${channelKey}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
+  testChannelConnection: (channelKey) => request(`/inventory/channels/${channelKey}/test-connection`, {
+    method: 'POST'
+  }),
+  getInventoryLogs: (params = {}) => {
+    const query = new URLSearchParams(params);
+    return request(`/inventory/logs?${query.toString()}`);
+  },
+  simulateMarketplaceOrder: (data) => request('/inventory/simulate-order', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+
   // Admin & Analytics
   getPublicSettings: () => request('/admin/settings/public'),
   getFullAnalytics: () => request('/admin/analytics'),
@@ -177,3 +230,4 @@ export const api = {
 
   formatImageUrl,
 };
+

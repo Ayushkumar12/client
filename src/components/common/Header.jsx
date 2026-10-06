@@ -155,7 +155,7 @@ export function Header() {
             <span className="font-serif text-lg sm:text-xl font-bold tracking-[0.18em] text-neutral-900 group-hover:text-brand-maroon transition-colors leading-tight">
               OCT<span className="text-brand-maroon">9</span>
             </span>
-            <span className="text-[7.5px] tracking-[0.22em] uppercase text-neutral-500 font-medium hidden sm:block">
+            <span className="text-xs tracking-[0.18em] text-neutral-500 font-medium hidden sm:block">
               Luxury Without Noise
             </span>
           </div>
@@ -388,14 +388,15 @@ export function Header() {
               >
                 <Link
                   to={link.path}
-                  className={`flex items-center space-x-1 px-3.5 py-2 text-[11px] font-bold tracking-wider uppercase transition-colors ${isActive
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`flex items-center space-x-1.5 px-3.5 py-2 text-xs font-semibold transition-colors ${isActive
                       ? 'text-[#5A1827] border-b-2 border-[#5A1827] font-bold'
                       : 'text-neutral-700 hover:text-[#5A1827] hover:bg-[#FAF7F2]'
                     }`}
                 >
                   <span>{link.label}</span>
                   {link.badge && (
-                    <span className="bg-[#5A1827] text-white text-[8px] px-1 py-0.2 rounded font-bold uppercase tracking-normal">
+                    <span className="bg-[#5A1827] text-white text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">
                       {link.badge}
                     </span>
                   )}

@@ -217,13 +217,13 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
           </div>
         </div>
 
-        {/* Action Buttons: Add to Cart + Instant Buy */}
-        <div className="pt-1.5 space-y-1.5">
-          {/* Add to Cart Pill Button (Matching Reference Shape) */}
+        {/* Action Buttons: Add to Cart (Primary Solid) + Instant Buy (Secondary Ghost) */}
+        <div className="pt-2 space-y-1.5">
+          {/* Add to Cart Pill Button (Primary) */}
           <button
             type="button"
             onClick={handleAddToCart}
-            className="w-full py-2 sm:py-2.5 px-4 rounded-full bg-[#FF7A59] hover:bg-[#EE6847] active:scale-98 text-white text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 transition-all shadow-sm hover:shadow-md cursor-pointer"
+            className="w-full py-2 sm:py-2.5 px-4 rounded-full bg-[#5A1827] hover:bg-[#43121D] active:scale-98 text-white text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 transition-all shadow-sm hover:shadow-md cursor-pointer"
           >
             {isAdded ? (
               <>
@@ -238,14 +238,14 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
             )}
           </button>
 
-          {/* Instant Buy Pill Button */}
+          {/* Instant Buy (Secondary Ghost Button - Clear Hierarchy) */}
           {showInstantBuy && (
             <button
               type="button"
               onClick={handleInstantBuy}
-              className="w-full py-1.5 sm:py-2 px-4 rounded-full bg-neutral-900 hover:bg-[#5A1827] text-white text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 transition-colors cursor-pointer shadow-2xs"
+              className="w-full py-1.5 sm:py-2 px-4 rounded-full bg-white hover:bg-neutral-900 text-neutral-900 hover:text-white border border-neutral-300 hover:border-neutral-900 text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
             >
-              <Zap className="w-3 h-3 text-amber-300" />
+              <Zap className="w-3 h-3 text-amber-500" />
               <span>Instant Buy</span>
             </button>
           )}

@@ -187,7 +187,7 @@ export function CheckoutPage() {
           currency: 'INR',
           name: 'OCT9 Luxury Ethnic Wear',
           description: `Order #${createdOrder.order_number}`,
-          image: '/oct9-logo.jpg',
+          image: window.location.protocol === 'https:' ? `${window.location.origin}/oct9-logo.jpg` : undefined,
           order_id: createdOrder.razorpay_order_id,
           handler: async function (response) {
             try {
@@ -466,11 +466,11 @@ export function CheckoutPage() {
                       <div className="flex items-center space-x-2">
                         <Banknote className="w-4 h-4 text-brand-maroon" />
                         <span className="text-xs sm:text-sm font-bold text-neutral-900">
-                          Cash on Delivery (Delhivery COD)
+                          Cash on Delivery (Shiprocket Verified COD)
                         </span>
                       </div>
                       <p className="text-xs text-neutral-500 mt-1">
-                        Pay in cash to the Delhivery courier executive upon doorstep delivery.
+                        Pay in cash to the Shiprocket courier executive upon doorstep delivery.
                       </p>
                     </div>
                   </label>
@@ -548,7 +548,7 @@ export function CheckoutPage() {
                   )}
 
                   <div className="flex justify-between">
-                    <span>Delhivery Express Shipping</span>
+                    <span>Shiprocket Express Shipping</span>
                     <span>{shippingFee === 0 ? <strong className="text-emerald-700">FREE</strong> : `₹${shippingFee}`}</span>
                   </div>
 
@@ -587,7 +587,7 @@ export function CheckoutPage() {
 
                 <p className="text-[11px] text-neutral-400 text-center flex items-center justify-center space-x-1">
                   <Truck className="w-3 h-3 text-brand-maroon" />
-                  <span>Ships via <strong>Delhivery Express</strong> with real-time tracking</span>
+                  <span>Ships via <strong>Shiprocket Express</strong> with real-time tracking</span>
                 </p>
               </div>
             </div>

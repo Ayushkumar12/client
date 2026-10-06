@@ -735,7 +735,7 @@ export function ProductDetailPage() {
                     onClick={() => toggleAccordion('reviews')}
                     className="w-full flex items-center justify-between text-left text-xs font-bold uppercase tracking-wider text-neutral-900 cursor-pointer"
                   >
-                    <span>CUSTOMER REVIEWS ({product.reviews_count || 12})</span>
+                    <span>CUSTOMER REVIEWS ({product.reviews_count !== undefined ? product.reviews_count : (product.reviews?.length || 0)})</span>
                     {openAccordions.reviews ? (
                       <ChevronUp className="w-4 h-4 text-neutral-600" />
                     ) : (

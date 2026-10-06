@@ -37,8 +37,8 @@ export function NewArrivalsSection({ products = [], loading = false }) {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#EFE8DD]">
         <div className="space-y-1.5">
           {/* Golden Badge */}
-          <div className="inline-flex items-center space-x-2 bg-[#FAF3EA] border border-[#E5D7C2] px-3.5 py-1 rounded-full text-[11px] font-bold tracking-widest text-[#8C6339] uppercase">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+          <div className="inline-flex items-center space-x-2 bg-[#FAF3EA] border border-[#E5D7C2] px-3.5 py-1 rounded-full text-xs font-bold tracking-widest text-[#8C6339] uppercase">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" aria-hidden="true" />
             <span>{sec.badge || 'JUST DROPPED • ATELIER 2026'}</span>
           </div>
 

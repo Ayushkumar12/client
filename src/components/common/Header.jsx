@@ -432,7 +432,7 @@ export function Header() {
                 <img src="/oct9-logo.jpg" alt="OCT9" className="h-8 w-auto rounded object-contain border border-neutral-200" />
                 <div className="flex flex-col">
                   <span className="font-serif font-bold text-neutral-900 tracking-widest leading-none">OCT9</span>
-                  <span className="text-[7px] uppercase tracking-wider text-neutral-500">Luxury Without Noise</span>
+                  <span className="text-xs uppercase tracking-wider text-neutral-500 font-medium">Luxury Without Noise</span>
                 </div>
               </div>
               <button onClick={() => setIsMobileMenuOpen(false)} className="text-neutral-500 hover:text-neutral-900">

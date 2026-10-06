@@ -11,7 +11,7 @@ export function BentoMosaicSection() {
     tag: 'Fine Ornaments',
     title: 'ZEWAR',
     subtitle: 'by OCT9',
-    description: 'Handcrafted Kundan, Polki & Pearl masterpieces.',
+    description: 'Handcrafted Kundan, Polki & Pearl masterpieces tailored for royal occasions.',
     image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=85',
     link: '/category/accessories',
     cta_text: 'Shop Jewellery Atelier'
@@ -36,7 +36,7 @@ export function BentoMosaicSection() {
           image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=600&q=85'
         },
         {
-          title: 'Couture ₹7,500+',
+          title: 'Above ₹7,500',
           link: '/category/all?min_price=7500',
           image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=600&q=85'
         },
@@ -52,14 +52,19 @@ export function BentoMosaicSection() {
         }
       ];
 
+  // Safeguard against any residual nonsense string in CMS/database
+  const zewarCleanDescription = (zewar.description && !zewar.description.includes('gfhgf'))
+    ? zewar.description
+    : 'Handcrafted Kundan, Polki & Pearl masterpieces.';
+
   return (
     <section className="py-14 sm:py-18 bg-[#FDFBF7] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Heading */}
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white border border-amber-200/80 mb-3 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-neutral-800">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" aria-hidden="true" />
+            <span className="text-xs font-bold tracking-[0.16em] uppercase text-neutral-800">
               {bento.badge || 'Curated Destinations'}
             </span>
           </div>
@@ -77,7 +82,8 @@ export function BentoMosaicSection() {
           <div className="lg:col-span-4">
             <Link
               to={zewar.link || '/category/accessories'}
-              className="group relative block w-full h-[380px] sm:h-[460px] lg:h-full min-h-[380px] lg:min-h-[530px] rounded-3xl overflow-hidden bg-neutral-950 border border-amber-200/60 shadow-md hover:shadow-2xl transition-all duration-500"
+              className="group relative block w-full h-[380px] sm:h-[460px] lg:h-full min-h-[380px] lg:min-h-[530px] rounded-2xl overflow-hidden bg-neutral-950 border border-amber-200/60 shadow-md hover:shadow-2xl transition-all duration-500"
+              aria-label="Shop ZEWAR Royal Jewellery Atelier"
             >
               <img
                 src={zewar.image}
@@ -91,7 +97,7 @@ export function BentoMosaicSection() {
 
               {/* Top Atelier Badge */}
               <div className="absolute top-6 left-6 z-10">
-                <span className="bg-white/15 backdrop-blur-md text-amber-200 border border-amber-300/30 text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full">
+                <span className="bg-white/15 backdrop-blur-md text-amber-200 border border-amber-300/30 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
                   {zewar.tag || 'Fine Ornaments'}
                 </span>
               </div>
@@ -104,18 +110,16 @@ export function BentoMosaicSection() {
                 <p className="font-serif italic text-xs sm:text-sm text-neutral-300 tracking-wider">
                   by <span className="text-amber-300 font-bold tracking-widest">OCT9</span>
                 </p>
-                <p className="text-[11px] text-neutral-300 max-w-xs mx-auto leading-relaxed pt-1">
-                  {zewar.description || 'Handcrafted Kundan, Polki & Pearl masterpieces.'}
+                <p className="text-xs text-neutral-300 max-w-xs mx-auto leading-relaxed pt-1 drop-shadow-xs">
+                  {zewarCleanDescription}
                 </p>
               </div>
 
-              {/* Bottom Interactive CTA Pill */}
+              {/* Bottom Interactive CTA Pill (Unified structure) */}
               <div className="absolute inset-x-0 bottom-6 flex items-center justify-between px-6">
-                <span className="bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-4 py-2 rounded-full border border-white/20 shadow-md">
-                  {zewar.cta_text || 'Shop Jewellery Atelier'}
-                </span>
-                <span className="w-9 h-9 rounded-full bg-white/25 backdrop-blur-md text-white flex items-center justify-center group-hover:bg-amber-400 group-hover:text-black transition-all">
-                  <ArrowUpRight className="w-4 h-4" />
+                <span className="bg-black/70 backdrop-blur-md text-white text-xs font-semibold px-4 py-2 rounded-full border border-white/20 shadow-md flex items-center space-x-1.5 group-hover:bg-[#5A1827] transition-colors">
+                  <span>{zewar.cta_text || 'Shop Jewellery Atelier'}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
                 </span>
               </div>
             </Link>
@@ -127,7 +131,8 @@ export function BentoMosaicSection() {
               <Link
                 key={idx}
                 to={cat.link || '/category/all'}
-                className="group relative block h-[220px] sm:h-[245px] rounded-3xl overflow-hidden bg-neutral-900 border border-neutral-200/80 shadow-sm hover:shadow-xl transition-all duration-500"
+                className="group relative block h-[220px] sm:h-[245px] rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-200/80 shadow-sm hover:shadow-xl transition-all duration-500"
+                aria-label={`Explore ${cat.title}`}
               >
                 <img
                   src={cat.image}
@@ -135,13 +140,11 @@ export function BentoMosaicSection() {
                   className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-106"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
                 <div className="absolute inset-x-0 bottom-4 px-4 flex items-center justify-between">
-                  <span className="bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-3.5 py-1.5 rounded-full border border-white/20 shadow-md">
-                    {cat.title}
-                  </span>
-                  <span className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  <span className="bg-black/70 backdrop-blur-md text-white text-xs font-semibold px-3.5 py-1.5 rounded-full border border-white/20 shadow-md flex items-center space-x-1.5 group-hover:bg-[#5A1827] transition-colors">
+                    <span>{cat.title}</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </span>
                 </div>
               </Link>

@@ -83,6 +83,7 @@ export function InsideBrandSection() {
                 <Link
                   to={item.link || '/category/all'}
                   className="relative w-full aspect-[3/4.4] rounded-t-[100px] rounded-b-2xl overflow-hidden bg-white border-2 border-amber-300/60 p-1.5 shadow-sm hover:shadow-2xl transition-all duration-500 group-hover:-translate-y-1.5"
+                  aria-label={`Explore ${item.title}`}
                 >
                   <div className="relative w-full h-full rounded-t-[94px] rounded-b-xl overflow-hidden bg-neutral-950">
                     <img
@@ -92,25 +93,25 @@ export function InsideBrandSection() {
                       loading="lazy"
                     />
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/10" />
+                    {/* High-Contrast Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent" />
 
                     {/* Badge top */}
                     {item.badge && (
                       <div className="absolute top-4 inset-x-0 flex justify-center">
-                        <span className="bg-black/50 backdrop-blur-md text-amber-200 border border-amber-300/30 text-[9px] font-bold uppercase tracking-[0.16em] px-2.5 py-0.5 rounded-full shadow-xs">
+                        <span className="bg-black/60 backdrop-blur-md text-amber-200 border border-amber-300/40 text-xs font-bold uppercase tracking-[0.16em] px-3 py-0.5 rounded-full shadow-xs">
                           {item.badge}
                         </span>
                       </div>
                     )}
 
-                    {/* Bottom Details Overlay inside the Arch */}
-                    <div className="absolute inset-x-0 bottom-4 text-center px-3 space-y-1">
-                      <h3 className="font-serif text-white text-sm sm:text-base font-bold tracking-wide drop-shadow-md">
+                    {/* Balanced Bottom Details Overlay inside the Arch */}
+                    <div className="absolute inset-x-0 bottom-6 text-center px-4 space-y-1">
+                      <h3 className="font-serif text-white text-base sm:text-lg font-bold tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                         {item.title}
                       </h3>
                       {item.subtitle && (
-                        <p className="text-xs text-neutral-300 font-light truncate">
+                        <p className="text-xs text-neutral-200 font-light truncate drop-shadow-sm">
                           {item.subtitle}
                         </p>
                       )}
@@ -118,13 +119,13 @@ export function InsideBrandSection() {
                   </div>
                 </Link>
 
-                {/* Refined CTA Link below each arch - Centered for balance */}
+                {/* Refined CTA Link below each arch - Tightly grouped for Gestalt continuity */}
                 <Link
                   to={item.link || '/category/all'}
-                  className="mt-3.5 inline-flex items-center justify-center space-x-1.5 text-xs font-bold uppercase tracking-[0.14em] text-neutral-900 group-hover:text-brand-maroon transition-colors border-b-2 border-neutral-900 group-hover:border-brand-maroon pb-0.5 text-center"
+                  className="mt-2.5 inline-flex items-center justify-center space-x-1.5 text-xs font-bold uppercase tracking-[0.14em] text-neutral-900 group-hover:text-brand-maroon transition-colors border-b-2 border-neutral-900 group-hover:border-brand-maroon pb-0.5 text-center"
                 >
                   <span>Discover Now</span>
-                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                 </Link>
               </div>
             ))}

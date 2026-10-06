@@ -107,7 +107,7 @@ export function Footer() {
                 <span className="font-serif text-xl sm:text-2xl font-bold tracking-[0.2em] text-neutral-900">
                   {brand.name || 'OCT9'}
                 </span>
-                <span className="text-[8px] tracking-[0.25em] uppercase text-neutral-500 font-medium">
+                <span className="text-xs tracking-wider uppercase text-neutral-500 font-medium">
                   {brand.tagline || 'Luxury Without Noise'}
                 </span>
               </div>

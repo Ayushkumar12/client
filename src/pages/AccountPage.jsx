@@ -2317,50 +2317,7 @@ export function AccountPage() {
           </main>
         </div>
 
-        {/* ========================================================= */}
-        {/* BOTTOM ASSURANCE BANNER (ACROSS ALL PAGES) */}
-        {/* ========================================================= */}
-        <div className="bg-[#FAF3EA] border border-[#EFE3D3] rounded-3xl p-6 sm:p-8 mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-full bg-white text-brand-maroon flex items-center justify-center shrink-0 shadow-2xs">
-              <Truck className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="font-bold text-xs text-neutral-900">Free Shipping</h4>
-              <p className="text-[11px] text-neutral-500">Orders above ₹1,999</p>
-            </div>
-          </div>
 
-          <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-full bg-white text-brand-maroon flex items-center justify-center shrink-0 shadow-2xs">
-              <RotateCcw className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="font-bold text-xs text-neutral-900">Easy Returns</h4>
-              <p className="text-[11px] text-neutral-500">7 days hassle free</p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-full bg-white text-brand-maroon flex items-center justify-center shrink-0 shadow-2xs">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="font-bold text-xs text-neutral-900">Secure Payments</h4>
-              <p className="text-[11px] text-neutral-500">100% safe & secure</p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-full bg-white text-brand-maroon flex items-center justify-center shrink-0 shadow-2xs">
-              <Package className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="font-bold text-xs text-neutral-900">Premium Quality</h4>
-              <p className="text-[11px] text-neutral-500">Finest fabrics & craft</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Add / Edit Address Modal */}

@@ -53,38 +53,40 @@ function getProductSilhouetteLabel(product) {
   return 'Designer Suit';
 }
 
-export function ProductCard({ product, showDescription = true, showInstantBuy = true }) {
+const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1610030469668-9655ecbbdd13?auto=format&fit=crop&w=800&q=80';
+
+export function ProductCard({ product, showDescription = true, showInstantBuy = true, compact = false }) {
   const { addToCart, openCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   // Normalize product images
   const images = Array.isArray(product.images) && product.images.length > 0
     ? product.images
-    : [product.image || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80'];
+    : [product.image || FALLBACK_PRODUCT_IMAGE];
 
-  const mainImage = images[0];
+  const mainImage = images[0] || FALLBACK_PRODUCT_IMAGE;
   const hoverImage = images.length > 1 ? images[1] : mainImage;
   const isWishlisted = isInWishlist(product.id);
 
   // Available Sizes
   const availableSizes = Array.isArray(product.sizes) && product.sizes.length > 0
     ? product.sizes
-    : ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+    : [];
 
-  const [selectedSize, setSelectedSize] = useState(() => availableSizes[0] || 'M');
+  const [selectedSize, setSelectedSize] = useState(() => availableSizes[0] || 'Standard');
   const [isAdded, setIsAdded] = useState(false);
 
-  // Category Tag - Only show real silhouette/product name, never festival/wear words
+  // Category Tag - Clean silhouette/product name in Title Case
   const categoryLabel = getProductSilhouetteLabel(product);
 
   // Description snippet
-  const descriptionText = product.description || (product.fabric ? `Crafted from pure ${product.fabric} with artisan embroidery and tailored drape.` : 'Exquisite luxury ethnic design crafted for celebratory moments.');
+  const descriptionText = product.description || (product.short_description ? product.short_description : '');
 
   const hasDiscount = product.discount_percent > 0 || (product.original_price && product.original_price > product.price);
   const discountPercent = product.discount_percent || (hasDiscount ? Math.round(((product.original_price - product.price) / product.original_price) * 100) : 0);
 
   // Stock status checks
-  const stockCount = Number(product.stock !== undefined ? product.stock : 50);
+  const stockCount = Number(product.stock !== undefined ? product.stock : 0);
   const isOutOfStock = stockCount <= 0;
   const isLowStock = stockCount > 0 && stockCount <= 10;
 
@@ -119,19 +121,23 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
   };
 
   return (
-    <div className={`group relative bg-white rounded-[26px] sm:rounded-[28px] overflow-hidden border shadow-2xs hover:shadow-xl transition-all duration-500 flex flex-col justify-between p-2.5 sm:p-3 ${
-      isOutOfStock ? 'border-neutral-300 opacity-90' : 'border-neutral-200/90 hover:border-brand-maroon/40'
+    <div className={`group relative bg-white rounded-2xl overflow-hidden border shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between p-3 ${
+      isOutOfStock ? 'border-neutral-300 opacity-90' : 'border-neutral-200/90 hover:border-[#5A1827]/40'
     }`}>
       {/* Top Image Container with Notched Tab & Inverted Curves */}
-      <div className="relative aspect-[3/3.8] sm:aspect-[3/4] w-full rounded-[20px] sm:rounded-[22px] overflow-hidden bg-neutral-100">
-        <Link to={getProductUrl(product)} className="block w-full h-full">
+      <div className="relative aspect-[3/3.9] w-full rounded-xl overflow-hidden bg-neutral-100">
+        <Link to={getProductUrl(product)} className="block w-full h-full" aria-label={product.title}>
           <img
             src={mainImage}
             alt={product.title}
-            className={`w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-106 ${
+            className={`w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105 ${
               isOutOfStock ? 'grayscale-40' : ''
             }`}
             loading="lazy"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
+            }}
           />
 
           {/* Hover Image Crossfade */}
@@ -141,43 +147,46 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
               alt={product.title}
               className="w-full h-full object-cover object-top absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out"
               loading="lazy"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
+              }}
             />
           )}
 
           {/* Out of Stock Overlay */}
           {isOutOfStock && (
-            <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px] flex items-center justify-center p-3 z-20">
-              <span className="bg-red-600/95 text-white font-extrabold text-[11px] sm:text-xs tracking-widest uppercase px-3 py-1.5 rounded-full shadow-lg border border-red-400">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center p-3 z-20">
+              <span className="bg-red-600 text-white font-bold text-xs tracking-wider uppercase px-3.5 py-1.5 rounded-full shadow-lg border border-red-400">
                 Out of Stock
               </span>
             </div>
           )}
         </Link>
 
-        {/* Top-Left Inverted-Corner Notched Category Tab */}
+        {/* Top-Left Notched Category Tab with legible Title Case */}
         <div className="absolute top-0 left-0 z-20 flex items-start pointer-events-none">
-          <div className="bg-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-br-[16px] sm:rounded-br-[18px] border-r border-b border-neutral-200/70 shadow-2xs">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-neutral-800">
+          <div className="bg-white/95 backdrop-blur-xs px-3 py-1 rounded-br-xl border-r border-b border-neutral-200/80 shadow-2xs">
+            <span className="text-xs font-semibold text-neutral-800 tracking-normal">
               {categoryLabel}
             </span>
           </div>
-          {/* Smooth Inverted Top-Right Fillet */}
-          <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+          <svg className="w-3 h-3 fill-white/95" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M0,0 C0,7.73 6.27,14 14,14 L0,14 L0,0 Z" />
           </svg>
         </div>
 
         {/* Top-Right Action Controls (Wishlist & Discount / Stock Badge) */}
-        <div className="absolute top-2.5 right-2.5 z-20 flex flex-col items-end space-y-2">
+        <div className="absolute top-2.5 right-2.5 z-20 flex flex-col items-end space-y-1.5">
           {/* Wishlist Heart Button */}
           <button
             type="button"
             onClick={handleWishlistClick}
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 hover:bg-white text-neutral-700 hover:text-red-500 shadow-md flex items-center justify-center transition-all cursor-pointer"
-            aria-label="Wishlist"
+            className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-neutral-700 hover:text-red-500 shadow-sm flex items-center justify-center transition-all cursor-pointer"
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
             <Heart
-              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors ${
+              className={`w-4 h-4 transition-colors ${
                 isWishlisted ? 'fill-red-500 text-red-500' : 'text-neutral-600'
               }`}
             />
@@ -185,125 +194,129 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
 
           {/* Discount Pill */}
           {hasDiscount && (
-            <span className="bg-[#5A1827] text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs uppercase tracking-wider">
+            <span className="bg-[#5A1827] text-white text-xs font-bold px-2.5 py-0.5 rounded-full shadow-2xs tracking-wide">
               {discountPercent}% OFF
             </span>
           )}
 
           {/* Low Stock Urgency Pill */}
           {isLowStock && (
-            <span className="bg-amber-500 text-neutral-950 text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-xs uppercase tracking-wider border border-amber-300 flex items-center space-x-1 animate-pulse">
-              <span>⚡ Only {stockCount} Left</span>
+            <span className="bg-amber-500 text-neutral-950 text-xs font-bold px-2 py-0.5 rounded-full shadow-2xs tracking-wide border border-amber-300 flex items-center space-x-1 animate-pulse">
+              <span>⚡ {stockCount} left</span>
             </span>
           )}
         </div>
       </div>
 
       {/* Card Body Details */}
-      <div className="pt-3 px-1 sm:px-1.5 pb-1 flex-1 flex flex-col justify-between space-y-2.5">
+      <div className="pt-3 px-1 pb-1 flex-1 flex flex-col justify-between space-y-2">
         <div>
           {/* Title & Price Header Row */}
           <div className="flex items-start justify-between gap-2">
             <Link to={getProductUrl(product)} className="flex-1 min-w-0">
-              <h3 className="font-serif text-sm sm:text-base font-bold text-neutral-900 line-clamp-1 hover:text-brand-maroon transition-colors">
+              <h3 className="font-serif text-sm sm:text-base font-bold text-neutral-900 line-clamp-1 hover:text-[#5A1827] transition-colors">
                 {product.title}
               </h3>
             </Link>
 
             {/* Price Pill */}
-            <div className="shrink-0 bg-[#FF7A59]/15 text-[#D94F30] border border-[#FF7A59]/30 font-bold text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-2xs whitespace-nowrap">
+            <div className="shrink-0 bg-amber-50 text-[#8C6339] border border-amber-200/80 font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-full shadow-2xs whitespace-nowrap">
               ₹{Number(product.price).toLocaleString('en-IN')}
             </div>
           </div>
 
-          {/* Description / Fabric Details */}
-          {showDescription && (
-            <p className="text-[11px] sm:text-xs text-neutral-500 line-clamp-2 leading-relaxed mt-1 font-normal">
+          {/* Description Snippet (Single line for optimal scanning) */}
+          {showDescription && !compact && (
+            <p className="text-xs text-neutral-500 line-clamp-1 leading-relaxed mt-1 font-normal">
               {descriptionText}
             </p>
           )}
 
-          {/* Real-time Available Stock Line */}
-          <div className="mt-1.5 flex items-center justify-between text-[10px] font-medium">
+          {/* Stock Status Indicator (Legible font size >= 12px) */}
+          <div className="mt-1.5 flex items-center justify-between text-xs font-medium">
             {isOutOfStock ? (
-              <span className="text-red-600 font-bold flex items-center space-x-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+              <span className="text-red-600 font-semibold flex items-center space-x-1.5">
+                <span className="w-2 h-2 rounded-full bg-red-500 inline-block" aria-hidden="true"></span>
                 <span>Out of Stock (0 available)</span>
               </span>
             ) : isLowStock ? (
-              <span className="text-amber-700 font-bold flex items-center space-x-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
-                <span>Low Stock: Only {stockCount} units left</span>
+              <span className="text-amber-700 font-semibold flex items-center space-x-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping inline-block" aria-hidden="true"></span>
+                <span>Low Stock: Only {stockCount} left</span>
               </span>
             ) : (
-              <span className="text-emerald-700 font-semibold flex items-center space-x-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                <span>In Stock ({stockCount} units available)</span>
+              <span className="text-emerald-700 font-semibold flex items-center space-x-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block" aria-hidden="true"></span>
+                <span>In Stock ({stockCount} available)</span>
               </span>
             )}
           </div>
 
-          {/* Interactive Size Pill Buttons */}
-          <div className="mt-2 flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-0.5">
-            {availableSizes.map((sz) => {
-              const isSelected = selectedSize === sz;
-              return (
-                <button
-                  key={sz}
-                  type="button"
-                  disabled={isOutOfStock}
-                  onClick={(e) => handleSizeClick(sz, e)}
-                  className={`px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-bold transition-all border whitespace-nowrap ${
-                    isOutOfStock
-                      ? 'bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed line-through'
-                      : isSelected
-                      ? 'bg-[#FF7A59] text-white border-[#FF7A59] shadow-xs scale-105 cursor-pointer'
-                      : 'bg-[#FAF7F2] text-neutral-700 border-neutral-300/90 hover:border-neutral-700 hover:bg-neutral-100 cursor-pointer'
-                  }`}
-                >
-                  {sz}
-                </button>
-              );
-            })}
-          </div>
+          {/* Accessible Size Buttons (Touch target compliant) */}
+          {!compact && (
+            <div className="mt-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+              {availableSizes.map((sz) => {
+                const isSelected = selectedSize === sz;
+                return (
+                  <button
+                    key={sz}
+                    type="button"
+                    disabled={isOutOfStock}
+                    onClick={(e) => handleSizeClick(sz, e)}
+                    aria-pressed={isSelected}
+                    aria-label={`Size ${sz}`}
+                    className={`relative min-w-[34px] h-8 px-2 rounded-full text-xs font-bold transition-all border flex items-center justify-center whitespace-nowrap after:absolute after:-inset-1 ${
+                      isOutOfStock
+                        ? 'bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed line-through'
+                        : isSelected
+                        ? 'bg-[#5A1827] text-white border-[#5A1827] shadow-xs cursor-pointer'
+                        : 'bg-[#FAF7F2] text-neutral-700 border-neutral-300 hover:border-neutral-600 hover:bg-neutral-100 cursor-pointer'
+                    }`}
+                  >
+                    {sz}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* Action Buttons: Add to Cart (Primary Solid) + Instant Buy (Secondary Ghost) */}
-        <div className="pt-2 space-y-1.5">
-          {/* Add to Cart Pill Button (Primary) */}
+        {/* Action Buttons: Standardized matching 40px height & clean alignment */}
+        <div className="pt-2 flex items-center gap-2">
+          {/* Add to Cart Button (Primary) */}
           <button
             type="button"
             disabled={isOutOfStock}
             onClick={handleAddToCart}
-            className={`w-full py-2 sm:py-2.5 px-4 rounded-full text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 transition-all shadow-sm ${
+            className={`flex-1 h-10 px-3.5 rounded-full text-xs font-bold flex items-center justify-center space-x-1.5 transition-all shadow-2xs box-border ${
               isOutOfStock
-                ? 'bg-neutral-200 text-neutral-500 cursor-not-allowed shadow-none border border-neutral-300'
+                ? 'w-full bg-neutral-200 text-neutral-500 cursor-not-allowed border border-neutral-300 shadow-none'
                 : 'bg-[#5A1827] hover:bg-[#43121D] active:scale-98 text-white hover:shadow-md cursor-pointer'
             }`}
           >
             {isOutOfStock ? (
-              <span>Out of Stock</span>
+              <span className="whitespace-nowrap">Out of Stock</span>
             ) : isAdded ? (
               <>
-                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-                <span>Added to Bag</span>
+                <Check className="w-3.5 h-3.5 text-white shrink-0" aria-hidden="true" />
+                <span className="whitespace-nowrap">Added</span>
               </>
             ) : (
               <>
-                <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-                <span>Add To Cart</span>
+                <ShoppingCart className="w-3.5 h-3.5 text-white shrink-0" aria-hidden="true" />
+                <span className="whitespace-nowrap">Add To Cart</span>
               </>
             )}
           </button>
 
-          {/* Instant Buy (Secondary Ghost Button - Clear Hierarchy) */}
+          {/* Instant Buy (Secondary Button with matched 40px height) */}
           {showInstantBuy && !isOutOfStock && (
             <button
               type="button"
               onClick={handleInstantBuy}
-              className="w-full py-1.5 sm:py-2 px-4 rounded-full bg-white hover:bg-neutral-900 text-neutral-900 hover:text-white border border-neutral-300 hover:border-neutral-900 text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
+              className="flex-1 h-10 px-3.5 rounded-full bg-white hover:bg-neutral-900 text-neutral-900 hover:text-white border border-neutral-300 hover:border-neutral-900 text-xs font-bold flex items-center justify-center space-x-1.5 transition-all shadow-2xs hover:shadow-sm cursor-pointer whitespace-nowrap box-border"
             >
-              <Zap className="w-3 h-3 text-amber-500" />
+              <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" aria-hidden="true" />
               <span>Instant Buy</span>
             </button>
           )}

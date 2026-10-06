@@ -55,13 +55,13 @@ export function HomePage() {
       <NewArrivalsSection products={newArrivals} loading={loading} />
 
       {/* 4. OCT9 Picks - Curated Quality & Comfort Showcase */}
-      <BrandPicksSection products={brandPicks} />
+      <BrandPicksSection products={brandPicks} loading={loading} />
 
       {/* 5. Inside OCT9 - Brand Narrative & 3 Mughal Jharokha Arch Cards */}
       <InsideBrandSection />
 
       {/* 6. Adorned to Perfection - Jewellery & Accessories Showcase */}
-      <AdornedJewelsSection products={jewels} />
+      <AdornedJewelsSection products={jewels} loading={loading} />
 
       {/* 7. Bento Mosaic - Zewar Spotlight & Shop by Budget / Category */}
       <BentoMosaicSection />

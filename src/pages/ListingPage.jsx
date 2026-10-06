@@ -953,40 +953,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         </section>
       )}
 
-      {/* 5. TRUST BADGES STRIP (Bottom of All Category Pages matching Screenshots) */}
-      <section className={`mt-16 py-8 border-t border-b ${
-        isDarkGala ? 'bg-[#181412] border-neutral-800 text-neutral-200' : 'bg-[#F9F5EE] border-brand-border/80 text-neutral-800'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 text-center">
-            <div className="flex flex-col items-center space-y-2">
-              <Truck className={`w-5 h-5 ${isDarkGala ? 'text-amber-400' : 'text-brand-maroon'}`} />
-              <h4 className="text-xs font-bold">Free Shipping</h4>
-              <p className="text-[11px] opacity-70">Orders above ₹1,999</p>
-            </div>
-            <div className="flex flex-col items-center space-y-2">
-              <RefreshCcw className={`w-5 h-5 ${isDarkGala ? 'text-amber-400' : 'text-brand-maroon'}`} />
-              <h4 className="text-xs font-bold">Easy Returns</h4>
-              <p className="text-[11px] opacity-70">7 days hassle-free</p>
-            </div>
-            <div className="flex flex-col items-center space-y-2">
-              <ShieldCheck className={`w-5 h-5 ${isDarkGala ? 'text-amber-400' : 'text-brand-maroon'}`} />
-              <h4 className="text-xs font-bold">Secure Payments</h4>
-              <p className="text-[11px] opacity-70">100% safe & encrypted</p>
-            </div>
-            <div className="flex flex-col items-center space-y-2">
-              <Award className={`w-5 h-5 ${isDarkGala ? 'text-amber-400' : 'text-brand-maroon'}`} />
-              <h4 className="text-xs font-bold">Premium Quality</h4>
-              <p className="text-[11px] opacity-70">Handcrafted excellence</p>
-            </div>
-            <div className="flex flex-col items-center space-y-2 col-span-2 sm:col-span-1">
-              <Headphones className={`w-5 h-5 ${isDarkGala ? 'text-amber-400' : 'text-brand-maroon'}`} />
-              <h4 className="text-xs font-bold">Customer Support</h4>
-              <p className="text-[11px] opacity-70">Dedicated WhatsApp help</p>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       {/* 6. MOBILE FILTERS SLIDE-OVER MODAL */}
       {isMobileFilterOpen && (

@@ -102,19 +102,19 @@ export function Footer() {
           {/* Brand Col */}
           <div className="lg:col-span-2 space-y-4">
             <Link to="/" className="flex items-center space-x-3 group">
-              <img src="/oct9-logo.jpg" alt="OCT9 - Luxury Without Noise" className="h-10 sm:h-11 w-auto rounded-lg object-contain border border-neutral-200 shadow-2xs transition-transform group-hover:scale-105" />
+              <img src="/oct9-logo.jpg" alt="OCT9" className="h-10 sm:h-11 w-auto rounded-lg object-contain border border-neutral-200 shadow-2xs" />
               <div className="flex flex-col">
-                <span className="font-serif text-xl sm:text-2xl font-bold tracking-[0.2em] text-neutral-900">
+                <span className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
                   {brand.name || 'OCT9'}
                 </span>
                 <span className="text-xs tracking-wider uppercase text-neutral-500 font-medium">
-                  {brand.tagline || 'Luxury Without Noise'}
+                  {brand.tagline || 'Fashion & Ethnic Wear'}
                 </span>
               </div>
             </Link>
 
             <p className="text-xs text-neutral-600 leading-relaxed pr-6">
-              {brand.name || 'OCT9'} celebrates the eternal beauty of Indian ethnic craftsmanship. From imperial Anarkalis and Zardozi suits to handloom Kanjivaram sarees and bespoke juttis, each creation is tailored to perfection for the modern royalty in you.
+              {brand.name || 'OCT9'} is your online destination for high-quality ethnic wear, designer suits, sarees, and fashion accessories. We focus on comfort, style, and affordable prices.
             </p>
 
             <div className="flex items-center space-x-3 pt-2">
@@ -209,7 +209,7 @@ export function Footer() {
         {/* Payment Methods & Bottom Bar */}
         <div className="pt-8 border-t border-neutral-200/80 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
           <div>
-            © 2026 {brand.name || 'OCT9'}. All Rights Reserved. | <span className="text-brand-maroon font-semibold">Tradition • Craftsmanship • Elegance</span>
+            © 2026 {brand.name || 'OCT9'}. All Rights Reserved. | <span className="text-neutral-700 font-medium">Quality • Comfort • Style</span>
           </div>
 
           {/* Payment Gateways / Logos Strip */}

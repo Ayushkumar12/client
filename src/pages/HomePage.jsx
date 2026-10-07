@@ -38,32 +38,32 @@ export function HomePage() {
   return (
     <div className="space-y-12 sm:space-y-16 pb-16">
       <SEO
-        title="OCT9 | Timeless Ethnic Elegance - Luxury Suits, Sarees & Festive Wear"
-        description="Shop exclusive Indian ethnic wear, designer suits, anarkalis, sarees and festive outfits at OCT9. Enjoy Fast Express Delivery via Shiprocket and 100% Secure Razorpay Checkout."
+        title="OCT9 - Women's Ethnic Wear, Suits, Sarees & Dresses"
+        description="Shop ethnic wear, designer suits, sarees, and festive fashion at OCT9. Fast shipping across India and secure payment options."
       />
 
       {/* Semantic Top-Level H1 Heading for Accessibility & SEO */}
-      <h1 className="sr-only">OCT9 | Timeless Ethnic Elegance - Luxury Suits, Sarees & Festive Wear</h1>
+      <h1 className="sr-only">OCT9 - Women's Ethnic Wear & Fashion Collection</h1>
 
-      {/* 1. Dynamic Luxury Slideshow Hero Section */}
+      {/* 1. Hero Slideshow Section */}
       <HeroSlideshow />
 
-      {/* 2. Shop by Silhouette - Royal Mughal Jharokha Arch Category Section */}
+      {/* 2. Shop by Category */}
       <JharokhaCategories />
 
-      {/* 3. Dedicated New Arrivals Showcase Section */}
+      {/* 3. New Arrivals Showcase */}
       <NewArrivalsSection products={newArrivals} loading={loading} />
 
-      {/* 4. OCT9 Picks - Curated Quality & Comfort Showcase */}
+      {/* 4. Featured Picks Showcase */}
       <BrandPicksSection products={brandPicks} loading={loading} />
 
-      {/* 5. Inside OCT9 - Brand Narrative & 3 Mughal Jharokha Arch Cards */}
+      {/* 5. About Brand Section */}
       <InsideBrandSection />
 
-      {/* 6. Adorned to Perfection - Jewellery & Accessories Showcase */}
+      {/* 6. Jewellery & Accessories Section */}
       <AdornedJewelsSection products={jewels} loading={loading} />
 
-      {/* 7. Bento Mosaic - Zewar Spotlight & Shop by Budget / Category */}
+      {/* 7. Category & Budget Mosaic */}
       <BentoMosaicSection />
     </div>
   );

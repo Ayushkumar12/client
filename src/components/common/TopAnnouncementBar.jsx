@@ -8,25 +8,25 @@ export function TopAnnouncementBar() {
   const brand = getBrand();
 
   return (
-    <div className="bg-[#FAF7F2] text-neutral-700 text-xs py-1.5 px-4 border-b border-neutral-200/80 transition-all font-sans">
+    <div className="bg-neutral-100 text-neutral-700 text-xs py-1.5 px-4 border-b border-neutral-200 transition-all font-sans">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
         {/* Left Announcements */}
         <div className="flex items-center space-x-6 overflow-x-auto no-scrollbar py-0.5">
           <div className="flex items-center space-x-1.5 whitespace-nowrap">
-            <Truck className="w-3.5 h-3.5 text-brand-maroon shrink-0" />
+            <Truck className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
             <span>
-              {brand.announcement_bar || '✨ Free Shipping on orders above ₹1,999 • Handcrafted with Love'}
+              {brand.announcement_bar || 'Free Shipping on orders above ₹999'}
             </span>
           </div>
 
           <div className="hidden md:flex items-center space-x-1.5 whitespace-nowrap">
-            <Tag className="w-3.5 h-3.5 text-brand-maroon shrink-0" />
-            <span>15% Off on Prepaid Orders | Use Code: <strong className="text-white bg-brand-maroon px-1.5 py-0.5 rounded font-mono font-bold text-xs">OCT15</strong></span>
+            <Tag className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
+            <span>Use code <strong className="text-white bg-neutral-800 px-1.5 py-0.5 rounded font-mono font-bold text-xs">OCT15</strong> for 15% off prepaid orders</span>
           </div>
 
           <div className="hidden lg:flex items-center space-x-1.5 whitespace-nowrap">
-            <RotateCcw className="w-3.5 h-3.5 text-brand-maroon shrink-0" />
-            <span>7 Days Easy Returns</span>
+            <RotateCcw className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
+            <span>7-Day Return Policy</span>
           </div>
         </div>
 

@@ -34,30 +34,30 @@ export function NewArrivalsSection({ products = [], loading = false }) {
   return (
     <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
       {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#EFE8DD]">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-neutral-200">
         <div className="space-y-1.5">
-          {/* Golden Badge */}
-          <div className="inline-flex items-center space-x-2 bg-[#FAF3EA] border border-[#E5D7C2] px-3.5 py-1 rounded-full text-xs font-bold tracking-widest text-[#8C6339] uppercase">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" aria-hidden="true" />
-            <span>{sec.badge || 'JUST DROPPED • ATELIER 2026'}</span>
+          {/* Badge */}
+          <div className="inline-flex items-center space-x-2 bg-neutral-100 border border-neutral-200 px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-neutral-700 uppercase">
+            <Sparkles className="w-3.5 h-3.5 text-neutral-600" aria-hidden="true" />
+            <span>{sec.badge || 'LATEST COLLECTION'}</span>
           </div>
 
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
             {sec.title || 'New Arrivals'}
           </h2>
 
-          <p className="text-xs sm:text-sm text-neutral-500 font-light max-w-xl">
-            {sec.subtitle || 'Freshly tailored royal silhouettes, intricate zardozi embroidery, and rich artisanal drapes.'}
+          <p className="text-xs sm:text-sm text-neutral-500 max-w-xl">
+            {sec.subtitle || 'Discover the newest additions to our collection.'}
           </p>
         </div>
 
         {/* View All link */}
         <Link
           to="/new-arrivals"
-          className="inline-flex items-center space-x-2 text-xs sm:text-sm font-bold text-brand-maroon hover:text-brand-maroon-hover group self-start md:self-auto py-1"
+          className="inline-flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-neutral-900 hover:text-neutral-600 group self-start md:self-auto py-1"
         >
-          <span>{sec.cta_text || 'View All 50+ New Styles'}</span>
-          <ChevronRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
+          <span>{sec.cta_text || 'View All New Styles'}</span>
+          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 

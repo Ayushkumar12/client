@@ -19,17 +19,17 @@ export function AdornedJewelsSection({ products = [], loading = false }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Heading */}
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FAF7F2] border border-amber-200/80 mb-3 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" aria-hidden="true" />
-            <span className="text-xs font-bold tracking-[0.16em] uppercase text-neutral-800">
-              {sec.badge || 'Jewellery Atelier'}
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 mb-3 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-neutral-600" aria-hidden="true" />
+            <span className="text-xs font-semibold tracking-wider uppercase text-neutral-700">
+              {sec.badge || 'Accessories & Jewellery'}
             </span>
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight">
-            {sec.title || 'Adorned to Perfection'}
+          <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
+            {sec.title || 'Matching Accessories'}
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-neutral-500 font-normal leading-relaxed">
-            {sec.subtitle || 'Complete your royal look with hand-selected Kundan, Meenakari, and pearl statement jewels.'}
+            {sec.subtitle || 'Complete your look with our handpicked jewellery and fashion accessories.'}
           </p>
         </div>
 
@@ -56,9 +56,9 @@ export function AdornedJewelsSection({ products = [], loading = false }) {
         <div className="mt-10 text-center">
           <Link
             to="/category/accessories"
-            className="inline-flex items-center space-x-2 bg-neutral-900 hover:bg-brand-maroon text-white text-xs font-bold uppercase tracking-[0.16em] px-8 py-3 rounded-full transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 cursor-pointer"
+            className="inline-flex items-center space-x-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold uppercase tracking-wider px-8 py-3 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer"
           >
-            <span>{sec.cta_text || 'Explore Full Jewellery Collection'}</span>
+            <span>{sec.cta_text || 'View All Accessories'}</span>
             <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
           </Link>
         </div>

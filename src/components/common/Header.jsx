@@ -144,19 +144,19 @@ export function Header() {
           {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Brand Logo matching user specifications */}
+        {/* Brand Logo */}
         <Link to="/" className="flex items-center space-x-2.5 sm:space-x-3 group shrink-0">
           <img
             src="/oct9-logo.jpg"
-            alt="OCT9 - Luxury Without Noise"
-            className="h-8 sm:h-9 w-auto rounded-lg object-contain border border-neutral-200 shadow-2xs transition-transform duration-300 group-hover:scale-105"
+            alt="OCT9"
+            className="h-8 sm:h-9 w-auto rounded-lg object-contain border border-neutral-200 shadow-2xs"
           />
           <div className="flex flex-col">
-            <span className="font-serif text-lg sm:text-xl font-bold tracking-[0.18em] text-neutral-900 group-hover:text-brand-maroon transition-colors leading-tight">
-              OCT<span className="text-brand-maroon">9</span>
+            <span className="text-lg sm:text-xl font-bold tracking-tight text-neutral-900 leading-tight">
+              OCT<span className="text-neutral-700">9</span>
             </span>
-            <span className="text-xs tracking-[0.18em] text-neutral-500 font-medium hidden sm:block">
-              Luxury Without Noise
+            <span className="text-xs tracking-wider text-neutral-500 font-medium hidden sm:block">
+              Fashion & Ethnic Wear
             </span>
           </div>
         </Link>
@@ -432,7 +432,7 @@ export function Header() {
                 <img src="/oct9-logo.jpg" alt="OCT9" className="h-8 w-auto rounded object-contain border border-neutral-200" />
                 <div className="flex flex-col">
                   <span className="font-serif font-bold text-neutral-900 tracking-widest leading-none">OCT9</span>
-                  <span className="text-xs uppercase tracking-wider text-neutral-500 font-medium">Luxury Without Noise</span>
+                  <span className="text-xs uppercase tracking-wider text-neutral-500 font-medium">Fashion & Ethnic Wear</span>
                 </div>
               </div>
               <button onClick={() => setIsMobileMenuOpen(false)} className="text-neutral-500 hover:text-neutral-900">

@@ -45,86 +45,32 @@ export function JharokhaCategories() {
   if (!categories || categories.length === 0) return null;
 
   return (
-    <section className="relative w-full py-2 sm:py-4 overflow-hidden">
-      <div className="w-full px-[10px]">
-        {/* Categories Row - Full width with 10px margin, category names only */}
-        <div className="flex items-center justify-between sm:justify-center gap-2.5 sm:gap-4 md:gap-6 overflow-x-auto py-2 no-scrollbar">
+    <section className="relative w-full py-4 bg-white border-b border-neutral-100 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Categories Row - Clean modern horizontal avatar carousel */}
+        <div className="flex items-center justify-start sm:justify-center gap-4 sm:gap-6 md:gap-8 overflow-x-auto py-2 no-scrollbar">
           {categories.map((cat, idx) => {
-            const catId = cat.id || cat.slug || `jharokha-${idx}`;
+            const catId = cat.id || cat.slug || `category-${idx}`;
             return (
               <Link
                 key={catId}
                 to={cat.link || `/category/${cat.slug}`}
-                className="group flex flex-col items-center space-y-2 shrink-0 focus:outline-none transition-transform duration-300 hover:-translate-y-1.5"
+                className="group flex flex-col items-center space-y-2 shrink-0 focus:outline-none"
                 aria-label={cat.name}
               >
-                {/* Jharokha SVG Frame Card with Double Border */}
-                <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.07)] group-hover:drop-shadow-[0_10px_22px_rgba(90,24,39,0.16)] transition-all duration-300">
-                  <svg
-                    viewBox="0 0 160 160"
-                    className="w-full h-full transform transition-transform duration-500 group-hover:scale-[1.03]"
-                  >
-                    <defs>
-                      <clipPath id={`jharokha-clip-${catId}`}>
-                        <path d={JHAROKHA_INNER_PATH} />
-                      </clipPath>
-                    </defs>
-
-                    {/* Outer Background Layer (Cream/Ivory Fill) */}
-                    <path
-                      d={JHAROKHA_PATH}
-                      fill="#FAF7F2"
-                      stroke="#8C6339"
-                      strokeWidth="1.2"
-                      strokeOpacity="0.75"
-                    />
-
-                    {/* Outer Fine Double Line Trim */}
-                    <path
-                      d={JHAROKHA_PATH}
-                      fill="none"
-                      stroke="#D4B68A"
-                      strokeWidth="0.8"
-                      strokeDasharray="3 1.5"
-                      transform="scale(0.96) translate(3.2, 3.2)"
-                      opacity="0.9"
-                    />
-
-                    {/* Inner Clipped Image */}
-                    <g clipPath={`url(#jharokha-clip-${catId})`}>
-                      <image
-                        href={cat.image}
-                        x="0"
-                        y="0"
-                        width="160"
-                        height="160"
-                        preserveAspectRatio="xMidYMid slice"
-                        className="transition-transform duration-700 ease-out group-hover:scale-115 origin-center"
-                      />
-
-                      {/* Subtle warm lighting vignette */}
-                      <path
-                        d={JHAROKHA_INNER_PATH}
-                        fill="none"
-                        stroke="rgba(0,0,0,0.15)"
-                        strokeWidth="2"
-                      />
-                    </g>
-
-                    {/* Inner Fine Gold Border Line */}
-                    <path
-                      d={JHAROKHA_INNER_PATH}
-                      fill="none"
-                      stroke="#A87B4F"
-                      strokeWidth="1.2"
-                      className="transition-colors duration-300 group-hover:stroke-[#5A1827]"
-                    />
-                  </svg>
+                {/* Modern circular thumbnail with clean border */}
+                <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-2 border-neutral-200 group-hover:border-neutral-800 transition-all duration-300 shadow-xs group-hover:shadow-md">
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-110"
+                    loading="lazy"
+                  />
                 </div>
 
                 {/* Category Name Label */}
                 <div className="text-center px-1">
-                  <span className="font-serif sm:font-sans text-xs sm:text-sm font-semibold tracking-wide text-neutral-800 group-hover:text-brand-maroon transition-colors block">
+                  <span className="text-xs sm:text-sm font-medium text-neutral-700 group-hover:text-neutral-950 transition-colors block whitespace-nowrap">
                     {cat.name}
                   </span>
                 </div>

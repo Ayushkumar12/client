@@ -6,13 +6,13 @@ const ContentContext = createContext(null);
 export const DEFAULT_SITE_CONTENT = {
   brand: {
     name: 'OCT9',
-    tagline: 'Luxury Without Noise',
-    sub_tagline: 'Timeless Indian Heritage Atelier',
-    announcement_bar: '✨ Complimentary Express Air Shipping Across India on Orders Above ₹1,999 • Handcrafted with Love',
+    tagline: 'Fashion & Ethnic Wear',
+    sub_tagline: 'Women\'s Ethnic Wear & Dresses',
+    announcement_bar: 'Free Shipping on orders above ₹999 • 15% off prepaid orders',
     support_phone: '+91 98765 43210',
-    support_email: 'concierge@oct9.com',
+    support_email: 'support@oct9.com',
     whatsapp_number: '919876543210',
-    address: 'Atelier OCT9, Fashion Hub, Shahpur Jat, New Delhi 110049',
+    address: 'OCT9 Fashion Store, New Delhi 110049',
     instagram_url: 'https://instagram.com',
     facebook_url: 'https://facebook.com',
     pinterest_url: 'https://pinterest.com'

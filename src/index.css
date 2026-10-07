@@ -1,37 +1,37 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-dark: #141414;
-  --color-brand-charcoal: #1C1C1C;
-  --color-brand-gold: #C5A880;
-  --color-brand-gold-light: #E2CEB4;
-  --color-brand-gold-dark: #A38459;
-  --color-brand-maroon: #5A1827;
-  --color-brand-maroon-hover: #430F1B;
-  --color-brand-maroon-light: #7A2437;
-  --color-brand-cream: #FAF7F2;
-  --color-brand-cream-warm: #F3ECE1;
-  --color-brand-sand: #ECE4D8;
-  --color-brand-border: #E7DFD5;
+  --color-brand-dark: #1F2937;
+  --color-brand-charcoal: #374151;
+  --color-brand-gold: #D97706;
+  --color-brand-gold-light: #FDE68A;
+  --color-brand-gold-dark: #B45309;
+  --color-brand-maroon: #881337;
+  --color-brand-maroon-hover: #4C0519;
+  --color-brand-maroon-light: #9F1239;
+  --color-brand-cream: #FAFAFA;
+  --color-brand-cream-warm: #F4F4F5;
+  --color-brand-sand: #E4E4E7;
+  --color-brand-border: #E5E7EB;
 
-  --font-serif: "Outfit", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Inter", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  --shadow-luxury: 0 10px 30px -5px rgba(20, 20, 20, 0.08), 0 4px 6px -2px rgba(20, 20, 20, 0.03);
-  --shadow-luxury-hover: 0 20px 35px -5px rgba(90, 24, 39, 0.12), 0 8px 10px -4px rgba(20, 20, 20, 0.04);
+  --shadow-luxury: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-luxury-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
 }
 
 :root {
-  --color-gold: #C5A880;
-  --color-maroon: #5A1827;
-  --color-cream: #FAF7F2;
-  --color-dark: #141414;
+  --color-gold: #D97706;
+  --color-maroon: #881337;
+  --color-cream: #FAFAFA;
+  --color-dark: #1F2937;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: #FAF7F2;
-  color: #1A1A1A;
+  background-color: #FAFAFA;
+  color: #1F2937;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -44,45 +44,43 @@ h1, h2, h3, h4, h5, h6, .font-serif {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F3ECE1;
+  background: #F3F4F6;
 }
 ::-webkit-scrollbar-thumb {
-  background: #C5A880;
+  background: #D1D5DB;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #A38459;
+  background: #9CA3AF;
 }
 
-/* Luxury Gold & Maroon utility classes */
+/* Standard Utility classes */
 .gold-gradient-text {
-  background: linear-gradient(135deg, #A38459 0%, #C5A880 50%, #7A5B30 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #B45309;
 }
 
 .gold-gradient-bg {
-  background: linear-gradient(135deg, #DFD5C6 0%, #C5A880 50%, #B89758 100%);
+  background-color: #F59E0B;
 }
 
 .maroon-gradient-bg {
-  background: linear-gradient(135deg, #7A2437 0%, #5A1827 50%, #3D0E19 100%);
+  background-color: #881337;
 }
 
 .dark-luxury-bg {
-  background: linear-gradient(180deg, #181818 0%, #121212 100%);
+  background-color: #1F2937;
 }
 
 /* Card Zoom & Hover */
 .card-hover-effect {
-  transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-hover-effect:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
 }
 
 /* Custom Range Slider for Price Filter */

@@ -414,7 +414,7 @@ export function CheckoutPage() {
                 </h2>
 
                 <div className="space-y-3">
-                  {/* Razorpay Online */}
+                  {/* Online Payment */}
                   <label
                     className={`flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.payment_method === 'razorpay'
                         ? 'border-brand-maroon bg-brand-maroon/5 ring-1 ring-brand-maroon'
@@ -430,19 +430,14 @@ export function CheckoutPage() {
                       className="mt-1 text-brand-maroon focus:ring-brand-maroon"
                     />
                     <div className="ml-3 flex-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <CreditCard className="w-4 h-4 text-brand-maroon" />
-                          <span className="text-xs sm:text-sm font-bold text-neutral-900">
-                            Online Payment (Razorpay)
-                          </span>
-                        </div>
-                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">
-                          Extra 15% Off with OCT15
+                      <div className="flex items-center space-x-2">
+                        <CreditCard className="w-4 h-4 text-brand-maroon" />
+                        <span className="text-xs sm:text-sm font-bold text-neutral-900">
+                          Online Payment (UPI, Cards, NetBanking, Wallets)
                         </span>
                       </div>
                       <p className="text-xs text-neutral-500 mt-1">
-                        Pay securely with UPI (Google Pay, PhonePe, Paytm), Cards, NetBanking, or Wallets.
+                        Pay securely with UPI (Google Pay, PhonePe, Paytm), Debit/Credit Cards, or NetBanking.
                       </p>
                     </div>
                   </label>
@@ -466,11 +461,11 @@ export function CheckoutPage() {
                       <div className="flex items-center space-x-2">
                         <Banknote className="w-4 h-4 text-brand-maroon" />
                         <span className="text-xs sm:text-sm font-bold text-neutral-900">
-                          Cash on Delivery (Shiprocket Verified COD)
+                          Cash on Delivery (COD)
                         </span>
                       </div>
                       <p className="text-xs text-neutral-500 mt-1">
-                        Pay in cash to the Shiprocket courier executive upon doorstep delivery.
+                        Pay in cash to the courier executive upon doorstep delivery.
                       </p>
                     </div>
                   </label>
@@ -517,7 +512,7 @@ export function CheckoutPage() {
                         type="text"
                         value={couponInput}
                         onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                        placeholder="Coupon Code (OCT15)"
+                        placeholder="Enter Coupon Code"
                         className="flex-1 text-xs p-2.5 border rounded-lg uppercase"
                       />
                       <button
@@ -548,7 +543,7 @@ export function CheckoutPage() {
                   )}
 
                   <div className="flex justify-between">
-                    <span>Shiprocket Express Shipping</span>
+                    <span>Express Shipping</span>
                     <span>{shippingFee === 0 ? <strong className="text-emerald-700">FREE</strong> : `₹${shippingFee}`}</span>
                   </div>
 
@@ -580,14 +575,14 @@ export function CheckoutPage() {
                   ) : (
                     <>
                       <ShieldCheck className="w-4 h-4 text-brand-gold-light" />
-                      <span>{formData.payment_method === 'razorpay' ? `Pay ₹${grandTotal} via Razorpay` : 'Confirm Cash on Delivery'}</span>
+                      <span>{formData.payment_method === 'razorpay' ? `Pay ₹${grandTotal}` : 'Confirm Cash on Delivery'}</span>
                     </>
                   )}
                 </button>
 
                 <p className="text-[11px] text-neutral-400 text-center flex items-center justify-center space-x-1">
                   <Truck className="w-3 h-3 text-brand-maroon" />
-                  <span>Ships via <strong>Shiprocket Express</strong> with real-time tracking</span>
+                  <span>Ships via <strong>Express Courier</strong> with real-time tracking</span>
                 </p>
               </div>
             </div>

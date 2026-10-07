@@ -68,7 +68,7 @@ export function AccountPage() {
   } = useAuth();
 
   const { wishlist, toggleWishlist, wishlistCount } = useWishlist();
-  const { addToCart, applyCoupon } = useCart();
+  const { addToCart } = useCart();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -175,12 +175,7 @@ export function AccountPage() {
   const [wishlistSearch, setWishlistSearch] = useState('');
   const [wishlistSort, setWishlistSort] = useState('newest');
 
-  // Coupon Copy Feedback & Tab States
-  const [copiedCoupon, setCopiedCoupon] = useState('');
-  const [couponTab, setCouponTab] = useState('available');
-  const [customCouponInput, setCustomCouponInput] = useState('');
-  const [couponApplyFeedback, setCouponApplyFeedback] = useState('');
-  const [expandedCouponId, setExpandedCouponId] = useState(null);
+
 
   // Notification Tab States
   const [notificationFilter, setNotificationFilter] = useState('all');
@@ -198,9 +193,9 @@ export function AccountPage() {
     {
       id: 'notif_2',
       category: 'offers',
-      title: 'Flat 10% Off on All Sarees',
-      badge: 'Special Offer',
-      desc: 'Use code SAREE10 and get flat 10% off on all sarees. Minimum order value ₹1,999.',
+      title: 'New Silk Saree Collection Live',
+      badge: 'Special Collection',
+      desc: 'Discover our newly launched handcrafted silk and organza sarees in the atelier.',
       time: '5 hours ago',
       iconType: 'gift',
       iconBg: 'bg-[#FDF2F4]',
@@ -463,11 +458,7 @@ export function AccountPage() {
     setSavedPayments(prev => prev.filter(p => p.id !== id));
   };
 
-  const handleCopyCoupon = (code) => {
-    navigator.clipboard?.writeText(code);
-    setCopiedCoupon(code);
-    setTimeout(() => setCopiedCoupon(''), 2500);
-  };
+
 
   // Sample Wishlist items for rich showcase if user wishlist is empty
   const displayWishlist = useMemo(() => {
@@ -574,7 +565,6 @@ export function AccountPage() {
     wishlist: 'Wishlist',
     addresses: 'Addresses',
     payment: 'Payment Methods',
-    offers: 'Offers & Coupons',
     notifications: 'Notifications',
     settings: 'Settings'
   };
@@ -711,29 +701,6 @@ export function AccountPage() {
                   </div>
                 </button>
 
-                {/* Nav Item: Offers & Coupons */}
-                <button
-                  onClick={() => setSearchParams({ tab: 'offers' })}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
-                    activeTab === 'offers'
-                      ? 'bg-[#5A1827] text-white shadow-2xs font-bold'
-                      : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100/70'
-                  }`}
-                >
-                  <div className="flex items-center space-x-2.5">
-                    <Tag className="w-4 h-4" />
-                    <span>Offers & Coupons</span>
-                  </div>
-                  <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      activeTab === 'offers'
-                        ? 'bg-white/20 text-white'
-                        : 'bg-amber-100 text-amber-900'
-                    }`}
-                  >
-                    2
-                  </span>
-                </button>
 
                 {/* Nav Item: Notifications */}
                 <button
@@ -1839,287 +1806,7 @@ export function AccountPage() {
               </div>
             )}
 
-            {/* ========================================================= */}
-            {/* TAB 6: OFFERS & COUPONS */}
-            {/* ========================================================= */}
-            {activeTab === 'offers' && (
-              <div className="space-y-6 animate-fadeIn">
-                {/* Header Title + Coupon Code Apply Box */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div>
-                    <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
-                      Offers & Coupons
-                    </h1>
-                    <p className="text-xs text-neutral-500 mt-1">
-                      Save more on your favourite products with exclusive offers and discount coupons.
-                    </p>
-                  </div>
 
-                  {/* Top Right Apply Coupon Bar */}
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      if (customCouponInput.trim()) {
-                        applyCoupon(customCouponInput.trim().toUpperCase());
-                        setCouponApplyFeedback(`Coupon ${customCouponInput.trim().toUpperCase()} applied!`);
-                        setCustomCouponInput('');
-                        setTimeout(() => setCouponApplyFeedback(''), 3000);
-                      }
-                    }}
-                    className="flex items-center space-x-2 w-full md:w-auto"
-                  >
-                    <input
-                      type="text"
-                      placeholder="Enter coupon code"
-                      value={customCouponInput}
-                      onChange={(e) => setCustomCouponInput(e.target.value)}
-                      className="w-full sm:w-56 text-xs px-3.5 py-2.5 bg-white border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon uppercase font-mono font-semibold"
-                    />
-                    <button
-                      type="submit"
-                      className="px-5 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-xl shadow-2xs transition-colors cursor-pointer shrink-0"
-                    >
-                      Apply
-                    </button>
-                  </form>
-                </div>
-
-                {couponApplyFeedback && (
-                  <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>{couponApplyFeedback}</span>
-                  </div>
-                )}
-
-                {/* Sub-Category Tabs */}
-                <div className="flex items-center space-x-2 border-b border-neutral-200/80 text-xs font-bold">
-                  {[
-                    { key: 'available', label: 'Available Coupons (6)' },
-                    { key: 'my_coupons', label: 'My Coupons (2)' },
-                    { key: 'expired', label: 'Expired Coupons (4)' }
-                  ].map((tab) => (
-                    <button
-                      key={tab.key}
-                      onClick={() => setCouponTab(tab.key)}
-                      className={`pb-2.5 px-3 border-b-2 transition-colors cursor-pointer ${
-                        couponTab === tab.key
-                          ? 'border-[#5A1827] text-[#5A1827]'
-                          : 'border-transparent text-neutral-500 hover:text-neutral-800'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Top Featured Promo Banners (2 Side-by-Side Cards) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Banner 1: Festive Special */}
-                  <div className="bg-[#EEDEC8] border border-[#DECDB3] rounded-2xl p-5 sm:p-6 shadow-2xs relative overflow-hidden flex flex-col justify-between space-y-4">
-                    <div className="relative z-10 space-y-1">
-                      <span className="text-xs font-serif italic text-neutral-800 block">
-                        Festive Special
-                      </span>
-                      <h3 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
-                        FLAT 10% OFF
-                      </h3>
-                      <p className="text-xs text-neutral-700">
-                        on all Sarees &amp; Designer Suits
-                      </p>
-                    </div>
-
-                    <div className="relative z-10 flex flex-wrap items-center gap-2 pt-2">
-                      <div className="border border-dashed border-neutral-700 bg-white/80 px-3 py-1.5 rounded-lg text-xs font-mono font-bold text-neutral-900">
-                        Use Code: <span className="text-[#5A1827]">SAREE10</span>
-                      </div>
-                      <Link
-                        to="/new-arrivals"
-                        className="px-4 py-1.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-lg transition-colors shadow-2xs"
-                      >
-                        Shop Now
-                      </Link>
-                    </div>
-
-                    {/* Mockup visual on right */}
-                    <div className="hidden sm:block absolute right-3 bottom-2 w-40 h-28 bg-white/80 rounded-xl shadow-md border border-neutral-200 overflow-hidden transform rotate-2 p-1.5">
-                      <div className="w-full h-full bg-[#9B4553]/10 rounded flex flex-col items-center justify-center p-2 text-center">
-                        <span className="text-[10px] font-serif font-bold text-[#5A1827]">OCT9 LUXURY</span>
-                        <span className="text-[8px] text-neutral-500">Festive Edit 2026</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Banner 2: Prepaid Orders */}
-                  <div className="bg-[#FAD9CE] border border-[#ECC0B2] rounded-2xl p-5 sm:p-6 shadow-2xs relative overflow-hidden flex flex-col justify-between space-y-4">
-                    <div className="relative z-10 space-y-1">
-                      <span className="text-xs text-neutral-800 font-semibold block">
-                        Prepaid Orders
-                      </span>
-                      <h3 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
-                        EXTRA 5% OFF
-                      </h3>
-                      <p className="text-xs text-neutral-700">
-                        on all orders
-                      </p>
-                    </div>
-
-                    <div className="relative z-10 flex flex-wrap items-center gap-2 pt-2">
-                      <div className="border border-dashed border-neutral-700 bg-white/80 px-3 py-1.5 rounded-lg text-xs font-mono font-bold text-neutral-900">
-                        Use Code: <span className="text-[#5A1827]">PREPAID5</span>
-                      </div>
-                      <Link
-                        to="/new-arrivals"
-                        className="px-4 py-1.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-lg transition-colors shadow-2xs"
-                      >
-                        Shop Now
-                      </Link>
-                    </div>
-
-                    {/* Decorative Graphic on right */}
-                    <div className="hidden sm:flex absolute right-4 bottom-3 space-x-1 items-end opacity-80">
-                      <div className="w-3.5 h-12 bg-amber-600 rounded-t" />
-                      <div className="w-3.5 h-16 bg-[#5A1827] rounded-t" />
-                      <div className="w-3.5 h-8 bg-rose-400 rounded-t" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Available Coupons Section Header */}
-                <div className="pt-2">
-                  <h3 className="font-serif font-bold text-base text-neutral-900 mb-3">
-                    Available Coupons
-                  </h3>
-
-                  {/* 2-Column Grid of Coupons */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {[
-                      {
-                        id: 'c_1',
-                        code: 'SAREE10',
-                        badgeText: '10%',
-                        badgeSub: 'OFF',
-                        badgeBg: 'bg-[#FDF2F4]',
-                        badgeTextColor: 'text-[#B8233D]',
-                        title: 'Flat 10% Off on all Sarees',
-                        minOrder: 'Min. order value ₹1,999',
-                        details: 'Valid on all Silk, Banarasi, Organza and Chiffon Sarees. Max discount ₹2,000.'
-                      },
-                      {
-                        id: 'c_2',
-                        code: 'FESTIVE15',
-                        badgeText: '15%',
-                        badgeSub: 'OFF',
-                        badgeBg: 'bg-[#FFF8E5]',
-                        badgeTextColor: 'text-[#A47012]',
-                        title: 'Flat 15% Off on Suits & Juttis',
-                        minOrder: 'Min. order value ₹2,999',
-                        details: 'Applicable on Handcrafted Anarkalis, Punjabi Suits, and Embroidered Juttis.'
-                      },
-                      {
-                        id: 'c_3',
-                        code: 'PREPAID5',
-                        badgeText: '5%',
-                        badgeSub: 'OFF',
-                        badgeBg: 'bg-[#EBF9F1]',
-                        badgeTextColor: 'text-[#1E824C]',
-                        title: 'Extra 5% Off on Prepaid Orders',
-                        minOrder: 'No min. num order value',
-                        details: 'Instant discount applied on Razorpay online payments (UPI, Netbanking, Cards).'
-                      },
-                      {
-                        id: 'c_4',
-                        code: 'WELCOME500',
-                        badgeText: '₹500',
-                        badgeSub: 'OFF',
-                        badgeBg: 'bg-[#F3EFFC]',
-                        badgeTextColor: 'text-[#6B3FA0]',
-                        title: 'Flat ₹500 Off on First Order',
-                        minOrder: 'Min. order value ₹2,499',
-                        details: 'Exclusive inaugural luxury gift for newly registered OCT9 members.'
-                      },
-                      {
-                        id: 'c_5',
-                        code: 'OCTFEST20',
-                        badgeText: '20%',
-                        badgeSub: 'OFF',
-                        badgeBg: 'bg-[#FFF2EB]',
-                        badgeTextColor: 'text-[#D35400]',
-                        title: 'Flat 20% Off on Festive Collection',
-                        minOrder: 'Min. order value ₹4,999',
-                        details: 'Applicable across our Grand Royal Wedding & Festive Wardrobe collection.'
-                      },
-                      {
-                        id: 'c_6',
-                        code: 'JUTTI300',
-                        badgeText: '₹300',
-                        badgeSub: 'OFF',
-                        badgeBg: 'bg-[#EBF7FC]',
-                        badgeTextColor: 'text-[#1F7A9C]',
-                        title: 'Flat ₹300 Off on Juttis',
-                        minOrder: 'Min. order value ₹1,499',
-                        details: 'Valid on genuine leather artisan-crafted bridal and daily wear juttis.'
-                      }
-                    ].map((coupon) => (
-                      <div
-                        key={coupon.id}
-                        className="bg-white rounded-2xl p-4 sm:p-5 border border-neutral-200/80 shadow-2xs flex flex-col justify-between space-y-3 hover:shadow-xs transition-shadow"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          {/* Left Badge */}
-                          <div
-                            className={`w-16 h-16 rounded-xl ${coupon.badgeBg} ${coupon.badgeTextColor} flex flex-col items-center justify-center font-bold shrink-0`}
-                          >
-                            <span className="text-sm sm:text-base leading-none">{coupon.badgeText}</span>
-                            <span className="text-[10px] uppercase font-bold tracking-wider mt-0.5">
-                              {coupon.badgeSub}
-                            </span>
-                          </div>
-
-                          {/* Middle Info */}
-                          <div className="flex-1 min-w-0 space-y-1">
-                            <h4 className="font-mono font-bold text-xs sm:text-sm text-neutral-900 truncate">
-                              {coupon.code}
-                            </h4>
-                            <p className="text-xs text-neutral-700 font-semibold truncate">
-                              {coupon.title}
-                            </p>
-                            <p className="text-[11px] text-neutral-400">
-                              {coupon.minOrder}
-                            </p>
-                            <button
-                              onClick={() => setExpandedCouponId(expandedCouponId === coupon.id ? null : coupon.id)}
-                              className="text-[11px] text-brand-maroon font-semibold hover:underline flex items-center space-x-0.5 cursor-pointer pt-0.5"
-                            >
-                              <span>View Details</span>
-                              <span>{expandedCouponId === coupon.id ? '▴' : '▾'}</span>
-                            </button>
-                          </div>
-
-                          {/* Right Apply Button */}
-                          <button
-                            onClick={() => {
-                              applyCoupon(coupon.code);
-                              setCouponApplyFeedback(`Coupon ${coupon.code} applied successfully!`);
-                              setTimeout(() => setCouponApplyFeedback(''), 3000);
-                            }}
-                            className="px-4 py-2 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shrink-0 shadow-2xs"
-                          >
-                            Apply
-                          </button>
-                        </div>
-
-                        {/* Expandable Terms */}
-                        {expandedCouponId === coupon.id && (
-                          <div className="pt-2 border-t border-neutral-100 text-[11px] text-neutral-600 bg-neutral-50/70 p-2.5 rounded-lg animate-fadeIn">
-                            {coupon.details}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* ========================================================= */}
             {/* TAB 7: NOTIFICATIONS */}

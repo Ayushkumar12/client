@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Truck, Tag, RotateCcw, MapPin } from 'lucide-react';
+import { Truck, Tag, RotateCcw, MapPin, Sparkles } from 'lucide-react';
 import { useContent } from '../../context/ContentContext.jsx';
 
 export function TopAnnouncementBar() {
@@ -20,8 +20,8 @@ export function TopAnnouncementBar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-1.5 whitespace-nowrap">
-            <Tag className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
-            <span>Use code <strong className="text-white bg-neutral-800 px-1.5 py-0.5 rounded font-mono font-bold text-xs">OCT15</strong> for 15% off prepaid orders</span>
+            <Sparkles className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
+            <span>Handcrafted Luxury Ethnic Wear &amp; Bespoke Silhouettes</span>
           </div>
 
           <div className="hidden lg:flex items-center space-x-1.5 whitespace-nowrap">

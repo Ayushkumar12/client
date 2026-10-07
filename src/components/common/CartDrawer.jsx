@@ -89,7 +89,7 @@ export function CartDrawer() {
                 <Truck className="w-4 h-4 text-brand-maroon" />
                 <span>
                   {freeShippingRemaining > 0 ? (
-                    <>Add <strong className="text-brand-maroon">₹{freeShippingRemaining}</strong> more for <strong>Free Shiprocket Shipping</strong></>
+                    <>Add <strong className="text-brand-maroon">₹{freeShippingRemaining}</strong> more for <strong>Free Express Shipping</strong></>
                   ) : (
                     <strong className="text-emerald-700 flex items-center">
                       <Check className="w-3.5 h-3.5 mr-1 inline" /> You have unlocked FREE Express Shipping!
@@ -237,7 +237,7 @@ export function CartDrawer() {
                     type="text"
                     value={couponInput}
                     onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                    placeholder="Coupon Code (Try OCT15)"
+                    placeholder="Enter Coupon Code"
                     className="flex-1 text-xs px-3 py-2 bg-white border border-neutral-300 rounded-lg focus:outline-none focus:border-brand-maroon uppercase"
                   />
                   <button
@@ -267,7 +267,7 @@ export function CartDrawer() {
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span>Shiprocket Express Shipping</span>
+                  <span>Express Shipping</span>
                   <span>{shippingFee === 0 ? <strong className="text-emerald-700">FREE</strong> : `₹${shippingFee}`}</span>
                 </div>
                 <div className="flex justify-between text-sm font-bold text-neutral-900 pt-2 border-t border-brand-border">

@@ -54,8 +54,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   const [selectedDiscount, setSelectedDiscount] = useState(null);
   const [sortBy, setSortBy] = useState('featured');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [newsletterSuccess, setNewsletterSuccess] = useState(false);
 
   // Common Color Palette Swatches matching screenshots
   const colorOptions = [
@@ -121,7 +119,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=1200&q=85',
         badges: ['100% Pure Fabrics', 'Custom Fit Freedom', 'Unstitched 3-Piece Sets'],
         theme: 'cream_luxury',
-        hasSuitPromoBanner: true,
         circularSubcategories: [
           { name: 'Cotton Suits', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
           { name: 'Mulberry Silk Suits', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
@@ -149,7 +146,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
         badges: ['Ready to Wear', 'Precision Tailoring', 'Wide Range of Sizes'],
         theme: 'dark_burgundy',
-        hasSuitPromoBanner: true,
         circularSubcategories: [
           { name: 'Farshi Salwar Suits', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
           { name: 'Palazzo Suits', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
@@ -183,7 +179,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
         fabricOptions: ['Georgette', 'Chanderi', 'Silk', 'Cotton', 'Rayon', 'Velvet'],
         occasionOptions: ['Wedding', 'Festive', 'Party Wear', 'Casual'],
-        hasNewsletterBanner: true,
         priceMin: 999,
         priceMax: 15000
       };
@@ -258,7 +253,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         typeOptions: ['Silk Sarees', 'Organza Sarees', 'Banarasi Sarees', 'Chiffon Sarees', 'Linen Sarees', 'Party Wear', 'Designer Sarees'],
         sizeOptions: ['Free Size'],
         fabricOptions: ['Kanjivaram Silk', 'Chiffon', 'Silk', 'Banarasi Silk', 'Georgette', 'Cotton/Linen', 'Organza', 'Crepe'],
-        hasNewsletterBanner: true,
         priceMin: 1499,
         priceMax: 9999
       };
@@ -268,27 +262,26 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
       return {
         title: 'Party Wear',
         heading: 'Party Wear',
-        tagline: 'NOIR & GOLD SPECIAL GALA',
-        description: 'Exclusive party and festive outfits created for special moments.',
+        tagline: 'EXCLUSIVE EVENING SOIRÉE & GALA',
+        description: 'Dazzling sequin, velvet, and bespoke ethnic party wear crafted for unforgettable evenings and celebrations.',
         heroImage: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=85',
-        badges: ['Premium Velvet', 'Sequins & Zardozi', 'Tailored for Special Occasions'],
-        theme: 'dark_gala',
-        hasPartyPromoBanner: true,
+        badges: ['Handcrafted Embellishments', 'Premium Velvets & Silks', 'Free Shipping Above ₹1,999'],
+        theme: 'cream_luxury',
         circularSubcategories: [
           { name: 'Reception Wear', image: 'https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?auto=format&fit=crop&w=300&q=80' },
           { name: 'Engagement Wear', image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=300&q=80' },
           { name: 'Cocktail Wear', image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=300&q=80' },
           { name: 'Sangeet Wear', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Wedding Guest', image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Evening Wear', image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Bridesmaid Suits', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' }
+          { name: 'Evening Gowns', image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Velvet Specials', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Bridesmaid Outfits', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' }
         ],
         typeFilterTitle: 'Occasion Type',
-        typeOptions: ['Reception Wear', 'Engagement Wear', 'Cocktail Wear', 'Sangeet Wear', 'Wedding Guest', 'Evening Wear', 'Bridesmaid Suits'],
+        typeOptions: ['Reception Wear', 'Engagement Wear', 'Cocktail Wear', 'Sangeet Wear', 'Evening Gowns', 'Velvet Specials', 'Bridesmaid Outfits'],
         sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'],
-        fabricOptions: ['Raw Silk', 'Georgette', 'Silk', 'Organza', 'Net & Georgette', 'Velvet', 'Wool Blend', 'Satin & Silk Blend'],
-        workTypeOptions: ['Zari Embroidered', 'Sequins', 'Zardozi', 'Cutdana', 'Mirror Work'],
-        priceMin: 2499,
+        fabricOptions: ['Raw Silk & Wool Blend', 'Net & Georgette', 'Velvet', 'Organza', 'Silk', 'Chiffon', 'Satin Blend'],
+        occasionOptions: ['Reception', 'Cocktail', 'Engagement', 'Sangeet', 'Party Wear', 'Wedding'],
+        priceMin: 1499,
         priceMax: 15000
       };
     }
@@ -302,7 +295,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
         badges: ['Premium Fabrics', 'Exclusive Designs', 'Festive Season Collection'],
         theme: 'maroon_gold',
-        hasFestiveOfferStrip: true,
         circularSubcategories: [
           { name: 'Holi', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
           { name: 'Diwali', image: 'https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?auto=format&fit=crop&w=300&q=80' },
@@ -418,25 +410,9 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
 
   const activeFiltersCount = selectedSizes.length + selectedFabrics.length + selectedOccasions.length + selectedTypes.length + (priceRange < 15000 ? 1 : 0) + (selectedDiscount ? 1 : 0);
 
-  const handleNewsletterSubmit = (e) => {
-    e.preventDefault();
-    if (newsletterEmail) {
-      setNewsletterSuccess(true);
-      setTimeout(() => setNewsletterSuccess(false), 4000);
-      setNewsletterEmail('');
-    }
-  };
-
-  // Dynamic Theme Classes
-  const isDarkGala = config.theme === 'dark_gala';
-  const isDarkBurgundy = config.theme === 'dark_burgundy';
-  const isMaroonGold = config.theme === 'maroon_gold';
-
-  const pageBgClass = isDarkGala ? 'bg-[#151210] text-[#FAF7F2]' : 'bg-[#FAF7F2] text-neutral-900';
-  const sidebarBgClass = isDarkGala
-    ? 'bg-[#1D1916] border-neutral-800 text-neutral-200'
-    : 'bg-white border-brand-border text-neutral-800';
-
+  // Cohesive Brand Theme Classes
+  const pageBgClass = 'bg-[#FAF7F2] text-neutral-900';
+  const sidebarBgClass = 'bg-white border-brand-border text-neutral-800';
 
   return (
     <div className={`min-h-screen ${pageBgClass} pb-16 transition-colors duration-300`}>
@@ -445,7 +421,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         description={config.description}
       />
 
-      {/* Clean Category Header (Hero section removed in favor of sleek catalog header) */}
+      {/* Clean Category Header */}
       <section className="border-b border-brand-border/60 bg-white/70 backdrop-blur-xs py-5 sm:py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
@@ -481,9 +457,9 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         </div>
       </section>
 
-      {/* 2. SUBCATEGORY QUICK-SELECT CIRCLE CARDS (Screenshots 1, 2, 4, 5) */}
+      {/* 2. SUBCATEGORY QUICK-SELECT CIRCLE CARDS */}
       {config.circularSubcategories && config.circularSubcategories.length > 0 && (
-        <section className={`py-6 border-b ${isDarkGala ? 'border-neutral-800 bg-[#191512]' : 'border-brand-border/60 bg-white/60'}`}>
+        <section className="py-6 border-b border-brand-border/60 bg-white/60">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-start sm:justify-center gap-6 sm:gap-10 overflow-x-auto no-scrollbar py-2">
               {config.circularSubcategories.map((sub) => {
@@ -497,8 +473,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
                     <div className={`w-18 h-18 sm:w-22 sm:h-22 rounded-full overflow-hidden p-0.5 transition-all duration-300 shadow-md ${
                       isSelected
                         ? 'ring-3 ring-brand-maroon scale-105'
-                        : isDarkGala
-                        ? 'ring-1 ring-amber-500/40 group-hover:ring-amber-400 group-hover:scale-105'
                         : 'ring-1 ring-neutral-300 group-hover:ring-brand-maroon group-hover:scale-105'
                     }`}>
                       <img
@@ -510,8 +484,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
                     <span className={`mt-2 text-xs font-semibold tracking-tight transition-colors text-center max-w-[90px] truncate ${
                       isSelected
                         ? 'text-brand-maroon font-bold'
-                        : isDarkGala
-                        ? 'text-neutral-300 group-hover:text-amber-300'
                         : 'text-neutral-700 group-hover:text-brand-maroon'
                     }`}>
                       {sub.name}
@@ -528,32 +500,26 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
       {/* 3. MAIN CONTENT: SIDEBAR FILTERS + PRODUCT GRID */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Top Control Bar: Total Count + Sort By */}
-        <div className={`flex items-center justify-between pb-5 border-b ${isDarkGala ? 'border-neutral-800' : 'border-brand-border'}`}>
+        <div className="flex items-center justify-between pb-5 border-b border-brand-border">
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setIsMobileFilterOpen(true)}
-              className={`lg:hidden flex items-center space-x-2 px-4 py-2 rounded-lg text-xs font-semibold shadow-xs border ${
-                isDarkGala ? 'bg-neutral-800 text-white border-neutral-700' : 'bg-white text-neutral-800 border-neutral-300'
-              }`}
+              className="lg:hidden flex items-center space-x-2 px-4 py-2 rounded-lg text-xs font-semibold shadow-xs border bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-50"
             >
               <Filter className="w-3.5 h-3.5 text-brand-maroon" />
               <span>Filters ({activeFiltersCount})</span>
             </button>
-            <p className={`text-xs sm:text-sm ${isDarkGala ? 'text-neutral-400' : 'text-neutral-600'}`}>
-              <strong className={isDarkGala ? 'text-white' : 'text-neutral-900'}>{config.heading}</strong>: Showing <strong>{pagination.total}</strong> products
+            <p className="text-xs sm:text-sm text-neutral-600">
+              <strong className="text-neutral-900">{config.heading}</strong>: Showing <strong>{pagination.total}</strong> products
             </p>
           </div>
 
           <div className="flex items-center space-x-3">
-            <span className={`text-xs hidden sm:inline ${isDarkGala ? 'text-neutral-400' : 'text-neutral-500'}`}>Sort By:</span>
+            <span className="text-xs hidden sm:inline text-neutral-500">Sort By:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className={`text-xs sm:text-sm rounded-lg px-3 py-2 font-medium cursor-pointer shadow-2xs border focus:outline-none ${
-                isDarkGala
-                  ? 'bg-neutral-900 text-neutral-200 border-neutral-700 focus:border-amber-400'
-                  : 'bg-white text-neutral-800 border-neutral-300 focus:border-brand-maroon'
-              }`}
+              className="text-xs sm:text-sm rounded-lg px-3 py-2 font-medium cursor-pointer shadow-2xs border bg-white text-neutral-800 border-neutral-300 focus:outline-none focus:border-brand-maroon"
             >
               <option value="featured">Featured / Recommended</option>
               <option value="newest">Newest First</option>
@@ -571,13 +537,13 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
           <aside className={`hidden lg:block space-y-6 p-5 rounded-2xl border shadow-2xs sticky top-28 ${sidebarBgClass}`}>
             <div className="flex items-center justify-between pb-3 border-b border-neutral-200/40">
               <div className="flex items-center space-x-2">
-                <SlidersHorizontal className={`w-4 h-4 ${isDarkGala ? 'text-amber-400' : 'text-brand-maroon'}`} />
+                <SlidersHorizontal className="w-4 h-4 text-brand-maroon" />
                 <span className="font-serif font-bold text-sm">Filters</span>
               </div>
               {activeFiltersCount > 0 && (
                 <button
                   onClick={clearAllFilters}
-                  className={`text-xs font-semibold hover:underline ${isDarkGala ? 'text-amber-400' : 'text-brand-maroon'}`}
+                  className="text-xs font-semibold text-brand-maroon hover:underline"
                 >
                   CLEAR ALL
                 </button>
@@ -615,11 +581,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
                       onClick={() => handleSizeToggle(sz)}
                       className={`min-w-9 h-8 px-2 rounded-md text-xs font-semibold border transition-all ${
                         selectedSizes.includes(sz)
-                          ? isDarkGala
-                            ? 'bg-amber-400 text-neutral-950 border-amber-400 font-bold'
-                            : 'bg-neutral-900 text-white border-neutral-900'
-                          : isDarkGala
-                          ? 'bg-neutral-800 text-neutral-300 border-neutral-700 hover:border-neutral-500'
+                          ? 'bg-neutral-900 text-white border-neutral-900'
                           : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:border-neutral-400'
                       }`}
                     >
@@ -634,7 +596,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
             <div className="space-y-2.5 pt-4 border-t border-neutral-200/30">
               <div className="flex justify-between text-xs font-bold">
                 <span>Price Range</span>
-                <span className={isDarkGala ? 'text-amber-400' : 'text-brand-maroon'}>
+                <span className="text-brand-maroon">
                   Up to ₹{priceRange.toLocaleString('en-IN')}
                 </span>
               </div>
@@ -743,7 +705,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
                 {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <div key={n} className={`rounded-2xl h-96 animate-pulse border ${isDarkGala ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200'}`} />
+                  <div key={n} className="rounded-2xl h-96 animate-pulse border bg-white border-neutral-200" />
                 ))}
               </div>
             ) : products.length === 0 ? (
@@ -773,7 +735,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
 
                 {/* Pagination Controls */}
                 {pagination.totalPages > 1 && (
-                  <div className={`flex items-center justify-center space-x-2 pt-6 border-t ${isDarkGala ? 'border-neutral-800' : 'border-brand-border'}`}>
+                  <div className="flex items-center justify-center space-x-2 pt-6 border-t border-brand-border">
                     {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => {
                       const isCurrent = pagination.page === p;
                       return (
@@ -787,11 +749,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
                           }}
                           className={`w-9 h-9 rounded-full text-xs font-bold transition-all ${
                             isCurrent
-                              ? isDarkGala
-                                ? 'bg-amber-400 text-neutral-950 shadow-md font-bold'
-                                : 'bg-neutral-900 text-white shadow-md'
-                              : isDarkGala
-                              ? 'bg-neutral-800 text-neutral-300 border border-neutral-700 hover:bg-neutral-700'
+                              ? 'bg-neutral-900 text-white shadow-md'
                               : 'bg-white text-neutral-700 hover:bg-neutral-100 border border-neutral-200'
                           }`}
                         >
@@ -807,161 +765,13 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         </div>
       </div>
 
-      {/* 4. MID-PAGE PROMOTIONAL BANNERS MATCHING SCREENSHOTS */}
-      {/* Suits Mid-Page Collection Banner (Screenshot 2) */}
-      {config.hasSuitPromoBanner && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-          <div className="rounded-2xl bg-gradient-to-r from-[#F7EFE5] via-[#EFE5D6] to-[#E5D7C2] border border-brand-border p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand-maroon shrink-0 shadow-md">
-                <img
-                  src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=200&q=80"
-                  alt="Suits Model"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <span className="text-[11px] font-bold text-brand-maroon uppercase tracking-wider">PREMIUM SUIT COLLECTION</span>
-                <h3 className="font-serif text-xl sm:text-2xl font-bold text-neutral-900">EXCEPTIONAL ETHNIC LUXURY</h3>
-                <Link
-                  to="/category/suits"
-                  className="inline-block mt-2 px-4 py-1.5 bg-brand-maroon text-white text-xs font-semibold rounded-lg shadow-sm hover:bg-brand-maroon-hover transition-colors"
-                >
-                  SHOP NOW
-                </Link>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-6 text-xs text-neutral-700 font-medium">
-              <div className="flex items-center space-x-2">
-                <Truck className="w-4 h-4 text-brand-maroon" />
-                <span>Free Shipping</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RefreshCcw className="w-4 h-4 text-brand-maroon" />
-                <span>Easy Returns</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-4 h-4 text-brand-maroon" />
-                <span>Secure Payments</span>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Party Wear Special Banner (Screenshot 4) */}
-      {config.hasPartyPromoBanner && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-          <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#241A14] via-[#1E1510] to-[#120E0C] border border-amber-500/30 p-8 sm:p-10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-3">
-              <span className="text-[11px] font-bold text-amber-400 uppercase tracking-widest">
-                EXCLUSIVE COLLECTION
-              </span>
-              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white">
-                Make Every Moment Special
-              </h2>
-              <p className="text-xs sm:text-sm text-neutral-300 max-w-lg">
-                Tailored fine fabrics for dinner gala, reception and sangeet night.
-              </p>
-              <button
-                onClick={() => window.scrollTo({ top: 400, behavior: 'smooth' })}
-                className="mt-2 px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-neutral-950 font-bold text-xs rounded-lg transition-colors shadow-md"
-              >
-                Shop Party Wear Now
-              </button>
-            </div>
-            <div className="w-full md:w-64 h-36 rounded-xl overflow-hidden border border-amber-500/20">
-              <img
-                src="https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=600&q=80"
-                alt="Party Wear Gala"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Festive Wear Offer Strip Banner (Screenshot 5) */}
-      {config.hasFestiveOfferStrip && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-          <div className="rounded-2xl bg-gradient-to-r from-[#FDE8E9] via-[#FCE4D6] to-[#FFF1E6] border border-rose-200 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand-maroon shrink-0 shadow-md">
-                <img
-                  src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=200&q=80"
-                  alt="Festive Model"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <span className="text-[11px] font-bold text-brand-maroon uppercase tracking-wider">FESTIVE OFFER</span>
-                <h3 className="font-serif text-xl sm:text-2xl font-bold text-neutral-900">FLAT 10% OFF</h3>
-                <p className="text-xs text-neutral-600 font-medium mt-0.5">Use Coupon Code: <strong className="text-brand-maroon bg-white px-2 py-0.5 rounded border border-rose-300">FESTIVE10</strong></p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-6 text-xs text-neutral-700 font-medium">
-              <div className="flex items-center space-x-2">
-                <Truck className="w-4 h-4 text-brand-maroon" />
-                <span>Free Shipping</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RefreshCcw className="w-4 h-4 text-brand-maroon" />
-                <span>Easy Returns</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-4 h-4 text-brand-maroon" />
-                <span>100% Secure</span>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Newsletter Banner for New Arrivals / Sarees */}
-      {config.hasNewsletterBanner && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-          <div className="rounded-2xl bg-[#F7F1E5] border border-brand-border p-8 text-center space-y-4">
-            <h3 className="font-serif text-2xl font-bold text-neutral-900">Join Our Newsletter</h3>
-            <p className="text-xs text-neutral-600 max-w-md mx-auto">
-              Deliver pure ethnic wear options on your stylish wardrobe with exclusive preview access.
-            </p>
-            <form onSubmit={handleNewsletterSubmit} className="max-w-md mx-auto flex gap-2">
-              <input
-                type="email"
-                required
-                placeholder="Enter your email address"
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                className="flex-1 bg-white border border-neutral-300 rounded-lg px-4 py-2.5 text-xs text-neutral-800 focus:outline-none focus:border-brand-maroon shadow-2xs"
-              />
-              <button
-                type="submit"
-                className="bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs font-semibold px-6 py-2.5 rounded-lg transition-colors shadow-sm"
-              >
-                Subscribe
-              </button>
-            </form>
-            {newsletterSuccess && (
-              <p className="text-xs font-semibold text-emerald-700 flex items-center justify-center space-x-1">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Thank you for subscribing to OCT9!</span>
-              </p>
-            )}
-          </div>
-        </section>
-      )}
-
 
 
       {/* 6. MOBILE FILTERS SLIDE-OVER MODAL */}
       {isMobileFilterOpen && (
         <div className="fixed inset-0 z-50 flex lg:hidden">
           <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={() => setIsMobileFilterOpen(false)} />
-          <div className={`relative ml-auto w-4/5 max-w-xs h-full shadow-2xl p-5 overflow-y-auto flex flex-col justify-between ${
-            isDarkGala ? 'bg-[#1A1614] text-white' : 'bg-white text-neutral-900'
-          }`}>
+          <div className="relative ml-auto w-4/5 max-w-xs h-full shadow-2xl p-5 overflow-y-auto flex flex-col justify-between bg-white text-neutral-900">
             <div className="space-y-5">
               <div className="flex items-center justify-between pb-3 border-b border-neutral-200/30">
                 <span className="font-serif font-bold text-base">Filters</span>
@@ -1030,13 +840,13 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
             <div className="pt-4 border-t border-neutral-200/30 flex gap-2">
               <button
                 onClick={clearAllFilters}
-                className="flex-1 py-2 text-xs font-semibold border border-neutral-300 rounded-lg"
+                className="flex-1 py-2 text-xs font-semibold border border-neutral-300 rounded-lg hover:bg-neutral-100"
               >
                 Clear
               </button>
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="flex-1 py-2 bg-brand-maroon text-white text-xs font-semibold rounded-lg shadow-sm"
+                className="flex-1 py-2 bg-brand-maroon text-white text-xs font-semibold rounded-lg shadow-sm hover:bg-brand-maroon-hover"
               >
                 Apply
               </button>

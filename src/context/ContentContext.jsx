@@ -86,16 +86,16 @@ export const DEFAULT_SITE_CONTENT = {
       slug: 'accessories',
       link: '/category/accessories',
       image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=85',
-      tagline: 'Royal Jewels',
+      tagline: 'Royal Jewels & Polki',
       active: true
     },
     {
-      id: 'sharara-set',
-      name: 'Sharara Set',
-      slug: 'suits',
-      link: '/category/suits?sub_category=Sharara+Suit',
-      image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=600&q=85',
-      tagline: 'Regal Sharara',
+      id: 'new-arrivals',
+      name: 'New Arrivals',
+      slug: 'new-arrivals',
+      link: '/new-arrivals',
+      image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=85',
+      tagline: 'Fresh 2026 Drop',
       active: true
     },
     {
@@ -103,7 +103,7 @@ export const DEFAULT_SITE_CONTENT = {
       name: 'Farshi Salwaar Set',
       slug: 'suits',
       link: '/category/suits?sub_category=Punjabi+Suit',
-      image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=85',
+      image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=600&q=85',
       tagline: 'Heritage Cut',
       active: true
     },
@@ -132,6 +132,15 @@ export const DEFAULT_SITE_CONTENT = {
       link: '/category/festive-wear',
       image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=85',
       tagline: 'Imperial Flare',
+      active: true
+    },
+    {
+      id: 'sharara-set',
+      name: 'Sharara Set',
+      slug: 'suits',
+      link: '/category/suits?sub_category=Sharara+Suit',
+      image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=600&q=85',
+      tagline: 'Regal Twirl',
       active: true
     },
     {

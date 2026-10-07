@@ -2,39 +2,40 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../../context/ContentContext.jsx';
 
-// Exact 4-Point Royal Mughal Jharokha Arch SVG Path
-const JHAROKHA_PATH = `
-  M 80 4
-  C 80 18, 92 22, 102 22
-  C 122 22, 138 38, 138 58
-  C 138 68, 142 80, 156 80
-  C 142 80, 138 92, 138 102
-  C 138 122, 122 138, 102 138
-  C 92 138, 80 142, 80 156
-  C 80 142, 68 138, 58 138
-  C 38 138, 22 122, 22 102
-  C 22 92, 18 80, 4 80
-  C 18 80, 22 68, 22 58
-  C 22 38, 38 22, 58 22
-  C 68 22, 80 18, 80 4
+// 4-Pointed Royal Mughal Jharokha Arch / Medallion Path (Outer Outline)
+// Coordinates calibrated on 200 x 210 viewBox
+const JHAROKHA_OUTER_PATH = `
+  M 100 6
+  C 100 24, 118 28, 134 28
+  C 162 28, 180 50, 180 76
+  C 180 92, 186 100, 196 105
+  C 186 110, 180 118, 180 134
+  C 180 160, 162 182, 134 182
+  C 118 182, 100 186, 100 204
+  C 100 186, 82 182, 66 182
+  C 38 182, 20 160, 20 134
+  C 20 118, 14 110, 4 105
+  C 14 100, 20 92, 20 76
+  C 20 50, 38 28, 66 28
+  C 82 28, 100 24, 100 6
   Z
 `.replace(/\s+/g, ' ').trim();
 
-// Slightly inset path for the inner image / double border frame
+// Inner Inset Path for Double Gold Border & Exact Image Mask
 const JHAROKHA_INNER_PATH = `
-  M 80 10
-  C 80 22, 90 26, 99 26
-  C 117 26, 132 41, 132 59
-  C 132 68, 136 78, 148 80
-  C 136 82, 132 92, 132 101
-  C 132 119, 117 134, 99 134
-  C 90 134, 80 138, 80 150
-  C 80 138, 70 134, 61 134
-  C 43 134, 28 119, 28 101
-  C 28 92, 24 82, 12 80
-  C 24 78, 28 68, 28 59
-  C 28 41, 43 26, 61 26
-  C 70 26, 80 22, 80 10
+  M 100 14
+  C 100 28, 116 34, 130 34
+  C 154 34, 170 54, 170 76
+  C 170 90, 176 99, 185 105
+  C 176 111, 170 120, 170 134
+  C 170 156, 154 176, 130 176
+  C 116 176, 100 182, 100 196
+  C 100 182, 84 176, 70 176
+  C 46 176, 30 156, 30 134
+  C 30 120, 24 111, 15 105
+  C 24 99, 30 90, 30 76
+  C 30 54, 46 34, 70 34
+  C 84 34, 100 28, 100 14
   Z
 `.replace(/\s+/g, ' ').trim();
 
@@ -45,32 +46,101 @@ export function JharokhaCategories() {
   if (!categories || categories.length === 0) return null;
 
   return (
-    <section className="relative w-full py-4 bg-white border-b border-neutral-100 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Categories Row - Clean modern horizontal avatar carousel */}
-        <div className="flex items-center justify-start sm:justify-center gap-4 sm:gap-6 md:gap-8 overflow-x-auto py-2 no-scrollbar">
+    <section className="relative w-full py-6 sm:py-8 md:py-10 bg-gradient-to-b from-[#FAF7F2] via-[#FDFBF7] to-[#FAF7F2] border-y border-[#EFE8DC] overflow-hidden">
+      {/* Background Subtle Luxury Texture Watermark */}
+      <div 
+        className="absolute inset-0 opacity-[0.03] pointer-events-none bg-repeat"
+        style={{
+          backgroundImage: `radial-gradient(#5A1827 1px, transparent 1px)`,
+          backgroundSize: '24px 24px'
+        }}
+      />
+
+      {/* Full-Width Edge-to-Edge Container */}
+      <div className="relative w-full px-3 sm:px-6 md:px-8 lg:px-10 xl:px-14">
+        {/* Full-width responsive flex container */}
+        <div className="flex items-center justify-start lg:justify-center xl:justify-between gap-3 sm:gap-5 md:gap-6 lg:gap-5 xl:gap-6 overflow-x-auto pb-3 pt-1 no-scrollbar scroll-smooth">
           {categories.map((cat, idx) => {
             const catId = cat.id || cat.slug || `category-${idx}`;
+            const clipId = `jharokha-clip-${catId}`;
+
             return (
               <Link
                 key={catId}
                 to={cat.link || `/category/${cat.slug}`}
-                className="group flex flex-col items-center space-y-2 shrink-0 focus:outline-none"
+                className="group flex flex-col items-center flex-shrink-0 lg:flex-1 min-w-[105px] sm:min-w-[125px] md:min-w-[140px] lg:min-w-[145px] max-w-[185px] focus:outline-none transition-transform duration-300 hover:-translate-y-1.5"
                 aria-label={cat.name}
               >
-                {/* Modern circular thumbnail with clean border */}
-                <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-2 border-neutral-200 group-hover:border-neutral-800 transition-all duration-300 shadow-xs group-hover:shadow-md">
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    className="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-110"
-                    loading="lazy"
-                  />
+                {/* Royal Jharokha SVG Frame */}
+                <div className="relative w-24 h-26 sm:w-28 sm:h-30 md:w-32 md:h-34 lg:w-36 lg:h-38 xl:w-40 xl:h-42 filter drop-shadow-[0_4px_12px_rgba(184,147,88,0.18)] group-hover:drop-shadow-[0_10px_24px_rgba(184,147,88,0.4)] transition-all duration-500 ease-out">
+                  <svg
+                    viewBox="0 0 200 210"
+                    className="w-full h-full overflow-visible"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <defs>
+                      {/* Mask for the Inner Image */}
+                      <clipPath id={clipId}>
+                        <path d={JHAROKHA_INNER_PATH} />
+                      </clipPath>
+                    </defs>
+
+                    {/* Outer Solid Fill Behind Image */}
+                    <path
+                      d={JHAROKHA_OUTER_PATH}
+                      fill="#FFFFFF"
+                    />
+
+                    {/* Masked Category Image */}
+                    <g clipPath={`url(#${clipId})`}>
+                      <image
+                        href={cat.image}
+                        x="0"
+                        y="0"
+                        width="200"
+                        height="210"
+                        preserveAspectRatio="xMidYMid slice"
+                        className="transition-transform duration-700 ease-out origin-center group-hover:scale-110"
+                      />
+                      {/* Subtle Warm Amber Gradient Overlay */}
+                      <rect
+                        x="0"
+                        y="0"
+                        width="200"
+                        height="210"
+                        fill="rgba(90, 24, 39, 0.04)"
+                        className="group-hover:fill-transparent transition-colors duration-300"
+                      />
+                    </g>
+
+                    {/* Outer Gold Contour Stroke */}
+                    <path
+                      d={JHAROKHA_OUTER_PATH}
+                      fill="none"
+                      stroke="#C5A880"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="group-hover:stroke-[#936829] transition-colors duration-300"
+                    />
+
+                    {/* Inner Fine Gold Hairline Stroke */}
+                    <path
+                      d={JHAROKHA_INNER_PATH}
+                      fill="none"
+                      stroke="#B89358"
+                      strokeWidth="1"
+                      strokeOpacity="0.85"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="group-hover:stroke-[#5A1827] group-hover:stroke-opacity-60 transition-all duration-300"
+                    />
+                  </svg>
                 </div>
 
-                {/* Category Name Label */}
-                <div className="text-center px-1">
-                  <span className="text-xs sm:text-sm font-medium text-neutral-700 group-hover:text-neutral-950 transition-colors block whitespace-nowrap">
+                {/* Category Title Label */}
+                <div className="mt-2.5 sm:mt-3 text-center px-0.5 w-full">
+                  <span className="text-[11px] sm:text-xs md:text-[13px] lg:text-sm font-semibold tracking-wide text-neutral-800 group-hover:text-brand-maroon transition-colors duration-200 block whitespace-nowrap text-ellipsis overflow-hidden">
                     {cat.name}
                   </span>
                 </div>
@@ -82,3 +152,7 @@ export function JharokhaCategories() {
     </section>
   );
 }
+
+export default JharokhaCategories;
+
+

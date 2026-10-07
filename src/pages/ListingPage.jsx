@@ -91,15 +91,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1200&q=85',
         badges: ['Premium Fabrics', 'Bespoke Designs', 'Tailored for Royalty'],
         theme: 'maroon_gold',
-        circularSubcategories: [
-          { name: 'Silk Embellished Designer Suits', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Anarkali Designer Suits', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Organza Designer Suits', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Chanderi Designer Suits', image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Velvet Designer Suits', image: 'https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Bespoke Designer Suits', image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Indo-Western Designer Suits', image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=300&q=80' }
-        ],
         typeFilterTitle: 'Suit Type',
         typeOptions: ['Silk Embellished Designer Suits', 'Anarkali Designer Suits', 'Organza Designer Suits', 'Chanderi Designer Suits', 'Velvet Designer Suits', 'Bespoke Designer Suits', 'Indo-Western Designer Suits'],
         sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
@@ -119,13 +110,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=1200&q=85',
         badges: ['100% Pure Fabrics', 'Custom Fit Freedom', 'Unstitched 3-Piece Sets'],
         theme: 'cream_luxury',
-        circularSubcategories: [
-          { name: 'Cotton Suits', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Mulberry Silk Suits', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Roman Silk Suits', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Chanderi Unstitched', image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Georgette Unstitched', image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=300&q=80' }
-        ],
         typeFilterTitle: 'Fabric Type',
         typeOptions: ['Cotton Suits', 'Mulberry Silk Suits', 'Roman Silk Suits', 'Chanderi Unstitched', 'Georgette Unstitched', 'Organza Unstitched'],
         sizeOptions: ['Unstitched (Free Size)'],
@@ -146,14 +130,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
         badges: ['Ready to Wear', 'Precision Tailoring', 'Wide Range of Sizes'],
         theme: 'dark_burgundy',
-        circularSubcategories: [
-          { name: 'Farshi Salwar Suits', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Palazzo Suits', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Sharara Suits', image: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Straight Suits', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Anarkali Suits', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Pakistani Suits', image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=300&q=80' }
-        ],
         typeFilterTitle: 'Suit Style',
         typeOptions: ['Farshi Salwar Suits', 'Palazzo Suits', 'Sharara Suits', 'Straight Suits', 'Anarkali Suits', 'Pakistani Suits'],
         sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
@@ -457,47 +433,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         </div>
       </section>
 
-      {/* 2. SUBCATEGORY QUICK-SELECT CIRCLE CARDS */}
-      {config.circularSubcategories && config.circularSubcategories.length > 0 && (
-        <section className="py-6 border-b border-brand-border/60 bg-white/60">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-start sm:justify-center gap-6 sm:gap-10 overflow-x-auto no-scrollbar py-2">
-              {config.circularSubcategories.map((sub) => {
-                const isSelected = selectedTypes.includes(sub.name) || subCategoryParam === sub.name;
-                return (
-                  <button
-                    key={sub.name}
-                    onClick={() => handleTypeToggle(sub.name)}
-                    className="flex flex-col items-center group cursor-pointer shrink-0 focus:outline-none"
-                  >
-                    <div className={`w-18 h-18 sm:w-22 sm:h-22 rounded-full overflow-hidden p-0.5 transition-all duration-300 shadow-md ${
-                      isSelected
-                        ? 'ring-3 ring-brand-maroon scale-105'
-                        : 'ring-1 ring-neutral-300 group-hover:ring-brand-maroon group-hover:scale-105'
-                    }`}>
-                      <img
-                        src={sub.image}
-                        alt={sub.name}
-                        className="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-500"
-                      />
-                    </div>
-                    <span className={`mt-2 text-xs font-semibold tracking-tight transition-colors text-center max-w-[90px] truncate ${
-                      isSelected
-                        ? 'text-brand-maroon font-bold'
-                        : 'text-neutral-700 group-hover:text-brand-maroon'
-                    }`}>
-                      {sub.name}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-
-      {/* 3. MAIN CONTENT: SIDEBAR FILTERS + PRODUCT GRID */}
+      {/* 2. MAIN CONTENT: SIDEBAR FILTERS + PRODUCT GRID */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Top Control Bar: Total Count + Sort By */}
         <div className="flex items-center justify-between pb-5 border-b border-brand-border">

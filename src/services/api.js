@@ -68,34 +68,82 @@ async function fetchWithFallback(endpoint, fetchOptions = {}) {
 }
 
 async function request(endpoint, options = {}) {
+  const method = options.method || 'GET';
+  const startTime = performance.now();
   const headers = {
     'Content-Type': 'application/json',
     ...getAuthHeader(),
     ...options.headers,
   };
 
-  const response = await fetchWithFallback(endpoint, { ...options, headers });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data.message || `Request failed with status ${response.status}`);
+  console.groupCollapsed(`🌐 [API Request] ${method} ${endpoint}`);
+  console.log('Request Endpoint:', endpoint);
+  console.log('Request Options:', options);
+  if (options.body) {
+    try {
+      console.log('Request Payload:', JSON.parse(options.body));
+    } catch {
+      console.log('Request Body:', options.body);
+    }
   }
-  return data;
+  console.groupEnd();
+
+  try {
+    const response = await fetchWithFallback(endpoint, { ...options, headers });
+    const duration = (performance.now() - startTime).toFixed(1);
+    const data = await response.json().catch(() => ({}));
+
+    console.groupCollapsed(`📥 [API Response] ${response.status} ${method} ${endpoint} (${duration}ms)`);
+    console.log('Status Code:', response.status);
+    console.log('Response URL:', response.url);
+    console.log('Response Data:', data);
+    console.groupEnd();
+
+    if (!response.ok) {
+      console.error(`❌ [API Error] ${response.status} ${method} ${endpoint}:`, data);
+      throw new Error(data.message || `Request failed with status ${response.status}`);
+    }
+    return data;
+  } catch (err) {
+    const duration = (performance.now() - startTime).toFixed(1);
+    console.error(`💥 [API Network Error] ${method} ${endpoint} (${duration}ms):`, err);
+    throw err;
+  }
 }
 
 async function uploadRequest(endpoint, formData) {
+  const startTime = performance.now();
   const headers = getAuthHeader();
 
-  const response = await fetchWithFallback(endpoint, {
-    method: 'POST',
-    body: formData,
-    headers,
-  });
+  console.groupCollapsed(`📤 [API Upload Request] POST ${endpoint}`);
+  console.log('Endpoint:', endpoint);
+  console.log('FormData:', formData);
+  console.groupEnd();
 
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data.message || `Upload failed with status ${response.status}`);
+  try {
+    const response = await fetchWithFallback(endpoint, {
+      method: 'POST',
+      body: formData,
+      headers,
+    });
+    const duration = (performance.now() - startTime).toFixed(1);
+    const data = await response.json().catch(() => ({}));
+
+    console.groupCollapsed(`📥 [API Upload Response] ${response.status} POST ${endpoint} (${duration}ms)`);
+    console.log('Status Code:', response.status);
+    console.log('Response Data:', data);
+    console.groupEnd();
+
+    if (!response.ok) {
+      console.error(`❌ [API Upload Error] ${response.status} POST ${endpoint}:`, data);
+      throw new Error(data.message || `Upload failed with status ${response.status}`);
+    }
+    return data;
+  } catch (err) {
+    const duration = (performance.now() - startTime).toFixed(1);
+    console.error(`💥 [API Upload Error] POST ${endpoint} (${duration}ms):`, err);
+    throw err;
   }
-  return data;
 }
 
 

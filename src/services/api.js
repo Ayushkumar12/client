@@ -1,23 +1,64 @@
 // Configured Primary & Fallback API endpoints
-const DEVTUNNEL_API = 'https://5nbb03kw-5000.inc1.devtunnels.ms/api';
+const DEVTUNNEL_API = 'https://back.oct9.in/api';
 const LOCALHOST_API = 'http://localhost:5000/api';
 
 // Resolve primary API based on current hostname / environment
 function resolveInitialBase() {
-  if (import.meta.env?.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
-  }
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
+    const port = window.location.port;
+
+    // 1. If running on Vite dev server (port 5173 or 3000)
+    // Use relative '/api' which Vite proxies to localhost:5000 directly.
+    // This provides 100% same-origin cookie transmission and zero CORS errors on mobile/desktop!
+    if (port === '5173' || port === '3000') {
+      return '/api';
+    }
+
+    // 2. Direct localhost or loopback
     if (host === 'localhost' || host === '127.0.0.1') {
       return LOCALHOST_API;
     }
+
+    // 3. If accessed from local area network (LAN/WiFi testing on mobile phone, e.g. 192.168.x.x)
+    if (/^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host)) {
+      return `http://${host}:5000/api`;
+    }
+
+    // 4. Production domain host (oct9.in or any subdomains like www.oct9.in, admin.oct9.in)
+    if (host.endsWith('oct9.in')) {
+      return '/api';
+    }
   }
-  return DEVTUNNEL_API;
+
+  if (import.meta.env?.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
+  }
+
+  // Fallback for production or remote non-localhost hosting without VITE_API_URL
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return DEVTUNNEL_API;
+  }
+
+  return LOCALHOST_API;
 }
 
 let CURRENT_API_BASE = resolveInitialBase();
-const FALLBACK_API_BASE = CURRENT_API_BASE === LOCALHOST_API ? DEVTUNNEL_API : LOCALHOST_API;
+
+function getFallbackBase() {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (CURRENT_API_BASE === '/api') {
+      return host === 'localhost' || host === '127.0.0.1'
+        ? LOCALHOST_API
+        : `http://${host}:5000/api`;
+    }
+    if (host.endsWith('oct9.in')) {
+      return DEVTUNNEL_API;
+    }
+  }
+  return CURRENT_API_BASE === LOCALHOST_API ? DEVTUNNEL_API : LOCALHOST_API;
+}
 
 export const API_BASE = CURRENT_API_BASE;
 
@@ -33,9 +74,15 @@ export function formatImageUrl(url) {
     return trimmed;
   }
   if (trimmed.startsWith('/uploads/')) {
+    if (CURRENT_API_BASE === '/api' || CURRENT_API_BASE.startsWith('/')) {
+      return trimmed;
+    }
     return `${CURRENT_API_BASE.replace(/\/api\/?$/, '')}${trimmed}`;
   }
   if (trimmed.startsWith('uploads/')) {
+    if (CURRENT_API_BASE === '/api' || CURRENT_API_BASE.startsWith('/')) {
+      return `/${trimmed}`;
+    }
     return `${CURRENT_API_BASE.replace(/\/api\/?$/, '')}/${trimmed}`;
   }
   return trimmed;
@@ -49,21 +96,37 @@ function getAuthHeader() {
 async function fetchWithFallback(endpoint, fetchOptions = {}) {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   
+  const optionsWithCredentials = {
+    credentials: 'include',
+    ...fetchOptions,
+  };
+
   // Try primary endpoint first
   const primaryUrl = `${CURRENT_API_BASE}${cleanEndpoint}`;
   try {
-    const response = await fetch(primaryUrl, fetchOptions);
+    const response = await fetch(primaryUrl, optionsWithCredentials);
     return response;
   } catch (err) {
-    // If primary network fetch fails (e.g. devtunnel down or localhost offline), try fallback
-    const fallbackUrl = `${FALLBACK_API_BASE}${cleanEndpoint}`;
-    try {
-      const fallbackResponse = await fetch(fallbackUrl, fetchOptions);
-      CURRENT_API_BASE = FALLBACK_API_BASE; // switch active base
-      return fallbackResponse;
-    } catch (fallbackErr) {
-      throw err; // throw original network error
+    // If primary network fetch fails, try fallback
+    const fallbackBase = getFallbackBase();
+    if (fallbackBase && fallbackBase !== CURRENT_API_BASE) {
+      const fallbackUrl = `${fallbackBase}${cleanEndpoint}`;
+      try {
+        const fallbackResponse = await fetch(fallbackUrl, optionsWithCredentials);
+        CURRENT_API_BASE = fallbackBase; // switch active base
+        return fallbackResponse;
+      } catch (fallbackErr) {
+        if (fallbackBase !== DEVTUNNEL_API && CURRENT_API_BASE !== DEVTUNNEL_API) {
+          try {
+            const tunnelResponse = await fetch(`${DEVTUNNEL_API}${cleanEndpoint}`, optionsWithCredentials);
+            CURRENT_API_BASE = DEVTUNNEL_API;
+            return tunnelResponse;
+          } catch (tunnelErr) {}
+        }
+        throw err;
+      }
     }
+    throw err;
   }
 }
 
@@ -76,7 +139,7 @@ async function request(endpoint, options = {}) {
     ...options.headers,
   };
 
-  console.groupCollapsed(`🌐 [API Request] ${method} ${endpoint}`);
+  console.groupCollapsed(`[API Request] ${method} ${endpoint}`);
   console.log('Request Endpoint:', endpoint);
   console.log('Request Options:', options);
   if (options.body) {
@@ -93,20 +156,20 @@ async function request(endpoint, options = {}) {
     const duration = (performance.now() - startTime).toFixed(1);
     const data = await response.json().catch(() => ({}));
 
-    console.groupCollapsed(`📥 [API Response] ${response.status} ${method} ${endpoint} (${duration}ms)`);
+    console.groupCollapsed(`[API Response] ${response.status} ${method} ${endpoint} (${duration}ms)`);
     console.log('Status Code:', response.status);
     console.log('Response URL:', response.url);
     console.log('Response Data:', data);
     console.groupEnd();
 
     if (!response.ok) {
-      console.error(`❌ [API Error] ${response.status} ${method} ${endpoint}:`, data);
+      console.error(`[API Error] ${response.status} ${method} ${endpoint}:`, data);
       throw new Error(data.message || `Request failed with status ${response.status}`);
     }
     return data;
   } catch (err) {
     const duration = (performance.now() - startTime).toFixed(1);
-    console.error(`💥 [API Network Error] ${method} ${endpoint} (${duration}ms):`, err);
+    console.error(`[API Network Error] ${method} ${endpoint} (${duration}ms):`, err);
     throw err;
   }
 }
@@ -115,7 +178,7 @@ async function uploadRequest(endpoint, formData) {
   const startTime = performance.now();
   const headers = getAuthHeader();
 
-  console.groupCollapsed(`📤 [API Upload Request] POST ${endpoint}`);
+  console.groupCollapsed(`[API Upload Request] POST ${endpoint}`);
   console.log('Endpoint:', endpoint);
   console.log('FormData:', formData);
   console.groupEnd();
@@ -129,7 +192,7 @@ async function uploadRequest(endpoint, formData) {
     const duration = (performance.now() - startTime).toFixed(1);
     const data = await response.json().catch(() => ({}));
 
-    console.groupCollapsed(`📥 [API Upload Response] ${response.status} POST ${endpoint} (${duration}ms)`);
+    console.groupCollapsed(`[API Upload Response] ${response.status} POST ${endpoint} (${duration}ms)`);
     console.log('Status Code:', response.status);
     console.log('Response Data:', data);
     console.groupEnd();
@@ -148,9 +211,12 @@ async function uploadRequest(endpoint, formData) {
 
 
 export const api = {
-  // Auth
+  // Auth & Session
   login: (credentials) => request('/auth/login', { method: 'POST', body: JSON.stringify(credentials) }),
   register: (userData) => request('/auth/register', { method: 'POST', body: JSON.stringify(userData) }),
+  logout: () => request('/auth/logout', { method: 'POST' }),
+  getSession: () => request('/auth/session'),
+  getActiveSessions: () => request('/auth/sessions'),
   getProfile: () => request('/auth/profile'),
   updateProfile: (profileData) => request('/auth/profile', { method: 'PUT', body: JSON.stringify(profileData) }),
   saveAddress: (address) => request('/auth/address', { method: 'POST', body: JSON.stringify(address) }),
@@ -207,8 +273,14 @@ export const api = {
     const query = new URLSearchParams(params);
     return request(`/shiprocket/international-serviceability?${query.toString()}`);
   },
-  getPackingSlipUrl: (waybill) => `${API_BASE}/shiprocket/packing-slip/${waybill}`,
-  getShippingLabelUrl: (waybill) => `${API_BASE}/shiprocket/shipping-label/${waybill}`,
+  getPackingSlipUrl: (waybill) => {
+    const token = localStorage.getItem('oct9_token');
+    return `${API_BASE}/shiprocket/packing-slip/${waybill}${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+  },
+  getShippingLabelUrl: (waybill) => {
+    const token = localStorage.getItem('oct9_token');
+    return `${API_BASE}/shiprocket/shipping-label/${waybill}${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+  },
   getLogisticsStats: () => request('/shiprocket/admin/overview'),
   getShiprocketPickups: () => request('/shiprocket/pickup-locations'),
   getShiprocketWallet: () => request('/shiprocket/wallet/balance'),
@@ -297,6 +369,11 @@ export const api = {
     body: JSON.stringify(data)
   }),
 
+  // Forms (Contact & Returns)
+  getFormConfig: () => request('/forms/config'),
+  submitContactForm: (formData) => request('/forms/contact', { method: 'POST', body: JSON.stringify(formData) }),
+  submitReturnRequest: (formData) => request('/forms/return', { method: 'POST', body: JSON.stringify(formData) }),
+
   // Admin & Analytics
   getPublicSettings: () => request('/admin/settings/public'),
   getFullAnalytics: () => request('/admin/analytics'),
@@ -310,7 +387,6 @@ export const api = {
   }),
   getDashboardMetrics: () => request('/admin/dashboard'),
   getCustomers: () => request('/admin/customers'),
-
   formatImageUrl,
 };
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, AlertTriangle, Loader2, CheckCircle2 } from 'lucide-react';
+import { X, AlertTriangle, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
 import { api } from '../../services/api.js';
 
 const CANCEL_REASONS = [
@@ -34,7 +34,9 @@ export function CancelOrderModal({ order, isOpen, onClose, onCancelSuccess }) {
     try {
       const res = await api.cancelOrder(order.id || order.order_number, {
         reason: selectedReason,
-        comment: comment.trim()
+        comment: comment.trim(),
+        customer_email: order.customer_email,
+        customer_phone: order.customer_phone
       });
 
       if (res.success) {
@@ -56,7 +58,7 @@ export function CancelOrderModal({ order, isOpen, onClose, onCancelSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-neutral-200 overflow-hidden">
+      <div className="relative w-full max-w-lg bg-white rounded-sm shadow-2xl border border-neutral-200 overflow-hidden">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 bg-neutral-50/70">
           <div className="flex items-center space-x-2">
@@ -135,8 +137,9 @@ export function CancelOrderModal({ order, isOpen, onClose, onCancelSuccess }) {
               />
             </div>
 
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-900 leading-relaxed">
-              ⚠️ <strong>Note:</strong> Once cancelled, this order cannot be reactivated and courier dispatch will be halted.
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-sm text-[11px] text-amber-900 leading-relaxed flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <span><strong>Note:</strong> Once cancelled, this order cannot be reactivated and courier dispatch will be halted.</span>
             </div>
 
             {/* Actions */}
@@ -145,14 +148,14 @@ export function CancelOrderModal({ order, isOpen, onClose, onCancelSuccess }) {
                 type="button"
                 onClick={onClose}
                 disabled={submitting}
-                className="flex-1 py-2.5 px-4 rounded-xl border border-neutral-300 text-xs font-bold text-neutral-700 hover:bg-neutral-100 transition-colors"
+                className="flex-1 py-2.5 px-4 rounded-sm border border-neutral-300 text-xs font-semibold text-neutral-700 hover:bg-neutral-100 transition-colors uppercase tracking-wider"
               >
                 Keep Order
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 disabled:bg-neutral-400 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center space-x-1.5"
+                className="flex-1 py-2.5 px-4 rounded-sm bg-red-600 hover:bg-red-700 disabled:bg-neutral-400 text-white text-xs font-semibold uppercase tracking-wider transition-all shadow-sm flex items-center justify-center space-x-1.5"
               >
                 {submitting ? (
                   <>

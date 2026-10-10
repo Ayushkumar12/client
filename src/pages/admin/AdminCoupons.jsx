@@ -83,7 +83,7 @@ export function AdminCoupons() {
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl border border-brand-border shadow-2xs overflow-hidden">
+      <div className="bg-white rounded-sm border border-brand-border shadow-2xs overflow-hidden">
         {loading ? (
           <div className="py-16 text-center">
             <Loader2 className="w-8 h-8 text-brand-maroon animate-spin mx-auto" />
@@ -135,7 +135,7 @@ export function AdminCoupons() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+          <div className="bg-white rounded-sm p-6 max-w-md w-full shadow-2xl space-y-4">
             <h3 className="font-serif font-bold text-base text-neutral-900">Create New Promo Code</h3>
             <form onSubmit={handleCreate} className="space-y-3 text-xs">
               <div>

@@ -86,13 +86,13 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
       return {
         title: 'Designer Suits',
         heading: 'Designer Suits',
-        tagline: 'ROYAL BESPOKE ATELIER',
-        description: 'Exquisite hand-embroidered bespoke suits tailored for royalty and special celebrations.',
+        tagline: 'PREMIUM DESIGNER WEAR',
+        description: 'Exquisite hand-embroidered suits crafted for weddings, parties, and special celebrations.',
         heroImage: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1200&q=85',
-        badges: ['Premium Fabrics', 'Bespoke Designs', 'Tailored for Royalty'],
+        badges: ['Premium Fabrics', 'Exclusive Designs', 'Wedding & Festive Ready'],
         theme: 'maroon_gold',
         typeFilterTitle: 'Suit Type',
-        typeOptions: ['Silk Embellished Designer Suits', 'Anarkali Designer Suits', 'Organza Designer Suits', 'Chanderi Designer Suits', 'Velvet Designer Suits', 'Bespoke Designer Suits', 'Indo-Western Designer Suits'],
+        typeOptions: ['Silk Embellished Designer Suits', 'Anarkali Designer Suits', 'Organza Designer Suits', 'Chanderi Designer Suits', 'Velvet Designer Suits', 'Party Wear Designer Suits', 'Indo-Western Designer Suits'],
         sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
         fabricOptions: ['Georgette', 'Chanderi Silk', 'Silk', 'Organza', 'Velvet', 'Net', 'Wool Blend'],
         occasionOptions: ['Wedding', 'Festival', 'Party Wear', 'Engagement', 'Reception', 'Daily Wear'],
@@ -105,10 +105,10 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
       return {
         title: 'Unstitched Suits',
         heading: 'Unstitched Suits',
-        tagline: 'PURE FABRIC FOR BESPOKE FIT',
+        tagline: 'PREMIUM UNSTITCHED FABRIC',
         description: 'Premium unstitched 3-piece suit fabrics in rich cotton, mulberry silk, and roman silk.',
         heroImage: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=1200&q=85',
-        badges: ['100% Pure Fabrics', 'Custom Fit Freedom', 'Unstitched 3-Piece Sets'],
+        badges: ['100% Pure Fabrics', 'Custom Stitching Freedom', 'Unstitched 3-Piece Sets'],
         theme: 'cream_luxury',
         typeFilterTitle: 'Fabric Type',
         typeOptions: ['Cotton Suits', 'Mulberry Silk Suits', 'Roman Silk Suits', 'Chanderi Unstitched', 'Georgette Unstitched', 'Organza Unstitched'],
@@ -125,7 +125,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
       return {
         title: 'Stitched Suits',
         heading: 'Stitched Suits',
-        tagline: 'READY-TO-WEAR BESPOKE SUITS',
+        tagline: 'READY-TO-WEAR SUIT SETS',
         description: 'Perfectly tailored ethnic suits ready for your grand celebrations and everyday charm.',
         heroImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
         badges: ['Ready to Wear', 'Precision Tailoring', 'Wide Range of Sizes'],
@@ -145,10 +145,10 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
       return {
         title: 'New Arrivals',
         heading: 'New Arrivals',
-        tagline: 'FRESH FROM OUR ATELIER',
+        tagline: 'FRESH NEW DESIGNS',
         description: 'Discover the latest collection of premium ethnic wear crafted for your special moments.',
         heroImage: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1200&q=85',
-        badges: ['Latest Designs', 'Bespoke Drapes', 'Limited Stock'],
+        badges: ['Latest Designs', 'Premium Quality', 'Limited Stock'],
         theme: 'cream_luxury',
         typeFilterTitle: 'Category',
         typeOptions: ['Farshi Salwar Suits', 'Palazzo Suits', 'Sharara Suits', 'Straight Suits', 'Anarkali Suits', 'Cotton Suits', 'Sarees', 'Accessories', 'Jutti', 'Party Wear'],
@@ -215,11 +215,11 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heading: 'Sarees',
         tagline: 'ROYAL HERITAGE DRAPES',
         description: 'Charming flowing drapes for every festive occasion.',
-        heroImage: 'https://images.unsplash.com/photo-1610030469668-9655ecbbdd13?auto=format&fit=crop&w=1200&q=85',
+        heroImage: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=1200&q=85',
         badges: ['Employed Fabrics', 'Free Shipping Above ₹1,999', 'Easy Returns 7 Days Free Return'],
         theme: 'cream_luxury',
         circularSubcategories: [
-          { name: 'Silk Sarees', image: 'https://images.unsplash.com/photo-1610030469668-9655ecbbdd13?auto=format&fit=crop&w=300&q=80' },
+          { name: 'Silk Sarees', image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=300&q=80' },
           { name: 'Organza Sarees', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
           { name: 'Banarasi Sarees', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
           { name: 'Chiffon Sarees', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
@@ -238,8 +238,8 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
       return {
         title: 'Party Wear',
         heading: 'Party Wear',
-        tagline: 'EXCLUSIVE EVENING SOIRÉE & GALA',
-        description: 'Dazzling sequin, velvet, and bespoke ethnic party wear crafted for unforgettable evenings and celebrations.',
+        tagline: 'PARTY WEAR & EVENING DRESSES',
+        description: 'Dazzling sequin, velvet, and ethnic party wear crafted for parties and festive occasions.',
         heroImage: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=85',
         badges: ['Handcrafted Embellishments', 'Premium Velvets & Silks', 'Free Shipping Above ₹1,999'],
         theme: 'cream_luxury',
@@ -266,8 +266,8 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
       return {
         title: 'Festive Wear',
         heading: 'Festive Wear',
-        tagline: 'ROYAL FESTIVE ATELIER',
-        description: 'Celebrate every festival with royal festive styles.',
+        tagline: 'FESTIVE COLLECTION',
+        description: 'Celebrate every festival in style with our rich ethnic collection.',
         heroImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
         badges: ['Premium Fabrics', 'Exclusive Designs', 'Festive Season Collection'],
         theme: 'maroon_gold',
@@ -293,7 +293,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
     return {
       title: currentCategory.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
       heading: 'All Collections',
-      tagline: 'LUXURY ETHNIC ATELIER',
+      tagline: 'PREMIUM ETHNIC COLLECTION',
       description: 'A perfect blend of tradition and contemporary elegance tailored for your special celebrations.',
       heroImage: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1200&q=85',
       badges: ['Handcrafted Designs', 'Premium Quality', 'Free Shipping Above ₹1,999'],
@@ -425,7 +425,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
           {/* Quick Filters / Summary Badges */}
           <div className="flex items-center space-x-2 text-xs">
             {config.badges.slice(0, 2).map((badge, idx) => (
-              <span key={idx} className="bg-brand-cream/90 text-brand-maroon font-semibold px-3 py-1 rounded-full border border-brand-border text-[11px]">
+              <span key={idx} className="bg-brand-cream/90 text-brand-maroon font-semibold px-2.5 py-1 rounded-sm border border-brand-border text-[11px]">
                 {badge}
               </span>
             ))}
@@ -440,7 +440,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setIsMobileFilterOpen(true)}
-              className="lg:hidden flex items-center space-x-2 px-4 py-2 rounded-lg text-xs font-semibold shadow-xs border bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-50"
+              className="lg:hidden flex items-center space-x-2 px-3 py-2 rounded-sm text-xs font-semibold shadow-xs border bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-50"
             >
               <Filter className="w-3.5 h-3.5 text-brand-maroon" />
               <span>Filters ({activeFiltersCount})</span>
@@ -455,7 +455,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="text-xs sm:text-sm rounded-lg px-3 py-2 font-medium cursor-pointer shadow-2xs border bg-white text-neutral-800 border-neutral-300 focus:outline-none focus:border-brand-maroon"
+              className="text-xs sm:text-sm rounded-sm px-3 py-2 font-medium cursor-pointer shadow-2xs border bg-white text-neutral-800 border-neutral-300 focus:outline-none focus:border-brand-maroon"
             >
               <option value="featured">Featured / Recommended</option>
               <option value="newest">Newest First</option>
@@ -470,7 +470,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         {/* 2-Column Desktop Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 pt-8 items-start">
           {/* LEFT SIDEBAR FILTERS (Desktop) */}
-          <aside className={`hidden lg:block space-y-6 p-5 rounded-2xl border shadow-2xs sticky top-28 ${sidebarBgClass}`}>
+          <aside className={`hidden lg:block space-y-6 p-5 rounded-sm border shadow-2xs sticky top-28 ${sidebarBgClass}`}>
             <div className="flex items-center justify-between pb-3 border-b border-neutral-200/40">
               <div className="flex items-center space-x-2">
                 <SlidersHorizontal className="w-4 h-4 text-brand-maroon" />
@@ -639,31 +639,31 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
           {/* PRODUCT GRID */}
           <main className="lg:col-span-3">
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
                 {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <div key={n} className="rounded-2xl h-96 animate-pulse border bg-white border-neutral-200" />
+                  <div key={n} className="rounded-sm h-64 sm:h-96 animate-pulse border bg-white border-neutral-200" />
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="p-12 text-center rounded-2xl border bg-white border-brand-border space-y-4">
-                <div className="w-16 h-16 rounded-full bg-neutral-100 mx-auto flex items-center justify-center">
-                  <SlidersHorizontal className="w-8 h-8 text-neutral-400" />
+              <div className="p-12 text-center rounded-sm border bg-white border-brand-border space-y-4">
+                <div className="w-14 h-14 rounded-sm bg-neutral-100 mx-auto flex items-center justify-center">
+                  <SlidersHorizontal className="w-7 h-7 text-neutral-400" />
                 </div>
                 <h3 className="font-serif text-lg font-bold">No matching products found</h3>
                 <p className="text-xs opacity-75 max-w-sm mx-auto">
-                  Try clearing some filters to explore our full atelier catalog.
+                  Try clearing some filters to explore our full product collection.
                 </p>
                 <button
                   onClick={clearAllFilters}
-                  className="px-5 py-2 bg-brand-maroon text-white text-xs font-semibold rounded-lg shadow-sm hover:bg-brand-maroon-hover"
+                  className="px-5 py-2.5 bg-brand-maroon text-white text-xs font-semibold rounded-sm shadow-sm hover:bg-brand-maroon-hover transition-colors"
                 >
                   Clear All Filters
                 </button>
               </div>
             ) : (
               <div className="space-y-12">
-                {/* Products 3-Column Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                {/* Products 2-Col Mobile / 3-Col Desktop Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
                   {products.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
@@ -671,7 +671,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
 
                 {/* Pagination Controls */}
                 {pagination.totalPages > 1 && (
-                  <div className="flex items-center justify-center space-x-2 pt-6 border-t border-brand-border">
+                  <div className="flex items-center justify-center space-x-1.5 pt-6 border-t border-brand-border">
                     {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => {
                       const isCurrent = pagination.page === p;
                       return (
@@ -683,9 +683,9 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
                             setSearchParams(newParams);
                             window.scrollTo({ top: 300, behavior: 'smooth' });
                           }}
-                          className={`w-9 h-9 rounded-full text-xs font-bold transition-all ${
+                          className={`w-8 h-8 rounded-sm text-xs font-bold transition-all ${
                             isCurrent
-                              ? 'bg-neutral-900 text-white shadow-md'
+                              ? 'bg-neutral-900 text-white shadow-xs'
                               : 'bg-white text-neutral-700 hover:bg-neutral-100 border border-neutral-200'
                           }`}
                         >
@@ -745,7 +745,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
                       <button
                         key={sz}
                         onClick={() => handleSizeToggle(sz)}
-                        className={`min-w-8 h-8 px-2 rounded text-xs font-semibold border ${
+                        className={`min-w-8 h-8 px-2 rounded-sm text-xs font-semibold border ${
                           selectedSizes.includes(sz)
                             ? 'bg-neutral-900 text-white border-neutral-900'
                             : 'bg-neutral-50 text-neutral-800 border-neutral-300'
@@ -776,13 +776,13 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
             <div className="pt-4 border-t border-neutral-200/30 flex gap-2">
               <button
                 onClick={clearAllFilters}
-                className="flex-1 py-2 text-xs font-semibold border border-neutral-300 rounded-lg hover:bg-neutral-100"
+                className="flex-1 py-2 text-xs font-semibold border border-neutral-300 rounded-sm hover:bg-neutral-100"
               >
                 Clear
               </button>
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="flex-1 py-2 bg-brand-maroon text-white text-xs font-semibold rounded-lg shadow-sm hover:bg-brand-maroon-hover"
+                className="flex-1 py-2 bg-brand-maroon text-white text-xs font-semibold rounded-sm shadow-sm hover:bg-brand-maroon-hover"
               >
                 Apply
               </button>

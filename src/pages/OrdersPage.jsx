@@ -24,6 +24,8 @@ import { ShiprocketTrackerModal } from '../components/common/ShiprocketTrackerMo
 import { CancelOrderModal } from '../components/common/CancelOrderModal.jsx';
 import { ReturnOrderModal } from '../components/common/ReturnOrderModal.jsx';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
+import { parseAddress } from '../utils/addressUtils.js';
+import { getProductUrl } from '../utils/productUrl.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../services/api.js';
 
@@ -97,7 +99,7 @@ export function OrdersPage() {
     const returnStatus = (o.return_status || '').toLowerCase();
 
     if (activeTab === 'active') {
-      return ['pending', 'confirmed', 'processing', 'shipped', 'in_transit', 'out_for_delivery'].includes(status);
+      return ['pending', 'confirmed', 'processing', 'manifested', 'shipped', 'in_transit', 'out_for_delivery'].includes(status);
     }
     if (activeTab === 'delivered') {
       return status === 'delivered';
@@ -116,30 +118,30 @@ export function OrdersPage() {
     const returnStatus = (order.return_status || 'none').toLowerCase();
 
     if (returnStatus === 'return_requested') {
-      return <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2.5 py-1 rounded-full flex items-center gap-1">● Return Pending Approval</span>;
+      return <span className="text-[10px] bg-amber-100 text-amber-900 font-semibold px-2 py-0.5 rounded-sm uppercase tracking-wider">Return Pending</span>;
     }
     if (returnStatus === 'return_approved') {
-      return <span className="text-[10px] bg-purple-100 text-purple-900 font-bold px-2.5 py-1 rounded-full flex items-center gap-1">● Return Approved ({order.return_awb || 'Pickup Scheduled'})</span>;
+      return <span className="text-[10px] bg-blue-100 text-blue-900 font-semibold px-2 py-0.5 rounded-sm uppercase tracking-wider">Return Approved</span>;
     }
     if (returnStatus === 'return_rejected') {
-      return <span className="text-[10px] bg-red-100 text-red-900 font-bold px-2.5 py-1 rounded-full flex items-center gap-1">● Return Rejected</span>;
+      return <span className="text-[10px] bg-red-100 text-red-900 font-semibold px-2 py-0.5 rounded-sm uppercase tracking-wider">Return Rejected</span>;
     }
 
     switch (status) {
       case 'delivered':
-        return <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">✓ Delivered</span>;
+        return <span className="text-[10px] bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-sm uppercase tracking-wider">Delivered</span>;
       case 'out_for_delivery':
-        return <span className="text-[10px] bg-sky-100 text-sky-800 font-bold px-2.5 py-1 rounded-full">● Out for Delivery</span>;
+        return <span className="text-[10px] bg-sky-100 text-sky-800 font-semibold px-2 py-0.5 rounded-sm uppercase tracking-wider">Out for Delivery</span>;
       case 'shipped':
       case 'in_transit':
-        return <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2.5 py-1 rounded-full">● In Transit</span>;
+        return <span className="text-[10px] bg-blue-100 text-blue-800 font-semibold px-2 py-0.5 rounded-sm uppercase tracking-wider">In Transit</span>;
       case 'processing':
       case 'confirmed':
-        return <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">● Confirmed & Manifested</span>;
+        return <span className="text-[10px] bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded-sm uppercase tracking-wider">Confirmed</span>;
       case 'cancelled':
-        return <span className="text-[10px] bg-neutral-200 text-neutral-700 font-bold px-2.5 py-1 rounded-full">✕ Cancelled</span>;
+        return <span className="text-[10px] bg-neutral-200 text-neutral-700 font-semibold px-2 py-0.5 rounded-sm uppercase tracking-wider">Cancelled</span>;
       default:
-        return <span className="text-[10px] bg-neutral-100 text-neutral-800 font-bold px-2.5 py-1 rounded-full uppercase">{status}</span>;
+        return <span className="text-[10px] bg-neutral-100 text-neutral-800 font-semibold px-2 py-0.5 rounded-sm uppercase tracking-wider">{status}</span>;
     }
   };
 
@@ -147,6 +149,36 @@ export function OrdersPage() {
     <div className="bg-[#FAF7F2] min-h-screen pb-24 pt-6">
       <SEO title="My Orders & History | OCT9 Luxury Ethnic Wear" />
 
+      {!isAuthenticated ? (
+        <div className="max-w-md mx-auto px-4 py-20 text-center space-y-5">
+          <div className="w-14 h-14 rounded-full bg-white border border-[#EFE8DC] flex items-center justify-center mx-auto">
+            <ShieldCheck className="w-6 h-6 text-[#5A1827]" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="font-serif text-2xl font-bold text-neutral-900">Sign In to View Orders</h1>
+            <p className="text-xs text-neutral-500 leading-relaxed">
+              Your order history, tracking, invoices, and returns are available after signing in to your OCT9 account.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
+            <Link
+              to="/login?redirect=/orders"
+              className="w-full sm:w-auto px-6 py-2.5 bg-[#5A1827] text-white text-xs font-semibold rounded-sm hover:bg-[#43121D] transition-colors text-center"
+            >
+              Sign In
+            </Link>
+            <Link
+              to="/register?redirect=/orders"
+              className="w-full sm:w-auto px-6 py-2.5 border border-neutral-300 bg-white text-neutral-900 text-xs font-semibold rounded-sm hover:bg-neutral-50 transition-colors text-center"
+            >
+              Create Account
+            </Link>
+          </div>
+          <Link to="/track-order" className="inline-block text-xs text-[#5A1827] font-semibold underline underline-offset-2">
+            Track an order with AWB number instead
+          </Link>
+        </div>
+      ) : (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Top Header & Breadcrumb */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-border/60 pb-4">
@@ -162,7 +194,7 @@ export function OrdersPage() {
           <div className="flex items-center gap-3">
             <Link
               to="/track-order"
-              className="px-4 py-2 bg-white hover:bg-neutral-50 text-neutral-900 border border-neutral-300 rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition-colors"
+              className="px-4 py-2 bg-white hover:bg-neutral-50 text-neutral-900 border border-neutral-300 rounded-sm text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition-colors"
             >
               <Search className="w-3.5 h-3.5 text-brand-maroon" />
               <span>Track with AWB</span>
@@ -170,7 +202,7 @@ export function OrdersPage() {
 
             <Link
               to="/"
-              className="px-4 py-2 bg-brand-maroon hover:bg-brand-maroon-hover text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-all"
+              className="px-4 py-2 bg-brand-maroon hover:bg-brand-maroon-hover text-white rounded-sm text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-all"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
               <span>Explore Collection</span>
@@ -184,7 +216,7 @@ export function OrdersPage() {
           <div className="flex items-center gap-1 overflow-x-auto w-full md:w-auto pb-1 no-scrollbar text-xs font-bold">
             {[
               { key: 'all', label: 'All Orders', count: orders.length },
-              { key: 'active', label: 'Active / In Transit', count: orders.filter((o) => ['pending', 'confirmed', 'processing', 'shipped', 'in_transit'].includes((o.order_status || '').toLowerCase())).length },
+              { key: 'active', label: 'Active / In Transit', count: orders.filter((o) => ['pending', 'confirmed', 'processing', 'manifested', 'shipped', 'in_transit', 'out_for_delivery'].includes((o.order_status || '').toLowerCase())).length },
               { key: 'delivered', label: 'Delivered', count: orders.filter((o) => (o.order_status || '').toLowerCase() === 'delivered').length },
               { key: 'returns', label: 'Returns & Exchanges', count: orders.filter((o) => o.return_status && o.return_status !== 'none').length },
               { key: 'cancelled', label: 'Cancelled', count: orders.filter((o) => (o.order_status || '').toLowerCase() === 'cancelled').length }
@@ -192,7 +224,7 @@ export function OrdersPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`px-3.5 py-2 rounded-xl whitespace-nowrap transition-all ${
+                className={`px-3.5 py-2 rounded-sm whitespace-nowrap transition-all ${
                   activeTab === tab.key
                     ? 'bg-neutral-900 text-white shadow-sm'
                     : 'bg-white hover:bg-neutral-100 text-neutral-600 border border-neutral-200'
@@ -210,7 +242,7 @@ export function OrdersPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by Order # or Item..."
-              className="w-full text-xs pl-8 pr-3 py-2.5 bg-white border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon shadow-2xs"
+              className="w-full text-xs pl-8 pr-3 py-2.5 bg-white border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon shadow-2xs"
             />
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
           </div>
@@ -223,7 +255,7 @@ export function OrdersPage() {
             <p className="text-xs text-neutral-500 font-medium">Loading your orders & tracking telemetry...</p>
           </div>
         ) : filteredOrders.length === 0 ? (
-          <div className="bg-white border border-brand-border rounded-2xl p-12 text-center space-y-4 shadow-sm">
+          <div className="bg-white border border-brand-border rounded-sm p-12 text-center space-y-4 shadow-sm">
             <div className="w-16 h-16 rounded-full bg-neutral-100 text-neutral-400 flex items-center justify-center mx-auto">
               <Package className="w-8 h-8" />
             </div>
@@ -233,7 +265,7 @@ export function OrdersPage() {
             </p>
             <Link
               to="/"
-              className="inline-flex items-center space-x-2 px-6 py-2.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs font-bold rounded-xl shadow-md transition-all"
+              className="inline-flex items-center space-x-2 px-6 py-2.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs font-bold rounded-sm shadow-md transition-all"
             >
               <ShoppingBag className="w-4 h-4" />
               <span>Start Shopping</span>
@@ -243,7 +275,7 @@ export function OrdersPage() {
           <div className="space-y-4">
             {filteredOrders.map((order) => {
               const items = order.items || [];
-              const addr = typeof order.shipping_address === 'string' ? JSON.parse(order.shipping_address) : order.shipping_address || {};
+              const addr = parseAddress(order.shipping_address);
               const orderDate = new Date(order.created_at || Date.now()).toLocaleDateString('en-IN', {
                 day: '2-digit',
                 month: 'short',
@@ -255,7 +287,7 @@ export function OrdersPage() {
               const returnRequested = order.return_status && order.return_status !== 'none';
 
               return (
-                <div key={order.id} className="bg-white rounded-2xl border border-brand-border shadow-xs overflow-hidden transition-all hover:shadow-md">
+                <div key={order.id} className="bg-white rounded-sm border border-brand-border shadow-xs overflow-hidden transition-all hover:shadow-md">
                   {/* Order Card Header */}
                   <div className="p-4 sm:p-5 bg-neutral-50/70 border-b border-neutral-100 flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
@@ -305,8 +337,8 @@ export function OrdersPage() {
                         </div>
 
                         <Link
-                          to={`/product/${item.product_slug || ''}`}
-                          className="px-3 py-1.5 rounded-lg border border-neutral-200 hover:bg-neutral-50 text-[11px] font-semibold text-neutral-700 whitespace-nowrap"
+                          to={getProductUrl(item)}
+                          className="px-3 py-1.5 rounded-sm border border-neutral-200 hover:bg-neutral-50 text-[11px] font-semibold text-neutral-700 whitespace-nowrap"
                         >
                           View Item
                         </Link>
@@ -316,7 +348,7 @@ export function OrdersPage() {
 
                   {/* Return Details Banner if Return Active */}
                   {returnRequested && (
-                    <div className="mx-4 sm:mx-5 mb-4 p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-xs text-purple-900 space-y-1">
+                    <div className="mx-4 sm:mx-5 mb-4 p-3.5 rounded-sm bg-purple-50 border border-purple-200 text-xs text-purple-900 space-y-1">
                       <div className="flex items-center justify-between font-bold">
                         <span className="flex items-center gap-1.5">
                           <RotateCcw className="w-4 h-4 text-purple-700" />
@@ -331,7 +363,7 @@ export function OrdersPage() {
 
                   {/* Cancellation Reason Banner if Cancelled */}
                   {order.cancellation_reason && (
-                    <div className="mx-4 sm:mx-5 mb-4 p-3 rounded-xl bg-neutral-100 border border-neutral-200 text-xs text-neutral-700">
+                    <div className="mx-4 sm:mx-5 mb-4 p-3 rounded-sm bg-neutral-100 border border-neutral-200 text-xs text-neutral-700">
                       <strong>Cancellation Reason:</strong> {order.cancellation_reason}
                     </div>
                   )}
@@ -354,15 +386,23 @@ export function OrdersPage() {
                     {/* Buttons Toolbar */}
                     <div className="flex flex-wrap items-center gap-2">
                       {/* Live Tracking */}
-                      {order.delhivery_waybill && (
+                      {order.delhivery_waybill ? (
                         <button
                           type="button"
                           onClick={() => setTrackingWaybill(order.delhivery_waybill)}
-                          className="px-3 py-1.5 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg flex items-center space-x-1 text-[11px] shadow-2xs cursor-pointer"
+                          className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-sm flex items-center space-x-1 text-[11px] uppercase tracking-wider shadow-2xs cursor-pointer"
                         >
                           <Truck className="w-3 h-3" />
                           <span>Track Live</span>
                         </button>
+                      ) : (
+                        <Link
+                          to={`/track-order?order=${order.order_number}`}
+                          className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-sm flex items-center space-x-1 text-[11px] uppercase tracking-wider shadow-2xs"
+                        >
+                          <Truck className="w-3 h-3" />
+                          <span>Track Order</span>
+                        </Link>
                       )}
 
                       {/* Download Invoice */}
@@ -374,7 +414,7 @@ export function OrdersPage() {
                           setDownloadingId(null);
                         }}
                         disabled={downloadingId === order.id}
-                        className="px-3 py-1.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-700 font-semibold rounded-lg flex items-center space-x-1 text-[11px] cursor-pointer"
+                        className="px-3 py-1.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-700 font-semibold rounded-sm flex items-center space-x-1 text-[11px] uppercase tracking-wider cursor-pointer"
                       >
                         <Download className="w-3 h-3" />
                         <span>{downloadingId === order.id ? 'Generating...' : 'Invoice (PDF)'}</span>
@@ -385,7 +425,7 @@ export function OrdersPage() {
                         <button
                           type="button"
                           onClick={() => setCancellingOrder(order)}
-                          className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold rounded-lg flex items-center space-x-1 text-[11px] cursor-pointer"
+                          className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-semibold rounded-sm flex items-center space-x-1 text-[11px] uppercase tracking-wider cursor-pointer"
                         >
                           <XCircle className="w-3 h-3" />
                           <span>Cancel Order</span>
@@ -397,7 +437,7 @@ export function OrdersPage() {
                         <button
                           type="button"
                           onClick={() => setReturningOrder(order)}
-                          className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-300 font-bold rounded-lg flex items-center space-x-1 text-[11px] cursor-pointer"
+                          className="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 border border-neutral-300 font-semibold rounded-sm flex items-center space-x-1 text-[11px] uppercase tracking-wider cursor-pointer"
                         >
                           <RotateCcw className="w-3 h-3" />
                           <span>Return / Exchange</span>
@@ -410,7 +450,6 @@ export function OrdersPage() {
             })}
           </div>
         )}
-      </div>
 
       {/* Live Shiprocket Tracking Modal */}
       {trackingWaybill && (
@@ -439,6 +478,8 @@ export function OrdersPage() {
           onClose={() => setReturningOrder(null)}
           onReturnSuccess={handleReturnSuccess}
         />
+      )}
+      </div>
       )}
     </div>
   );

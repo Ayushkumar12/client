@@ -85,7 +85,9 @@ export function ReturnOrderModal({ order, isOpen, onClose, onReturnSuccess }) {
         reason: selectedReason,
         description: description.trim(),
         proof_images: proofImages,
-        refund_preference: refundPreference === 'upi' ? `UPI: ${upiId.trim()}` : 'Original Payment Source'
+        refund_preference: refundPreference === 'upi' ? `UPI: ${upiId.trim()}` : 'Original Payment Source',
+        customer_email: order.customer_email,
+        customer_phone: order.customer_phone
       };
 
       const res = await api.requestReturn(order.id || order.order_number, payload);
@@ -109,11 +111,11 @@ export function ReturnOrderModal({ order, isOpen, onClose, onReturnSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn overflow-y-auto">
-      <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-neutral-200 overflow-hidden my-8">
+      <div className="relative w-full max-w-xl bg-white rounded-sm shadow-2xl border border-neutral-200 overflow-hidden my-8">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 bg-neutral-50/80">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-sm bg-neutral-100 text-neutral-800 flex items-center justify-center">
               <RotateCcw className="w-4 h-4" />
             </div>
             <div>

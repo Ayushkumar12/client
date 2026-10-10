@@ -19,6 +19,7 @@ import { ShiprocketTrackerModal } from '../components/common/ShiprocketTrackerMo
 import { ShiprocketLiveMap } from '../components/common/ShiprocketLiveMap.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
+import { parseAddress } from '../utils/addressUtils.js';
 import { api } from '../services/api.js';
 
 export function OrderConfirmationPage() {
@@ -65,9 +66,7 @@ export function OrderConfirmationPage() {
     );
   }
 
-  const addr = typeof order.shipping_address === 'string'
-    ? JSON.parse(order.shipping_address)
-    : (order.shipping_address || {});
+  const addr = parseAddress(order.shipping_address);
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen py-10">
@@ -75,7 +74,7 @@ export function OrderConfirmationPage() {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
         {/* Success Card Header */}
-        <div className="bg-white rounded-2xl p-8 border border-neutral-200/90 shadow-sm text-center space-y-4">
+        <div className="bg-white rounded-sm p-8 border border-neutral-200/90 shadow-sm text-center space-y-4">
           <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200">
             <CheckCircle2 className="w-8 h-8" />
           </div>
@@ -90,9 +89,9 @@ export function OrderConfirmationPage() {
             Your order <strong>#{order.order_number}</strong> has been placed successfully. A confirmation email and SMS with tracking details have been sent to <strong>{order.customer_email}</strong>.
           </p>
 
-          {/* Quick Summary Pill & Invoice Quick Action */}
+          {/* Quick Summary & Invoice Quick Action */}
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <div className="inline-flex items-center space-x-3 bg-neutral-50 border border-neutral-200 px-5 py-2.5 rounded-full text-xs text-neutral-800">
+            <div className="inline-flex items-center space-x-3 bg-neutral-50 border border-neutral-200 px-4 py-2 rounded-sm text-xs text-neutral-800">
               <span>Order ID: <strong className="font-mono text-brand-maroon">{order.order_number}</strong></span>
               <span>•</span>
               <span>Payment: <strong className="uppercase text-neutral-900">{order.payment_method === 'cod' ? 'Cash On Delivery' : 'Paid Online'}</strong></span>
@@ -107,7 +106,7 @@ export function OrderConfirmationPage() {
                 setDownloading(false);
               }}
               disabled={downloading}
-              className="inline-flex items-center space-x-1.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white px-5 py-2.5 rounded-full text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-75"
+              className="inline-flex items-center space-x-1.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white px-5 py-2 rounded-sm text-xs font-semibold shadow-2xs transition-colors cursor-pointer disabled:opacity-75 uppercase tracking-wider"
             >
               <FileText className="w-4 h-4 text-brand-gold-light" />
               <span>{downloading ? 'Downloading PDF...' : 'Download Invoice (PDF)'}</span>
@@ -124,6 +123,16 @@ export function OrderConfirmationPage() {
                 Delivery & Tracking Details
               </h2>
             </div>
+            {order.delhivery_waybill && (
+              <button
+                type="button"
+                onClick={() => setShowShiprocketModal(true)}
+                className="px-3.5 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold rounded-sm transition-colors flex items-center space-x-1.5 cursor-pointer shadow-2xs"
+              >
+                <Truck className="w-3.5 h-3.5 text-brand-gold-light" />
+                <span>Live GPS Tracking</span>
+              </button>
+            )}
           </div>
 
           <ShiprocketLiveMap
@@ -138,7 +147,7 @@ export function OrderConfirmationPage() {
         {/* SECTION 2: Order Summary & Delivery Address */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Shipping Address */}
-          <div className="bg-white rounded-2xl p-6 border border-neutral-200 shadow-xs space-y-3">
+          <div className="bg-white rounded-sm p-6 border border-neutral-200 shadow-xs space-y-3">
             <h3 className="font-serif font-bold text-sm text-neutral-900 flex items-center space-x-2">
               <MapPin className="w-4 h-4 text-brand-maroon" />
               <span>Delivery Address</span>
@@ -152,7 +161,7 @@ export function OrderConfirmationPage() {
           </div>
 
           {/* Ordered Items Summary */}
-          <div className="bg-white rounded-2xl p-6 border border-neutral-200 shadow-xs space-y-3">
+          <div className="bg-white rounded-sm p-6 border border-neutral-200 shadow-xs space-y-3">
             <h3 className="font-serif font-bold text-sm text-neutral-900 flex items-center space-x-2">
               <Package className="w-4 h-4 text-brand-maroon" />
               <span>Ordered Items ({order.items?.length || 0})</span>
@@ -175,13 +184,13 @@ export function OrderConfirmationPage() {
         </div>
 
         {/* Bottom Actions Bar */}
-        <div className="bg-white rounded-2xl p-5 border border-neutral-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
+        <div className="bg-white rounded-sm p-5 border border-neutral-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center space-x-2 text-xs text-neutral-500">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
             <span>100% Authentic Handcrafted Luxury Apparel • Verified Shiprocket Logistics</span>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={async () => {
                 setDownloading(true);
@@ -189,15 +198,31 @@ export function OrderConfirmationPage() {
                 setDownloading(false);
               }}
               disabled={downloading}
-              className="px-4 py-2 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold rounded-xl transition-colors flex items-center space-x-1.5 cursor-pointer disabled:opacity-75"
+              className="px-4 py-2 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold rounded-sm transition-colors flex items-center space-x-1.5 cursor-pointer disabled:opacity-75"
             >
               <FileText className="w-4 h-4 text-neutral-600" />
               <span>{downloading ? 'Downloading...' : 'Download Invoice (PDF)'}</span>
             </button>
 
             <Link
+              to="/orders"
+              className="px-4 py-2 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold rounded-sm transition-colors flex items-center space-x-1.5"
+            >
+              <Package className="w-4 h-4 text-neutral-600" />
+              <span>My Orders</span>
+            </Link>
+
+            <Link
+              to={`/track-order?order=${order.order_number}`}
+              className="px-4 py-2 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold rounded-sm transition-colors flex items-center space-x-1.5"
+            >
+              <Truck className="w-4 h-4 text-neutral-600" />
+              <span>Track Order</span>
+            </Link>
+
+            <Link
               to="/"
-              className="px-5 py-2 bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center space-x-1.5"
+              className="px-5 py-2 bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs font-semibold rounded-sm shadow-xs transition-colors flex items-center space-x-1.5"
             >
               <span>Continue Shopping</span>
               <ArrowRight className="w-4 h-4" />

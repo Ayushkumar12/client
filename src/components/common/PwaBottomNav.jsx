@@ -53,9 +53,13 @@ export function PwaBottomNav() {
         )}
       </NavLink>
 
-      <button
-        onClick={openCart}
-        className="relative flex flex-col items-center py-1 px-3 text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer"
+      <NavLink
+        to="/cart"
+        className={({ isActive }) =>
+          `relative flex flex-col items-center py-1 px-3 transition-colors ${
+            isActive ? 'text-brand-maroon font-bold' : 'text-neutral-500 hover:text-neutral-900'
+          }`
+        }
       >
         <ShoppingBag className="w-4.5 h-4.5 mb-0.5 text-brand-maroon" />
         <span>Cart</span>
@@ -64,7 +68,7 @@ export function PwaBottomNav() {
             {totalItems}
           </span>
         )}
-      </button>
+      </NavLink>
 
       <NavLink
         to={isAuthenticated ? '/account' : '/login'}

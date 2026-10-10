@@ -8,13 +8,13 @@ export function BentoMosaicSection() {
   const bento = getSection('bento_mosaic') || {};
 
   const zewar = bento.zewar_card || {
-    tag: 'Fine Ornaments',
+    tag: 'Jewellery & Gifts',
     title: 'ZEWAR',
     subtitle: 'by OCT9',
-    description: 'Handcrafted Kundan, Polki & Pearl masterpieces tailored for royal occasions.',
+    description: 'Handcrafted Kundan, Polki & Pearl jewellery for festive occasions.',
     image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=85',
     link: '/category/accessories',
-    cta_text: 'Shop Jewellery Atelier'
+    cta_text: 'Shop Jewellery'
   };
 
   const categories = bento.categories && bento.categories.length > 0
@@ -48,7 +48,7 @@ export function BentoMosaicSection() {
         {
           title: 'Royal Sarees',
           link: '/category/sarees',
-          image: 'https://images.unsplash.com/photo-1610030469668-9655ecbbdd13?auto=format&fit=crop&w=600&q=85'
+          image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=600&q=85'
         }
       ];
 
@@ -61,13 +61,10 @@ export function BentoMosaicSection() {
     <section className="py-14 bg-white relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Heading */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 mb-3 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-neutral-600" aria-hidden="true" />
-            <span className="text-xs font-semibold tracking-wider uppercase text-neutral-700">
-              {bento.badge || 'Browse Collections'}
-            </span>
-          </div>
+        <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+          <p className="text-[11px] uppercase tracking-widest text-neutral-500 font-semibold">
+            {bento.badge || 'Browse Collections'}
+          </p>
           <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
             {bento.title || 'Shop by Budget & Category'}
           </h2>
@@ -123,12 +120,12 @@ export function BentoMosaicSection() {
           </div>
 
           {/* 2. Right Symmetrical 6-Card Grid */}
-          <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
+          <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
             {categories.map((cat, idx) => (
               <Link
                 key={idx}
                 to={cat.link || '/category/all'}
-                className="group relative block h-[220px] sm:h-[240px] rounded-xl overflow-hidden bg-neutral-900 border border-neutral-200 shadow-xs hover:shadow-md transition-all duration-300"
+                className="group relative block h-[160px] sm:h-[240px] rounded-xl overflow-hidden bg-neutral-900 border border-neutral-200 shadow-xs hover:shadow-md transition-all duration-300"
                 aria-label={`Explore ${cat.title}`}
               >
                 <img
@@ -138,10 +135,10 @@ export function BentoMosaicSection() {
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-                <div className="absolute inset-x-0 bottom-4 px-4 flex items-center justify-between">
-                  <span className="bg-black/70 backdrop-blur-xs text-white text-xs font-medium px-3 py-1 rounded flex items-center space-x-1.5 group-hover:bg-black/90 transition-colors">
-                    <span>{cat.title}</span>
-                    <ArrowUpRight className="w-3 h-3" aria-hidden="true" />
+                <div className="absolute inset-x-0 bottom-3 sm:bottom-4 px-2.5 sm:px-4 flex items-center justify-between">
+                  <span className="bg-black/70 backdrop-blur-xs text-white text-[11px] sm:text-xs font-medium px-2.5 sm:px-3 py-1 rounded flex items-center space-x-1 group-hover:bg-black/90 transition-colors truncate max-w-full">
+                    <span className="truncate">{cat.title}</span>
+                    <ArrowUpRight className="w-3 h-3 shrink-0" aria-hidden="true" />
                   </span>
                 </div>
               </Link>

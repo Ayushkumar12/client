@@ -26,7 +26,7 @@ export function ImageUploader({
   helperText = '',
   aspectRatio = 'aspect-[16/7]',
   className = '',
-  rounded = 'rounded-2xl',
+  rounded = 'rounded-sm',
   showLibraryButton = true,
   fallbackImage = '/banners/hero_banner_2.png'
 }) {
@@ -296,7 +296,7 @@ export function ImageUploader({
             </>
           ) : (
             /* Empty Dropzone State */
-            <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-[#FAF7F2] space-y-2.5 border border-dashed border-neutral-300 rounded-2xl hover:bg-[#F5EFEB] transition-colors">
+            <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-[#FAF7F2] space-y-2.5 border border-dashed border-neutral-300 rounded-sm hover:bg-[#F5EFEB] transition-colors">
               <div className="w-11 h-11 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center shadow-2xs">
                 {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
               </div>
@@ -336,7 +336,7 @@ export function ImageUploader({
         {/* Modal: Full Resolution Preview */}
         {previewModalImg && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn">
-            <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-2xl overflow-hidden shadow-2xl p-2">
+            <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-sm overflow-hidden shadow-2xl p-2">
               <button
                 onClick={() => setPreviewModalImg(null)}
                 className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black cursor-pointer"
@@ -346,7 +346,7 @@ export function ImageUploader({
               <img
                 src={previewModalImg}
                 alt="Preview"
-                className="w-full h-auto max-h-[85vh] object-contain rounded-xl"
+                className="w-full h-auto max-h-[85vh] object-contain rounded-sm"
               />
             </div>
           </div>
@@ -355,7 +355,7 @@ export function ImageUploader({
         {/* Modal: SQL Media Library */}
         {showMediaLibrary && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-            <div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl space-y-4">
+            <div className="bg-white rounded-sm p-6 max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl space-y-4">
               <div className="flex justify-between items-center border-b pb-3">
                 <div>
                   <h3 className="font-serif font-bold text-lg text-neutral-900">Media Library</h3>
@@ -385,7 +385,7 @@ export function ImageUploader({
                       <div
                         key={m.id}
                         onClick={() => handleSelectFromLibrary(m)}
-                        className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-neutral-200 hover:border-brand-maroon hover:ring-2 hover:ring-brand-maroon/30 transition-all cursor-pointer bg-neutral-100"
+                        className="group relative aspect-[3/4] rounded-sm overflow-hidden border border-neutral-200 hover:border-brand-maroon hover:ring-2 hover:ring-brand-maroon/30 transition-all cursor-pointer bg-neutral-100"
                       >
                         <img
                           src={formatImageUrl(m.url)}
@@ -404,7 +404,7 @@ export function ImageUploader({
               <div className="border-t pt-3 flex justify-end">
                 <button
                   onClick={() => setShowMediaLibrary(false)}
-                  className="px-4 py-2 bg-neutral-900 text-white text-xs font-bold rounded-xl cursor-pointer hover:bg-neutral-800"
+                  className="px-4 py-2 bg-neutral-900 text-white text-xs font-bold rounded-sm cursor-pointer hover:bg-neutral-800"
                 >
                   Close
                 </button>
@@ -449,7 +449,7 @@ export function ImageUploader({
       </div>
 
       {error && (
-        <div className="flex items-center space-x-2 text-xs text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200">
+        <div className="flex items-center space-x-2 text-xs text-red-600 bg-red-50 p-2.5 rounded-sm border border-red-200">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
@@ -462,7 +462,7 @@ export function ImageUploader({
           return (
             <div
               key={`${url}-${idx}`}
-              className={`group relative rounded-xl overflow-hidden border bg-white shadow-2xs transition-all ${
+              className={`group relative rounded-sm overflow-hidden border bg-white shadow-2xs transition-all ${
                 isPrimary ? 'border-brand-maroon ring-2 ring-brand-maroon/30' : 'border-neutral-200 hover:border-neutral-400'
               }`}
             >
@@ -527,7 +527,7 @@ export function ImageUploader({
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={triggerFileInput}
-            className={`aspect-[3/4] rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-center p-3 cursor-pointer transition-all duration-300 ${
+            className={`aspect-[3/4] rounded-sm border-2 border-dashed flex flex-col items-center justify-center text-center p-3 cursor-pointer transition-all duration-300 ${
               isDragging
                 ? 'border-brand-maroon bg-brand-maroon/5 scale-102'
                 : 'border-neutral-300 hover:border-neutral-500 bg-[#FAF7F2] hover:bg-[#F5EFEB]'
@@ -554,7 +554,7 @@ export function ImageUploader({
       {/* Modal: Full Resolution Preview */}
       {previewModalImg && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn">
-          <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-2xl overflow-hidden shadow-2xl p-2">
+          <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-sm overflow-hidden shadow-2xl p-2">
             <button
               onClick={() => setPreviewModalImg(null)}
               className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black cursor-pointer"
@@ -564,7 +564,7 @@ export function ImageUploader({
             <img
               src={previewModalImg}
               alt="Preview"
-              className="w-full h-auto max-h-[85vh] object-contain rounded-xl"
+              className="w-full h-auto max-h-[85vh] object-contain rounded-sm"
             />
           </div>
         </div>
@@ -573,7 +573,7 @@ export function ImageUploader({
       {/* Modal: SQL Media Library */}
       {showMediaLibrary && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl space-y-4">
+          <div className="bg-white rounded-sm p-6 max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b pb-3">
               <div>
                 <h3 className="font-serif font-bold text-lg text-neutral-900">Media Library</h3>
@@ -603,7 +603,7 @@ export function ImageUploader({
                     <div
                       key={m.id}
                       onClick={() => handleSelectFromLibrary(m)}
-                      className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-neutral-200 hover:border-brand-maroon hover:ring-2 hover:ring-brand-maroon/30 transition-all cursor-pointer bg-neutral-100"
+                      className="group relative aspect-[3/4] rounded-sm overflow-hidden border border-neutral-200 hover:border-brand-maroon hover:ring-2 hover:ring-brand-maroon/30 transition-all cursor-pointer bg-neutral-100"
                     >
                       <img
                         src={formatImageUrl(m.url)}
@@ -622,7 +622,7 @@ export function ImageUploader({
             <div className="border-t pt-3 flex justify-end">
               <button
                 onClick={() => setShowMediaLibrary(false)}
-                className="px-4 py-2 bg-neutral-900 text-white text-xs font-bold rounded-xl cursor-pointer hover:bg-neutral-800"
+                className="px-4 py-2 bg-neutral-900 text-white text-xs font-bold rounded-sm cursor-pointer hover:bg-neutral-800"
               >
                 Close
               </button>

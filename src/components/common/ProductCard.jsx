@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Heart, ShoppingCart, Check, Zap, ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Heart } from 'lucide-react';
 import { useCart } from '../../context/CartContext.jsx';
 import { useWishlist } from '../../context/WishlistContext.jsx';
 import { getProductUrl } from '../../utils/productUrl.js';
@@ -53,11 +53,12 @@ function getProductSilhouetteLabel(product) {
   return 'Designer Suit';
 }
 
-const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1610030469668-9655ecbbdd13?auto=format&fit=crop&w=800&q=80';
+const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=800&q=80';
 
 export function ProductCard({ product, showDescription = true, showInstantBuy = true, compact = false }) {
-  const { addToCart, openCart } = useCart();
+  const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const navigate = useNavigate();
 
   // Normalize product images
   const images = Array.isArray(product.images) && product.images.length > 0
@@ -111,7 +112,7 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
     e.stopPropagation();
     if (isOutOfStock) return;
     addToCart(product, selectedSize, 'Standard', 1);
-    openCart();
+    navigate('/checkout');
   };
 
   const handleWishlistClick = (e) => {
@@ -121,11 +122,11 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
   };
 
   return (
-    <div className={`group relative bg-white rounded-2xl overflow-hidden border shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between p-3 ${
+    <div className={`group relative bg-white rounded-sm overflow-hidden border shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between p-2 sm:p-3 ${
       isOutOfStock ? 'border-neutral-300 opacity-90' : 'border-neutral-200/90 hover:border-[#5A1827]/40'
     }`}>
-      {/* Top Image Container with Notched Tab & Inverted Curves */}
-      <div className="relative aspect-[3/3.9] w-full rounded-xl overflow-hidden bg-neutral-100">
+      {/* Top Image Container with Notched Tab */}
+      <div className="relative aspect-[3/3.8] w-full rounded-sm overflow-hidden bg-neutral-100">
         <Link to={getProductUrl(product)} className="block w-full h-full" aria-label={product.title}>
           <img
             src={mainImage}
@@ -156,8 +157,8 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
 
           {/* Out of Stock Overlay */}
           {isOutOfStock && (
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center p-3 z-20">
-              <span className="bg-red-600 text-white font-bold text-xs tracking-wider uppercase px-3.5 py-1.5 rounded-full shadow-lg border border-red-400">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center p-2 z-20">
+              <span className="bg-red-600 text-white font-bold text-[10px] sm:text-xs tracking-wider uppercase px-2.5 py-1 rounded-sm shadow-md border border-red-400">
                 Out of Stock
               </span>
             </div>
@@ -166,95 +167,95 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
 
         {/* Top-Left Notched Category Tab with legible Title Case */}
         <div className="absolute top-0 left-0 z-20 flex items-start pointer-events-none">
-          <div className="bg-white/95 backdrop-blur-xs px-3 py-1 rounded-br-xl border-r border-b border-neutral-200/80 shadow-2xs">
-            <span className="text-xs font-semibold text-neutral-800 tracking-normal">
+          <div className="bg-white/95 backdrop-blur-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-br-sm border-r border-b border-neutral-200/80 shadow-2xs">
+            <span className="text-[10px] sm:text-xs font-semibold text-neutral-800 tracking-normal line-clamp-1 max-w-[110px] sm:max-w-none">
               {categoryLabel}
             </span>
           </div>
-          <svg className="w-3 h-3 fill-white/95" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-white/95" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M0,0 C0,7.73 6.27,14 14,14 L0,14 L0,0 Z" />
           </svg>
         </div>
 
         {/* Top-Right Action Controls (Wishlist & Discount / Stock Badge) */}
-        <div className="absolute top-2.5 right-2.5 z-20 flex flex-col items-end space-y-1.5">
+        <div className="absolute top-2 right-2 z-20 flex flex-col items-end space-y-1">
           {/* Wishlist Heart Button */}
           <button
             type="button"
             onClick={handleWishlistClick}
-            className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-neutral-700 hover:text-red-500 shadow-sm flex items-center justify-center transition-all cursor-pointer"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 hover:bg-white text-neutral-700 hover:text-red-500 shadow-sm flex items-center justify-center transition-all cursor-pointer"
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
             <Heart
-              className={`w-4 h-4 transition-colors ${
+              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors ${
                 isWishlisted ? 'fill-red-500 text-red-500' : 'text-neutral-600'
               }`}
             />
           </button>
 
-          {/* Discount Pill */}
+          {/* Discount Tag */}
           {hasDiscount && (
-            <span className="bg-[#5A1827] text-white text-xs font-bold px-2.5 py-0.5 rounded-full shadow-2xs tracking-wide">
+            <span className="bg-[#5A1827] text-white text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 rounded-sm shadow-2xs tracking-wide">
               {discountPercent}% OFF
             </span>
           )}
 
-          {/* Low Stock Urgency Pill */}
+          {/* Low Stock Urgency Tag */}
           {isLowStock && (
-            <span className="bg-amber-500 text-neutral-950 text-xs font-bold px-2 py-0.5 rounded-full shadow-2xs tracking-wide border border-amber-300 flex items-center space-x-1 animate-pulse">
-              <span>⚡ {stockCount} left</span>
+            <span className="bg-amber-500 text-neutral-950 text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 rounded-sm shadow-2xs tracking-wide border border-amber-300">
+              <span>Only {stockCount} left</span>
             </span>
           )}
         </div>
       </div>
 
       {/* Card Body Details */}
-      <div className="pt-3 px-1 pb-1 flex-1 flex flex-col justify-between space-y-2">
+      <div className="pt-2 px-0.5 pb-0.5 flex-1 flex flex-col justify-between space-y-1.5 sm:space-y-2">
         <div>
           {/* Title & Price Header Row */}
-          <div className="flex items-start justify-between gap-2">
+          <div className="flex items-start justify-between gap-1 sm:gap-2">
             <Link to={getProductUrl(product)} className="flex-1 min-w-0">
-              <h3 className="font-serif text-sm sm:text-base font-bold text-neutral-900 line-clamp-1 hover:text-[#5A1827] transition-colors">
+              <h3 className="font-serif text-xs sm:text-sm md:text-base font-bold text-neutral-900 line-clamp-1 hover:text-[#5A1827] transition-colors leading-tight">
                 {product.title}
               </h3>
             </Link>
 
-            {/* Price Pill */}
-            <div className="shrink-0 bg-amber-50 text-[#8C6339] border border-amber-200/80 font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-full shadow-2xs whitespace-nowrap">
+            {/* Price Tag */}
+            <div className="shrink-0 bg-amber-50 text-[#8C6339] border border-amber-200/80 font-bold text-[11px] sm:text-xs md:text-sm px-1.5 sm:px-2 py-0.5 rounded-sm shadow-2xs whitespace-nowrap">
               ₹{Number(product.price).toLocaleString('en-IN')}
             </div>
           </div>
 
-          {/* Description Snippet (Single line for optimal scanning) */}
+          {/* Description Snippet (Shown on sm+ or compact) */}
           {showDescription && !compact && (
-            <p className="text-xs text-neutral-500 line-clamp-1 leading-relaxed mt-1 font-normal">
+            <p className="hidden sm:block text-xs text-neutral-500 line-clamp-1 leading-relaxed mt-1 font-normal">
               {descriptionText}
             </p>
           )}
 
-          {/* Stock Status Indicator (Legible font size >= 12px) */}
-          <div className="mt-1.5 flex items-center justify-between text-xs font-medium">
+          {/* Stock Status Indicator */}
+          <div className="mt-1 flex items-center justify-between text-[11px] sm:text-xs font-medium">
             {isOutOfStock ? (
-              <span className="text-red-600 font-semibold flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-red-500 inline-block" aria-hidden="true"></span>
-                <span>Out of Stock (0 available)</span>
+              <span className="text-red-600 font-semibold flex items-center space-x-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" aria-hidden="true"></span>
+                <span className="truncate">Out of Stock</span>
               </span>
             ) : isLowStock ? (
-              <span className="text-amber-700 font-semibold flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping inline-block" aria-hidden="true"></span>
-                <span>Low Stock: Only {stockCount} left</span>
+              <span className="text-amber-700 font-semibold flex items-center space-x-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block shrink-0" aria-hidden="true"></span>
+                <span className="truncate">Only {stockCount} left</span>
               </span>
             ) : (
-              <span className="text-emerald-700 font-semibold flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block" aria-hidden="true"></span>
-                <span>In Stock ({stockCount} available)</span>
+              <span className="text-emerald-700 font-semibold flex items-center space-x-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block shrink-0" aria-hidden="true"></span>
+                <span className="truncate">In Stock</span>
               </span>
             )}
           </div>
 
-          {/* Accessible Size Buttons (Touch target compliant) */}
-          {!compact && (
-            <div className="mt-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+          {/* Accessible Size Buttons (Clean rectangular boxes) */}
+          {!compact && availableSizes.length > 0 && (
+            <div className="mt-1.5 flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
               {availableSizes.map((sz) => {
                 const isSelected = selectedSize === sz;
                 return (
@@ -265,7 +266,7 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
                     onClick={(e) => handleSizeClick(sz, e)}
                     aria-pressed={isSelected}
                     aria-label={`Size ${sz}`}
-                    className={`relative min-w-[34px] h-8 px-2 rounded-full text-xs font-bold transition-all border flex items-center justify-center whitespace-nowrap after:absolute after:-inset-1 ${
+                    className={`relative min-w-[26px] sm:min-w-[32px] h-6 sm:h-7 px-1.5 rounded-sm text-[10px] sm:text-xs font-bold transition-all border flex items-center justify-center whitespace-nowrap ${
                       isOutOfStock
                         ? 'bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed line-through'
                         : isSelected
@@ -281,14 +282,14 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
           )}
         </div>
 
-        {/* Action Buttons: Standardized matching 40px height & clean alignment */}
-        <div className="pt-2 flex items-center gap-2">
+        {/* Action Buttons: Crisp rectangular design */}
+        <div className="pt-1.5 flex items-center gap-1.5">
           {/* Add to Cart Button (Primary) */}
           <button
             type="button"
             disabled={isOutOfStock}
             onClick={handleAddToCart}
-            className={`flex-1 h-10 px-3.5 rounded-full text-xs font-bold flex items-center justify-center space-x-1.5 transition-all shadow-2xs box-border ${
+            className={`flex-1 h-8 sm:h-9 px-2 sm:px-3 rounded-sm text-[11px] sm:text-xs font-semibold uppercase tracking-wider flex items-center justify-center transition-all shadow-2xs box-border ${
               isOutOfStock
                 ? 'w-full bg-neutral-200 text-neutral-500 cursor-not-allowed border border-neutral-300 shadow-none'
                 : 'bg-[#5A1827] hover:bg-[#43121D] active:scale-98 text-white hover:shadow-md cursor-pointer'
@@ -297,27 +298,20 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
             {isOutOfStock ? (
               <span className="whitespace-nowrap">Out of Stock</span>
             ) : isAdded ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-white shrink-0" aria-hidden="true" />
-                <span className="whitespace-nowrap">Added</span>
-              </>
+              <span className="whitespace-nowrap">Added</span>
             ) : (
-              <>
-                <ShoppingCart className="w-3.5 h-3.5 text-white shrink-0" aria-hidden="true" />
-                <span className="whitespace-nowrap">Add To Cart</span>
-              </>
+              <span className="whitespace-nowrap">Add to Cart</span>
             )}
           </button>
 
-          {/* Instant Buy (Secondary Button with matched 40px height) */}
+          {/* Instant Buy (Secondary Button) */}
           {showInstantBuy && !isOutOfStock && (
             <button
               type="button"
               onClick={handleInstantBuy}
-              className="flex-1 h-10 px-3.5 rounded-full bg-white hover:bg-neutral-900 text-neutral-900 hover:text-white border border-neutral-300 hover:border-neutral-900 text-xs font-bold flex items-center justify-center space-x-1.5 transition-all shadow-2xs hover:shadow-sm cursor-pointer whitespace-nowrap box-border"
+              className="flex-1 h-8 sm:h-9 px-2 sm:px-3 rounded-sm bg-white hover:bg-neutral-900 text-neutral-900 hover:text-white border border-neutral-300 hover:border-neutral-900 text-[11px] sm:text-xs font-semibold uppercase tracking-wider flex items-center justify-center transition-all shadow-2xs hover:shadow-sm cursor-pointer whitespace-nowrap box-border"
             >
-              <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" aria-hidden="true" />
-              <span>Instant Buy</span>
+              <span>Buy Now</span>
             </button>
           )}
         </div>

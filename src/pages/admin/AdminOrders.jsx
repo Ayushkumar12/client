@@ -17,6 +17,17 @@ import { ShiprocketTrackerModal } from '../../components/common/ShiprocketTracke
 import { downloadOrderInvoicePdf } from '../../utils/invoicePdf.js';
 import { api } from '../../services/api.js';
 
+function parseAddress(shippingAddress) {
+  if (!shippingAddress) return {};
+  if (typeof shippingAddress === 'object') return shippingAddress;
+  try {
+    const parsed = JSON.parse(shippingAddress);
+    return typeof parsed === 'object' && parsed !== null ? parsed : { address_line1: String(shippingAddress) };
+  } catch {
+    return { address_line1: String(shippingAddress) };
+  }
+}
+
 export function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -91,45 +102,45 @@ export function AdminOrders() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-200">
         <div>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
-            Order Management & Fulfillment
+          <h1 className="text-xl font-bold text-neutral-900">
+            Orders &amp; Fulfillment
           </h1>
-          <p className="text-xs text-neutral-500 mt-1">
-            Fulfill orders with 1-click Shiprocket AWB creation, generate shipping labels & track shipments.
+          <p className="text-xs text-neutral-500 mt-0.5">
+            Manage customer orders, generate Shiprocket AWB manifests, and track shipment status.
           </p>
         </div>
 
         <button
           onClick={fetchOrders}
-          className="px-3.5 py-2 bg-white border border-neutral-300 rounded-xl text-xs font-bold text-neutral-800 hover:bg-neutral-50 flex items-center space-x-1.5 shadow-2xs self-start sm:self-auto"
+          className="px-3.5 py-2 bg-white border border-neutral-300 rounded-md text-xs font-semibold text-neutral-800 hover:bg-neutral-50 flex items-center space-x-1.5 transition-colors cursor-pointer self-start sm:self-auto"
         >
-          <RefreshCw className="w-3.5 h-3.5 text-brand-maroon" />
+          <RefreshCw className="w-3.5 h-3.5 text-neutral-600" />
           <span>Refresh Orders</span>
         </button>
       </div>
 
       {actionMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl flex items-center space-x-2">
+        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium rounded-md flex items-center space-x-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           <span>{actionMessage}</span>
         </div>
       )}
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-brand-border shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-white p-3 rounded-lg border border-neutral-200 flex flex-col md:flex-row items-center justify-between gap-3">
         {/* Status Filter Tabs */}
         <div className="flex items-center space-x-1 overflow-x-auto no-scrollbar w-full md:w-auto">
           {['all', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize whitespace-nowrap transition-colors ${
+              className={`px-3 py-1.5 rounded-md text-xs font-medium capitalize whitespace-nowrap transition-colors cursor-pointer ${
                 statusFilter === st
-                  ? 'bg-brand-maroon text-white shadow-2xs'
+                  ? 'bg-neutral-900 text-white font-semibold'
                   : 'text-neutral-600 hover:bg-neutral-100'
               }`}
             >
@@ -145,14 +156,14 @@ export function AdminOrders() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search Order #, Customer, AWB..."
-            className="w-full text-xs pl-9 pr-3 py-2 bg-neutral-50 border border-neutral-300 rounded-lg focus:outline-none focus:border-brand-maroon"
+            className="w-full text-xs pl-8 pr-3 py-1.5 bg-neutral-50 border border-neutral-300 rounded-md focus:outline-none focus:border-neutral-900"
           />
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
         </form>
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-2xl border border-brand-border shadow-2xs overflow-hidden">
+      <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
         {loading ? (
           <div className="py-20 text-center">
             <Loader2 className="w-8 h-8 text-brand-maroon animate-spin mx-auto" />
@@ -177,7 +188,7 @@ export function AdminOrders() {
               </thead>
               <tbody className="divide-y divide-neutral-100">
                 {orders.map((o) => {
-                  const addr = typeof o.shipping_address === 'string' ? JSON.parse(o.shipping_address) : o.shipping_address;
+                  const addr = parseAddress(o.shipping_address);
                   return (
                     <tr key={o.id} className="hover:bg-neutral-50/80 transition-colors">
                       <td className="p-4">
@@ -186,7 +197,14 @@ export function AdminOrders() {
                       </td>
 
                       <td className="p-4">
-                        <p className="font-bold text-neutral-900">{o.customer_name}</p>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="font-bold text-neutral-900">{o.customer_name}</p>
+                          {o.user_id ? (
+                            <span className="font-mono text-[9px] bg-neutral-100 text-neutral-600 px-1.5 py-0.2 rounded-xs font-semibold">
+                              #USR-{o.user_id}
+                            </span>
+                          ) : null}
+                        </div>
                         <span className="text-neutral-500">{addr?.city || 'India'} ({addr?.pincode})</span>
                       </td>
 
@@ -293,7 +311,7 @@ export function AdminOrders() {
       {/* Order Details Modal */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl space-y-6 max-h-[85vh] overflow-y-auto">
+          <div className="bg-white rounded-sm p-6 sm:p-8 max-w-2xl w-full shadow-2xl space-y-6 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b pb-4">
               <div>
                 <span className="text-xs text-neutral-500 font-semibold">Order Management</span>
@@ -303,7 +321,7 @@ export function AdminOrders() {
             </div>
 
             {/* Customer & Address */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-brand-cream p-4 rounded-xl border border-brand-border">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-brand-cream p-4 rounded-md border border-brand-border">
               <div>
                 <strong className="text-neutral-900 block mb-1">Customer Information</strong>
                 <p>{selectedOrder.customer_name}</p>
@@ -313,9 +331,12 @@ export function AdminOrders() {
               <div>
                 <strong className="text-neutral-900 block mb-1">Delivery Address</strong>
                 {(() => {
-                  const a = typeof selectedOrder.shipping_address === 'string' ? JSON.parse(selectedOrder.shipping_address) : selectedOrder.shipping_address;
+                  const a = parseAddress(selectedOrder.shipping_address);
                   return (
-                    <p>{a.address_line1}, {a.city}, {a.state} - {a.pincode}</p>
+                    <p>
+                      {[a.address_line1, a.city, a.state].filter(Boolean).join(', ')}
+                      {a.pincode ? ` - ${a.pincode}` : ''}
+                    </p>
                   );
                 })()}
               </div>
@@ -324,7 +345,7 @@ export function AdminOrders() {
             {/* Items */}
             <div>
               <h4 className="font-serif font-bold text-sm text-neutral-900 mb-2">Order Items</h4>
-              <div className="divide-y border rounded-xl overflow-hidden">
+              <div className="divide-y border rounded-md overflow-hidden">
                 {(selectedOrder.items || []).map((it, idx) => (
                   <div key={idx} className="p-3 flex items-center justify-between text-xs bg-white">
                     <div className="flex items-center space-x-3">
@@ -341,7 +362,7 @@ export function AdminOrders() {
             </div>
 
             {/* Shiprocket Actions inside modal */}
-            <div className="p-4 bg-[#141414] text-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="p-4 bg-[#141414] text-white rounded-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <span className="text-[10px] text-brand-gold uppercase tracking-wider font-bold">Shiprocket Logistics Status</span>
                 <p className="font-mono text-sm font-bold">

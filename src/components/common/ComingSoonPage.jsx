@@ -100,10 +100,9 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
             <span>Back to Boutique</span>
           </Link>
           <span className="text-neutral-300">•</span>
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-900 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
-            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase">
-              Atelier Preview • Launching Soon
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-sm bg-amber-50 border border-amber-300 text-amber-900 shadow-2xs">
+            <span className="text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase">
+              Collection Preview • Launching Soon
             </span>
           </div>
         </div>
@@ -130,31 +129,31 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
         </div>
 
         {/* Countdown Timer Canvas */}
-        <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-amber-200/80 p-6 sm:p-8 max-w-xl mx-auto shadow-lg shadow-amber-950/5">
+        <div className="bg-white/80 backdrop-blur-md rounded-sm border border-amber-200/80 p-6 sm:p-8 max-w-xl mx-auto shadow-sm">
           <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-500 block mb-4">
             {launchDate ? `Official Launch: ${new Date(launchDate).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}` : 'Estimated Collection Unveiling'}
           </span>
 
           <div className="grid grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-[#FAF7F2] rounded-2xl p-3 sm:p-4 border border-amber-100">
+            <div className="bg-[#FAF7F2] rounded-sm p-3 sm:p-4 border border-amber-100">
               <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block">
                 {String(timeLeft.days).padStart(2, '0')}
               </span>
               <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-semibold">Days</span>
             </div>
-            <div className="bg-[#FAF7F2] rounded-2xl p-3 sm:p-4 border border-amber-100">
+            <div className="bg-[#FAF7F2] rounded-sm p-3 sm:p-4 border border-amber-100">
               <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block">
                 {String(timeLeft.hours).padStart(2, '0')}
               </span>
               <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-semibold">Hours</span>
             </div>
-            <div className="bg-[#FAF7F2] rounded-2xl p-3 sm:p-4 border border-amber-100">
+            <div className="bg-[#FAF7F2] rounded-sm p-3 sm:p-4 border border-amber-100">
               <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block">
                 {String(timeLeft.minutes).padStart(2, '0')}
               </span>
               <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-semibold">Mins</span>
             </div>
-            <div className="bg-[#FAF7F2] rounded-2xl p-3 sm:p-4 border border-amber-100">
+            <div className="bg-[#FAF7F2] rounded-sm p-3 sm:p-4 border border-amber-100">
               <span className="font-serif text-2xl sm:text-4xl font-bold text-brand-maroon block">
                 {String(timeLeft.seconds).padStart(2, '0')}
               </span>
@@ -175,7 +174,7 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
           </div>
 
           {subscribed ? (
-            <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-4 text-emerald-800 flex items-center justify-center space-x-2 animate-fadeIn">
+            <div className="bg-emerald-50 border border-emerald-300 rounded-sm p-4 text-emerald-800 flex items-center justify-center space-x-2 animate-fadeIn">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
               <span className="text-xs font-semibold">
                 You're on the VIP VIP List! We will notify you the moment {categoryTitle} goes live.
@@ -190,12 +189,12 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
                   placeholder="Enter email or WhatsApp number"
                   value={emailOrPhone}
                   onChange={(e) => setEmailOrPhone(e.target.value)}
-                  className="w-full bg-white text-neutral-900 placeholder-neutral-400 text-xs px-4 py-3 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon shadow-2xs font-medium"
+                  className="w-full bg-white text-neutral-900 placeholder-neutral-400 text-xs px-4 py-3 rounded-sm border border-neutral-300 focus:outline-none focus:border-brand-maroon shadow-2xs font-medium"
                 />
               </div>
               <button
                 type="submit"
-                className="bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-xl shadow-md transition-colors flex items-center space-x-1.5 shrink-0 cursor-pointer"
+                className="bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-sm shadow-sm transition-colors flex items-center space-x-1.5 shrink-0 cursor-pointer"
               >
                 <Bell className="w-3.5 h-3.5" />
                 <span>Notify Me</span>
@@ -221,7 +220,7 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
                 <Link
                   key={cat.id || cat.slug}
                   to={cat.link || `/category/${cat.slug}`}
-                  className="group flex flex-col items-center space-y-2 p-2 rounded-2xl hover:bg-white/80 transition-all duration-300 border border-transparent hover:border-amber-200/80"
+                  className="group flex flex-col items-center space-y-2 p-2 rounded-sm hover:bg-white/80 transition-all duration-300 border border-transparent hover:border-amber-200/80"
                 >
                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-amber-300/70 p-0.5 shadow-sm group-hover:scale-108 transition-transform duration-500">
                     <img

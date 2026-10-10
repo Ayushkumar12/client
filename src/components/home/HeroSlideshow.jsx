@@ -102,9 +102,8 @@ export function HeroSlideshow() {
           return (
             <div
               key={slide.id || idx}
-              className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
-                isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-              }`}
+              className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                }`}
             >
               {slide.link ? (
                 <Link to={slide.link} className="block w-full h-full">
@@ -124,11 +123,10 @@ export function HeroSlideshow() {
               <button
                 key={slide.id || idx}
                 onClick={() => setCurrentSlide(idx)}
-                className={`transition-all duration-300 rounded-full cursor-pointer ${
-                  currentSlide === idx
+                className={`transition-all duration-300 rounded-full cursor-pointer ${currentSlide === idx
                     ? 'w-5 sm:w-7 h-1.5 sm:h-2 bg-[#F6D389] shadow-md ring-2 ring-[#F6D389]/40'
                     : 'w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white/60 hover:bg-white'
-                }`}
+                  }`}
                 aria-label={`Go to slide ${idx + 1}`}
               />
             ))}

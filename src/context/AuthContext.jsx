@@ -28,20 +28,31 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function loadUser() {
-      if (token) {
-        try {
+      try {
+        if (token) {
           const res = await api.getProfile();
           if (res.success) {
             setUser(res.user);
           } else {
             logout();
           }
-        } catch (e) {
-          console.warn('Session expired or server unavailable:', e.message);
-          logout();
+        } else {
+          // Check if session cookie is active on server
+          const sessionRes = await api.getSession();
+          if (sessionRes?.success && sessionRes.authenticated && sessionRes.user) {
+            setUser(sessionRes.user);
+          }
         }
+      } catch (e) {
+        console.warn('Session check or server unavailable:', e.message);
+        if (token) {
+          localStorage.removeItem('oct9_token');
+          setToken(null);
+          setUser(null);
+        }
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     loadUser();
   }, [token]);
@@ -49,8 +60,10 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const res = await api.login({ email, password });
     if (res.success) {
-      localStorage.setItem('oct9_token', res.token);
-      setToken(res.token);
+      if (res.token) {
+        localStorage.setItem('oct9_token', res.token);
+        setToken(res.token);
+      }
       setUser(res.user);
       return res;
     }
@@ -60,18 +73,26 @@ export function AuthProvider({ children }) {
   const register = async (userData) => {
     const res = await api.register(userData);
     if (res.success) {
-      localStorage.setItem('oct9_token', res.token);
-      setToken(res.token);
+      if (res.token) {
+        localStorage.setItem('oct9_token', res.token);
+        setToken(res.token);
+      }
       setUser(res.user);
       return res;
     }
     throw new Error(res.message || 'Registration failed');
   };
 
-  const logout = () => {
-    localStorage.removeItem('oct9_token');
-    setToken(null);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await api.logout();
+    } catch (e) {
+      // Ignore network errors on logout
+    } finally {
+      localStorage.removeItem('oct9_token');
+      setToken(null);
+      setUser(null);
+    }
   };
 
   const refreshProfile = async () => {

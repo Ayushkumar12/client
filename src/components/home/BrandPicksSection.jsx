@@ -18,13 +18,10 @@ export function BrandPicksSection({ products = [], loading = false }) {
     <section className="py-12 bg-white relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 mb-3 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-neutral-600" aria-hidden="true" />
-            <span className="text-xs font-semibold tracking-wider uppercase text-neutral-700">
-              {sec.badge || 'Featured Picks'}
-            </span>
-          </div>
+        <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+          <p className="text-[11px] uppercase tracking-widest text-neutral-500 font-semibold">
+            {sec.badge || 'Featured Picks'}
+          </p>
           <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
             {sec.title || 'Popular Collections'}
           </h2>
@@ -35,17 +32,17 @@ export function BrandPicksSection({ products = [], loading = false }) {
 
         {/* Product Cards Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="bg-white rounded-2xl h-80 sm:h-96 animate-pulse border border-neutral-200/80 p-3 space-y-3">
-                <div className="w-full h-3/4 bg-neutral-200 rounded-xl" />
-                <div className="h-4 bg-neutral-200 rounded w-3/4" />
-                <div className="h-4 bg-neutral-200 rounded w-1/2" />
+              <div key={n} className="bg-white rounded-sm h-64 sm:h-96 animate-pulse border border-neutral-200/80 p-2 sm:p-3 space-y-2 sm:space-y-3">
+                <div className="w-full h-3/4 bg-neutral-200 rounded-sm" />
+                <div className="h-4 bg-neutral-200 rounded-xs w-3/4" />
+                <div className="h-4 bg-neutral-200 rounded-xs w-1/2" />
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {displayList.map((product, idx) => (
               <ProductCard key={product.id || idx} product={product} />
             ))}

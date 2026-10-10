@@ -37,17 +37,14 @@ export function ShiprocketPincodeChecker({ onCheckSuccess = null }) {
   };
 
   return (
-    <div className="bg-[#FAF7F2] border border-brand-border rounded-xl p-4 my-4">
+    <div className="bg-[#FAF7F2] border border-neutral-200 rounded-sm p-4 my-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-2">
           <Truck className="w-4 h-4 text-brand-maroon" />
           <span className="text-xs font-semibold uppercase tracking-wider text-neutral-800">
-            Shiprocket Express Delivery Check
+            Delivery Availability & Estimated Date
           </span>
         </div>
-        <span className="text-[10px] bg-purple-100 text-purple-800 font-bold px-1.5 py-0.5 rounded uppercase">
-          LIVE API
-        </span>
       </div>
 
       <form onSubmit={handleCheck} className="flex gap-2">
@@ -61,7 +58,7 @@ export function ShiprocketPincodeChecker({ onCheckSuccess = null }) {
               setError('');
             }}
             placeholder="Enter Delivery Pincode (e.g. 110001)"
-            className="w-full text-xs sm:text-sm pl-8 pr-3 py-2 bg-white border border-neutral-300 rounded-lg focus:outline-none focus:border-brand-maroon"
+            className="w-full text-xs sm:text-sm pl-8 pr-3 py-2 bg-white border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon"
           />
           <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
         </div>
@@ -69,7 +66,7 @@ export function ShiprocketPincodeChecker({ onCheckSuccess = null }) {
         <button
           type="submit"
           disabled={loading || pincode.length < 6}
-          className="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-400 text-white text-xs font-semibold rounded-lg flex items-center space-x-1 transition-colors cursor-pointer"
+          className="px-5 py-2 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-400 text-white text-xs font-semibold rounded-sm flex items-center space-x-1.5 transition-colors cursor-pointer uppercase tracking-wider"
         >
           {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Check'}
         </button>

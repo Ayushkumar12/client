@@ -55,11 +55,11 @@ export function ShiprocketTrackerModal({ waybill, isOpen, onClose, destinationCi
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-xs animate-fadeIn overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white text-neutral-900 rounded-2xl shadow-2xl overflow-hidden border border-neutral-200 my-8">
+      <div className="relative w-full max-w-2xl bg-white text-neutral-900 rounded-sm shadow-2xl overflow-hidden border border-neutral-200 my-8">
         {/* Header */}
         <div className="bg-[#FAF7F2] p-5 flex items-center justify-between border-b border-neutral-200">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700">
+            <div className="w-10 h-10 rounded-sm bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700">
               <Truck className="w-5 h-5" />
             </div>
             <div>
@@ -125,7 +125,7 @@ export function ShiprocketTrackerModal({ waybill, isOpen, onClose, destinationCi
           ) : (
             <>
               {/* Top AWB details pill */}
-              <div className="bg-[#FAF7F2] p-4 rounded-xl border border-neutral-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="bg-[#FAF7F2] p-4 rounded-sm border border-neutral-200 flex flex-wrap items-center justify-between gap-3 text-xs">
                 <div>
                   <span className="text-[10px] text-neutral-500 uppercase tracking-wider block font-semibold">AWB Number</span>
                   <div className="flex items-center space-x-2 mt-0.5">

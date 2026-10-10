@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   X,
@@ -8,10 +8,7 @@ import {
   Minus,
   ArrowRight,
   Truck,
-  Sparkles,
-  Check,
-  Tag,
-  Loader2
+  Check
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext.jsx';
 import { getProductUrl } from '../../utils/productUrl.js';
@@ -24,37 +21,17 @@ export function CartDrawer() {
     removeFromCart,
     updateQuantity,
     subtotal,
-    discountAmount,
-    shippingFee,
     grandTotal,
-    appliedCoupon,
-    applyCoupon,
-    removeCoupon,
-    couponError,
-    couponLoading,
-    freeShippingRemaining,
-    FREE_SHIPPING_LIMIT,
   } = useCart();
 
-  const [couponInput, setCouponInput] = useState('');
   const navigate = useNavigate();
 
   if (!isCartOpen) return null;
-
-  const handleApplyCoupon = async (e) => {
-    e.preventDefault();
-    if (couponInput.trim()) {
-      const ok = await applyCoupon(couponInput.trim());
-      if (ok) setCouponInput('');
-    }
-  };
 
   const handleCheckoutClick = () => {
     closeCart();
     navigate('/checkout');
   };
-
-  const progressPercent = Math.min(100, Math.round(((FREE_SHIPPING_LIMIT - freeShippingRemaining) / FREE_SHIPPING_LIMIT) * 100));
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden animate-fadeIn">
@@ -64,7 +41,7 @@ export function CartDrawer() {
         onClick={closeCart}
       />
 
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
         <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col animate-slideLeft">
           {/* Drawer Header */}
           <div className="p-4 bg-[#141414] text-white flex items-center justify-between border-b border-neutral-800">
@@ -82,27 +59,13 @@ export function CartDrawer() {
             </button>
           </div>
 
-          {/* Free Shipping Progress Bar */}
-          <div className="p-3.5 bg-brand-cream border-b border-brand-border text-xs">
-            <div className="flex items-center justify-between mb-1.5 font-medium text-neutral-800">
-              <div className="flex items-center space-x-1.5">
-                <Truck className="w-4 h-4 text-brand-maroon" />
-                <span>
-                  {freeShippingRemaining > 0 ? (
-                    <>Add <strong className="text-brand-maroon">₹{freeShippingRemaining}</strong> more for <strong>Free Express Shipping</strong></>
-                  ) : (
-                    <strong className="text-emerald-700 flex items-center">
-                      <Check className="w-3.5 h-3.5 mr-1 inline" /> You have unlocked FREE Express Shipping!
-                    </strong>
-                  )}
-                </span>
-              </div>
-            </div>
-            <div className="w-full h-1.5 bg-neutral-200 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-brand-maroon transition-all duration-500 rounded-full"
-                style={{ width: `${progressPercent}%` }}
-              />
+          {/* Complimentary Shipping Banner */}
+          <div className="p-3 bg-brand-cream border-b border-brand-border text-xs">
+            <div className="flex items-center space-x-2 text-neutral-800">
+              <Truck className="w-4 h-4 text-brand-maroon shrink-0" />
+              <span className="font-medium">
+                <strong className="text-emerald-700">FREE Express Shipping</strong> on all orders across India
+              </span>
             </div>
           </div>
 
@@ -163,12 +126,12 @@ export function CartDrawer() {
 
                       {/* Stock availability hint */}
                       {item.stock !== undefined && item.stock <= 0 ? (
-                        <span className="text-[10px] font-bold text-red-600 block mt-0.5">
-                          ⚠️ Out of stock - Please remove to checkout
+                        <span className="text-[10px] font-semibold text-red-600 block mt-0.5">
+                          Out of stock - Please remove to checkout
                         </span>
                       ) : item.stock !== undefined && item.stock <= 5 ? (
-                        <span className="text-[10px] font-bold text-amber-700 block mt-0.5">
-                          ⚡ Only {item.stock} left in stock
+                        <span className="text-[10px] font-semibold text-amber-700 block mt-0.5">
+                          Only {item.stock} left in stock
                         </span>
                       ) : null}
 
@@ -217,58 +180,15 @@ export function CartDrawer() {
           {/* Cart Footer */}
           {cart.length > 0 && (
             <div className="p-4 bg-brand-cream border-t border-brand-border space-y-3">
-              {/* Coupon Code Input */}
-              {appliedCoupon ? (
-                <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-xs">
-                  <div className="flex items-center space-x-1.5 text-emerald-800">
-                    <Tag className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Coupon <strong>{appliedCoupon.code}</strong> Applied (-₹{discountAmount})</span>
-                  </div>
-                  <button
-                    onClick={removeCoupon}
-                    className="text-xs text-red-600 hover:underline font-semibold"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleApplyCoupon} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={couponInput}
-                    onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                    placeholder="Enter Coupon Code"
-                    className="flex-1 text-xs px-3 py-2 bg-white border border-neutral-300 rounded-lg focus:outline-none focus:border-brand-maroon uppercase"
-                  />
-                  <button
-                    type="submit"
-                    disabled={couponLoading || !couponInput.trim()}
-                    className="px-3 py-2 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-400 text-white text-xs font-semibold rounded-lg flex items-center space-x-1"
-                  >
-                    {couponLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Apply'}
-                  </button>
-                </form>
-              )}
-
-              {couponError && (
-                <p className="text-[11px] text-red-600">{couponError}</p>
-              )}
-
               {/* Price Breakdown */}
-              <div className="space-y-1.5 text-xs text-neutral-600 pt-1">
+              <div className="space-y-1.5 text-xs text-neutral-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span className="font-semibold text-neutral-900">₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
-                {discountAmount > 0 && (
-                  <div className="flex justify-between text-emerald-700">
-                    <span>Coupon Discount</span>
-                    <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
-                  </div>
-                )}
                 <div className="flex justify-between">
                   <span>Express Shipping</span>
-                  <span>{shippingFee === 0 ? <strong className="text-emerald-700">FREE</strong> : `₹${shippingFee}`}</span>
+                  <span className="text-emerald-700 font-bold uppercase text-[11px]">FREE</span>
                 </div>
                 <div className="flex justify-between text-sm font-bold text-neutral-900 pt-2 border-t border-brand-border">
                   <span>Estimated Total</span>
@@ -276,14 +196,27 @@ export function CartDrawer() {
                 </div>
               </div>
 
-              {/* Checkout Button */}
-              <button
-                onClick={handleCheckoutClick}
-                className="w-full py-3 bg-brand-maroon hover:bg-brand-maroon-hover text-white text-sm font-bold rounded-xl shadow-lg flex items-center justify-center space-x-2 transition-transform active:scale-98"
-              >
-                <span>Proceed to Checkout</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {/* Action Buttons: Proceed to Checkout & View Full Cart Page */}
+              <div className="space-y-2 pt-1">
+                <button
+                  onClick={handleCheckoutClick}
+                  className="w-full py-3 bg-[#5A1827] hover:bg-[#43121D] active:scale-98 text-white text-xs sm:text-sm font-semibold uppercase tracking-wider rounded-sm shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                >
+                  <span>Proceed to Checkout</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeCart();
+                    navigate('/cart');
+                  }}
+                  className="w-full py-2.5 bg-white hover:bg-neutral-50 text-neutral-800 hover:text-neutral-950 border border-neutral-300 text-xs font-semibold uppercase tracking-wider rounded-sm flex items-center justify-center transition-all cursor-pointer"
+                >
+                  <span>View Shopping Bag</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

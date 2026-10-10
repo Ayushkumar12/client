@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+import { API_BASE } from '../services/api.js';
 
 /**
  * Official Shiprocket Tax Invoice Downloader
@@ -10,13 +10,37 @@ export async function downloadOrderInvoicePdf(order) {
     return;
   }
 
-  const orderId = order.id || order.shiprocket_order_id || order.order_number;
-  if (!orderId) {
+  const orderIdentifier = order.order_number || order.id || order.shiprocket_order_id;
+  if (!orderIdentifier) {
     alert('Order identifier is missing.');
     return;
   }
 
-  // Open the printable Tax Invoice file directly in a new tab
-  const invoiceEndpoint = `${API_BASE}/shiprocket/orders/invoice/${orderId}`;
-  window.open(invoiceEndpoint, '_blank');
+  const params = new URLSearchParams();
+  if (order.customer_email) {
+    params.set('email', order.customer_email);
+  } else if (order.customer_phone) {
+    params.set('phone', order.customer_phone);
+  }
+  const token = localStorage.getItem('oct9_token');
+  if (token) {
+    params.set('token', token);
+  }
+
+  const queryString = params.toString() ? `?${params.toString()}` : '';
+  const invoiceEndpoint = `${API_BASE}/shiprocket/orders/invoice/${encodeURIComponent(orderIdentifier)}${queryString}`;
+  
+  // Safe trigger via DOM anchor to bypass aggressive browser popup blockers
+  const link = document.createElement('a');
+  link.href = invoiceEndpoint;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  document.body.appendChild(link);
+  link.click();
+  setTimeout(() => {
+    if (document.body.contains(link)) {
+      document.body.removeChild(link);
+    }
+  }, 100);
 }
+

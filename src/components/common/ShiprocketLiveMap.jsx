@@ -79,11 +79,11 @@ export function ShiprocketLiveMap({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-neutral-200 shadow-xs overflow-hidden">
+    <div className="bg-white rounded-sm border border-neutral-200 shadow-xs overflow-hidden">
       {/* Top Header */}
       <div className="p-5 sm:p-6 bg-[#FCFBF9] border-b border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start space-x-3.5">
-          <div className="w-11 h-11 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 shrink-0">
+          <div className="w-11 h-11 rounded-sm bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 shrink-0">
             <Truck className="w-6 h-6" />
           </div>
           <div>

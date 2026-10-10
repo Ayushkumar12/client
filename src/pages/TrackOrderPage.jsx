@@ -16,6 +16,7 @@ import {
 import { SEO } from '../components/common/SEO.jsx';
 import { ShiprocketLiveMap } from '../components/common/ShiprocketLiveMap.jsx';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
+import { parseAddress } from '../utils/addressUtils.js';
 import { api } from '../services/api.js';
 
 export function TrackOrderPage() {
@@ -81,9 +82,7 @@ export function TrackOrderPage() {
   };
 
   const currentWaybill = trackingData?.waybill || orderDetails?.delhivery_waybill || queryInput;
-  const shippingAddr = orderDetails?.shipping_address
-    ? (typeof orderDetails.shipping_address === 'string' ? JSON.parse(orderDetails.shipping_address) : orderDetails.shipping_address)
-    : null;
+  const shippingAddr = orderDetails?.shipping_address ? parseAddress(orderDetails.shipping_address) : null;
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen py-10">
@@ -94,9 +93,9 @@ export function TrackOrderPage() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
         {/* Header Hero */}
-        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-neutral-200 shadow-xs text-center space-y-3">
-          <div className="inline-flex items-center space-x-1.5 bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-xs font-medium border border-purple-100">
-            <Truck className="w-3.5 h-3.5 text-purple-600" />
+        <div className="bg-white rounded-sm p-6 sm:p-8 border border-neutral-200 shadow-2xs text-center space-y-3">
+          <div className="inline-flex items-center space-x-1.5 bg-neutral-100 text-neutral-800 px-3 py-1 rounded-sm text-xs font-semibold uppercase tracking-wider border border-neutral-200">
+            <Truck className="w-3.5 h-3.5 text-neutral-700" />
             <span>Shiprocket Express Logistics</span>
           </div>
 
@@ -117,7 +116,7 @@ export function TrackOrderPage() {
                 value={queryInput}
                 onChange={(e) => setQueryInput(e.target.value)}
                 placeholder="Enter Order # or AWB Number..."
-                className="w-full text-xs sm:text-sm pl-9 pr-3 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon uppercase font-mono font-semibold text-neutral-900"
+                className="w-full text-xs sm:text-sm pl-9 pr-3 py-2.5 bg-neutral-50 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon uppercase font-mono font-semibold text-neutral-900"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
             </div>
@@ -125,7 +124,7 @@ export function TrackOrderPage() {
             <button
               type="submit"
               disabled={loading || !queryInput.trim()}
-              className="px-5 py-2.5 bg-brand-maroon hover:bg-brand-maroon-hover disabled:bg-neutral-400 text-white text-xs font-semibold rounded-xl transition-colors flex items-center space-x-1.5 shrink-0 cursor-pointer shadow-xs"
+              className="px-5 py-2.5 bg-brand-maroon hover:bg-brand-maroon-hover disabled:bg-neutral-400 text-white text-xs font-semibold uppercase tracking-wider rounded-sm transition-colors flex items-center space-x-1.5 shrink-0 cursor-pointer shadow-2xs"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Track'}
             </button>
@@ -134,7 +133,7 @@ export function TrackOrderPage() {
 
         {/* Error Alert */}
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs flex items-center space-x-2 max-w-lg mx-auto">
+          <div className="p-4 bg-red-50 border border-red-200 rounded-sm text-red-700 text-xs flex items-center space-x-2 max-w-lg mx-auto">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -177,14 +176,14 @@ export function TrackOrderPage() {
             </div>
 
             {/* Tracking Journey Timeline */}
-            <div className="bg-white rounded-2xl p-6 border border-neutral-200 shadow-xs space-y-5">
+            <div className="bg-white rounded-sm p-6 border border-neutral-200 shadow-xs space-y-5">
               <h3 className="font-serif font-bold text-base text-neutral-900">
                 Tracking History
               </h3>
 
               <div className="relative pl-7 space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-neutral-200">
                 {(trackingData?.timeline || [
-                  { status: 'Order Manifested', location: 'OCT9 Central Atelier Hub, New Delhi', time: 'Oct 02, 2026 • 09:30 AM', completed: true },
+                  { status: 'Order Manifested', location: 'OCT9 Fulfillment Center, New Delhi', time: 'Oct 02, 2026 • 09:30 AM', completed: true },
                   { status: 'Picked Up by Courier', location: 'Delhi Sort Facility (NH48)', time: 'Oct 02, 2026 • 01:15 PM', completed: true },
                   { status: 'In Transit', location: 'Express Corridor to Destination', time: 'Oct 02, 2026 • 03:00 PM', completed: true },
                   { status: 'Out for Delivery', location: 'Destination Regional Center', time: 'Expected Soon', completed: false },

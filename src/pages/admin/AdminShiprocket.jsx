@@ -151,7 +151,7 @@ export function AdminShiprocket() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white p-5 rounded-2xl border border-brand-border shadow-2xs">
+          <div className="bg-white p-5 rounded-sm border border-brand-border shadow-2xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Total Manifested</span>
               <div className="p-2 bg-purple-50 text-purple-700 rounded-xl">
@@ -166,7 +166,7 @@ export function AdminShiprocket() {
             </span>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-brand-border shadow-2xs">
+          <div className="bg-white p-5 rounded-sm border border-brand-border shadow-2xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">In Transit / Out</span>
               <div className="p-2 bg-blue-50 text-blue-700 rounded-xl">
@@ -179,7 +179,7 @@ export function AdminShiprocket() {
             <span className="text-[11px] text-neutral-500 mt-1 block">Live tracking updates</span>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-brand-border shadow-2xs">
+          <div className="bg-white p-5 rounded-sm border border-brand-border shadow-2xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Delivered</span>
               <div className="p-2 bg-emerald-50 text-emerald-700 rounded-xl">
@@ -192,7 +192,7 @@ export function AdminShiprocket() {
             <span className="text-[11px] text-emerald-700 font-semibold mt-1 block">100% Success rate</span>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-brand-border shadow-2xs">
+          <div className="bg-white p-5 rounded-sm border border-brand-border shadow-2xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Active Couriers</span>
               <div className="p-2 bg-amber-50 text-amber-700 rounded-xl">
@@ -210,7 +210,7 @@ export function AdminShiprocket() {
       {/* AWB Quick Tracker & Pincode Tester */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick AWB Tracker */}
-        <div className="bg-white rounded-2xl border border-brand-border p-6 shadow-2xs space-y-4">
+        <div className="bg-white rounded-sm border border-brand-border p-6 shadow-2xs space-y-4">
           <div className="flex items-center space-x-2">
             <Search className="w-5 h-5 text-purple-600" />
             <h3 className="font-serif font-bold text-base text-neutral-900">
@@ -245,7 +245,7 @@ export function AdminShiprocket() {
         </div>
 
         {/* Pincode Serviceability Tester */}
-        <div className="bg-white rounded-2xl border border-brand-border p-6 shadow-2xs space-y-4">
+        <div className="bg-white rounded-sm border border-brand-border p-6 shadow-2xs space-y-4">
           <div className="flex items-center space-x-2">
             <MapPin className="w-5 h-5 text-purple-600" />
             <h3 className="font-serif font-bold text-base text-neutral-900">
@@ -256,19 +256,19 @@ export function AdminShiprocket() {
             Verify 29,000+ Indian pincodes, prepaid/COD serviceability, courier partners, and expected delivery days.
           </p>
 
-          <form onSubmit={handleTestPincode} className="flex gap-2">
+          <form onSubmit={handleTestPincode} className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               maxLength={6}
               value={testPin}
               onChange={(e) => setTestPin(e.target.value.replace(/\D/g, ''))}
               placeholder="6-digit Pincode"
-              className="w-36 text-xs border border-neutral-300 rounded-xl px-4 py-2.5 font-mono focus:outline-none focus:border-purple-600"
+              className="w-full sm:w-36 text-xs border border-neutral-300 rounded-xl px-4 py-2.5 font-mono focus:outline-none focus:border-purple-600"
             />
             <button
               type="submit"
               disabled={pinLoading}
-              className="px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
             >
               {pinLoading ? 'Checking...' : 'Check Serviceability'}
             </button>
@@ -292,7 +292,7 @@ export function AdminShiprocket() {
       </div>
 
       {/* Shipping Rate Calculator */}
-      <div className="bg-white rounded-2xl border border-brand-border p-6 shadow-2xs space-y-4">
+      <div className="bg-white rounded-sm border border-brand-border p-6 shadow-2xs space-y-4">
         <div className="flex items-center space-x-2">
           <Calculator className="w-5 h-5 text-purple-600" />
           <h3 className="font-serif font-bold text-base text-neutral-900">
@@ -363,7 +363,7 @@ export function AdminShiprocket() {
       </div>
 
       {/* Recent Manifests Table */}
-      <div className="bg-white rounded-2xl border border-brand-border p-6 shadow-2xs space-y-4">
+      <div className="bg-white rounded-sm border border-brand-border p-6 shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="font-serif font-bold text-base text-neutral-900">

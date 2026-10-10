@@ -195,7 +195,7 @@ export function AccountPage() {
       category: 'offers',
       title: 'New Silk Saree Collection Live',
       badge: 'Special Collection',
-      desc: 'Discover our newly launched handcrafted silk and organza sarees in the atelier.',
+      desc: 'Discover our newly launched handcrafted silk and organza sarees in the collection.',
       time: '5 hours ago',
       iconType: 'gift',
       iconBg: 'bg-[#FDF2F4]',
@@ -597,7 +597,7 @@ export function AccountPage() {
           {/* LEFT SIDEBAR NAVIGATION */}
           <aside className="lg:col-span-3 space-y-4">
             {/* Sidebar User Header Pill */}
-            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-neutral-200/80 shadow-2xs space-y-4">
+            <div className="bg-white rounded-sm p-4 sm:p-5 border border-neutral-200/80 shadow-2xs space-y-4">
               <div className="flex items-center space-x-3.5">
                 <div className="w-12 h-12 rounded-full bg-[#F5EBE1] text-[#2A2A2A] font-serif font-bold text-base flex items-center justify-center border border-[#E8DCCF] shrink-0">
                   {initials}
@@ -620,7 +620,7 @@ export function AccountPage() {
                 {/* Nav Item: My Profile */}
                 <button
                   onClick={() => setSearchParams({ tab: 'profile' })}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-sm text-xs font-semibold transition-colors cursor-pointer ${
                     activeTab === 'profile'
                       ? 'bg-[#5A1827] text-white shadow-2xs font-bold'
                       : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100/70'
@@ -635,7 +635,7 @@ export function AccountPage() {
                 {/* Nav Item: My Orders */}
                 <button
                   onClick={() => setSearchParams({ tab: 'orders' })}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-sm text-xs font-semibold transition-colors cursor-pointer ${
                     activeTab === 'orders'
                       ? 'bg-[#5A1827] text-white shadow-2xs font-bold'
                       : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100/70'
@@ -650,7 +650,7 @@ export function AccountPage() {
                 {/* Nav Item: Wishlist */}
                 <button
                   onClick={() => setSearchParams({ tab: 'wishlist' })}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-sm text-xs font-semibold transition-colors cursor-pointer ${
                     activeTab === 'wishlist'
                       ? 'bg-[#5A1827] text-white shadow-2xs font-bold'
                       : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100/70'
@@ -674,7 +674,7 @@ export function AccountPage() {
                 {/* Nav Item: Addresses */}
                 <button
                   onClick={() => setSearchParams({ tab: 'addresses' })}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-sm text-xs font-semibold transition-colors cursor-pointer ${
                     activeTab === 'addresses'
                       ? 'bg-[#5A1827] text-white shadow-2xs font-bold'
                       : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100/70'
@@ -689,7 +689,7 @@ export function AccountPage() {
                 {/* Nav Item: Payment Methods */}
                 <button
                   onClick={() => setSearchParams({ tab: 'payment' })}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-sm text-xs font-semibold transition-colors cursor-pointer ${
                     activeTab === 'payment'
                       ? 'bg-[#5A1827] text-white shadow-2xs font-bold'
                       : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100/70'
@@ -705,7 +705,7 @@ export function AccountPage() {
                 {/* Nav Item: Notifications */}
                 <button
                   onClick={() => setSearchParams({ tab: 'notifications' })}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-sm text-xs font-semibold transition-colors cursor-pointer ${
                     activeTab === 'notifications'
                       ? 'bg-[#5A1827] text-white shadow-2xs font-bold'
                       : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100/70'
@@ -720,7 +720,7 @@ export function AccountPage() {
                 {/* Nav Item: Settings */}
                 <button
                   onClick={() => setSearchParams({ tab: 'settings' })}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-sm text-xs font-semibold transition-colors cursor-pointer ${
                     activeTab === 'settings'
                       ? 'bg-[#5A1827] text-white shadow-2xs font-bold'
                       : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100/70'
@@ -736,7 +736,7 @@ export function AccountPage() {
                 {isAdmin && (
                   <Link
                     to="/admin"
-                    className="w-full flex items-center space-x-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-brand-gold bg-[#1E1E1E] hover:bg-black transition-colors"
+                    className="w-full flex items-center space-x-2.5 px-3.5 py-2.5 rounded-sm text-xs font-semibold text-brand-gold bg-[#1E1E1E] hover:bg-black transition-colors"
                   >
                     <ShieldCheck className="w-4 h-4 text-brand-gold" />
                     <span>Admin Control Center</span>
@@ -746,7 +746,7 @@ export function AccountPage() {
                 {/* Nav Item: Logout */}
                 <button
                   onClick={logout}
-                  className="w-full flex items-center space-x-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer pt-2"
+                  className="w-full flex items-center space-x-2.5 px-3.5 py-2.5 rounded-sm text-xs font-semibold text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer pt-2"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Logout</span>
@@ -773,7 +773,7 @@ export function AccountPage() {
                 </div>
 
                 {/* Card 1: User Overview Card with Avatar */}
-                <div className="bg-white rounded-2xl p-6 sm:p-7 border border-neutral-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="bg-white rounded-sm p-6 sm:p-7 border border-neutral-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center space-x-5">
                     <div className="relative shrink-0">
                       <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#F5EBE1] text-[#2A2A2A] font-serif font-bold text-2xl flex items-center justify-center border-2 border-[#E8DCCF]">
@@ -808,7 +808,7 @@ export function AccountPage() {
 
                   <button
                     onClick={() => setIsEditingProfile(!isEditingProfile)}
-                    className="px-4 py-2 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-semibold rounded-xl flex items-center space-x-1.5 transition-colors self-start sm:self-auto cursor-pointer shadow-2xs"
+                    className="px-4 py-2 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-semibold rounded-sm flex items-center space-x-1.5 transition-colors self-start sm:self-auto cursor-pointer shadow-2xs"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                     <span>{isEditingProfile ? 'Cancel Edit' : 'Edit Profile'}</span>
@@ -816,7 +816,7 @@ export function AccountPage() {
                 </div>
 
                 {/* Card 2: Personal Information Form */}
-                <div className="bg-white rounded-2xl p-6 sm:p-8 border border-neutral-200/80 shadow-2xs space-y-6">
+                <div className="bg-white rounded-sm p-6 sm:p-8 border border-neutral-200/80 shadow-2xs space-y-6">
                   {/* Section Title */}
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 rounded-full bg-[#FDF2F4] text-[#5A1827] flex items-center justify-center font-bold">
@@ -833,7 +833,7 @@ export function AccountPage() {
                   </div>
 
                   {profileSaveSuccess && (
-                    <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl flex items-center space-x-2">
+                    <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-sm flex items-center space-x-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                       <span>Profile details updated successfully!</span>
                     </div>
@@ -852,7 +852,7 @@ export function AccountPage() {
                             required
                             value={profileForm.name}
                             onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                            className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon focus:bg-white text-neutral-900 font-semibold"
+                            className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon focus:bg-white text-neutral-900 font-semibold"
                           />
                           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
                         </div>
@@ -869,7 +869,7 @@ export function AccountPage() {
                             required
                             value={profileForm.email}
                             onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                            className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon focus:bg-white text-neutral-900 font-semibold"
+                            className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon focus:bg-white text-neutral-900 font-semibold"
                           />
                           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
                         </div>
@@ -884,7 +884,7 @@ export function AccountPage() {
                           <select
                             value={profileForm.country_code}
                             onChange={(e) => setProfileForm({ ...profileForm, country_code: e.target.value })}
-                            className="w-20 text-xs px-2 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                            className="w-20 text-xs px-2 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                           >
                             <option value="+91">+91</option>
                             <option value="+1">+1</option>
@@ -897,7 +897,7 @@ export function AccountPage() {
                             maxLength={10}
                             value={profileForm.phone}
                             onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
-                            className="flex-1 text-xs px-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon focus:bg-white font-semibold text-neutral-900"
+                            className="flex-1 text-xs px-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon focus:bg-white font-semibold text-neutral-900"
                           />
                         </div>
                       </div>
@@ -912,7 +912,7 @@ export function AccountPage() {
                             type="date"
                             value={profileForm.dob}
                             onChange={(e) => setProfileForm({ ...profileForm, dob: e.target.value })}
-                            className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon focus:bg-white font-semibold text-neutral-900"
+                            className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon focus:bg-white font-semibold text-neutral-900"
                           />
                           <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
                         </div>
@@ -952,7 +952,7 @@ export function AccountPage() {
                           <select
                             value={profileForm.preferred_language}
                             onChange={(e) => setProfileForm({ ...profileForm, preferred_language: e.target.value })}
-                            className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                            className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                           >
                             <option value="English">English</option>
                             <option value="Hindi">Hindi (हिंदी)</option>
@@ -970,13 +970,13 @@ export function AccountPage() {
                       <button
                         type="button"
                         onClick={() => setIsEditingProfile(false)}
-                        className="px-5 py-2.5 border border-neutral-300 hover:bg-neutral-50 text-neutral-700 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                        className="px-5 py-2.5 border border-neutral-300 hover:bg-neutral-50 text-neutral-700 text-xs font-semibold rounded-sm transition-colors cursor-pointer"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="px-6 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-xl shadow-2xs transition-colors cursor-pointer"
+                        className="px-6 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-sm shadow-2xs transition-colors cursor-pointer"
                       >
                         Save Changes
                       </button>
@@ -1009,14 +1009,14 @@ export function AccountPage() {
                       value={orderSearch}
                       onChange={(e) => setOrderSearch(e.target.value)}
                       placeholder="Search by Order ID, Product or Date..."
-                      className="w-full text-xs pl-9 pr-4 py-2.5 bg-white border border-neutral-200/90 rounded-xl focus:outline-none focus:border-brand-maroon shadow-2xs font-semibold text-neutral-900"
+                      className="w-full text-xs pl-9 pr-4 py-2.5 bg-white border border-neutral-200/90 rounded-sm focus:outline-none focus:border-brand-maroon shadow-2xs font-semibold text-neutral-900"
                     />
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
                   </div>
 
                   <button
                     onClick={() => setOrderStatusFilter(orderStatusFilter === 'all' ? 'shipped' : 'all')}
-                    className="px-4 py-2.5 bg-white border border-neutral-200/90 rounded-xl text-xs font-semibold text-neutral-700 hover:bg-neutral-50 shadow-2xs flex items-center space-x-1.5 shrink-0 self-stretch sm:self-auto cursor-pointer"
+                    className="px-4 py-2.5 bg-white border border-neutral-200/90 rounded-sm text-xs font-semibold text-neutral-700 hover:bg-neutral-50 shadow-2xs flex items-center space-x-1.5 shrink-0 self-stretch sm:self-auto cursor-pointer"
                   >
                     <SlidersHorizontal className="w-3.5 h-3.5 text-neutral-500" />
                     <span>Filter</span>
@@ -1052,7 +1052,7 @@ export function AccountPage() {
                     <div className="w-8 h-8 border-3 border-brand-maroon border-t-transparent rounded-full animate-spin mx-auto" />
                   </div>
                 ) : filteredOrders.length === 0 ? (
-                  <div className="bg-white rounded-2xl p-12 text-center border border-neutral-200/80 shadow-2xs space-y-3">
+                  <div className="bg-white rounded-sm p-12 text-center border border-neutral-200/80 shadow-2xs space-y-3">
                     <Package className="w-12 h-12 text-neutral-300 mx-auto" />
                     <h3 className="font-serif font-bold text-base text-neutral-800">
                       No matching orders found
@@ -1080,13 +1080,13 @@ export function AccountPage() {
                       return (
                         <div
                           key={o.id}
-                          className="bg-white rounded-2xl p-5 sm:p-6 border border-neutral-200/80 shadow-2xs space-y-4 hover:shadow-xs transition-shadow"
+                          className="bg-white rounded-sm p-5 sm:p-6 border border-neutral-200/80 shadow-2xs space-y-4 hover:shadow-xs transition-shadow"
                         >
                           {/* Top Row: Thumbnail + Order ID + Status + Amount + Actions */}
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div className="flex items-start space-x-4">
                               {/* Order Image Thumbnail */}
-                              <div className="w-16 h-18 sm:w-20 sm:h-22 rounded-xl bg-[#9B4553] text-white flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+                              <div className="w-16 h-18 sm:w-20 sm:h-22 rounded-sm bg-[#9B4553] text-white flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
                                 {firstItem.product_image && firstItem.product_image.startsWith('http') ? (
                                   <img
                                     src={firstItem.product_image}
@@ -1285,7 +1285,7 @@ export function AccountPage() {
                       value={wishlistSearch}
                       onChange={(e) => setWishlistSearch(e.target.value)}
                       placeholder="Search in wishlist..."
-                      className="w-full text-xs pl-9 pr-4 py-2.5 bg-white border border-neutral-200/90 rounded-xl focus:outline-none focus:border-brand-maroon shadow-2xs font-semibold text-neutral-900"
+                      className="w-full text-xs pl-9 pr-4 py-2.5 bg-white border border-neutral-200/90 rounded-sm focus:outline-none focus:border-brand-maroon shadow-2xs font-semibold text-neutral-900"
                     />
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
                   </div>
@@ -1293,7 +1293,7 @@ export function AccountPage() {
                   <select
                     value={wishlistSort}
                     onChange={(e) => setWishlistSort(e.target.value)}
-                    className="px-3.5 py-2.5 bg-white border border-neutral-200/90 rounded-xl text-xs font-semibold text-neutral-700 shadow-2xs focus:outline-none focus:border-brand-maroon shrink-0 self-stretch sm:self-auto cursor-pointer"
+                    className="px-3.5 py-2.5 bg-white border border-neutral-200/90 rounded-sm text-xs font-semibold text-neutral-700 shadow-2xs focus:outline-none focus:border-brand-maroon shrink-0 self-stretch sm:self-auto cursor-pointer"
                   >
                     <option value="newest">Sort by: Newest First</option>
                     <option value="price-low">Price: Low to High</option>
@@ -1303,7 +1303,7 @@ export function AccountPage() {
 
                 {/* 4-Column Responsive Grid */}
                 {displayWishlist.length === 0 ? (
-                  <div className="bg-white rounded-2xl p-12 text-center border border-neutral-200/80 shadow-2xs space-y-3">
+                  <div className="bg-white rounded-sm p-12 text-center border border-neutral-200/80 shadow-2xs space-y-3">
                     <Heart className="w-12 h-12 text-neutral-300 mx-auto" />
                     <h3 className="font-serif font-bold text-base text-neutral-800">
                       Your wishlist is empty
@@ -1313,7 +1313,7 @@ export function AccountPage() {
                     </p>
                     <Link
                       to="/new-arrivals"
-                      className="inline-block px-5 py-2.5 bg-[#5A1827] text-white text-xs font-bold rounded-xl shadow-2xs"
+                      className="inline-block px-5 py-2.5 bg-[#5A1827] text-white text-xs font-bold rounded-sm shadow-2xs"
                     >
                       Shop New Arrivals
                     </Link>
@@ -1323,7 +1323,7 @@ export function AccountPage() {
                     {displayWishlist.map((item) => (
                       <div
                         key={item.id}
-                        className="bg-white rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs flex flex-col justify-between group hover:shadow-xs transition-shadow"
+                        className="bg-white rounded-sm overflow-hidden border border-neutral-200/80 shadow-2xs flex flex-col justify-between group hover:shadow-xs transition-shadow"
                       >
                         <div className="relative aspect-[3/4] bg-neutral-100 overflow-hidden">
                           <Link to={getProductUrl(item)}>
@@ -1428,7 +1428,7 @@ export function AccountPage() {
 
                   <button
                     onClick={handleOpenAddAddress}
-                    className="px-4 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-xl flex items-center space-x-1.5 transition-colors shadow-2xs self-start sm:self-auto cursor-pointer"
+                    className="px-4 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-sm flex items-center space-x-1.5 transition-colors shadow-2xs self-start sm:self-auto cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add New Address</span>
@@ -1444,7 +1444,7 @@ export function AccountPage() {
                     return (
                       <div
                         key={addr.id}
-                        className={`bg-white rounded-2xl p-5 border shadow-2xs space-y-3 relative transition-all ${
+                        className={`bg-white rounded-sm p-5 border shadow-2xs space-y-3 relative transition-all ${
                           isDef ? 'border-[#5A1827]/30 ring-1 ring-[#5A1827]/20' : 'border-neutral-200/80'
                         }`}
                       >
@@ -1535,14 +1535,14 @@ export function AccountPage() {
                 </div>
 
                 {paymentSaveSuccess && (
-                  <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl flex items-center space-x-2">
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-sm flex items-center space-x-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     <span>{paymentSaveSuccess}</span>
                   </div>
                 )}
 
                 {/* Card 1: Saved Payment Methods */}
-                <div className="bg-white rounded-2xl p-6 sm:p-7 border border-neutral-200/80 shadow-2xs space-y-4">
+                <div className="bg-white rounded-sm p-6 sm:p-7 border border-neutral-200/80 shadow-2xs space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-100 pb-3">
                     <h3 className="font-bold text-sm text-neutral-900">
                       Saved Payment Methods
@@ -1610,7 +1610,7 @@ export function AccountPage() {
                 </div>
 
                 {/* Card 2: Add a New Payment Method */}
-                <div className="bg-white rounded-2xl p-6 sm:p-7 border border-neutral-200/80 shadow-2xs space-y-5">
+                <div className="bg-white rounded-sm p-6 sm:p-7 border border-neutral-200/80 shadow-2xs space-y-5">
                   <h3 className="font-bold text-sm text-neutral-900">
                     Add a New Payment Method
                   </h3>
@@ -1650,7 +1650,7 @@ export function AccountPage() {
                           key={method.key}
                           type="button"
                           onClick={() => setPaymentMethodType(method.key)}
-                          className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                          className={`p-3.5 rounded-sm border text-left transition-all cursor-pointer ${
                             isSel
                               ? 'border-[#5A1827] bg-[#FBF1F3]/40 ring-1 ring-[#5A1827]/20 shadow-2xs'
                               : 'border-neutral-200 bg-white hover:bg-neutral-50'
@@ -1695,7 +1695,7 @@ export function AccountPage() {
                               placeholder="1234 5678 9012 3456"
                               value={newCard.number}
                               onChange={(e) => setNewCard({ ...newCard, number: e.target.value })}
-                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                             />
                             <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
                           </div>
@@ -1713,7 +1713,7 @@ export function AccountPage() {
                               placeholder="MM/YY"
                               value={newCard.expiry}
                               onChange={(e) => setNewCard({ ...newCard, expiry: e.target.value })}
-                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                             />
                             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
                           </div>
@@ -1731,7 +1731,7 @@ export function AccountPage() {
                               placeholder="123"
                               value={newCard.cvv}
                               onChange={(e) => setNewCard({ ...newCard, cvv: e.target.value })}
-                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                             />
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
                           </div>
@@ -1748,7 +1748,7 @@ export function AccountPage() {
                               placeholder="Arijit Singh"
                               value={newCard.name}
                               onChange={(e) => setNewCard({ ...newCard, name: e.target.value })}
-                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                             />
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
                           </div>
@@ -1768,7 +1768,7 @@ export function AccountPage() {
 
                         <button
                           type="submit"
-                          className="px-6 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-xl shadow-2xs transition-colors cursor-pointer"
+                          className="px-6 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-sm shadow-2xs transition-colors cursor-pointer"
                         >
                           Save Card
                         </button>
@@ -1789,13 +1789,13 @@ export function AccountPage() {
                           placeholder="yourname@bank"
                           value={newUpi.upiId}
                           onChange={(e) => setNewUpi({ ...newUpi, upiId: e.target.value })}
-                          className="w-full text-xs px-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                          className="w-full text-xs px-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                         />
                       </div>
                       <div className="flex justify-end">
                         <button
                           type="submit"
-                          className="px-6 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-xl shadow-2xs cursor-pointer"
+                          className="px-6 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-sm shadow-2xs cursor-pointer"
                         >
                           Verify & Save UPI
                         </button>
@@ -1828,7 +1828,7 @@ export function AccountPage() {
                     onClick={() => {
                       setNotificationsList(prev => prev.map(n => ({ ...n, unread: false })));
                     }}
-                    className="px-4 py-2 bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-2xs self-start sm:self-auto cursor-pointer"
+                    className="px-4 py-2 bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold rounded-sm flex items-center space-x-1.5 shadow-2xs self-start sm:self-auto cursor-pointer"
                   >
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Mark All as Read</span>
@@ -1865,7 +1865,7 @@ export function AccountPage() {
                     .map((item) => (
                       <div
                         key={item.id}
-                        className="bg-white rounded-2xl p-4 sm:p-5 border border-neutral-200/80 shadow-2xs flex items-center justify-between gap-3 hover:shadow-xs transition-shadow"
+                        className="bg-white rounded-sm p-4 sm:p-5 border border-neutral-200/80 shadow-2xs flex items-center justify-between gap-3 hover:shadow-xs transition-shadow"
                       >
                         <div className="flex items-center space-x-3.5 flex-1 min-w-0">
                           {/* Unread Red Dot */}
@@ -1974,7 +1974,7 @@ export function AccountPage() {
                   </p>
                 </div>
 
-                <div className="bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-2xs space-y-6">
+                <div className="bg-white rounded-sm p-6 border border-neutral-200/80 shadow-2xs space-y-6">
                   <div className="space-y-3">
                     <h3 className="font-bold text-sm text-neutral-900">Notifications Preferences</h3>
                     <div className="space-y-2 text-xs">
@@ -1993,7 +1993,7 @@ export function AccountPage() {
                     <h3 className="font-bold text-sm text-neutral-900">Security</h3>
                     <button
                       onClick={() => alert('Password reset link has been dispatched to your email.')}
-                      className="px-4 py-2 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold rounded-xl cursor-pointer"
+                      className="px-4 py-2 border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold rounded-sm cursor-pointer"
                     >
                       Change Account Password
                     </button>
@@ -2010,7 +2010,7 @@ export function AccountPage() {
       {/* Add / Edit Address Modal */}
       {showAddressModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl space-y-4">
+          <div className="bg-white rounded-sm p-6 sm:p-7 max-w-md w-full shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="font-serif font-bold text-base text-neutral-900">
                 {editingAddressId ? 'Edit Shipping Address' : 'Add New Shipping Address'}
@@ -2034,7 +2034,7 @@ export function AccountPage() {
                   placeholder="Full Name"
                   value={addressForm.name}
                   onChange={(e) => setAddressForm({ ...addressForm, name: e.target.value })}
-                  className="w-full text-xs p-2.5 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                  className="w-full text-xs p-2.5 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                 />
               </div>
 
@@ -2049,7 +2049,7 @@ export function AccountPage() {
                   placeholder="9876543210"
                   value={addressForm.phone}
                   onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })}
-                  className="w-full text-xs p-2.5 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                  className="w-full text-xs p-2.5 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                 />
               </div>
 
@@ -2063,7 +2063,7 @@ export function AccountPage() {
                   placeholder="Flat, House no., Building, Street"
                   value={addressForm.address_line1}
                   onChange={(e) => setAddressForm({ ...addressForm, address_line1: e.target.value })}
-                  className="w-full text-xs p-2.5 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                  className="w-full text-xs p-2.5 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                 />
               </div>
 
@@ -2076,7 +2076,7 @@ export function AccountPage() {
                   placeholder="Area, Landmark, Sector"
                   value={addressForm.address_line2}
                   onChange={(e) => setAddressForm({ ...addressForm, address_line2: e.target.value })}
-                  className="w-full text-xs p-2.5 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                  className="w-full text-xs p-2.5 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                 />
               </div>
 
@@ -2092,7 +2092,7 @@ export function AccountPage() {
                     placeholder="110001"
                     value={addressForm.pincode}
                     onChange={(e) => setAddressForm({ ...addressForm, pincode: e.target.value })}
-                    className="w-full text-xs p-2.5 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                    className="w-full text-xs p-2.5 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                   />
                 </div>
                 <div>
@@ -2105,7 +2105,7 @@ export function AccountPage() {
                     placeholder="City"
                     value={addressForm.city}
                     onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })}
-                    className="w-full text-xs p-2.5 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                    className="w-full text-xs p-2.5 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                   />
                 </div>
                 <div>
@@ -2118,7 +2118,7 @@ export function AccountPage() {
                     placeholder="State"
                     value={addressForm.state}
                     onChange={(e) => setAddressForm({ ...addressForm, state: e.target.value })}
-                    className="w-full text-xs p-2.5 border border-neutral-300 rounded-xl focus:outline-none focus:border-brand-maroon font-semibold"
+                    className="w-full text-xs p-2.5 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
                   />
                 </div>
               </div>
@@ -2160,13 +2160,13 @@ export function AccountPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddressModal(false)}
-                  className="px-4 py-2 border border-neutral-300 rounded-xl text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 border border-neutral-300 rounded-sm text-xs font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-xl shadow cursor-pointer"
+                  className="px-5 py-2 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-sm shadow cursor-pointer"
                 >
                   Save Address
                 </button>

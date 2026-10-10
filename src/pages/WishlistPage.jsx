@@ -33,9 +33,9 @@ export function WishlistPage() {
         </div>
 
         {wishlist.length === 0 ? (
-          <div className="bg-white rounded-3xl p-16 text-center border border-brand-border mt-8 space-y-4 max-w-lg mx-auto shadow-sm">
-            <div className="w-16 h-16 rounded-full bg-[#FAF7F2] text-brand-maroon flex items-center justify-center mx-auto">
-              <Heart className="w-8 h-8" />
+          <div className="bg-white rounded-sm p-12 text-center border border-neutral-200 mt-8 space-y-4 max-w-lg mx-auto shadow-2xs">
+            <div className="w-14 h-14 rounded-full bg-[#FAF7F2] text-brand-maroon flex items-center justify-center mx-auto">
+              <Heart className="w-7 h-7" />
             </div>
             <h3 className="font-serif text-lg font-bold text-neutral-800">Your Wishlist is Empty</h3>
             <p className="text-xs text-neutral-500">
@@ -43,13 +43,13 @@ export function WishlistPage() {
             </p>
             <Link
               to="/new-arrivals"
-              className="inline-block px-6 py-2.5 bg-brand-maroon text-white text-xs font-bold rounded-full shadow"
+              className="inline-block px-6 py-2.5 bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs font-semibold uppercase tracking-wider rounded-sm transition-colors shadow-2xs"
             >
               Discover New Arrivals
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 mt-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 mt-8">
             {wishlist.map((item) => (
               <ProductCard key={item.id} product={item} />
             ))}

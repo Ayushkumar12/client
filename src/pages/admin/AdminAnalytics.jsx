@@ -13,7 +13,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   RefreshCw,
-  Sparkles,
+  Award,
   ArrowUpRight,
   ShieldCheck,
   CreditCard,
@@ -24,7 +24,7 @@ import { api } from '../../services/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 
 export function AdminAnalytics() {
-  const { showPublicRatings, refreshSettings } = useAuth();
+  const { showPublicRatings, showProductBadges, refreshSettings } = useAuth();
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [togglingRatings, setTogglingRatings] = useState(false);
@@ -68,7 +68,8 @@ export function AdminAnalytics() {
   const handleToggleBadges = async () => {
     setTogglingBadges(true);
     try {
-      const res = await api.togglePublicBadges();
+      const nextVal = !showProductBadges;
+      const res = await api.togglePublicBadges(nextVal);
       if (res.success) {
         await refreshSettings();
         await loadAnalytics();
@@ -126,36 +127,43 @@ export function AdminAnalytics() {
       </div>
 
       {/* 1-CLICK GLOBAL RATINGS & BADGES CONTROL BANNER */}
-      <div className="bg-gradient-to-r from-neutral-900 via-[#1F1416] to-neutral-900 rounded-3xl p-6 text-white shadow-xl border border-brand-gold/30">
+      <div className="bg-gradient-to-r from-neutral-900 via-[#1F1416] to-neutral-900 rounded-sm p-6 text-white shadow-xl border border-brand-gold/30">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center flex-wrap gap-2">
               <span className="bg-brand-gold text-neutral-950 text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full tracking-wider">
-                1-Click Master Control
+                1-Click Master Controls
               </span>
               <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
                 showPublicRatings
                   ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                   : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
               }`}>
-                {showPublicRatings ? '● Public Storefront Ratings: VISIBLE' : '○ Public Storefront Ratings: HIDDEN'}
+                {showPublicRatings ? '● Ratings: VISIBLE' : '○ Ratings: HIDDEN'}
+              </span>
+              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
+                showProductBadges
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                  : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+              }`}>
+                {showProductBadges ? '● Badges: VISIBLE' : '○ Badges: HIDDEN'}
               </span>
             </div>
 
             <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#F3E5D0]">
-              Global Storefront Rating & Review Visibility
+              Global Storefront Rating & Badge Visibility
             </h2>
             <p className="text-xs text-neutral-300 leading-relaxed">
-              When disabled, regular customers browsing the store will <strong>not see star ratings or review scores</strong> on product cards and product details. Administrators can always view all ratings, reviews, and catalog sentiment here.
+              Instantly toggle customer ratings, star reviews, and product ribbon badges (Bestseller, New Arrival, Sale) across all storefront product cards in real time. Administrators always retain full visibility here.
             </p>
           </div>
 
-          {/* 1-Click Toggle Button */}
+          {/* 1-Click Toggle Buttons */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
             <button
               onClick={handleToggleRatings}
               disabled={togglingRatings}
-              className={`px-6 py-3.5 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2.5 shadow-lg transition-all transform active:scale-98 cursor-pointer ${
+              className={`px-5 py-3 rounded-sm font-bold text-xs flex items-center justify-center space-x-2 shadow-lg transition-all transform active:scale-98 cursor-pointer ${
                 showPublicRatings
                   ? 'bg-red-600 hover:bg-red-700 text-white'
                   : 'bg-emerald-600 hover:bg-emerald-700 text-white ring-2 ring-emerald-400/40'
@@ -166,12 +174,36 @@ export function AdminAnalytics() {
               ) : showPublicRatings ? (
                 <>
                   <EyeOff className="w-4 h-4" />
-                  <span>Hide Ratings from Storefront (1-Click)</span>
+                  <span>Hide Ratings</span>
                 </>
               ) : (
                 <>
                   <Eye className="w-4 h-4" />
-                  <span>Enable Ratings on Storefront (1-Click)</span>
+                  <span>Show Ratings</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handleToggleBadges}
+              disabled={togglingBadges}
+              className={`px-5 py-3 rounded-sm font-bold text-xs flex items-center justify-center space-x-2 shadow-lg transition-all transform active:scale-98 cursor-pointer ${
+                showProductBadges
+                  ? 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border border-neutral-700'
+                  : 'bg-amber-600 hover:bg-amber-700 text-white ring-2 ring-amber-400/40'
+              }`}
+            >
+              {togglingBadges ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : showProductBadges ? (
+                <>
+                  <EyeOff className="w-4 h-4" />
+                  <span>Hide Badges</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="w-4 h-4" />
+                  <span>Show Badges</span>
                 </>
               )}
             </button>
@@ -182,7 +214,7 @@ export function AdminAnalytics() {
       {/* KPI Cards Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Total Revenue */}
-        <div className="bg-white p-5 rounded-2xl border border-brand-border shadow-2xs hover:shadow-md transition-all space-y-2">
+        <div className="bg-white p-5 rounded-sm border border-brand-border shadow-2xs hover:shadow-md transition-all space-y-2">
           <div className="flex items-center justify-between text-neutral-500">
             <span className="text-xs font-semibold uppercase tracking-wider">Total Sales Revenue</span>
             <span className="p-2 bg-emerald-50 text-emerald-700 rounded-xl">
@@ -199,7 +231,7 @@ export function AdminAnalytics() {
         </div>
 
         {/* Catalog Average Rating */}
-        <div className="bg-white p-5 rounded-2xl border border-brand-border shadow-2xs hover:shadow-md transition-all space-y-2">
+        <div className="bg-white p-5 rounded-sm border border-brand-border shadow-2xs hover:shadow-md transition-all space-y-2">
           <div className="flex items-center justify-between text-neutral-500">
             <span className="text-xs font-semibold uppercase tracking-wider">Catalog Rating Score</span>
             <span className="p-2 bg-amber-50 text-amber-600 rounded-xl">
@@ -218,7 +250,7 @@ export function AdminAnalytics() {
         </div>
 
         {/* Total Orders & AOV */}
-        <div className="bg-white p-5 rounded-2xl border border-brand-border shadow-2xs hover:shadow-md transition-all space-y-2">
+        <div className="bg-white p-5 rounded-sm border border-brand-border shadow-2xs hover:shadow-md transition-all space-y-2">
           <div className="flex items-center justify-between text-neutral-500">
             <span className="text-xs font-semibold uppercase tracking-wider">Total Orders / AOV</span>
             <span className="p-2 bg-blue-50 text-blue-700 rounded-xl">
@@ -234,17 +266,17 @@ export function AdminAnalytics() {
         </div>
 
         {/* Shiprocket Delivery Rate */}
-        <div className="bg-white p-5 rounded-2xl border border-brand-border shadow-2xs hover:shadow-md transition-all space-y-2">
+        <div className="bg-white p-5 rounded-sm border border-neutral-200 shadow-2xs space-y-2">
           <div className="flex items-center justify-between text-neutral-500">
             <span className="text-xs font-semibold uppercase tracking-wider">Logistics Fulfillment</span>
-            <span className="p-2 bg-purple-50 text-purple-700 rounded-xl">
+            <span className="p-2 bg-blue-50 text-blue-700 rounded-sm">
               <Truck className="w-4 h-4" />
             </span>
           </div>
           <div className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
             {logisticsData.on_time_rate || 98.2}%
           </div>
-          <div className="text-[11px] text-purple-700 font-semibold flex items-center space-x-1">
+          <div className="text-[11px] text-blue-700 font-semibold flex items-center space-x-1">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Shiprocket Live Sandbox</span>
           </div>
@@ -254,10 +286,10 @@ export function AdminAnalytics() {
       {/* Analytics Tabs Navigation */}
       <div className="flex border-b border-neutral-200 overflow-x-auto no-scrollbar space-x-6 text-xs font-bold">
         {[
-          { id: 'ratings', label: '⭐ Rating & Customer Sentiment Analytics' },
-          { id: 'financial', label: '💰 Revenue & Payment Trends' },
-          { id: 'inventory', label: '👗 Catalog & Top Sellers' },
-          { id: 'logistics', label: '🚚 Shiprocket Logistics Performance' },
+          { id: 'ratings', label: 'Ratings & Feedback' },
+          { id: 'financial', label: 'Revenue & Orders' },
+          { id: 'inventory', label: 'Catalog & Best Sellers' },
+          { id: 'logistics', label: 'Logistics Performance' },
         ].map(tab => (
           <button
             key={tab.id}
@@ -279,7 +311,7 @@ export function AdminAnalytics() {
           {/* Sentiment Summary Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Rating Breakdown Bars (7 cols) */}
-            <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-brand-border shadow-2xs space-y-5">
+            <div className="lg:col-span-7 bg-white p-6 rounded-sm border border-brand-border shadow-2xs space-y-5">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-serif text-lg font-bold text-neutral-900">Star Rating Distribution Breakdown</h3>
@@ -317,7 +349,7 @@ export function AdminAnalytics() {
                 ))}
               </div>
 
-              <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs">
+              <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-sm flex items-center justify-between text-xs">
                 <div className="flex items-center space-x-2">
                   <Sparkles className="w-4 h-4 text-emerald-600" />
                   <span className="font-semibold text-emerald-950">Overall Brand Sentiment Score:</span>
@@ -327,13 +359,13 @@ export function AdminAnalytics() {
             </div>
 
             {/* Quick Status Card (5 cols) */}
-            <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-brand-border shadow-2xs flex flex-col justify-between space-y-4">
+            <div className="lg:col-span-5 bg-white p-6 rounded-sm border border-brand-border shadow-2xs flex flex-col justify-between space-y-4">
               <div>
                 <h3 className="font-serif text-lg font-bold text-neutral-900">Admin Ratings Control Status</h3>
                 <p className="text-xs text-neutral-500 mt-1">Status of catalog ratings on the public website</p>
 
                 <div className="mt-5 space-y-4">
-                  <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-2">
+                  <div className="p-4 rounded-sm bg-neutral-50 border border-neutral-200 space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-neutral-700">Public Visibility:</span>
                       <span className={`font-bold px-2 py-0.5 rounded-full text-[10px] ${
@@ -349,7 +381,7 @@ export function AdminAnalytics() {
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-brand-maroon/5 border border-brand-maroon/20 space-y-1 text-xs">
+                  <div className="p-4 rounded-sm bg-brand-maroon/5 border border-brand-maroon/20 space-y-1 text-xs">
                     <span className="font-bold text-brand-maroon flex items-center space-x-1.5">
                       <ShieldCheck className="w-4 h-4" />
                       <span>Admin Exclusive View Guarantee</span>
@@ -375,13 +407,13 @@ export function AdminAnalytics() {
           {/* Highest vs Lowest Rated Products Tables */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Top 5 Highest Rated */}
-            <div className="bg-white p-6 rounded-3xl border border-brand-border shadow-2xs space-y-4">
+            <div className="bg-white p-5 rounded-sm border border-neutral-200 shadow-2xs space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="font-serif font-bold text-base text-neutral-900 flex items-center space-x-2">
-                  <span className="text-emerald-600">🏆</span>
+                  <Award className="w-4 h-4 text-emerald-700" />
                   <span>Top Rated Luxury Outfits</span>
                 </h4>
-                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-sm uppercase tracking-wider">
                   Admin Ratings View
                 </span>
               </div>
@@ -404,13 +436,13 @@ export function AdminAnalytics() {
             </div>
 
             {/* Lowest Rated / Attention Needed */}
-            <div className="bg-white p-6 rounded-3xl border border-brand-border shadow-2xs space-y-4">
+            <div className="bg-white p-5 rounded-sm border border-neutral-200 shadow-2xs space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="font-serif font-bold text-base text-neutral-900 flex items-center space-x-2">
-                  <span className="text-amber-500">⚠️</span>
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
                   <span>Outfits Needing Customer Attention</span>
                 </h4>
-                <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-sm uppercase tracking-wider">
                   Admin Monitoring
                 </span>
               </div>
@@ -435,11 +467,11 @@ export function AdminAnalytics() {
 
           {/* Recent Reviews Feed */}
           {ratingsData.recent_reviews && ratingsData.recent_reviews.length > 0 && (
-            <div className="bg-white p-6 rounded-3xl border border-brand-border shadow-2xs space-y-4">
+            <div className="bg-white p-6 rounded-sm border border-brand-border shadow-2xs space-y-4">
               <h4 className="font-serif font-bold text-base text-neutral-900">Recent Customer Reviews Stream</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {ratingsData.recent_reviews.slice(0, 6).map((rev) => (
-                  <div key={rev.id} className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200/80 space-y-2 text-xs">
+                  <div key={rev.id} className="p-4 bg-neutral-50 rounded-sm border border-neutral-200/80 space-y-2 text-xs">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-neutral-900">{rev.user_name}</span>
                       <div className="flex text-amber-400">
@@ -465,7 +497,7 @@ export function AdminAnalytics() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Monthly Sales Revenue Chart (8 cols) */}
-            <div className="lg:col-span-8 bg-white p-6 rounded-3xl border border-brand-border shadow-2xs space-y-6">
+            <div className="lg:col-span-8 bg-white p-6 rounded-sm border border-brand-border shadow-2xs space-y-6">
               <div>
                 <h3 className="font-serif text-lg font-bold text-neutral-900">Monthly Revenue Growth Trajectory</h3>
                 <p className="text-xs text-neutral-500">Gross sales performance over the past 6 months</p>
@@ -498,7 +530,7 @@ export function AdminAnalytics() {
             </div>
 
             {/* Payment Method Breakdown (4 cols) */}
-            <div className="lg:col-span-4 bg-white p-6 rounded-3xl border border-brand-border shadow-2xs space-y-5">
+            <div className="lg:col-span-4 bg-white p-6 rounded-sm border border-brand-border shadow-2xs space-y-5">
               <div>
                 <h3 className="font-serif text-lg font-bold text-neutral-900">Payment Gateway Splits</h3>
                 <p className="text-xs text-neutral-500">Razorpay Prepaid vs Cash on Delivery</p>
@@ -506,7 +538,7 @@ export function AdminAnalytics() {
 
               <div className="space-y-4">
                 {(revenueData.payment_methods || []).map((pm, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-2">
+                  <div key={idx} className="p-4 rounded-sm bg-neutral-50 border border-neutral-200 space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-neutral-800 flex items-center space-x-1.5">
                         <CreditCard className="w-4 h-4 text-brand-maroon" />
@@ -522,7 +554,7 @@ export function AdminAnalytics() {
                 ))}
               </div>
 
-              <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-xs space-y-1">
+              <div className="p-4 bg-amber-50 rounded-sm border border-amber-200 text-xs space-y-1">
                 <span className="font-bold text-amber-900">Razorpay Live Integration:</span>
                 <p className="text-[11px] text-amber-800">
                   Card, UPI, NetBanking and Wallet payments process with instant automatic verification.
@@ -536,7 +568,7 @@ export function AdminAnalytics() {
       {/* TAB 3: CATALOG & TOP SELLERS */}
       {activeTab === 'inventory' && (
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-3xl border border-brand-border shadow-2xs space-y-4">
+          <div className="bg-white p-6 rounded-sm border border-brand-border shadow-2xs space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-serif text-lg font-bold text-neutral-900">Top 10 Selling Products</h3>
@@ -600,26 +632,26 @@ export function AdminAnalytics() {
       {activeTab === 'logistics' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-3xl border border-brand-border shadow-2xs space-y-2">
+            <div className="bg-white p-6 rounded-sm border border-brand-border shadow-2xs space-y-2">
               <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Shipments Manifested</span>
               <div className="font-serif text-3xl font-bold text-neutral-900">{logisticsData.total_manifests || 8}</div>
               <p className="text-[11px] text-neutral-400">AWB generated via Shiprocket API</p>
             </div>
 
-            <div className="bg-white p-6 rounded-3xl border border-brand-border shadow-2xs space-y-2">
+            <div className="bg-white p-6 rounded-sm border border-brand-border shadow-2xs space-y-2">
               <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">In-Transit Out for Delivery</span>
               <div className="font-serif text-3xl font-bold text-blue-700">{logisticsData.in_transit || 3}</div>
               <p className="text-[11px] text-blue-600 font-medium">Real-time GPS tracking enabled</p>
             </div>
 
-            <div className="bg-white p-6 rounded-3xl border border-brand-border shadow-2xs space-y-2">
+            <div className="bg-white p-6 rounded-sm border border-brand-border shadow-2xs space-y-2">
               <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Successful Deliveries</span>
               <div className="font-serif text-3xl font-bold text-emerald-700">{logisticsData.delivered || 5}</div>
               <p className="text-[11px] text-emerald-600 font-medium">0% RTO recorded</p>
             </div>
           </div>
 
-          <div className="bg-neutral-900 text-white p-6 rounded-3xl border border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="bg-neutral-900 text-white p-6 rounded-sm border border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="space-y-1 text-center sm:text-left">
               <h4 className="font-serif font-bold text-base text-brand-gold-light">Shiprocket Sandbox Environment Active</h4>
               <p className="text-xs text-neutral-400">

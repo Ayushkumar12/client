@@ -179,13 +179,13 @@ export function AdminReturns() {
           <p className="text-xs text-neutral-500">Loading return requests...</p>
         </div>
       ) : filteredReturns.length === 0 ? (
-        <div className="bg-white border border-neutral-200 rounded-2xl p-12 text-center space-y-3">
+        <div className="bg-white border border-neutral-200 rounded-sm p-12 text-center space-y-3">
           <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />
           <h3 className="text-base font-bold text-neutral-900">No Return Requests Found</h3>
           <p className="text-xs text-neutral-500">All customer return requests have been processed.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-xs">
+        <div className="bg-white rounded-sm border border-neutral-200 overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
@@ -301,7 +301,7 @@ export function AdminReturns() {
       {/* Review Modal */}
       {selectedReturn && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn overflow-y-auto">
-          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-neutral-200 overflow-hidden my-8">
+          <div className="relative w-full max-w-2xl bg-white rounded-sm shadow-2xl border border-neutral-200 overflow-hidden my-8">
             <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 bg-neutral-50/80">
               <h3 className="text-base font-serif font-bold text-neutral-900">
                 Review Return Request: #{selectedReturn.order_number}

@@ -335,20 +335,20 @@ export function Header() {
             )}
           </Link>
 
-          {/* Cart Icon with Drawer Trigger */}
-          <button
-            onClick={openCart}
-            className="relative flex items-center space-x-1.5 bg-[#5A1827] hover:bg-[#43121D] text-white px-3 py-1.5 rounded-full transition-all duration-200 shadow-2xs group cursor-pointer"
-            aria-label="Shopping Cart"
+          {/* Cart Icon Link to /cart Page */}
+          <Link
+            to="/cart"
+            className="relative flex items-center space-x-1.5 bg-[#5A1827] hover:bg-[#43121D] text-white px-3 py-1.5 rounded-sm transition-all duration-200 shadow-2xs group cursor-pointer"
+            aria-label="Shopping Bag"
           >
-            <ShoppingBag className="w-3.5 h-3.5 text-white group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold hidden sm:inline">Cart</span>
+            <ShoppingBag className="w-3.5 h-3.5 text-white group-hover:scale-105 transition-transform" />
+            <span className="text-xs font-semibold hidden sm:inline uppercase tracking-wider">Cart</span>
             {totalItems > 0 && (
-              <span className="bg-white text-[#5A1827] text-[10px] font-bold px-1.5 py-0.2 rounded-full min-w-[16px] text-center">
+              <span className="bg-white text-[#5A1827] text-[10px] font-bold px-1.5 py-0.2 rounded-xs min-w-[16px] text-center">
                 {totalItems}
               </span>
             )}
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -360,12 +360,12 @@ export function Header() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search suits, sarees, festive wear..."
-            className="w-full bg-[#FAF7F2] text-neutral-900 text-xs pl-8 pr-14 py-1.5 rounded-full border border-neutral-300 focus:outline-none focus:border-brand-maroon focus:bg-white font-medium"
+            className="w-full bg-[#FAF7F2] text-neutral-900 text-xs pl-8 pr-14 py-1.5 rounded-sm border border-neutral-300 focus:outline-none focus:border-brand-maroon focus:bg-white font-medium"
           />
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
           <button
             type="submit"
-            className="absolute right-1 top-1/2 -translate-y-1/2 bg-[#5A1827] text-white text-[10px] font-bold px-2.5 py-1 rounded-full"
+            className="absolute right-1 top-1/2 -translate-y-1/2 bg-[#5A1827] text-white text-[10px] font-bold px-2.5 py-1 rounded-xs uppercase tracking-wider"
           >
             Go
           </button>

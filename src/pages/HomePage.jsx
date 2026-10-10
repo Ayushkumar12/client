@@ -8,12 +8,21 @@ import { InsideBrandSection } from '../components/home/InsideBrandSection.jsx';
 import { AdornedJewelsSection } from '../components/home/AdornedJewelsSection.jsx';
 import { BentoMosaicSection } from '../components/home/BentoMosaicSection.jsx';
 import { api } from '../services/api.js';
+import { useScrollReveal } from '../hooks/useScrollReveal.js';
 
 export function HomePage() {
   const [newArrivals, setNewArrivals] = useState([]);
   const [brandPicks, setBrandPicks] = useState([]);
   const [jewels, setJewels] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Scroll-reveal refs for each section
+  const categoriesRef = useScrollReveal();
+  const arrivalsRef = useScrollReveal({ delay: 60 });
+  const picksRef = useScrollReveal({ delay: 60 });
+  const brandRef = useScrollReveal({ delay: 60 });
+  const jewelsRef = useScrollReveal({ delay: 60 });
+  const mosaicRef = useScrollReveal({ delay: 60 });
 
   useEffect(() => {
     async function fetchData() {
@@ -49,22 +58,34 @@ export function HomePage() {
       <HeroSlideshow />
 
       {/* 2. Shop by Category */}
-      <JharokhaCategories />
+      <div ref={categoriesRef}>
+        <JharokhaCategories />
+      </div>
 
       {/* 3. New Arrivals Showcase */}
-      <NewArrivalsSection products={newArrivals} loading={loading} />
+      <div ref={arrivalsRef}>
+        <NewArrivalsSection products={newArrivals} loading={loading} />
+      </div>
 
       {/* 4. Featured Picks Showcase */}
-      <BrandPicksSection products={brandPicks} loading={loading} />
+      <div ref={picksRef}>
+        <BrandPicksSection products={brandPicks} loading={loading} />
+      </div>
 
       {/* 5. About Brand Section */}
-      <InsideBrandSection />
+      <div ref={brandRef}>
+        <InsideBrandSection />
+      </div>
 
       {/* 6. Jewellery & Accessories Section */}
-      <AdornedJewelsSection products={jewels} loading={loading} />
+      <div ref={jewelsRef}>
+        <AdornedJewelsSection products={jewels} loading={loading} />
+      </div>
 
       {/* 7. Category & Budget Mosaic */}
-      <BentoMosaicSection />
+      <div ref={mosaicRef}>
+        <BentoMosaicSection />
+      </div>
     </div>
   );
 }

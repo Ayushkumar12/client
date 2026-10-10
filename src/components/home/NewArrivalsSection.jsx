@@ -32,21 +32,19 @@ export function NewArrivalsSection({ products = [], loading = false }) {
   }, [products, activeTab]);
 
   return (
-    <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
-      {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-neutral-200">
-        <div className="space-y-1.5">
-          {/* Badge */}
-          <div className="inline-flex items-center space-x-2 bg-neutral-100 border border-neutral-200 px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-neutral-700 uppercase">
-            <Sparkles className="w-3.5 h-3.5 text-neutral-600" aria-hidden="true" />
-            <span>{sec.badge || 'LATEST COLLECTION'}</span>
-          </div>
+    <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-10">
+      {/* Section Header — compact on mobile */}
+      <div className="flex items-end justify-between gap-3 pb-3 sm:pb-6 border-b border-neutral-200">
+        <div className="space-y-0.5 sm:space-y-1.5 min-w-0">
+          <p className="text-[10px] sm:text-[11px] uppercase tracking-widest text-neutral-500 font-semibold">
+            {sec.badge || 'Latest Collection'}
+          </p>
 
-          <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
+          <h2 className="text-xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
             {sec.title || 'New Arrivals'}
           </h2>
 
-          <p className="text-xs sm:text-sm text-neutral-500 max-w-xl">
+          <p className="hidden sm:block text-sm text-neutral-500 max-w-xl">
             {sec.subtitle || 'Discover the newest additions to our collection.'}
           </p>
         </div>
@@ -54,48 +52,35 @@ export function NewArrivalsSection({ products = [], loading = false }) {
         {/* View All link */}
         <Link
           to="/new-arrivals"
-          className="inline-flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-neutral-900 hover:text-neutral-600 group self-start md:self-auto py-1"
+          className="inline-flex items-center space-x-1 text-xs sm:text-sm font-semibold text-neutral-900 hover:text-neutral-600 group shrink-0"
         >
-          <span>{sec.cta_text || 'View All New Styles'}</span>
+          <span className="hidden sm:inline">{sec.cta_text || 'View All New Styles'}</span>
+          <span className="sm:hidden">View All</span>
           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 
-      {/* Category Filter Tabs */}
-      <div className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto pt-6 pb-2 no-scrollbar">
-        {FILTER_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 sm:px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer ${
-              activeTab === tab.id
-                ? 'bg-[#5A1827] text-white shadow-sm ring-2 ring-[#5A1827]/20 font-bold'
-                : 'bg-white text-neutral-600 hover:text-neutral-900 border border-neutral-200 hover:border-neutral-300'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+
+
 
       {/* Products Grid */}
-      <div className="pt-6">
+      <div className="pt-3 sm:pt-6">
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
               <div
                 key={n}
-                className="bg-white rounded-2xl h-80 sm:h-96 animate-pulse border border-neutral-200/80 p-3 space-y-3"
+                className="bg-white h-64 sm:h-96 animate-pulse border border-neutral-200/80 p-3 space-y-3"
               >
-                <div className="w-full h-3/4 bg-neutral-200 rounded-xl" />
-                <div className="h-4 bg-neutral-200 rounded w-3/4" />
-                <div className="h-4 bg-neutral-200 rounded w-1/2" />
+                <div className="w-full h-3/4 bg-neutral-200 rounded" />
+                <div className="h-3 bg-neutral-200 rounded w-3/4" />
+                <div className="h-3 bg-neutral-200 rounded w-1/2" />
               </div>
             ))}
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 text-center border border-neutral-200 space-y-3">
-            <p className="font-serif text-lg font-bold text-neutral-800">
+          <div className="py-8 sm:p-12 text-center border-b border-neutral-200 space-y-2">
+            <p className="font-serif text-base sm:text-lg font-bold text-neutral-800">
               No new arrivals found in this category
             </p>
             <p className="text-xs text-neutral-500">
@@ -103,13 +88,13 @@ export function NewArrivalsSection({ products = [], loading = false }) {
             </p>
             <Link
               to="/new-arrivals"
-              className="inline-block px-5 py-2 bg-brand-maroon text-white text-xs font-semibold rounded-lg"
+              className="inline-block px-5 py-2 bg-brand-maroon text-white text-xs font-semibold rounded-lg mt-1"
             >
               Explore Full Catalog
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

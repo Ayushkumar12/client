@@ -25,8 +25,8 @@ function resolveInitialBase() {
       return `http://${host}:5000/api`;
     }
 
-    // 4. Production domain host (oct9.in or any subdomains like www.oct9.in, admin.oct9.in)
-    if (host.endsWith('oct9.in')) {
+    // 4. Production domain host (oct9.in or vercel preview urls)
+    if (host.endsWith('oct9.in') || host.endsWith('.vercel.app')) {
       return '/api';
     }
   }

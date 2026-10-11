@@ -14,7 +14,7 @@ import {
   Minus,
   Loader2,
   Check,
-  Zap,
+  Play,
   ArrowRight,
   AlertCircle
 } from 'lucide-react';
@@ -393,7 +393,7 @@ export function AdminInventory() {
             className="px-3 py-1.5 bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-700 text-xs font-medium rounded shadow-xs flex items-center space-x-1.5 cursor-pointer"
             title="Simulate marketplace order to test real-time stock deduction"
           >
-            <Zap className="w-3.5 h-3.5 text-amber-600" />
+            <Play className="w-3.5 h-3.5 text-neutral-600" />
             <span>Simulate Order</span>
           </button>
 
@@ -469,16 +469,14 @@ export function AdminInventory() {
         {/* Flipkart */}
         <div className="p-3.5 space-y-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="px-1.5 py-0.5 bg-[#2874F0] text-white font-bold text-[10px] rounded">FK</span>
-              <span className="font-semibold text-xs text-neutral-900">Flipkart Seller Hub</span>
-            </div>
-            <span className="inline-flex items-center text-[10px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-              Connected
+            <span className="font-semibold text-xs text-neutral-900">Flipkart</span>
+            <span className="inline-flex items-center space-x-1.5 text-[11px] text-neutral-500">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span>Connected</span>
             </span>
           </div>
           <div className="text-[11px] text-neutral-500 flex justify-between">
-            <span>Seller ID: <strong className="text-neutral-700">OCT9_LUX_DELHI</strong></span>
+            <span>Seller ID: <strong className="text-neutral-700 font-normal">OCT9_LUX_DELHI</strong></span>
             <span>Sync: 15m</span>
           </div>
           <div className="flex items-center space-x-2 pt-1 border-t border-neutral-100 text-xs">
@@ -487,7 +485,7 @@ export function AdminInventory() {
               disabled={testingChannelKey === 'flipkart'}
               className="text-neutral-600 hover:text-neutral-900 text-[11px] font-medium flex items-center space-x-1 cursor-pointer"
             >
-              {testingChannelKey === 'flipkart' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3 text-neutral-500" />}
+              {testingChannelKey === 'flipkart' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3 text-neutral-400" />}
               <span>Test Ping</span>
             </button>
             <span className="text-neutral-300">|</span>
@@ -506,17 +504,15 @@ export function AdminInventory() {
         {/* Amazon */}
         <div className="p-3.5 space-y-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="px-1.5 py-0.5 bg-[#FF9900] text-neutral-950 font-bold text-[10px] rounded">AMZ</span>
-              <span className="font-semibold text-xs text-neutral-900">Amazon SP-API</span>
-            </div>
-            <span className="inline-flex items-center text-[10px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-              Connected
+            <span className="font-semibold text-xs text-neutral-900">Amazon SP-API</span>
+            <span className="inline-flex items-center space-x-1.5 text-[11px] text-neutral-500">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span>Connected</span>
             </span>
           </div>
           <div className="text-[11px] text-neutral-500 flex justify-between">
-            <span>Marketplace: <strong className="text-neutral-700">India (IN)</strong></span>
-            <span>Fulfillment: MFN</span>
+            <span>Marketplace: <strong className="text-neutral-700 font-normal">India (IN)</strong></span>
+            <span>MFN</span>
           </div>
           <div className="flex items-center space-x-2 pt-1 border-t border-neutral-100 text-xs">
             <button
@@ -524,7 +520,7 @@ export function AdminInventory() {
               disabled={testingChannelKey === 'amazon'}
               className="text-neutral-600 hover:text-neutral-900 text-[11px] font-medium flex items-center space-x-1 cursor-pointer"
             >
-              {testingChannelKey === 'amazon' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3 text-neutral-500" />}
+              {testingChannelKey === 'amazon' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3 text-neutral-400" />}
               <span>Test Ping</span>
             </button>
             <span className="text-neutral-300">|</span>
@@ -543,16 +539,14 @@ export function AdminInventory() {
         {/* Meesho */}
         <div className="p-3.5 space-y-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="px-1.5 py-0.5 bg-[#580044] text-white font-bold text-[10px] rounded">MEE</span>
-              <span className="font-semibold text-xs text-neutral-900">Meesho Supplier</span>
-            </div>
-            <span className="inline-flex items-center text-[10px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-              Connected
+            <span className="font-semibold text-xs text-neutral-900">Meesho Supplier</span>
+            <span className="inline-flex items-center space-x-1.5 text-[11px] text-neutral-500">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span>Connected</span>
             </span>
           </div>
           <div className="text-[11px] text-neutral-500 flex justify-between">
-            <span>ID: <strong className="text-neutral-700">MEE_SUPP_77192</strong></span>
+            <span>ID: <strong className="text-neutral-700 font-normal">MEE_SUPP_77192</strong></span>
             <span>Hub: Okhla</span>
           </div>
           <div className="flex items-center space-x-2 pt-1 border-t border-neutral-100 text-xs">
@@ -561,7 +555,7 @@ export function AdminInventory() {
               disabled={testingChannelKey === 'meesho'}
               className="text-neutral-600 hover:text-neutral-900 text-[11px] font-medium flex items-center space-x-1 cursor-pointer"
             >
-              {testingChannelKey === 'meesho' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3 text-neutral-500" />}
+              {testingChannelKey === 'meesho' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3 text-neutral-400" />}
               <span>Test Ping</span>
             </button>
             <span className="text-neutral-300">|</span>
@@ -580,16 +574,14 @@ export function AdminInventory() {
         {/* Storefront */}
         <div className="p-3.5 space-y-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="px-1.5 py-0.5 bg-[#5A1827] text-white font-bold text-[10px] rounded">OCT9</span>
-              <span className="font-semibold text-xs text-neutral-900">Storefront Live</span>
-            </div>
-            <span className="inline-flex items-center text-[10px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-              Direct DB
+            <span className="font-semibold text-xs text-neutral-900">Storefront</span>
+            <span className="inline-flex items-center space-x-1.5 text-[11px] text-neutral-500">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span>Direct DB</span>
             </span>
           </div>
           <div className="text-[11px] text-neutral-500 flex justify-between">
-            <span>Sync: <strong className="text-neutral-700">Real-time (0ms)</strong></span>
+            <span>Sync: <strong className="text-neutral-700 font-normal">Real-time</strong></span>
             <span>Auto-Deduct: ON</span>
           </div>
           <div className="flex items-center space-x-2 pt-1 border-t border-neutral-100 text-xs">
@@ -598,7 +590,7 @@ export function AdminInventory() {
               disabled={testingChannelKey === 'storefront'}
               className="text-neutral-600 hover:text-neutral-900 text-[11px] font-medium flex items-center space-x-1 cursor-pointer"
             >
-              {testingChannelKey === 'storefront' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3 text-neutral-500" />}
+              {testingChannelKey === 'storefront' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3 text-neutral-400" />}
               <span>Check Latency</span>
             </button>
             <span className="text-neutral-300">|</span>

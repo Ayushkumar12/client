@@ -1,0 +1,48 @@
+# ----------------------------------------------------------------------
+# 1. Server & Execution Options (Preserving Existing Host Configuration)
+# ----------------------------------------------------------------------
+Options -Indexes +ExecCGI
+AddHandler cgi-script .cgi .pl
+
+# ----------------------------------------------------------------------
+# 2. Single Page Application (SPA) Routing for Vite & React Router
+# Fixes 404 Not Found on page refresh (e.g. /product/..., /cart, /orders)
+# ----------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # If the requested resource is index.html, do nothing
+  RewriteRule ^index\.html$ - [L]
+
+  # If the requested path is an existing physical file, serve it directly
+  RewriteCond %{REQUEST_FILENAME} !-f
+
+  # If the requested path is an existing physical directory, serve it directly
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # If the requested path is a symbolic link, serve it directly
+  RewriteCond %{REQUEST_FILENAME} !-l
+
+  # Otherwise, rewrite all requests to index.html so React Router handles the route
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 3. Browser Caching & Security Headers
+# ----------------------------------------------------------------------
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>

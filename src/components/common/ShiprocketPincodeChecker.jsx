@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Truck, CheckCircle2, AlertCircle, Clock, MapPin, Loader2, ShieldCheck, Zap } from 'lucide-react';
+import { Truck, CheckCircle2, AlertCircle, Clock, MapPin, Loader2, ShieldCheck } from 'lucide-react';
 import { api } from '../../services/api.js';
 
 export function ShiprocketPincodeChecker({ onCheckSuccess = null }) {
@@ -87,7 +87,7 @@ export function ShiprocketPincodeChecker({ onCheckSuccess = null }) {
             <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 text-emerald-600 shrink-0" />
             <span>Serviceable in {result.city}, {result.state} ({result.pincode})</span>
           </div>
-          
+
           <div className="flex items-center text-neutral-700 text-[11px] pl-5">
             <Clock className="w-3 h-3 mr-1.5 text-brand-gold-dark shrink-0" />
             <span>Estimated Delivery by <strong>{result.delivery_date || '2-3 Business Days'}</strong></span>

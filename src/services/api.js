@@ -1,5 +1,5 @@
 // Configured Primary & Fallback API endpoints
-const DEVTUNNEL_API = 'https://back.oct9.in/api';
+const DEVTUNNEL_API = 'https://backend.oct9.in/api';
 const LOCALHOST_API = 'http://localhost:5000/api';
 
 // Resolve primary API based on current hostname / environment
@@ -9,15 +9,14 @@ function resolveInitialBase() {
     const port = window.location.port;
 
     // 1. If running on Vite dev server (port 5173 or 3000)
-    // Use relative '/api' which Vite proxies to localhost:5000 directly.
-    // This provides 100% same-origin cookie transmission and zero CORS errors on mobile/desktop!
+    // Use relative '/api' which Vite dev server proxies to backendTarget
     if (port === '5173' || port === '3000') {
       return '/api';
     }
 
     // 2. Direct localhost or loopback
     if (host === 'localhost' || host === '127.0.0.1') {
-      return LOCALHOST_API;
+      return import.meta.env?.VITE_API_URL || LOCALHOST_API;
     }
 
     // 3. If accessed from local area network (LAN/WiFi testing on mobile phone, e.g. 192.168.x.x)
@@ -25,9 +24,19 @@ function resolveInitialBase() {
       return `http://${host}:5000/api`;
     }
 
-    // 4. Production domain host (oct9.in or vercel preview urls)
-    if (host.endsWith('oct9.in') || host.endsWith('.vercel.app')) {
-      return '/api';
+    // 4. Production domain host (oct9.in, www.oct9.in, admin.oct9.in)
+    // The backend is hosted on the dedicated subdomain https://backend.oct9.in/api
+    if (host.endsWith('oct9.in')) {
+      return DEVTUNNEL_API;
+    }
+
+    // 5. If running on Vercel preview or custom production host
+    if (import.meta.env?.VITE_API_URL) {
+      return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
+    }
+
+    if (host.endsWith('.vercel.app')) {
+      return DEVTUNNEL_API;
     }
   }
 
@@ -35,12 +44,7 @@ function resolveInitialBase() {
     return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
   }
 
-  // Fallback for production or remote non-localhost hosting without VITE_API_URL
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return DEVTUNNEL_API;
-  }
-
-  return LOCALHOST_API;
+  return DEVTUNNEL_API;
 }
 
 let CURRENT_API_BASE = resolveInitialBase();
@@ -49,15 +53,15 @@ function getFallbackBase() {
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
     if (CURRENT_API_BASE === '/api') {
-      return host === 'localhost' || host === '127.0.0.1'
-        ? LOCALHOST_API
-        : `http://${host}:5000/api`;
+      return host.endsWith('oct9.in')
+        ? DEVTUNNEL_API
+        : (host === 'localhost' || host === '127.0.0.1' ? LOCALHOST_API : DEVTUNNEL_API);
     }
-    if (host.endsWith('oct9.in')) {
+    if (CURRENT_API_BASE === LOCALHOST_API) {
       return DEVTUNNEL_API;
     }
   }
-  return CURRENT_API_BASE === LOCALHOST_API ? DEVTUNNEL_API : LOCALHOST_API;
+  return CURRENT_API_BASE === DEVTUNNEL_API ? LOCALHOST_API : DEVTUNNEL_API;
 }
 
 export const API_BASE = CURRENT_API_BASE;
@@ -105,9 +109,22 @@ async function fetchWithFallback(endpoint, fetchOptions = {}) {
   const primaryUrl = `${CURRENT_API_BASE}${cleanEndpoint}`;
   try {
     const response = await fetch(primaryUrl, optionsWithCredentials);
+
+    // If primary returned 404 or server gateway error and we're not yet on DEVTUNNEL_API, attempt fallback
+    if (!response.ok && (response.status === 404 || response.status >= 500) && CURRENT_API_BASE !== DEVTUNNEL_API) {
+      try {
+        const fallbackUrl = `${DEVTUNNEL_API}${cleanEndpoint}`;
+        const fallbackResponse = await fetch(fallbackUrl, optionsWithCredentials);
+        if (fallbackResponse.ok || fallbackResponse.status < 500) {
+          CURRENT_API_BASE = DEVTUNNEL_API;
+          return fallbackResponse;
+        }
+      } catch (e) {}
+    }
+
     return response;
   } catch (err) {
-    // If primary network fetch fails, try fallback
+    // If primary network fetch fails (e.g. localhost offline), try fallback endpoint
     const fallbackBase = getFallbackBase();
     if (fallbackBase && fallbackBase !== CURRENT_API_BASE) {
       const fallbackUrl = `${fallbackBase}${cleanEndpoint}`;
@@ -288,8 +305,11 @@ export const api = {
   submitShiprocketNDRAction: (data) => request('/shiprocket/ndr/action', { method: 'POST', body: JSON.stringify(data) }),
   generateShippingManifest: (data) => request('/shiprocket/manifests/generate', { method: 'POST', body: JSON.stringify(data) }),
   printShippingManifest: (data) => request('/shiprocket/manifests/print', { method: 'POST', body: JSON.stringify(data) }),
-  generateShiprocketLabel: (data) => request('/shiprocket/shipments/label', { method: 'POST', body: JSON.stringify(data) }),
+   generateShiprocketLabel: (data) => request('/shiprocket/shipments/label', { method: 'POST', body: JSON.stringify(data) }),
   generateShiprocketInvoice: (data) => request('/shiprocket/orders/invoice', { method: 'POST', body: JSON.stringify(data) }),
+  getShiprocketConfig: () => request('/shiprocket/config'),
+  updateShiprocketConfig: (cfg) => request('/shiprocket/config', { method: 'PUT', body: JSON.stringify(cfg) }),
+  testShiprocketConnection: (data) => request('/shiprocket/config/test', { method: 'POST', body: JSON.stringify(data) }),
 
   // Coupons
   validateCoupon: (code, cartTotal) => request('/coupons/validate', {

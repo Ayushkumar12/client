@@ -38,6 +38,9 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   const subCategoryParam = searchParams.get('sub_category') || '';
   const fabricParam = searchParams.get('fabric') || '';
   const occasionParam = searchParams.get('occasion') || '';
+  const minPriceParam = searchParams.get('min_price') || '';
+  const maxPriceParam = searchParams.get('max_price') || '';
+  const featuredParam = searchParams.get('featured') || '';
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +53,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   const [selectedTypes, setSelectedTypes] = useState(subCategoryParam ? [subCategoryParam] : []);
   const [selectedColors, setSelectedColors] = useState([]);
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [priceRange, setPriceRange] = useState(15000);
+  const [priceRange, setPriceRange] = useState(() => (maxPriceParam ? Number(maxPriceParam) : 15000));
   const [selectedDiscount, setSelectedDiscount] = useState(null);
   const [sortBy, setSortBy] = useState('featured');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -315,6 +318,9 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
     currentCategory,
     subCategoryParam,
     searchParam,
+    minPriceParam,
+    maxPriceParam,
+    featuredParam,
     selectedSizes,
     selectedFabrics,
     selectedOccasions,
@@ -329,12 +335,15 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
     setLoading(true);
     try {
       const page = searchParams.get('page') || 1;
+      const effectiveMaxPrice = maxPriceParam ? Number(maxPriceParam) : (priceRange < 15000 ? priceRange : undefined);
       const params = {
         category: currentCategory === 'all' || currentCategory === 'new-arrivals' ? undefined : currentCategory,
         new_arrival: isNewArrivalsPage ? 'true' : undefined,
+        featured: (featuredParam === 'true' || featuredParam === '1') ? 'true' : undefined,
         sub_category: selectedTypes.length > 0 ? selectedTypes.join(',') : (subCategoryParam || undefined),
         search: searchParam || undefined,
-        max_price: priceRange < 15000 ? priceRange : undefined,
+        min_price: minPriceParam ? Number(minPriceParam) : undefined,
+        max_price: effectiveMaxPrice,
         size: selectedSizes.length > 0 ? selectedSizes.join(',') : undefined,
         fabric: selectedFabrics.length > 0 ? selectedFabrics.join(',') : undefined,
         occasion: selectedOccasions.length > 0 ? selectedOccasions.join(',') : undefined,

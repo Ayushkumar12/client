@@ -312,11 +312,11 @@ export function RegisterPage() {
                   />
                   <span className="leading-snug">
                     I agree to OCT9's{' '}
-                    <Link to="/" className="text-[#5A1827] font-medium hover:underline">
+                    <Link to="/terms" className="text-[#5A1827] font-medium hover:underline">
                       Terms of Service
                     </Link>{' '}
                     and{' '}
-                    <Link to="/" className="text-[#5A1827] font-medium hover:underline">
+                    <Link to="/privacy" className="text-[#5A1827] font-medium hover:underline">
                       Privacy Policy
                     </Link>
                   </span>

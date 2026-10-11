@@ -15,7 +15,7 @@ export function AboutPage() {
   return (
     <div className="bg-white min-h-screen py-14 px-4 sm:px-6 lg:px-8 font-sans">
       <Helmet>
-        <title>{`${page.title || 'About OCT9 Atelier'} | ${brand.name || 'OCT9'}`}</title>
+        <title>{`${page.title || 'About OCT9'} | ${brand.name || 'OCT9'}`}</title>
         <meta
           name="description"
           content={page.subtitle || 'Learn about OCT9 heritage, master craftsmanship, and pure handloom ethnic collections.'}
@@ -29,7 +29,7 @@ export function AboutPage() {
             {page.badge || 'Heritage & Craft'}
           </p>
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-neutral-900 tracking-tight">
-            {page.title || 'About OCT9 Atelier'}
+            {page.title || 'About OCT9'}
           </h1>
           <p className="text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
             {page.subtitle || 'Crafting luxury Indian ethnic wear that celebrates hereditary weaves, timeless grace, and everyday elegance.'}

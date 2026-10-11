@@ -17,9 +17,18 @@ import {
 import { useAuth } from '../../context/AuthContext.jsx';
 
 export function AdminLayout() {
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, loading: authLoading, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-neutral-950 text-white flex flex-col items-center justify-center p-4 space-y-3 font-sans">
+        <div className="w-8 h-8 border-2 border-neutral-400 border-t-white rounded-full animate-spin" />
+        <p className="text-xs text-neutral-400">Verifying administrator session...</p>
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     return (

@@ -292,7 +292,14 @@ export function LoginPage() {
               </Link>
             </p>
             <p className="text-[11px] text-neutral-400">
-              By signing in, you agree to our Terms of Service & Privacy Policy.
+              By signing in, you agree to our{' '}
+              <Link to="/terms" className="text-neutral-500 hover:text-[#5A1827] underline">
+                Terms of Service
+              </Link>{' '}
+              &{' '}
+              <Link to="/privacy" className="text-neutral-500 hover:text-[#5A1827] underline">
+                Privacy Policy
+              </Link>.
             </p>
           </div>
         </div>

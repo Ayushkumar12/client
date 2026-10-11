@@ -16,36 +16,13 @@ export default function ContactForm() {
     const message = formEl.elements['message']?.value || '';
 
     try {
-      // 1. Retrieve access key dynamically from server (no hardcoded key in frontend)
-      const config = await api.getFormConfig().catch(() => null);
-      const accessKey = config?.accessKey;
-
-      if (accessKey) {
-        // 2a. Submit from client via Web3Forms (required for free-tier browser validation)
-        const formData = new FormData(formEl);
-        formData.append('access_key', accessKey);
-
-        const response = await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          body: formData
-        });
-        const data = await response.json();
-
-        if (data && data.success) {
-          setResult('Your message has been sent successfully.');
-          formEl.reset();
-        } else {
-          setResult(data?.message || 'Something went wrong. Please try again.');
-        }
+      // Submit through server backend for guaranteed database storage + Web3Forms dispatch
+      const result = await api.submitContactForm({ name, email, message });
+      if (result?.success) {
+        setResult('Your message has been received. Our team will be in touch shortly.');
+        formEl.reset();
       } else {
-        // 2b. Fallback: submit through server-side proxy if key unavailable
-        const result = await api.submitContactForm({ name, email, message });
-        if (result?.success) {
-          setResult('Your message has been received. Our team will be in touch shortly.');
-          formEl.reset();
-        } else {
-          setResult(result?.message || 'Something went wrong. Please try again.');
-        }
+        setResult(result?.message || 'Something went wrong. Please try again.');
       }
     } catch (err) {
       console.error('[ContactForm] Submission error:', err);

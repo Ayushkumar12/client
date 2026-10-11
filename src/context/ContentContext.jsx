@@ -467,54 +467,78 @@ export const DEFAULT_SITE_CONTENT = {
     terms: {
       badge: 'Legal Agreement',
       title: 'Terms & Conditions',
-      subtitle: 'Please review our terms governing platform usage, product purchases, and intellectual property.',
+      subtitle: 'Official terms governing platform usage, purchases, intellectual property, and consumer rights.',
       last_updated: 'October 2026',
       sections: [
         {
-          title: '1. Acceptance of Terms',
-          content: 'By browsing, accessing, or making a purchase on OCT9 (oct9.com), you agree to comply with and be bound by these Terms and Conditions.'
+          title: '1. Platform Acceptance & Entity Details',
+          content: 'By accessing, browsing, or placing an order on OCT9 (oct9.com), you agree to be bound by these Terms & Conditions, our Privacy Policy, and all applicable statutory regulations under the Indian Information Technology Act, 2000 and the Consumer Protection (E-Commerce) Rules, 2020.'
         },
         {
-          title: '2. Product Pricing & Accuracy',
-          content: 'We strive for accurate color and embroidery depictions. Minor variations in shade or handcrafted embroidery may occur due to photography lighting and artisan handwork.'
+          title: '2. Intellectual Property, Copyright & Trademarks',
+          content: 'All original content on this platform—including garment designs, silhouettes, textile prints, brand marks, photography, copy, lookbooks, graphics, and user interfaces—is the exclusive intellectual property of OCT9 and is protected by Indian and international copyright and trademark laws. Unauthorized reproduction, commercial redistribution, web-scraping, reverse engineering, or manufacturing of counterfeit replicas without express written consent is strictly prohibited and subject to legal prosecution.'
         },
         {
-          title: '3. Orders & Payment Security',
-          content: 'All transactions are encrypted with 256-bit SSL encryption. We reserve the right to cancel orders with incorrect pricing or fraudulent payment indications.'
+          title: '3. Copyright Claims & Takedown Policy (Notice & Safe Harbor)',
+          content: 'OCT9 respects the intellectual property rights of third parties and operates in compliance with safe-harbor standards. If you are a copyright or trademark owner and believe in good faith that any material or image displayed on this site infringes your intellectual property, please submit a written infringement notice to our designated agent at care@oct9.com with: (a) Identification of the copyrighted work claimed to be infringed; (b) Direct URL/link to the material on our platform; (c) Evidence of legal ownership or authorization; and (d) Your full contact details. Valid notices will be reviewed and acted upon within 36 hours.'
         },
         {
-          title: '4. Intellectual Property',
-          content: 'All graphics, designs, logos, and product imagery are exclusive intellectual property of OCT9 and cannot be reproduced without explicit written consent.'
+          title: '4. Third-Party Trademarks & Payment Gateways',
+          content: 'All third-party trademarks, carrier brand names (including Shiprocket, Delhivery, BlueDart), and payment aggregator logos (such as Razorpay, Visa, Mastercard, RuPay, UPI) displayed on this platform are the property of their respective owners. They are referenced strictly for identification and fulfillment purposes, and do not imply endorsement, affiliation, or sponsorship.'
+        },
+        {
+          title: '5. Product Handcrafting & Color Representation',
+          content: 'Our collections celebrate genuine Indian artisanal techniques, handloom weaving, and handcrafted zardozi embroidery. Subtle irregularities in weaves, natural vegetable dyes, and hand-stitched borders are inherent characteristics of authentic craftsmanship, not defects. We make every effort to display true product colors, but slight variations may occur due to photography lighting and individual screen calibrations.'
+        },
+        {
+          title: '6. Pricing, Invoicing & GST Transparency',
+          content: 'All listed prices are denominated in Indian National Rupees (INR) and are inclusive of statutory Goods and Services Tax (GST). Each order is accompanied by a legal tax invoice detailing itemized HSN codes and GST splits. We reserve the right to cancel orders arising from typographical or technical pricing errors prior to dispatch, with a prompt 100% refund.'
+        },
+        {
+          title: '7. Statutory Grievance Redressal Mechanism',
+          content: 'In compliance with Rule 5(9) of the Consumer Protection (E-Commerce) Rules, 2020, OCT9 has designated a Grievance Redressal Officer. Any consumer grievances, service disputes, or copyright notices may be addressed to: Grievance Officer, Customer Care, OCT9 Fashion Store, New Delhi 110049; Email: care@oct9.com or support@oct9.com; Phone: +91 98765 43210. Acknowledgment will be issued within 48 hours, and complaints will be resolved within 30 days.'
+        },
+        {
+          title: '8. Governing Law & Jurisdiction',
+          content: 'These Terms & Conditions and any disputes arising out of your purchases or use of this platform shall be governed exclusively by the laws of India. The competent courts in New Delhi, India shall have exclusive jurisdiction over all legal claims.'
         }
       ]
     },
     privacy: {
       badge: 'Data Security',
       title: 'Privacy Policy',
-      subtitle: 'Your privacy is paramount. Learn how we safeguard your personal data and browsing information.',
+      subtitle: 'Your privacy is paramount. Learn how we safeguard your personal data, transaction security, and consumer rights.',
       last_updated: 'October 2026',
       sections: [
         {
-          title: '1. Information We Collect',
-          content: 'We collect your name, email, delivery address, and phone number exclusively to process orders, communicate tracking updates, and provide customer support.'
+          title: '1. Information We Collect & Purpose Limitation',
+          content: 'We collect your name, contact phone number, email address, delivery pincode, and complete shipping address strictly for order processing, logistics dispatch, OTP authentication, and automated order tracking updates in compliance with fair data minimization principles.'
         },
         {
-          title: '2. How We Protect Your Data',
-          content: 'We never sell, rent, or trade your personal data to third parties. Sensitive payment credentials are processed directly through secure PCI-DSS certified payment gateways.'
+          title: '2. Payment Security & PCI-DSS Tokenization',
+          content: 'We never store, record, or have access to your full debit/credit card numbers, CVVs, or net banking passwords on our servers. All financial transactions are securely processed through RBI-authorized, PCI-DSS Level 1 certified payment gateways (Razorpay) utilizing 256-bit end-to-end SSL encryption.'
         },
         {
-          title: '3. Cookies & Session Management',
-          content: 'We use functional cookies solely to maintain your shopping cart, wishlist, and logged-in account preferences.'
+          title: '3. Data Sharing with Logistics Partners',
+          content: 'To deliver your parcels, your shipping contact details are shared securely with our integrated logistics partners (Shiprocket and authorized courier partners). These parties are contractually bound to use customer data solely for parcel delivery, pickup scheduling, and SMS/WhatsApp transit alerts.'
         },
         {
-          title: '4. Your Data Rights',
-          content: 'You may request access to, correction of, or deletion of your customer account and personal data at any time by contacting support@oct9.com.'
+          title: '4. Cookies & Session Management',
+          content: 'We use necessary functional cookies and local storage solely to retain your active shopping cart, wishlist selections, and authenticated session tokens. We do not sell, rent, or trade your personal browsing history to third-party ad networks.'
+        },
+        {
+          title: '5. Data Rights & Erasure (DPDP Act, 2023)',
+          content: 'Under the Digital Personal Data Protection Act, you have the right to request access to, correction of, or permanent erasure of your account and personal details from our active databases. To exercise your data rights, submit a written request to support@oct9.com.'
+        },
+        {
+          title: '6. Privacy Grievance Officer',
+          content: 'If you have any questions, concerns, or grievances regarding the handling of your personal data, please contact our Data Protection & Grievance Desk at support@oct9.com or care@oct9.com.'
         }
       ]
     },
     about: {
       badge: 'Heritage & Craft',
-      title: 'About OCT9 Atelier',
+      title: 'About OCT9',
       subtitle: 'Crafting luxury Indian ethnic wear that celebrates hereditary weaves, timeless grace, and everyday elegance.',
       story: 'Founded with a passion for authentic Indian textiles, OCT9 blends classical artisanal artistry with modern silhouettes. Each garment is meticulously crafted by generational artisans using pure mulberry silks, hand-loomed chanderi, and intricate zardozi threadwork. We believe true luxury lies in comfort, authentic craftsmanship, and accessible elegance.',
       values: [

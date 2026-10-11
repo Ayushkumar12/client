@@ -58,6 +58,7 @@ export function AccountPage() {
   const {
     user,
     isAuthenticated,
+    loading: authLoading,
     logout,
     updateProfile,
     saveAddress,
@@ -269,10 +270,10 @@ export function AccountPage() {
   ]);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!authLoading && !isAuthenticated) {
       navigate('/login');
     }
-  }, [isAuthenticated, navigate]);
+  }, [authLoading, isAuthenticated, navigate]);
 
   useEffect(() => {
     if (user) {
@@ -547,6 +548,14 @@ export function AccountPage() {
       }
     ];
   }, [user]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center bg-[#FAF7F2]">
+        <div className="w-8 h-8 border-2 border-brand-maroon border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!user) return null;
 

@@ -924,7 +924,7 @@ export function ProductDetailPage() {
               <div className="text-center py-8 space-y-2 text-emerald-700">
                 <CheckCircle2 className="w-12 h-12 mx-auto text-emerald-600 animate-bounce" />
                 <p className="font-bold text-sm">Thank You for Your Feedback!</p>
-                <p className="text-xs text-neutral-500">Your rating and review have been successfully submitted to our quality atelier.</p>
+                <p className="text-xs text-neutral-500">Your rating and review have been successfully submitted to our customer care team.</p>
               </div>
             ) : (
               <form onSubmit={handleReviewSubmit} className="space-y-4">

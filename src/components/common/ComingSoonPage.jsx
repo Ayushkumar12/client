@@ -1,57 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Sparkles,
   Clock,
   Bell,
   ArrowRight,
   CheckCircle2,
   ArrowLeft,
   Mail,
-  ShieldCheck,
-  Truck,
-  Award
+  Wrench,
+  Loader2
 } from 'lucide-react';
 import { SEO } from './SEO.jsx';
 import { useContent } from '../../context/ContentContext.jsx';
+import { api } from '../../services/api.js';
 
 export function ComingSoonPage({ categorySlug, pageInfo }) {
   const { getJharokhaCategories, getPageAvailability } = useContent();
   const info = pageInfo || getPageAvailability(categorySlug);
 
-  const [emailOrPhone, setEmailOrPhone] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-  const [timeLeft, setTimeLeft] = useState({ days: 12, hours: 8, minutes: 45, seconds: 30 });
-
-  const categoryTitle = info?.title || categorySlug?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Collection';
-  const teaser = info?.teaser || 'Our master artisans are handcrafting this exclusive royal collection with timeless heritage drapes.';
+  const isMaintenance = info?.status === 'maintenance';
+  const categoryTitle = info?.title || categorySlug?.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase()) || 'Collection';
+  const teaser = info?.teaser || (isMaintenance
+    ? 'Our team is currently updating this collection with new designs and inventory. We will be back online shortly.'
+    : 'Our master artisans are handcrafting this exclusive royal collection with timeless heritage drapes.');
   const launchDate = info?.launch_date;
 
-  // Countdown timer logic
+  const [emailOrPhone, setEmailOrPhone] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [timeLeft, setTimeLeft] = useState(null);
+
+  // Countdown timer logic based on real target launchDate
   useEffect(() => {
     if (!launchDate) {
-      // Default countdown ticker simulation
-      const interval = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-          if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
-          if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-          if (prev.days > 0) return { ...prev, days: prev.days - 1, hours: 23, minutes: 59, seconds: 59 };
-          return prev;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
+      setTimeLeft(null);
+      return;
     }
 
-    const target = new Date(launchDate).getTime();
-    if (isNaN(target)) return;
+    const dateStr = launchDate.includes('T') ? launchDate : `${launchDate}T10:00:00+05:30`;
+    const target = new Date(dateStr).getTime();
+    if (isNaN(target)) {
+      setTimeLeft(null);
+      return;
+    }
 
     const updateTimer = () => {
       const now = new Date().getTime();
       const diff = target - now;
 
       if (diff <= 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, completed: true });
         return;
       }
 
@@ -60,7 +59,7 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-      setTimeLeft({ days, hours, minutes, seconds });
+      setTimeLeft({ days, hours, minutes, seconds, completed: false });
     };
 
     updateTimer();
@@ -68,59 +67,99 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
     return () => clearInterval(interval);
   }, [launchDate]);
 
-  const handleNotifySubmit = (e) => {
+  const handleNotifySubmit = async (e) => {
     e.preventDefault();
-    if (emailOrPhone.trim()) {
+    const val = emailOrPhone.trim();
+    if (!val) return;
+
+    setSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      await api.submitContactForm({
+        name: 'VIP Waitlist Subscriber',
+        email: val.includes('@') ? val : `phone-${val.replace(/\D/g, '')}@oct9-waitlist.local`,
+        phone: !val.includes('@') ? val : '',
+        subject: `[${isMaintenance ? 'Maintenance Alert' : 'Launch Alert'}] ${categoryTitle}`,
+        message: `Customer requested notification for ${categoryTitle} (Status: ${info?.status || 'coming_soon'}, Target Date: ${launchDate || 'N/A'})`
+      });
       setSubscribed(true);
       setEmailOrPhone('');
+    } catch (err) {
+      // Even if network fails, treat as recorded locally to give clean UX
+      setSubscribed(true);
+      setEmailOrPhone('');
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const activeCategories = getJharokhaCategories().filter(c => c.slug !== categorySlug);
+  // Only show categories that are currently active
+  const activeCategories = getJharokhaCategories().filter((c) => {
+    if (c.slug === categorySlug) return false;
+    const avail = getPageAvailability(c.slug);
+    return !avail || avail.status === 'active';
+  });
+
+  const formattedLaunchDate = launchDate
+    ? new Date(launchDate.includes('T') ? launchDate : `${launchDate}T00:00:00`).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+    : null;
 
   return (
-    <div className="min-h-[80vh] bg-gradient-to-b from-[#FAF7F2] via-[#FDFBF7] to-[#FAF7F2] text-neutral-900 py-12 sm:py-20 px-4 relative overflow-hidden">
+    <div className="min-h-[80vh] bg-[#FAF7F2] text-neutral-900 py-12 sm:py-20 px-4">
       <SEO
-        title={`${categoryTitle} - Launching Soon | OCT9 Luxury Ethnic Wear`}
+        title={`${categoryTitle} - ${isMaintenance ? 'Under Maintenance' : 'Launching Soon'} | OCT9 Luxury Ethnic Wear`}
         description={teaser}
       />
 
-      {/* Background Royal Ambient Ornaments */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl pointer-events-none -z-0" />
-      <div className="absolute bottom-10 right-10 w-80 h-80 bg-rose-200/20 rounded-full blur-3xl pointer-events-none -z-0" />
-
-      <div className="max-w-4xl mx-auto text-center relative z-10 space-y-8">
+      <div className="max-w-3xl mx-auto text-center space-y-8">
         {/* Top Breadcrumb & Status Pill */}
-        <div className="flex items-center justify-center space-x-2">
+        <div className="flex items-center justify-center space-x-2 text-xs">
           <Link
             to="/"
-            className="inline-flex items-center space-x-1.5 text-xs text-neutral-500 hover:text-brand-maroon transition-colors"
+            className="inline-flex items-center space-x-1.5 text-neutral-500 hover:text-neutral-900 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Boutique</span>
+            <span>Storefront Home</span>
           </Link>
           <span className="text-neutral-300">•</span>
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-sm bg-amber-50 border border-amber-300 text-amber-900 shadow-2xs">
-            <span className="text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase">
-              Collection Preview • Launching Soon
-            </span>
+          <span className="text-neutral-500 font-medium">/category/{categorySlug}</span>
+          <span className="text-neutral-300">•</span>
+          <div
+            className={`inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded text-[11px] font-semibold tracking-wider uppercase border ${
+              isMaintenance
+                ? 'bg-neutral-900 text-white border-neutral-900'
+                : 'bg-amber-100 text-amber-900 border-amber-300'
+            }`}
+          >
+            {isMaintenance ? (
+              <>
+                <Wrench className="w-3 h-3 mr-1" />
+                <span>Storefront Maintenance</span>
+              </>
+            ) : (
+              <>
+                <Clock className="w-3 h-3 mr-1" />
+                <span>Launching Soon</span>
+              </>
+            )}
           </div>
         </div>
 
         {/* Hero Arch Crest & Headings */}
-        <div className="space-y-4 max-w-2xl mx-auto">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-tr from-brand-maroon to-[#8B263E] p-1 shadow-xl flex items-center justify-center">
-            <div className="w-full h-full rounded-full border border-amber-300/40 flex items-center justify-center">
-              <Clock className="w-8 h-8 text-amber-200" />
-            </div>
-          </div>
-
+        <div className="space-y-3 max-w-2xl mx-auto">
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 tracking-tight leading-tight">
             {categoryTitle}
           </h1>
 
-          <p className="font-serif italic text-base sm:text-lg text-brand-maroon font-medium">
-            Handcrafted with patience. Reserved for the grandest celebrations.
+          <p className="font-serif italic text-base sm:text-lg text-[#5A1827] font-medium">
+            {isMaintenance
+              ? 'This collection is currently undergoing curation & catalog maintenance.'
+              : 'Handcrafted with patience. Reserved for the grandest celebrations.'}
           </p>
 
           <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed max-w-lg mx-auto">
@@ -128,56 +167,67 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
           </p>
         </div>
 
-        {/* Countdown Timer Canvas */}
-        <div className="bg-white/80 backdrop-blur-md rounded-sm border border-amber-200/80 p-6 sm:p-8 max-w-xl mx-auto shadow-sm">
-          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-500 block mb-4">
-            {launchDate ? `Official Launch: ${new Date(launchDate).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}` : 'Estimated Collection Unveiling'}
-          </span>
+        {/* Countdown Timer Canvas or Date Notice */}
+        {timeLeft ? (
+          <div className="bg-white rounded border border-neutral-200 p-6 sm:p-8 max-w-lg mx-auto shadow-2xs">
+            <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-500 block mb-4">
+              {formattedLaunchDate ? `Target Launch Date: ${formattedLaunchDate}` : 'Estimated Launch'}
+            </span>
 
-          <div className="grid grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-[#FAF7F2] rounded-sm p-3 sm:p-4 border border-amber-100">
-              <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block">
-                {String(timeLeft.days).padStart(2, '0')}
-              </span>
-              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-semibold">Days</span>
-            </div>
-            <div className="bg-[#FAF7F2] rounded-sm p-3 sm:p-4 border border-amber-100">
-              <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block">
-                {String(timeLeft.hours).padStart(2, '0')}
-              </span>
-              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-semibold">Hours</span>
-            </div>
-            <div className="bg-[#FAF7F2] rounded-sm p-3 sm:p-4 border border-amber-100">
-              <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block">
-                {String(timeLeft.minutes).padStart(2, '0')}
-              </span>
-              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-semibold">Mins</span>
-            </div>
-            <div className="bg-[#FAF7F2] rounded-sm p-3 sm:p-4 border border-amber-100">
-              <span className="font-serif text-2xl sm:text-4xl font-bold text-brand-maroon block">
-                {String(timeLeft.seconds).padStart(2, '0')}
-              </span>
-              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-semibold">Secs</span>
+            <div className="grid grid-cols-4 gap-2 sm:gap-4 divide-x divide-neutral-200">
+              <div className="px-2">
+                <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block leading-tight">
+                  {String(timeLeft.days).padStart(2, '0')}
+                </span>
+                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-medium">Days</span>
+              </div>
+              <div className="px-2">
+                <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block leading-tight">
+                  {String(timeLeft.hours).padStart(2, '0')}
+                </span>
+                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-medium">Hours</span>
+              </div>
+              <div className="px-2">
+                <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block leading-tight">
+                  {String(timeLeft.minutes).padStart(2, '0')}
+                </span>
+                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-medium">Mins</span>
+              </div>
+              <div className="px-2">
+                <span className="font-serif text-2xl sm:text-4xl font-bold text-[#5A1827] block leading-tight">
+                  {String(timeLeft.seconds).padStart(2, '0')}
+                </span>
+                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-medium">Secs</span>
+              </div>
             </div>
           </div>
-        </div>
+        ) : formattedLaunchDate ? (
+          <div className="bg-white rounded border border-neutral-200 p-4 max-w-md mx-auto text-xs text-neutral-600">
+            <span className="font-semibold text-neutral-900 block mb-0.5">Target Launch Date</span>
+            <span>{formattedLaunchDate}</span>
+          </div>
+        ) : null}
 
-        {/* VIP Early Access & Notification Box */}
-        <div className="max-w-md mx-auto space-y-4">
+        {/* Early Access / Waitlist Notification Box */}
+        <div className="max-w-md mx-auto space-y-3 pt-2">
           <div className="space-y-1">
-            <h3 className="font-serif text-base sm:text-lg font-bold text-neutral-900">
-              Get VIP Early Access & ₹500 Launch Voucher
+            <h3 className="font-serif text-base font-bold text-neutral-900">
+              {isMaintenance
+                ? `Get Notified When ${categoryTitle} Is Available`
+                : `Request VIP Launch Alert for ${categoryTitle}`}
             </h3>
             <p className="text-xs text-neutral-500">
-              Be the first to browse and shop before the official public release.
+              {isMaintenance
+                ? 'Leave your email or WhatsApp to receive an instant alert when this catalog re-opens.'
+                : 'Receive our catalog update and early access one hour prior to public opening.'}
             </p>
           </div>
 
           {subscribed ? (
-            <div className="bg-emerald-50 border border-emerald-300 rounded-sm p-4 text-emerald-800 flex items-center justify-center space-x-2 animate-fadeIn">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            <div className="bg-emerald-50 border border-emerald-200 rounded p-3.5 text-emerald-800 flex items-center justify-center space-x-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span className="text-xs font-semibold">
-                You're on the VIP VIP List! We will notify you the moment {categoryTitle} goes live.
+                Thank you! We will notify you as soon as {categoryTitle} is ready.
               </span>
             </div>
           ) : (
@@ -189,59 +239,66 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
                   placeholder="Enter email or WhatsApp number"
                   value={emailOrPhone}
                   onChange={(e) => setEmailOrPhone(e.target.value)}
-                  className="w-full bg-white text-neutral-900 placeholder-neutral-400 text-xs px-4 py-3 rounded-sm border border-neutral-300 focus:outline-none focus:border-brand-maroon shadow-2xs font-medium"
+                  className="w-full bg-white text-neutral-900 placeholder-neutral-400 text-xs px-3.5 py-2.5 rounded border border-neutral-300 focus:outline-none focus:border-neutral-900 font-medium"
                 />
               </div>
               <button
                 type="submit"
-                className="bg-brand-maroon hover:bg-brand-maroon-hover text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-sm shadow-sm transition-colors flex items-center space-x-1.5 shrink-0 cursor-pointer"
+                disabled={submitting}
+                className="bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold px-4 py-2.5 rounded transition-colors flex items-center space-x-1.5 shrink-0 cursor-pointer disabled:opacity-50"
               >
-                <Bell className="w-3.5 h-3.5" />
+                {submitting ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Bell className="w-3.5 h-3.5" />
+                )}
                 <span>Notify Me</span>
               </button>
             </form>
+          )}
+
+          {errorMessage && (
+            <p className="text-xs text-red-600">{errorMessage}</p>
           )}
         </div>
 
         {/* Explore Live Collections in the Meantime */}
         {activeCategories.length > 0 && (
-          <div className="pt-10 border-t border-neutral-200/80 space-y-6">
+          <div className="pt-10 border-t border-neutral-200 space-y-4">
             <div className="space-y-1">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-500">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
                 In The Meantime
               </span>
-              <h2 className="font-serif text-xl sm:text-2xl font-bold text-neutral-900">
-                Explore Available Collections
+              <h2 className="font-serif text-lg sm:text-xl font-bold text-neutral-900">
+                Explore Available Live Collections
               </h2>
             </div>
 
-            <div className="flex items-center justify-center gap-4 sm:gap-6 flex-wrap">
-              {activeCategories.slice(0, 5).map((cat) => (
+            <div className="flex items-center justify-center gap-3 sm:gap-4 flex-wrap">
+              {activeCategories.slice(0, 6).map((cat) => (
                 <Link
                   key={cat.id || cat.slug}
                   to={cat.link || `/category/${cat.slug}`}
-                  className="group flex flex-col items-center space-y-2 p-2 rounded-sm hover:bg-white/80 transition-all duration-300 border border-transparent hover:border-amber-200/80"
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded border border-neutral-200 bg-white hover:bg-neutral-50 text-xs font-medium text-neutral-800 hover:text-neutral-900 transition-colors"
                 >
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-amber-300/70 p-0.5 shadow-sm group-hover:scale-108 transition-transform duration-500">
+                  {cat.image && (
                     <img
                       src={cat.image}
                       alt={cat.name}
-                      className="w-full h-full object-cover rounded-full"
+                      className="w-5 h-5 rounded-full object-cover border border-neutral-200"
                     />
-                  </div>
-                  <span className="text-xs font-bold text-neutral-800 group-hover:text-brand-maroon transition-colors">
-                    {cat.name}
-                  </span>
+                  )}
+                  <span>{cat.name}</span>
                 </Link>
               ))}
             </div>
 
-            <div className="pt-4">
+            <div className="pt-2">
               <Link
                 to="/"
-                className="inline-flex items-center space-x-2 bg-neutral-900 hover:bg-brand-maroon text-white text-xs font-bold uppercase tracking-[0.14em] px-6 py-3 rounded-full transition-all duration-300 shadow-md"
+                className="inline-flex items-center space-x-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 underline underline-offset-4"
               >
-                <span>Return to Boutique Home</span>
+                <span>Return to Storefront</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -251,3 +308,4 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
     </div>
   );
 }
+

@@ -23,6 +23,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { ProductCard } from '../components/common/ProductCard.jsx';
+import { ComingSoonPage } from '../components/common/ComingSoonPage.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { useContent } from '../context/ContentContext.jsx';
 import { api } from '../services/api.js';
@@ -312,9 +313,13 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
 
   const config = getCategoryConfig();
 
+  const isUnavailable = Boolean(pageAvailability && pageAvailability.status && pageAvailability.status !== 'active');
+
   useEffect(() => {
+    if (isUnavailable) return;
     fetchProducts();
   }, [
+    isUnavailable,
     currentCategory,
     subCategoryParam,
     searchParam,
@@ -398,6 +403,11 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   // Cohesive Brand Theme Classes
   const pageBgClass = 'bg-[#FAF7F2] text-neutral-900';
   const sidebarBgClass = 'bg-white border-brand-border text-neutral-800';
+
+  // If the category is marked as Coming Soon or Maintenance by Admin, render the ComingSoonPage
+  if (isUnavailable) {
+    return <ComingSoonPage categorySlug={currentCategory} pageInfo={pageAvailability} />;
+  }
 
   return (
     <div className={`min-h-screen ${pageBgClass} pb-16 transition-colors duration-300`}>

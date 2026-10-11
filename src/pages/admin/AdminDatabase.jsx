@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Database,
   Trash2,
   AlertTriangle,
   RefreshCw,
   ShieldAlert,
-  CheckCircle2,
-  Lock,
-  Boxes,
-  Package,
-  Layers,
-  ArrowRight
+  CheckCircle2
 } from 'lucide-react';
 import { api } from '../../services/api.js';
 import { TableSkeleton } from '../../components/common/Skeleton.jsx';

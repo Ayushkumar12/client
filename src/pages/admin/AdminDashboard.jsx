@@ -2,8 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   AlertTriangle,
-  ArrowRight,
-  Loader2
+  ArrowRight
 } from 'lucide-react';
 import { AgGridReact } from 'ag-grid-react';
 import { AgCharts } from 'ag-charts-react';
@@ -239,6 +238,12 @@ export function AdminDashboard() {
             className="px-3.5 py-2 bg-white hover:bg-neutral-50 text-neutral-800 font-medium border border-neutral-300 rounded-md transition-colors"
           >
             Inventory
+          </Link>
+          <Link
+            to="/admin/database"
+            className="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 font-medium border border-red-200 rounded-md transition-colors"
+          >
+            Database & Reset
           </Link>
           <Link
             to="/admin/analytics"

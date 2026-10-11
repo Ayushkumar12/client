@@ -351,7 +351,7 @@ export function AdminAnalytics() {
 
               <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-sm flex items-center justify-between text-xs">
                 <div className="flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-emerald-600" />
+                  <TrendingUp className="w-4 h-4 text-emerald-600" />
                   <span className="font-semibold text-emerald-950">Overall Brand Sentiment Score:</span>
                 </div>
                 <span className="font-bold text-emerald-800 text-sm">{ratingsData.sentiment_score || 96.4}% Positive</span>

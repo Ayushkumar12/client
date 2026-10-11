@@ -310,6 +310,7 @@ export const api = {
   getShiprocketConfig: () => request('/shiprocket/config'),
   updateShiprocketConfig: (cfg) => request('/shiprocket/config', { method: 'PUT', body: JSON.stringify(cfg) }),
   testShiprocketConnection: (data) => request('/shiprocket/config/test', { method: 'POST', body: JSON.stringify(data) }),
+  syncShiprocketDeliveryStatus: (params = {}) => request('/shiprocket/sync-status', { method: 'POST', body: JSON.stringify(params) }),
 
   // Coupons
   validateCoupon: (code, cartTotal) => request('/coupons/validate', {

@@ -38,6 +38,7 @@ export function AdminOrders() {
   const [trackingWaybill, setTrackingWaybill] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionMessage, setActionMessage] = useState('');
+  const [syncingStatus, setSyncingStatus] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -60,6 +61,25 @@ export function AdminOrders() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchOrders();
+  };
+
+  // Auto-Sync Shiprocket Delivery Status for all active shipments
+  const handleAutoSyncStatus = async () => {
+    setSyncingStatus(true);
+    setActionMessage('');
+    try {
+      const res = await api.syncShiprocketDeliveryStatus();
+      if (res.success) {
+        setActionMessage(`Shiprocket Sync Complete: ${res.total || 0} active shipments checked (${res.updated || 0} statuses updated).`);
+        fetchOrders();
+      } else {
+        alert(res.message || 'Failed to sync statuses with Shiprocket.');
+      }
+    } catch (err) {
+      alert('Error syncing statuses: ' + err.message);
+    } finally {
+      setSyncingStatus(false);
+    }
   };
 
   // 1-Click Generate Shiprocket Waybill
@@ -114,13 +134,25 @@ export function AdminOrders() {
           </p>
         </div>
 
-        <button
-          onClick={fetchOrders}
-          className="px-3.5 py-2 bg-white border border-neutral-300 rounded-md text-xs font-semibold text-neutral-800 hover:bg-neutral-50 flex items-center space-x-1.5 transition-colors cursor-pointer self-start sm:self-auto"
-        >
-          <RefreshCw className="w-3.5 h-3.5 text-neutral-600" />
-          <span>Refresh Orders</span>
-        </button>
+        <div className="flex items-center space-x-2 self-start sm:self-auto">
+          <button
+            onClick={handleAutoSyncStatus}
+            disabled={syncingStatus}
+            className="px-3 py-1.5 bg-neutral-900 text-white rounded-md text-xs font-semibold hover:bg-neutral-800 flex items-center space-x-1.5 transition-colors cursor-pointer disabled:opacity-50"
+            title="Auto-fetch latest delivery statuses for all in-transit orders from Shiprocket"
+          >
+            {syncingStatus ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Truck className="w-3.5 h-3.5" />}
+            <span>{syncingStatus ? 'Syncing...' : 'Auto-Sync Shiprocket'}</span>
+          </button>
+
+          <button
+            onClick={fetchOrders}
+            className="px-3 py-1.5 bg-white border border-neutral-300 rounded-md text-xs font-semibold text-neutral-800 hover:bg-neutral-50 flex items-center space-x-1.5 transition-colors cursor-pointer"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-neutral-600" />
+            <span>Refresh</span>
+          </button>
+        </div>
       </div>
 
       {actionMessage && (

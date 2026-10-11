@@ -7,7 +7,6 @@ import { CartProvider } from './context/CartContext.jsx';
 import { WishlistProvider } from './context/WishlistContext.jsx';
 import { ContentProvider } from './context/ContentContext.jsx';
 
-import { TopAnnouncementBar } from './components/common/TopAnnouncementBar.jsx';
 import { Header } from './components/common/Header.jsx';
 import { Footer } from './components/common/Footer.jsx';
 import { PwaBottomNav } from './components/common/PwaBottomNav.jsx';
@@ -61,7 +60,6 @@ function MainLayout({ children }) {
   return (
     <div className="min-h-screen flex flex-col justify-between bg-brand-cream pb-14 lg:pb-0">
       <div>
-        <TopAnnouncementBar />
         <Header />
         <main>{children}</main>
       </div>

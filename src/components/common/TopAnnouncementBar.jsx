@@ -6,6 +6,10 @@ export function TopAnnouncementBar() {
   const { getBrand } = useContent();
   const brand = getBrand();
 
+  if (!brand?.announcement_bar) {
+    return null;
+  }
+
   return (
     <div className="bg-neutral-100 text-neutral-700 text-xs py-1.5 px-3 sm:px-4 border-b border-neutral-200 font-sans tracking-wide">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">

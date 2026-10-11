@@ -8,7 +8,6 @@ import {
   ShieldCheck,
   Share2,
   Ruler,
-  Loader2,
   ChevronDown,
   ChevronUp,
   CheckCircle2,
@@ -337,7 +336,7 @@ export function ProductDetailPage() {
                 </button>
               </div>
 
-              {/* Large Editorial Serif Title (Matching Reference Image) */}
+              {/* Editorial Title (Sans-Serif) */}
               <h1 className="font-sans text-3xl sm:text-4xl text-neutral-900 mt-1 tracking-tight font-normal leading-tight">
                 {product.title}
               </h1>

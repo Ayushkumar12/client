@@ -13,7 +13,8 @@ import {
   LogOut,
   Palette,
   Boxes,
-  Mail
+  Mail,
+  Database
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 
@@ -60,6 +61,7 @@ export function AdminLayout() {
     { label: 'Shiprocket Logistics', path: '/admin/shiprocket', icon: Truck },
     { label: 'Product Catalog', path: '/admin/products', icon: ShoppingBag },
     { label: 'Customers', path: '/admin/customers', icon: Users },
+    { label: 'Database & Reset', path: '/admin/database', icon: Database },
   ];
 
 

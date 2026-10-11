@@ -486,6 +486,11 @@ export const api = {
   adminDeleteInquiry: (id) => request(`/admin/inquiries/${id}`, { method: 'DELETE' }),
   adminGetReturnRequests: () => request('/admin/return-requests'),
   adminDeleteReturnRequest: (id) => request(`/admin/return-requests/${id}`, { method: 'DELETE' }),
+  getDatabaseStats: () => request('/admin/database/stats'),
+  wipeDatabaseData: (data) => request('/admin/database/wipe', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
   formatImageUrl,
 };
 

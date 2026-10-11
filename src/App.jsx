@@ -50,6 +50,7 @@ import { AdminCustomers } from './pages/admin/AdminCustomers.jsx';
 import { AdminContentManager } from './pages/admin/AdminContentManager.jsx';
 import { AdminInventory } from './pages/admin/AdminInventory.jsx';
 import { AdminInquiries } from './pages/admin/AdminInquiries.jsx';
+import { AdminDatabase } from './pages/admin/AdminDatabase.jsx';
 
 function MainLayout({ children }) {
   const location = useLocation();
@@ -130,6 +131,7 @@ export default function App() {
                         <Route path="customers" element={<AdminCustomers />} />
                         <Route path="inquiries" element={<AdminInquiries />} />
                         <Route path="content" element={<AdminContentManager />} />
+                        <Route path="database" element={<AdminDatabase />} />
                       </Route>
 
                       {/* 404 Fallback */}

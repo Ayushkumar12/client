@@ -551,8 +551,34 @@ export function AccountPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center bg-[#FAF7F2]">
-        <div className="w-8 h-8 border-2 border-brand-maroon border-t-transparent rounded-full animate-spin" />
+      <div className="bg-[#FAF7F2] min-h-screen py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-4 bg-white border border-neutral-200 p-6 space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-full bg-neutral-200/80 skeleton-shimmer shrink-0" />
+                <div className="space-y-1.5 flex-1">
+                  <div className="h-4 bg-neutral-200/80 rounded w-3/4 skeleton-shimmer" />
+                  <div className="h-3 bg-neutral-200/80 rounded w-1/2 skeleton-shimmer" />
+                </div>
+              </div>
+              <div className="space-y-2 pt-4 border-t border-neutral-100">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="h-10 bg-neutral-100 rounded skeleton-shimmer" />
+                ))}
+              </div>
+            </div>
+            <div className="lg:col-span-8 bg-white border border-neutral-200 p-6 space-y-4">
+              <div className="h-6 bg-neutral-200/80 rounded w-48 skeleton-shimmer" />
+              <div className="h-3 bg-neutral-200/80 rounded w-72 skeleton-shimmer" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="h-24 bg-neutral-100 rounded skeleton-shimmer" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

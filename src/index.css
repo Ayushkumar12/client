@@ -28,8 +28,12 @@
   --color-dark: #1F2937;
 }
 
+html, body, #root, *, *::before, *::after {
+  font-family: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-sans) !important;
   background-color: #FAFAFA;
   color: #1F2937;
   -webkit-tap-highlight-color: transparent;
@@ -37,9 +41,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6, .font-serif, .font-sans {
-  font-family: var(--font-sans);
+h1, h2, h3, h4, h5, h6, p, span, a, button, input, select, textarea, label, div, .font-serif, .font-sans {
+  font-family: var(--font-sans) !important;
   font-style: normal;
+}
+
+/* Preserve monospace for code and SKU/ID tags */
+code, pre, kbd, samp, .font-mono, [data-mono] {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
 }
 
 /* Custom Scrollbar */

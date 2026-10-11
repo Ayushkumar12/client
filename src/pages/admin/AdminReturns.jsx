@@ -86,12 +86,14 @@ export function AdminReturns() {
     if (!matchSearch) return false;
     if (filter === 'pending') return r.return_status === 'return_requested';
     if (filter === 'approved') return r.return_status === 'return_approved';
+    if (filter === 'exchanged') return r.return_status === 'exchanged';
     if (filter === 'rejected') return r.return_status === 'return_rejected';
     return true;
   });
 
   const pendingCount = returns.filter((r) => r.return_status === 'return_requested').length;
   const approvedCount = returns.filter((r) => r.return_status === 'return_approved').length;
+  const exchangedCount = returns.filter((r) => r.return_status === 'exchanged').length;
   const rejectedCount = returns.filter((r) => r.return_status === 'return_rejected').length;
 
   return (
@@ -118,45 +120,55 @@ export function AdminReturns() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <div
           onClick={() => setFilter('all')}
-          className={`p-4 rounded-xl border cursor-pointer transition-all ${
+          className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
             filter === 'all' ? 'bg-neutral-900 text-white border-neutral-900' : 'bg-white border-neutral-200 hover:border-neutral-300'
           }`}
         >
           <span className="text-[10px] uppercase font-bold tracking-wider opacity-80 block">All Returns</span>
-          <p className="text-2xl font-bold mt-1">{returns.length}</p>
+          <p className="text-xl font-bold mt-1">{returns.length}</p>
         </div>
 
         <div
           onClick={() => setFilter('pending')}
-          className={`p-4 rounded-xl border cursor-pointer transition-all ${
+          className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
             filter === 'pending' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white border-neutral-200 hover:border-amber-400'
           }`}
         >
           <span className="text-[10px] uppercase font-bold tracking-wider opacity-80 block">Pending Review</span>
-          <p className="text-2xl font-bold mt-1">{pendingCount}</p>
+          <p className="text-xl font-bold mt-1">{pendingCount}</p>
         </div>
 
         <div
           onClick={() => setFilter('approved')}
-          className={`p-4 rounded-xl border cursor-pointer transition-all ${
+          className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
             filter === 'approved' ? 'bg-purple-700 text-white border-purple-700' : 'bg-white border-neutral-200 hover:border-purple-400'
           }`}
         >
-          <span className="text-[10px] uppercase font-bold tracking-wider opacity-80 block">Approved & AWB Issued</span>
-          <p className="text-2xl font-bold mt-1">{approvedCount}</p>
+          <span className="text-[10px] uppercase font-bold tracking-wider opacity-80 block">Refund Approved</span>
+          <p className="text-xl font-bold mt-1">{approvedCount}</p>
+        </div>
+
+        <div
+          onClick={() => setFilter('exchanged')}
+          className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+            filter === 'exchanged' ? 'bg-emerald-700 text-white border-emerald-700' : 'bg-white border-neutral-200 hover:border-emerald-400'
+          }`}
+        >
+          <span className="text-[10px] uppercase font-bold tracking-wider opacity-80 block">Exchanged</span>
+          <p className="text-xl font-bold mt-1">{exchangedCount}</p>
         </div>
 
         <div
           onClick={() => setFilter('rejected')}
-          className={`p-4 rounded-xl border cursor-pointer transition-all ${
+          className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
             filter === 'rejected' ? 'bg-red-600 text-white border-red-600' : 'bg-white border-neutral-200 hover:border-red-400'
           }`}
         >
           <span className="text-[10px] uppercase font-bold tracking-wider opacity-80 block">Rejected</span>
-          <p className="text-2xl font-bold mt-1">{rejectedCount}</p>
+          <p className="text-xl font-bold mt-1">{rejectedCount}</p>
         </div>
       </div>
 
@@ -252,13 +264,35 @@ export function AdminReturns() {
                           </span>
                         )}
                         {isApproved && (
-                          <div>
+                          <div className="space-y-0.5">
                             <span className="text-[10px] bg-purple-100 text-purple-900 font-bold px-2 py-0.5 rounded-full inline-block">
-                              ✓ Approved
+                              ✓ Refund Approved
                             </span>
                             {r.return_awb && (
-                              <span className="font-mono text-xs font-bold text-purple-800 block mt-1">
-                                AWB: {r.return_awb}
+                              <span className="font-mono text-[11px] font-bold text-purple-800 block">
+                                Reverse AWB: {r.return_awb}
+                              </span>
+                            )}
+                            {r.razorpay_payment_id && (
+                              <span className="text-[10px] text-emerald-700 font-medium block">
+                                Razorpay Refunded
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        {r.return_status === 'exchanged' && (
+                          <div className="space-y-0.5">
+                            <span className="text-[10px] bg-emerald-100 text-emerald-900 font-bold px-2 py-0.5 rounded-full inline-block">
+                              ⇄ Exchanged
+                            </span>
+                            {r.return_awb && (
+                              <span className="font-mono text-[11px] font-bold text-emerald-800 block">
+                                Reverse AWB: {r.return_awb}
+                              </span>
+                            )}
+                            {r.return_order_id && r.return_order_id.includes('EXCH') && (
+                              <span className="font-mono text-[10px] text-neutral-600 block">
+                                Exch Order: {r.return_order_id}
                               </span>
                             )}
                           </div>
@@ -330,6 +364,27 @@ export function AdminReturns() {
                 </div>
               </div>
 
+              {/* Shiprocket Reverse Pickup & Order Address */}
+              <div className="p-3.5 bg-neutral-50 rounded-xl border border-neutral-200 space-y-1">
+                <span className="text-neutral-400 uppercase text-[10px] font-bold block">
+                  Shiprocket Pickup / Exchange Address (Customer Order Address)
+                </span>
+                <p className="font-semibold text-neutral-900 leading-relaxed">
+                  {(() => {
+                    try {
+                      const addr = typeof selectedReturn.shipping_address === 'string' ? JSON.parse(selectedReturn.shipping_address || '{}') : (selectedReturn.shipping_address || {});
+                      return [addr.address_line1 || addr.street || addr.address, addr.address_line2, addr.city, addr.state, addr.pincode].filter(Boolean).join(', ') || 'Customer Order Address';
+                    } catch {
+                      return String(selectedReturn.shipping_address || 'Customer Order Address');
+                    }
+                  })()}
+                </p>
+                <p className="text-[11px] text-neutral-500 pt-0.5">
+                  Payment Source: <span className="font-semibold uppercase text-neutral-800">{selectedReturn.payment_method || 'Razorpay'}</span>
+                  {selectedReturn.razorpay_payment_id ? ` • Payment ID: ${selectedReturn.razorpay_payment_id}` : ''}
+                </p>
+              </div>
+
               {/* Return Claim & Description */}
               <div className="space-y-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Claimed Reason</span>
@@ -366,31 +421,47 @@ export function AdminReturns() {
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700 block">
                   Admin Action Decision
                 </span>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   <button
                     type="button"
                     onClick={() => setActionType('approve')}
-                    className={`py-3 px-4 rounded-xl border font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                    className={`p-3 rounded-xl border font-bold flex flex-col items-center justify-center gap-1 cursor-pointer transition-all text-center ${
                       actionType === 'approve'
                         ? 'bg-purple-700 text-white border-purple-700 shadow-md'
                         : 'bg-white text-neutral-700 border-neutral-300 hover:border-purple-600'
                     }`}
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Approve & Generate Shiprocket AWB</span>
+                    <span className="text-xs">Approve Refund</span>
+                    <span className="text-[9px] opacity-80 font-normal">Razorpay Refund + Shiprocket Reverse Pickup</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActionType('exchange')}
+                    className={`p-3 rounded-xl border font-bold flex flex-col items-center justify-center gap-1 cursor-pointer transition-all text-center ${
+                      actionType === 'exchange'
+                        ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
+                        : 'bg-white text-neutral-700 border-neutral-300 hover:border-emerald-600'
+                    }`}
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    <span className="text-xs">Approve Exchange</span>
+                    <span className="text-[9px] opacity-80 font-normal">Reverse Pickup + Replacement Dispatch</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setActionType('reject')}
-                    className={`py-3 px-4 rounded-xl border font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                    className={`p-3 rounded-xl border font-bold flex flex-col items-center justify-center gap-1 cursor-pointer transition-all text-center ${
                       actionType === 'reject'
                         ? 'bg-red-600 text-white border-red-600 shadow-md'
                         : 'bg-white text-neutral-700 border-neutral-300 hover:border-red-600'
                     }`}
                   >
                     <XCircle className="w-4 h-4" />
-                    <span>Reject Return Request</span>
+                    <span className="text-xs">Reject Request</span>
+                    <span className="text-[9px] opacity-80 font-normal">Decline return / policy mismatch</span>
                   </button>
                 </div>
 

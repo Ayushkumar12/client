@@ -119,7 +119,7 @@ export function ProductDetailPage() {
   if (!product) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center space-y-4 bg-[#FAF7F2]">
-        <h2 className="font-serif text-2xl font-bold">Product Not Found</h2>
+        <h2 className="font-sans text-2xl font-bold">Product Not Found</h2>
         <p className="text-xs text-neutral-500">The product you are looking for might have been moved or is out of stock.</p>
         <Link to="/new-arrivals" className="inline-block px-6 py-2.5 bg-brand-maroon text-white text-xs font-semibold rounded-lg">
           Browse New Arrivals
@@ -351,7 +351,7 @@ export function ProductDetailPage() {
               </div>
 
               {/* Large Editorial Serif Title (Matching Reference Image) */}
-              <h1 className="font-serif text-3xl sm:text-4xl text-neutral-900 mt-1 tracking-tight font-normal leading-tight">
+              <h1 className="font-sans text-3xl sm:text-4xl text-neutral-900 mt-1 tracking-tight font-normal leading-tight">
                 {product.title}
               </h1>
 
@@ -382,7 +382,7 @@ export function ProductDetailPage() {
             {/* 2. Price Section (Matching Reference: Rs.1,999 + Inclusive of all taxes) */}
             <div className="space-y-1">
               <div className="flex items-baseline space-x-3">
-                <span className="text-2xl sm:text-3xl font-serif font-bold text-neutral-900">
+                <span className="text-2xl sm:text-3xl font-sans font-bold text-neutral-900">
                   Rs.{Number(product.price).toLocaleString('en-IN')}
                 </span>
                 {product.original_price > product.price && (
@@ -755,7 +755,7 @@ export function ProductDetailPage() {
                     <div className="mt-3 space-y-3 animate-fadeIn">
                       <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
                         <div className="flex items-center space-x-2">
-                          <span className="font-serif text-2xl font-bold">{product.rating || 5.0}</span>
+                          <span className="font-sans text-2xl font-bold">{product.rating || 5.0}</span>
                           <div className="flex text-amber-400">
                             {[...Array(5)].map((_, i) => (
                               <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
@@ -858,7 +858,7 @@ export function ProductDetailPage() {
         {/* Related Products Section */}
         {product.related && product.related.length > 0 && (
           <div className="mt-12 sm:mt-20 pt-8 sm:pt-12 border-t border-neutral-200">
-            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-neutral-900 mb-6">
+            <h2 className="font-sans text-xl sm:text-2xl md:text-3xl font-bold text-neutral-900 mb-6">
               You May Also Like
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
@@ -877,7 +877,7 @@ export function ProductDetailPage() {
             <div className="flex justify-between items-center border-b pb-3">
               <div className="flex items-center space-x-2">
                 <Ruler className="w-5 h-5 text-neutral-900" />
-                <h3 className="font-serif font-bold text-base text-neutral-900">Ethnic Wear Size Chart (Inches)</h3>
+                <h3 className="font-sans font-bold text-base text-neutral-900">Ethnic Wear Size Chart (Inches)</h3>
               </div>
               <button onClick={() => setShowSizeGuide(false)} className="text-neutral-500 hover:text-black text-lg cursor-pointer">✕</button>
             </div>
@@ -917,7 +917,7 @@ export function ProductDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
           <div className="bg-white rounded-sm p-6 max-w-md w-full shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b border-neutral-100 pb-3">
-              <h3 className="font-serif font-bold text-base text-neutral-900">Rate &amp; Review This Outfit</h3>
+              <h3 className="font-sans font-bold text-base text-neutral-900">Rate &amp; Review This Outfit</h3>
               <button onClick={() => setShowReviewModal(false)} className="text-neutral-400 hover:text-black text-lg cursor-pointer">✕</button>
             </div>
             {reviewSuccess ? (

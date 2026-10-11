@@ -47,7 +47,7 @@ export function CartDrawer() {
           <div className="p-4 bg-[#141414] text-white flex items-center justify-between border-b border-neutral-800">
             <div className="flex items-center space-x-2">
               <ShoppingBag className="w-5 h-5 text-brand-gold" />
-              <h2 className="font-serif font-bold text-base tracking-wide">
+              <h2 className="font-sans font-bold text-base tracking-wide">
                 Your Shopping Bag ({cart.reduce((a, b) => a + b.quantity, 0)})
               </h2>
             </div>
@@ -77,7 +77,7 @@ export function CartDrawer() {
                   <ShoppingBag className="w-8 h-8 text-neutral-400" />
                 </div>
                 <div>
-                  <p className="font-serif text-lg font-bold text-neutral-800">Your bag is empty</p>
+                  <p className="font-sans text-lg font-bold text-neutral-800">Your bag is empty</p>
                   <p className="text-xs text-neutral-500 mt-1">Explore our latest festive ethnic collection.</p>
                 </div>
                 <button
@@ -105,7 +105,7 @@ export function CartDrawer() {
                         <Link
                           to={getProductUrl(item)}
                           onClick={closeCart}
-                          className="font-serif text-xs sm:text-sm font-semibold text-neutral-900 line-clamp-1 hover:text-brand-maroon"
+                          className="font-sans text-xs sm:text-sm font-semibold text-neutral-900 line-clamp-1 hover:text-brand-maroon"
                         >
                           {item.title}
                         </Link>

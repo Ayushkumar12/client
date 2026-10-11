@@ -155,7 +155,7 @@ export function OrdersPage() {
             <ShieldCheck className="w-6 h-6 text-[#5A1827]" />
           </div>
           <div className="space-y-2">
-            <h1 className="font-serif text-2xl font-bold text-neutral-900">Sign In to View Orders</h1>
+            <h1 className="font-sans text-2xl font-bold text-neutral-900">Sign In to View Orders</h1>
             <p className="text-xs text-neutral-500 leading-relaxed">
               Your order history, tracking, invoices, and returns are available after signing in to your OCT9 account.
             </p>
@@ -188,7 +188,7 @@ export function OrdersPage() {
               <span>/</span>
               <span className="text-neutral-900 font-semibold">My Orders</span>
             </nav>
-            <h1 className="text-2xl font-serif font-bold text-neutral-900">Order History & Deliveries</h1>
+            <h1 className="text-2xl font-sans font-bold text-neutral-900">Order History & Deliveries</h1>
           </div>
 
           <div className="flex items-center gap-3">
@@ -259,7 +259,7 @@ export function OrdersPage() {
             <div className="w-16 h-16 rounded-full bg-neutral-100 text-neutral-400 flex items-center justify-center mx-auto">
               <Package className="w-8 h-8" />
             </div>
-            <h3 className="text-lg font-serif font-bold text-neutral-900">No Orders Found</h3>
+            <h3 className="text-lg font-sans font-bold text-neutral-900">No Orders Found</h3>
             <p className="text-xs text-neutral-500 max-w-sm mx-auto">
               {searchQuery ? `No orders matched your search query "${searchQuery}".` : 'You have not placed any orders yet.'}
             </p>

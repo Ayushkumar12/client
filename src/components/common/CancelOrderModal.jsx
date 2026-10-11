@@ -66,7 +66,7 @@ export function CancelOrderModal({ order, isOpen, onClose, onCancelSuccess }) {
               <AlertTriangle className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-serif font-bold text-neutral-900">Cancel Order #{order.order_number}</h3>
+              <h3 className="text-base font-sans font-bold text-neutral-900">Cancel Order #{order.order_number}</h3>
               <p className="text-[11px] text-neutral-500">Order Total: ₹{Number(order.grand_total).toLocaleString('en-IN')}</p>
             </div>
           </div>

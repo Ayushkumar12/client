@@ -14,8 +14,8 @@
   --color-brand-sand: #E4E4E7;
   --color-brand-border: #E5E7EB;
 
-  --font-serif: "Cormorant Garamond", "Cinzel", "Playfair Display", Georgia, serif;
-  --font-sans: "Inter", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   --shadow-luxury: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   --shadow-luxury-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
@@ -37,8 +37,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6, .font-serif {
-  font-family: var(--font-serif);
+h1, h2, h3, h4, h5, h6, .font-serif, .font-sans {
+  font-family: var(--font-sans);
   font-style: normal;
 }
 

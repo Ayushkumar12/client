@@ -26,7 +26,7 @@ export function CookiePolicyPage() {
           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500">
             {page.badge || 'Transparency & Compliance'}
           </p>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-900">
+          <h1 className="font-sans text-3xl sm:text-4xl font-bold text-neutral-900">
             {page.title || 'Cookie Policy'}
           </h1>
           <p className="text-sm text-neutral-600">
@@ -40,7 +40,7 @@ export function CookiePolicyPage() {
         <div className="divide-y divide-neutral-200 space-y-8">
           {sections.map((sec, idx) => (
             <div key={idx} className="pt-8 first:pt-0 space-y-2">
-              <h2 className="font-serif text-base sm:text-lg font-bold text-neutral-900">{sec.title}</h2>
+              <h2 className="font-sans text-base sm:text-lg font-bold text-neutral-900">{sec.title}</h2>
               <p className="text-sm text-neutral-700 leading-relaxed whitespace-pre-line">{sec.content}</p>
             </div>
           ))}

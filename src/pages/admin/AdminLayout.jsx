@@ -35,7 +35,7 @@ export function AdminLayout() {
     return (
       <div className="min-h-screen bg-neutral-950 text-white flex flex-col items-center justify-center p-4 space-y-4 font-sans">
         <ShieldCheck className="w-12 h-12 text-red-500" />
-        <h1 className="font-serif text-2xl font-bold">Admin Access Required</h1>
+        <h1 className="font-sans text-2xl font-bold">Admin Access Required</h1>
         <p className="text-xs text-neutral-400">Please sign in with administrator credentials (admin@oct9.com).</p>
         <div className="flex space-x-3 pt-2">
           <Link to="/login" className="px-4 py-2 bg-neutral-100 text-neutral-900 text-xs font-semibold rounded-md hover:bg-white">

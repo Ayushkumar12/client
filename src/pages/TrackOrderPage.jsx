@@ -99,7 +99,7 @@ export function TrackOrderPage() {
             <span>Shiprocket Express Logistics</span>
           </div>
 
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+          <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
             Track Your Shipment
           </h1>
 
@@ -145,7 +145,7 @@ export function TrackOrderPage() {
             {/* Delivery Map & Stepper */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-serif font-bold text-lg text-neutral-900">
+                <h3 className="font-sans font-bold text-lg text-neutral-900">
                   Shipment Progress
                 </h3>
                 <div className="flex items-center space-x-2">
@@ -177,7 +177,7 @@ export function TrackOrderPage() {
 
             {/* Tracking Journey Timeline */}
             <div className="bg-white rounded-sm p-6 border border-neutral-200 shadow-xs space-y-5">
-              <h3 className="font-serif font-bold text-base text-neutral-900">
+              <h3 className="font-sans font-bold text-base text-neutral-900">
                 Tracking History
               </h3>
 

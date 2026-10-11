@@ -379,7 +379,7 @@ export function AdminProducts() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
           <div className="bg-white rounded-sm p-6 sm:p-8 max-w-2xl w-full shadow-2xl max-h-[85vh] overflow-y-auto space-y-4">
             <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="font-serif font-bold text-lg text-neutral-900">
+              <h3 className="font-sans font-bold text-lg text-neutral-900">
                 {editingProduct ? 'Edit Product Style' : 'Add New Ethnic Product'}
               </h3>
               <button onClick={() => setShowModal(false)} className="text-neutral-500 font-bold p-1">✕</button>

@@ -65,7 +65,7 @@ export function ReturnsPage() {
           <p className="text-xs uppercase tracking-widest text-neutral-500 font-semibold">
             {page.badge || 'Customer Care'}
           </p>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
+          <h1 className="font-sans text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
             {page.title || 'Returns & Exchanges Policy'}
           </h1>
           <p className="text-sm text-neutral-600 leading-relaxed max-w-2xl">
@@ -79,7 +79,7 @@ export function ReturnsPage() {
             <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold block mb-1">
               Return Window
             </span>
-            <p className="text-lg font-serif font-bold text-neutral-900">
+            <p className="text-lg font-sans font-bold text-neutral-900">
               {page.return_window || '7 Days'}
             </p>
             <p className="text-xs text-neutral-500 mt-0.5">From Date of Delivery</p>
@@ -89,7 +89,7 @@ export function ReturnsPage() {
             <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold block mb-1">
               Reverse Pickup
             </span>
-            <p className="text-lg font-serif font-bold text-neutral-900">
+            <p className="text-lg font-sans font-bold text-neutral-900">
               Doorstep Pickup
             </p>
             <p className="text-xs text-neutral-500 mt-0.5">Powered by Shiprocket</p>
@@ -99,7 +99,7 @@ export function ReturnsPage() {
             <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold block mb-1">
               Size Exchanges
             </span>
-            <p className="text-lg font-serif font-bold text-neutral-900">
+            <p className="text-lg font-sans font-bold text-neutral-900">
               Free Exchange
             </p>
             <p className="text-xs text-neutral-500 mt-0.5">Fast Replacement</p>
@@ -125,7 +125,7 @@ export function ReturnsPage() {
 
         {/* 4-Step Process in Clean Editorial List */}
         <div className="space-y-6">
-          <h2 className="font-serif text-xl font-bold text-neutral-900">
+          <h2 className="font-sans text-xl font-bold text-neutral-900">
             How Returns & Exchanges Work
           </h2>
 
@@ -146,7 +146,7 @@ export function ReturnsPage() {
 
         {/* Eligibility Details */}
         <div className="space-y-6 pt-4 border-t border-neutral-200">
-          <h2 className="font-serif text-xl font-bold text-neutral-900">
+          <h2 className="font-sans text-xl font-bold text-neutral-900">
             Item Eligibility & Condition
           </h2>
 
@@ -173,7 +173,7 @@ export function ReturnsPage() {
 
         {/* Refund Methods */}
         <div className="space-y-4 pt-4 border-t border-neutral-200">
-          <h2 className="font-serif text-xl font-bold text-neutral-900">
+          <h2 className="font-sans text-xl font-bold text-neutral-900">
             Refund Methods & Timelines
           </h2>
 
@@ -203,13 +203,13 @@ export function ReturnsPage() {
         {/* Return Request Form */}
         <div className="space-y-5 pt-6 border-t border-neutral-200">
           <div>
-            <h2 className="font-serif text-xl font-bold text-neutral-900">Request a Return or Exchange</h2>
+            <h2 className="font-sans text-xl font-bold text-neutral-900">Request a Return or Exchange</h2>
             <p className="text-xs text-neutral-500 mt-1">Fill in the details below and our team will process your request within 24 hours.</p>
           </div>
 
           {returnSubmitted ? (
             <div className="p-6 bg-neutral-50 border border-neutral-200 rounded-lg text-center space-y-3">
-              <h3 className="font-serif font-bold text-lg text-neutral-900">Request Received</h3>
+              <h3 className="font-sans font-bold text-lg text-neutral-900">Request Received</h3>
               <p className="text-xs text-neutral-600 max-w-sm mx-auto leading-relaxed">
                 We have received your return/exchange request. Our team will reach out within 24 hours with pickup details.
               </p>

@@ -323,7 +323,7 @@ export function CheckoutPage() {
             <Lock className="w-6 h-6 text-[#5A1827]" />
           </div>
           <div className="space-y-2">
-            <h1 className="font-serif text-2xl font-bold text-neutral-900">Sign In to Checkout</h1>
+            <h1 className="font-sans text-2xl font-bold text-neutral-900">Sign In to Checkout</h1>
             <p className="text-xs text-neutral-500 max-w-xs mx-auto leading-relaxed">
               Please sign in or create an account to place your order, track deliveries, and access order history.
             </p>
@@ -357,7 +357,7 @@ export function CheckoutPage() {
           <div className="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
             <Truck className="w-8 h-8" />
           </div>
-          <h1 className="font-serif text-2xl font-bold text-neutral-900">Your bag is empty</h1>
+          <h1 className="font-sans text-2xl font-bold text-neutral-900">Your bag is empty</h1>
           <p className="text-xs text-neutral-500 max-w-sm mx-auto">
             You don't have any items in your bag to checkout. Explore our latest arrivals to continue shopping.
           </p>

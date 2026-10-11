@@ -229,7 +229,7 @@ export function Header() {
               onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
               className="flex items-center space-x-1.5 text-neutral-800 hover:text-brand-maroon transition-colors focus:outline-none cursor-pointer py-1"
             >
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F5EBE1] text-[#5A1827] flex items-center justify-center border border-[#E8DCCF] font-serif font-bold text-xs shrink-0 shadow-2xs">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F5EBE1] text-[#5A1827] flex items-center justify-center border border-[#E8DCCF] font-sans font-bold text-xs shrink-0 shadow-2xs">
                 {isAuthenticated ? userInitials : <User className="w-3.5 h-3.5 text-brand-maroon" />}
               </div>
               <span className="text-xs font-semibold hidden md:inline-block">
@@ -431,7 +431,7 @@ export function Header() {
               <div className="flex items-center space-x-2.5">
                 <img src="/oct9-logo.jpg" alt="OCT9" className="h-8 w-auto rounded object-contain border border-neutral-200" />
                 <div className="flex flex-col">
-                  <span className="font-serif font-bold text-neutral-900 tracking-widest leading-none">OCT9</span>
+                  <span className="font-sans font-bold text-neutral-900 tracking-widest leading-none">OCT9</span>
                   <span className="text-xs uppercase tracking-wider text-neutral-500 font-medium">Fashion & Ethnic Wear</span>
                 </div>
               </div>

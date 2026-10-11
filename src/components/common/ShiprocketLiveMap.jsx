@@ -88,7 +88,7 @@ export function ShiprocketLiveMap({
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h3 className="font-serif font-bold text-neutral-900 text-base">
+              <h3 className="font-sans font-bold text-neutral-900 text-base">
                 {courierPartner}
               </h3>
               <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md">

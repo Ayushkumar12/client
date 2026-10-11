@@ -84,7 +84,7 @@ export function AdminDashboard() {
         {/* Total Revenue */}
         <div className="p-4 space-y-1">
           <span className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider block">Total Revenue</span>
-          <p className="text-2xl font-bold font-serif text-neutral-900">
+          <p className="text-2xl font-bold font-sans text-neutral-900">
             ₹{Number(metrics?.total_revenue || 0).toLocaleString('en-IN')}
           </p>
           <p className="text-[11px] text-neutral-500">Razorpay & COD confirmed</p>
@@ -93,7 +93,7 @@ export function AdminDashboard() {
         {/* Total Orders */}
         <div className="p-4 space-y-1">
           <span className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider block">Total Orders</span>
-          <p className="text-2xl font-bold font-serif text-neutral-900">
+          <p className="text-2xl font-bold font-sans text-neutral-900">
             {metrics?.total_orders || 0}
           </p>
           <p className="text-[11px] text-neutral-500">{metrics?.pending_orders || 0} pending fulfillment</p>
@@ -102,7 +102,7 @@ export function AdminDashboard() {
         {/* Shipments In Transit */}
         <div className="p-4 space-y-1">
           <span className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider block">In Transit</span>
-          <p className="text-2xl font-bold font-serif text-neutral-900">
+          <p className="text-2xl font-bold font-sans text-neutral-900">
             {metrics?.shipments_in_transit || 0}
           </p>
           <p className="text-[11px] text-neutral-500">Courier dispatches</p>
@@ -111,7 +111,7 @@ export function AdminDashboard() {
         {/* Total Catalog Products */}
         <div className="p-4 space-y-1">
           <span className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider block">Catalog Items</span>
-          <p className="text-2xl font-bold font-serif text-neutral-900">
+          <p className="text-2xl font-bold font-sans text-neutral-900">
             {metrics?.total_products || 0}
           </p>
           <p className="text-[11px] text-neutral-500">Active SKUs</p>
@@ -120,7 +120,7 @@ export function AdminDashboard() {
         {/* Registered Customers */}
         <div className="p-4 space-y-1">
           <span className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider block">Customers</span>
-          <p className="text-2xl font-bold font-serif text-neutral-900">
+          <p className="text-2xl font-bold font-sans text-neutral-900">
             {metrics?.total_customers || 0}
           </p>
           <Link to="/admin/customers" className="text-[11px] text-[#5A1827] font-semibold hover:underline">

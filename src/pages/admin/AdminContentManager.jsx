@@ -459,7 +459,7 @@ export function AdminContentManager() {
           <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-serif text-lg font-bold text-neutral-900">
+                <h2 className="font-sans text-lg font-bold text-neutral-900">
                   Page Availability & Coming Soon Controller
                 </h2>
                 <p className="text-xs text-neutral-500">
@@ -497,7 +497,7 @@ export function AdminContentManager() {
                         value={page.title || ''}
                         onChange={(e) => updatePageField(slug, 'title', e.target.value)}
                         placeholder="Page Display Title"
-                        className="font-serif font-bold text-base text-neutral-900 border-b border-dashed border-neutral-300 focus:border-brand-maroon focus:outline-none w-full mt-0.5 bg-transparent"
+                        className="font-sans font-bold text-base text-neutral-900 border-b border-dashed border-neutral-300 focus:border-brand-maroon focus:outline-none w-full mt-0.5 bg-transparent"
                       />
                     </div>
                     <a
@@ -604,7 +604,7 @@ export function AdminContentManager() {
         <div className="space-y-6">
           <div className="flex items-center justify-between bg-white p-5 rounded-sm border border-neutral-200 shadow-xs">
             <div>
-              <h2 className="font-serif text-lg font-bold text-neutral-900">
+              <h2 className="font-sans text-lg font-bold text-neutral-900">
                 Hero Slideshow Banner Manager
               </h2>
               <p className="text-xs text-neutral-500">
@@ -688,7 +688,7 @@ export function AdminContentManager() {
                         value={slide.title || ''}
                         onChange={(e) => handleSlideChange(idx, 'title', e.target.value)}
                         placeholder="e.g. Royal Heritage Drapes"
-                        className="w-full p-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon font-serif font-bold text-sm"
+                        className="w-full p-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-brand-maroon font-sans font-bold text-sm"
                       />
                     </div>
 
@@ -749,7 +749,7 @@ export function AdminContentManager() {
       {activeTab === 'jharokha' && (
         <div className="space-y-6">
           <div className="bg-white p-5 rounded-sm border border-neutral-200 shadow-xs">
-            <h2 className="font-serif text-lg font-bold text-neutral-900">
+            <h2 className="font-sans text-lg font-bold text-neutral-900">
               Jharokha Silhouette Arches
             </h2>
             <p className="text-xs text-neutral-500">
@@ -832,7 +832,7 @@ export function AdminContentManager() {
           <div className="bg-white rounded-sm border border-neutral-200 p-6 space-y-6 shadow-xs">
             <div className="border-b border-neutral-200 pb-3 flex items-center justify-between">
               <div>
-                <h3 className="font-serif text-lg font-bold text-neutral-900">
+                <h3 className="font-sans text-lg font-bold text-neutral-900">
                   1. Inside OCT9 (The Royal Atelier Section)
                 </h3>
                 <p className="text-xs text-neutral-500">
@@ -964,7 +964,7 @@ export function AdminContentManager() {
           {/* Section 2: Bento Mosaic & ZEWAR */}
           <div className="bg-white rounded-sm border border-neutral-200 p-6 space-y-6 shadow-xs">
             <div className="border-b border-neutral-200 pb-3">
-              <h3 className="font-serif text-lg font-bold text-neutral-900">
+              <h3 className="font-sans text-lg font-bold text-neutral-900">
                 2. Bento Mosaic & ZEWAR by OCT9
               </h3>
               <p className="text-xs text-neutral-500">
@@ -1149,7 +1149,7 @@ export function AdminContentManager() {
           {/* Section 3: Product Row Headings (New Arrivals, Curated Edit, Adorned to Perfection) */}
           <div className="bg-white rounded-sm border border-neutral-200 p-6 space-y-6 shadow-xs">
             <div className="border-b border-neutral-200 pb-3">
-              <h3 className="font-serif text-lg font-bold text-neutral-900">
+              <h3 className="font-sans text-lg font-bold text-neutral-900">
                 3. Product Feed Section Headings & Badges
               </h3>
             </div>
@@ -1157,7 +1157,7 @@ export function AdminContentManager() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
               {/* New Arrivals */}
               <div className="bg-[#FAF7F2] p-4 rounded-xl border border-neutral-200 space-y-3">
-                <h4 className="font-serif font-bold text-sm text-neutral-900">New Arrivals</h4>
+                <h4 className="font-sans font-bold text-sm text-neutral-900">New Arrivals</h4>
                 <div>
                   <label className="font-bold text-neutral-600 block mb-1">Badge:</label>
                   <input
@@ -1198,7 +1198,7 @@ export function AdminContentManager() {
 
               {/* The OCT9 Edit */}
               <div className="bg-[#FAF7F2] p-4 rounded-xl border border-neutral-200 space-y-3">
-                <h4 className="font-serif font-bold text-sm text-neutral-900">The OCT9 Edit</h4>
+                <h4 className="font-sans font-bold text-sm text-neutral-900">The OCT9 Edit</h4>
                 <div>
                   <label className="font-bold text-neutral-600 block mb-1">Badge:</label>
                   <input
@@ -1239,7 +1239,7 @@ export function AdminContentManager() {
 
               {/* Adorned to Perfection */}
               <div className="bg-[#FAF7F2] p-4 rounded-xl border border-neutral-200 space-y-3">
-                <h4 className="font-serif font-bold text-sm text-neutral-900">Adorned to Perfection</h4>
+                <h4 className="font-sans font-bold text-sm text-neutral-900">Adorned to Perfection</h4>
                 <div>
                   <label className="font-bold text-neutral-600 block mb-1">Badge:</label>
                   <input
@@ -1289,7 +1289,7 @@ export function AdminContentManager() {
         <div className="space-y-6">
           {/* Announcement Bar & General Brand */}
           <div className="bg-white rounded-sm border border-neutral-200 p-6 space-y-4 shadow-xs">
-            <h3 className="font-serif text-lg font-bold text-neutral-900 border-b border-neutral-200 pb-3">
+            <h3 className="font-sans text-lg font-bold text-neutral-900 border-b border-neutral-200 pb-3">
               Announcement Bar & Brand Identity
             </h3>
 
@@ -1371,7 +1371,7 @@ export function AdminContentManager() {
 
           {/* Brand Pillars */}
           <div className="bg-white rounded-sm border border-neutral-200 p-6 space-y-4 shadow-xs">
-            <h3 className="font-serif text-lg font-bold text-neutral-900 border-b border-neutral-200 pb-3">
+            <h3 className="font-sans text-lg font-bold text-neutral-900 border-b border-neutral-200 pb-3">
               4 Luxury Brand Pillars (Footer & Boutique)
             </h3>
 
@@ -1412,7 +1412,7 @@ export function AdminContentManager() {
           <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-2">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-serif text-lg font-bold text-neutral-900">
+                <h2 className="font-sans text-lg font-bold text-neutral-900">
                   Customer Care, Sizing & Policy Pages Content
                 </h2>
                 <p className="text-xs text-neutral-500">
@@ -1452,7 +1452,7 @@ export function AdminContentManager() {
             <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-6">
               <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                 <div>
-                  <h3 className="font-serif text-base font-bold text-neutral-900">Contact Us Page (/contact)</h3>
+                  <h3 className="font-sans text-base font-bold text-neutral-900">Contact Us Page (/contact)</h3>
                   <p className="text-xs text-neutral-500">Manage support phone, email, WhatsApp chat number, working hours & studio address.</p>
                 </div>
                 <a
@@ -1567,7 +1567,7 @@ export function AdminContentManager() {
             <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-6">
               <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                 <div>
-                  <h3 className="font-serif text-base font-bold text-neutral-900">Shipping & Delivery Policy Page (/shipping-policy)</h3>
+                  <h3 className="font-sans text-base font-bold text-neutral-900">Shipping & Delivery Policy Page (/shipping-policy)</h3>
                   <p className="text-xs text-neutral-500">Edit free shipping rules, express dispatch metrics, and policy section descriptions.</p>
                 </div>
                 <a
@@ -1709,7 +1709,7 @@ export function AdminContentManager() {
             <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-6">
               <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                 <div>
-                  <h3 className="font-serif text-base font-bold text-neutral-900">Returns & Exchanges Policy (/returns)</h3>
+                  <h3 className="font-sans text-base font-bold text-neutral-900">Returns & Exchanges Policy (/returns)</h3>
                   <p className="text-xs text-neutral-500">Edit return window, 4-step reverse pickup workflow, eligible items criteria, and refund timelines.</p>
                 </div>
                 <a
@@ -1828,7 +1828,7 @@ export function AdminContentManager() {
             <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-6">
               <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                 <div>
-                  <h3 className="font-serif text-base font-bold text-neutral-900">Size Guide & Tailoring Specifications (/size-guide)</h3>
+                  <h3 className="font-sans text-base font-bold text-neutral-900">Size Guide & Tailoring Specifications (/size-guide)</h3>
                   <p className="text-xs text-neutral-500">Edit suits & jutti measurement tables, custom tailoring advisory, and fit notes.</p>
                 </div>
                 <a
@@ -2033,7 +2033,7 @@ export function AdminContentManager() {
             <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-6">
               <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                 <div>
-                  <h3 className="font-serif text-base font-bold text-neutral-900">Frequently Asked Questions (/faq)</h3>
+                  <h3 className="font-sans text-base font-bold text-neutral-900">Frequently Asked Questions (/faq)</h3>
                   <p className="text-xs text-neutral-500">Manage FAQ categories, questions, and answers with live instant search on the storefront.</p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -2068,7 +2068,7 @@ export function AdminContentManager() {
                           type="text"
                           value={cat.name || ''}
                           onChange={(e) => handleUpdateFaqCategoryName(catIdx, e.target.value)}
-                          className="font-serif font-bold text-sm text-neutral-900 bg-white px-3 py-1.5 rounded-lg border border-neutral-300 flex-1 max-w-sm"
+                          className="font-sans font-bold text-sm text-neutral-900 bg-white px-3 py-1.5 rounded-lg border border-neutral-300 flex-1 max-w-sm"
                         />
                       </div>
                       <div className="flex items-center space-x-2">
@@ -2139,7 +2139,7 @@ export function AdminContentManager() {
               <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-4">
                 <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                   <div>
-                    <h3 className="font-serif text-base font-bold text-neutral-900">About OCT9 Atelier Story (/about)</h3>
+                    <h3 className="font-sans text-base font-bold text-neutral-900">About OCT9 Atelier Story (/about)</h3>
                     <p className="text-xs text-neutral-500">Edit the heritage story and brand philosophy.</p>
                   </div>
                   <a
@@ -2188,7 +2188,7 @@ export function AdminContentManager() {
               <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-4">
                 <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                   <div>
-                    <h3 className="font-serif text-base font-bold text-neutral-900">Terms & Conditions (/terms)</h3>
+                    <h3 className="font-sans text-base font-bold text-neutral-900">Terms & Conditions (/terms)</h3>
                     <p className="text-xs text-neutral-500">Edit legal clauses and platform terms.</p>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -2246,7 +2246,7 @@ export function AdminContentManager() {
               <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-4">
                 <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                   <div>
-                    <h3 className="font-serif text-base font-bold text-neutral-900">Privacy Policy (/privacy)</h3>
+                    <h3 className="font-sans text-base font-bold text-neutral-900">Privacy Policy (/privacy)</h3>
                     <p className="text-xs text-neutral-500">Edit privacy guarantees, cookies and data rights clauses.</p>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -2304,7 +2304,7 @@ export function AdminContentManager() {
               <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-4">
                 <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                   <div>
-                    <h3 className="font-serif text-base font-bold text-neutral-900">Cookie Policy (/cookie-policy)</h3>
+                    <h3 className="font-sans text-base font-bold text-neutral-900">Cookie Policy (/cookie-policy)</h3>
                     <p className="text-xs text-neutral-500">Edit cookies, storage technologies, and user consent disclosures.</p>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -2383,7 +2383,7 @@ export function AdminContentManager() {
               <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-4">
                 <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                   <div>
-                    <h3 className="font-serif text-base font-bold text-neutral-900">Cookie Consent Banner Notice</h3>
+                    <h3 className="font-sans text-base font-bold text-neutral-900">Cookie Consent Banner Notice</h3>
                     <p className="text-xs text-neutral-500">Configure the statutory consent prompt shown to first-time storefront visitors.</p>
                   </div>
                   <label className="flex items-center space-x-2 text-xs font-semibold text-neutral-800 cursor-pointer">
@@ -2450,7 +2450,7 @@ export function AdminContentManager() {
               <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-4">
                 <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                   <div>
-                    <h3 className="font-serif text-base font-bold text-neutral-900">
+                    <h3 className="font-sans text-base font-bold text-neutral-900">
                       Statutory Business Details &amp; Grievance Redressal
                     </h3>
                     <p className="text-xs text-neutral-500">

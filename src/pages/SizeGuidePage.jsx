@@ -40,7 +40,7 @@ export function SizeGuidePage() {
           <p className="text-xs uppercase tracking-widest text-neutral-500 font-semibold">
             {page.badge || 'Sizing & Tailoring'}
           </p>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
+          <h1 className="font-sans text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
             {page.title || 'Size Guide & Measurements'}
           </h1>
           <p className="text-sm text-neutral-600 leading-relaxed max-w-2xl">
@@ -153,7 +153,7 @@ export function SizeGuidePage() {
 
         {/* How to Measure Guidelines */}
         <div className="space-y-6 pt-6 border-t border-neutral-200">
-          <h2 className="font-serif text-xl font-bold text-neutral-900">How to Measure</h2>
+          <h2 className="font-sans text-xl font-bold text-neutral-900">How to Measure</h2>
 
           <div className="space-y-4">
             {howToMeasure.map((m, idx) => (

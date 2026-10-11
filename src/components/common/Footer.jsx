@@ -77,7 +77,7 @@ export function Footer() {
                 {DEFAULT_PILLAR_ICONS[idx % DEFAULT_PILLAR_ICONS.length]}
               </div>
 
-              <h4 className="font-serif font-bold text-xs sm:text-sm md:text-base text-neutral-900 group-hover:text-brand-maroon transition-colors tracking-wide mb-0.5 sm:mb-1">
+              <h4 className="font-sans font-bold text-xs sm:text-sm md:text-base text-neutral-900 group-hover:text-brand-maroon transition-colors tracking-wide mb-0.5 sm:mb-1">
                 {pillar.title}
               </h4>
 
@@ -130,7 +130,7 @@ export function Footer() {
 
           {/* Shop Links */}
           <div className="space-y-1.5 sm:space-y-3">
-            <h4 className="font-serif text-xs font-bold text-neutral-900 uppercase tracking-wider">Shop</h4>
+            <h4 className="font-sans text-xs font-bold text-neutral-900 uppercase tracking-wider">Shop</h4>
             <ul className="space-y-1.5 sm:space-y-2 text-xs">
               <li><Link to="/new-arrivals" className="text-neutral-600 hover:text-brand-maroon transition-colors">New Arrivals</Link></li>
               <li><Link to="/category/stitched-suits" className="text-neutral-600 hover:text-brand-maroon transition-colors">Stitched Suits</Link></li>
@@ -145,7 +145,7 @@ export function Footer() {
 
           {/* Customer Care */}
           <div className="space-y-2.5 sm:space-y-3">
-            <h4 className="font-serif text-xs font-bold text-neutral-900 uppercase tracking-wider">Customer Care</h4>
+            <h4 className="font-sans text-xs font-bold text-neutral-900 uppercase tracking-wider">Customer Care</h4>
             <ul className="space-y-1.5 sm:space-y-2 text-xs">
               <li><Link to="/track-order" className="text-brand-maroon font-bold hover:underline">Track Order</Link></li>
               <li><Link to="/contact" className="text-neutral-600 hover:text-brand-maroon transition-colors">Contact Us</Link></li>
@@ -159,7 +159,7 @@ export function Footer() {
 
           {/* Newsletter & Contact */}
           <div className="col-span-1 sm:col-span-2 lg:col-span-1 space-y-2 sm:space-y-4">
-            <h4 className="font-serif text-xs font-bold text-neutral-900 uppercase tracking-wider">Stay In Touch</h4>
+            <h4 className="font-sans text-xs font-bold text-neutral-900 uppercase tracking-wider">Stay In Touch</h4>
             <p className="text-xs text-neutral-500 leading-relaxed">
               Subscribe for exclusive offers and updates on new designer drops.
             </p>

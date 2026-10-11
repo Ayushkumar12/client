@@ -119,7 +119,7 @@ export function ReturnOrderModal({ order, isOpen, onClose, onReturnSuccess }) {
               <RotateCcw className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-serif font-bold text-neutral-900">Request Return / Exchange</h3>
+              <h3 className="text-base font-sans font-bold text-neutral-900">Request Return / Exchange</h3>
               <p className="text-[11px] text-neutral-500">Order #{order.order_number} • ₹{Number(order.grand_total).toLocaleString('en-IN')}</p>
             </div>
           </div>

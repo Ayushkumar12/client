@@ -80,7 +80,7 @@ export function NewArrivalsSection({ products = [], loading = false }) {
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="py-8 sm:p-12 text-center border-b border-neutral-200 space-y-2">
-            <p className="font-serif text-base sm:text-lg font-bold text-neutral-800">
+            <p className="font-sans text-base sm:text-lg font-bold text-neutral-800">
               No new arrivals found in this category
             </p>
             <p className="text-xs text-neutral-500">

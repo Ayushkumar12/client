@@ -152,11 +152,11 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
 
         {/* Hero Arch Crest & Headings */}
         <div className="space-y-3 max-w-2xl mx-auto">
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 tracking-tight leading-tight">
+          <h1 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 tracking-tight leading-tight">
             {categoryTitle}
           </h1>
 
-          <p className="font-serif italic text-base sm:text-lg text-[#5A1827] font-medium">
+          <p className="font-sans italic text-base sm:text-lg text-[#5A1827] font-medium">
             {isMaintenance
               ? 'This collection is currently undergoing curation & catalog maintenance.'
               : 'Handcrafted with patience. Reserved for the grandest celebrations.'}
@@ -176,25 +176,25 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
 
             <div className="grid grid-cols-4 gap-2 sm:gap-4 divide-x divide-neutral-200">
               <div className="px-2">
-                <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block leading-tight">
+                <span className="font-sans text-2xl sm:text-4xl font-bold text-neutral-900 block leading-tight">
                   {String(timeLeft.days).padStart(2, '0')}
                 </span>
                 <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-medium">Days</span>
               </div>
               <div className="px-2">
-                <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block leading-tight">
+                <span className="font-sans text-2xl sm:text-4xl font-bold text-neutral-900 block leading-tight">
                   {String(timeLeft.hours).padStart(2, '0')}
                 </span>
                 <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-medium">Hours</span>
               </div>
               <div className="px-2">
-                <span className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 block leading-tight">
+                <span className="font-sans text-2xl sm:text-4xl font-bold text-neutral-900 block leading-tight">
                   {String(timeLeft.minutes).padStart(2, '0')}
                 </span>
                 <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-medium">Mins</span>
               </div>
               <div className="px-2">
-                <span className="font-serif text-2xl sm:text-4xl font-bold text-[#5A1827] block leading-tight">
+                <span className="font-sans text-2xl sm:text-4xl font-bold text-[#5A1827] block leading-tight">
                   {String(timeLeft.seconds).padStart(2, '0')}
                 </span>
                 <span className="text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500 font-medium">Secs</span>
@@ -211,7 +211,7 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
         {/* Early Access / Waitlist Notification Box */}
         <div className="max-w-md mx-auto space-y-3 pt-2">
           <div className="space-y-1">
-            <h3 className="font-serif text-base font-bold text-neutral-900">
+            <h3 className="font-sans text-base font-bold text-neutral-900">
               {isMaintenance
                 ? `Get Notified When ${categoryTitle} Is Available`
                 : `Request VIP Launch Alert for ${categoryTitle}`}
@@ -269,7 +269,7 @@ export function ComingSoonPage({ categorySlug, pageInfo }) {
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
                 In The Meantime
               </span>
-              <h2 className="font-serif text-lg sm:text-xl font-bold text-neutral-900">
+              <h2 className="font-sans text-lg sm:text-xl font-bold text-neutral-900">
                 Explore Available Live Collections
               </h2>
             </div>

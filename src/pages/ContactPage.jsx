@@ -77,7 +77,7 @@ export function ContactPage() {
           <p className="text-xs uppercase tracking-widest text-neutral-500 font-semibold">
             {page.badge || 'Customer Care'}
           </p>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
+          <h1 className="font-sans text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
             {page.title || 'Contact Us'}
           </h1>
           <p className="text-sm text-neutral-600 leading-relaxed max-w-2xl">
@@ -134,7 +134,7 @@ export function ContactPage() {
           {/* Inquiry Form */}
           <div className="md:col-span-7 space-y-6">
             <div>
-              <h2 className="font-serif text-xl font-bold text-neutral-900">Send an Inquiry</h2>
+              <h2 className="font-sans text-xl font-bold text-neutral-900">Send an Inquiry</h2>
               <p className="text-xs text-neutral-500 mt-1">
                 Fill in the details below and our team will get back to you promptly.
               </p>
@@ -142,7 +142,7 @@ export function ContactPage() {
 
             {submitted ? (
               <div className="p-6 bg-neutral-50 border border-neutral-200 rounded-lg text-center space-y-3 animate-fadeIn">
-                <h3 className="font-serif font-bold text-lg text-neutral-900">Thank You</h3>
+                <h3 className="font-sans font-bold text-lg text-neutral-900">Thank You</h3>
                 <p className="text-xs text-neutral-600 max-w-sm mx-auto leading-relaxed">
                   Your inquiry has been received. Our support team will reply within 2 business hours.
                 </p>
@@ -264,7 +264,7 @@ export function ContactPage() {
           {/* Studio Address & Quick Links */}
           <div className="md:col-span-5 space-y-8">
             <div className="space-y-3">
-              <h2 className="font-serif text-lg font-bold text-neutral-900">Studio & Head Office</h2>
+              <h2 className="font-sans text-lg font-bold text-neutral-900">Studio & Head Office</h2>
               <p className="text-xs text-neutral-600 leading-relaxed">
                 {page.address || brand.address || 'OCT9 Flagship Studio, Fashion Hub, Shahpur Jat, New Delhi 110049'}
               </p>

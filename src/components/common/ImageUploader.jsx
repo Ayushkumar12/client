@@ -358,7 +358,7 @@ export function ImageUploader({
             <div className="bg-white rounded-sm p-6 max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl space-y-4">
               <div className="flex justify-between items-center border-b pb-3">
                 <div>
-                  <h3 className="font-serif font-bold text-lg text-neutral-900">Media Library</h3>
+                  <h3 className="font-sans font-bold text-lg text-neutral-900">Media Library</h3>
                   <p className="text-xs text-neutral-500">Pick any previously uploaded image.</p>
                 </div>
                 <button
@@ -576,7 +576,7 @@ export function ImageUploader({
           <div className="bg-white rounded-sm p-6 max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b pb-3">
               <div>
-                <h3 className="font-serif font-bold text-lg text-neutral-900">Media Library</h3>
+                <h3 className="font-sans font-bold text-lg text-neutral-900">Media Library</h3>
                 <p className="text-xs text-neutral-500">Pick any previously uploaded image.</p>
               </div>
               <button

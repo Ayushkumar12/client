@@ -608,7 +608,7 @@ export function AccountPage() {
             {/* Sidebar User Header Pill */}
             <div className="bg-white rounded-sm p-4 sm:p-5 border border-neutral-200/80 shadow-2xs space-y-4">
               <div className="flex items-center space-x-3.5">
-                <div className="w-12 h-12 rounded-full bg-[#F5EBE1] text-[#2A2A2A] font-serif font-bold text-base flex items-center justify-center border border-[#E8DCCF] shrink-0">
+                <div className="w-12 h-12 rounded-full bg-[#F5EBE1] text-[#2A2A2A] font-sans font-bold text-base flex items-center justify-center border border-[#E8DCCF] shrink-0">
                   {initials}
                 </div>
                 <div className="min-w-0">
@@ -773,7 +773,7 @@ export function AccountPage() {
               <div className="space-y-6 animate-fadeIn">
                 {/* Header Title */}
                 <div>
-                  <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+                  <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
                     My Profile
                   </h1>
                   <p className="text-xs text-neutral-500 mt-1">
@@ -785,7 +785,7 @@ export function AccountPage() {
                 <div className="bg-white rounded-sm p-6 sm:p-7 border border-neutral-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center space-x-5">
                     <div className="relative shrink-0">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#F5EBE1] text-[#2A2A2A] font-serif font-bold text-2xl flex items-center justify-center border-2 border-[#E8DCCF]">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#F5EBE1] text-[#2A2A2A] font-sans font-bold text-2xl flex items-center justify-center border-2 border-[#E8DCCF]">
                         {initials}
                       </div>
                       <button
@@ -832,7 +832,7 @@ export function AccountPage() {
                       <User className="w-4 h-4" />
                     </div>
                     <div>
-                      <h3 className="font-serif font-bold text-base text-[#5A1827]">
+                      <h3 className="font-sans font-bold text-base text-[#5A1827]">
                         Personal Information
                       </h3>
                       <p className="text-xs text-neutral-500">
@@ -1002,7 +1002,7 @@ export function AccountPage() {
               <div className="space-y-6 animate-fadeIn">
                 {/* Header Title */}
                 <div>
-                  <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+                  <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
                     My Orders
                   </h1>
                   <p className="text-xs text-neutral-500 mt-1">
@@ -1063,7 +1063,7 @@ export function AccountPage() {
                 ) : filteredOrders.length === 0 ? (
                   <div className="bg-white rounded-sm p-12 text-center border border-neutral-200/80 shadow-2xs space-y-3">
                     <Package className="w-12 h-12 text-neutral-300 mx-auto" />
-                    <h3 className="font-serif font-bold text-base text-neutral-800">
+                    <h3 className="font-sans font-bold text-base text-neutral-800">
                       No matching orders found
                     </h3>
                     <p className="text-xs text-neutral-500">
@@ -1278,7 +1278,7 @@ export function AccountPage() {
               <div className="space-y-6 animate-fadeIn">
                 {/* Header Title */}
                 <div>
-                  <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+                  <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
                     My Wishlist
                   </h1>
                   <p className="text-xs text-neutral-500 mt-1">
@@ -1314,7 +1314,7 @@ export function AccountPage() {
                 {displayWishlist.length === 0 ? (
                   <div className="bg-white rounded-sm p-12 text-center border border-neutral-200/80 shadow-2xs space-y-3">
                     <Heart className="w-12 h-12 text-neutral-300 mx-auto" />
-                    <h3 className="font-serif font-bold text-base text-neutral-800">
+                    <h3 className="font-sans font-bold text-base text-neutral-800">
                       Your wishlist is empty
                     </h3>
                     <p className="text-xs text-neutral-500">
@@ -1427,7 +1427,7 @@ export function AccountPage() {
                 {/* Header Title + Add New Address Button */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+                    <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
                       My Addresses
                     </h1>
                     <p className="text-xs text-neutral-500 mt-1">
@@ -1535,7 +1535,7 @@ export function AccountPage() {
               <div className="space-y-6 animate-fadeIn">
                 {/* Header Title */}
                 <div>
-                  <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+                  <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
                     Payment Methods
                   </h1>
                   <p className="text-xs text-neutral-500 mt-1">
@@ -1825,7 +1825,7 @@ export function AccountPage() {
                 {/* Header Title + Mark All as Read */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+                    <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
                       Notifications
                     </h1>
                     <p className="text-xs text-neutral-500 mt-1">
@@ -1975,7 +1975,7 @@ export function AccountPage() {
             {activeTab === 'settings' && (
               <div className="space-y-6 animate-fadeIn">
                 <div>
-                  <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+                  <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
                     Account Settings
                   </h1>
                   <p className="text-xs text-neutral-500 mt-1">
@@ -2021,7 +2021,7 @@ export function AccountPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
           <div className="bg-white rounded-sm p-6 sm:p-7 max-w-md w-full shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="font-serif font-bold text-base text-neutral-900">
+              <h3 className="font-sans font-bold text-base text-neutral-900">
                 {editingAddressId ? 'Edit Shipping Address' : 'Add New Shipping Address'}
               </h3>
               <button

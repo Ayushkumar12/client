@@ -64,7 +64,7 @@ export function ShiprocketTrackerModal({ waybill, isOpen, onClose, destinationCi
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-serif font-bold text-base text-neutral-900">Shiprocket Live Tracking</span>
+                <span className="font-sans font-bold text-base text-neutral-900">Shiprocket Live Tracking</span>
                 <span className="text-[10px] bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded">
                   Live
                 </span>

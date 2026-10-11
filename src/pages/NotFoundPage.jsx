@@ -18,7 +18,7 @@ export function NotFoundPage() {
             <span className="text-xs uppercase tracking-[0.25em] text-neutral-500 font-medium">
               Error 404
             </span>
-            <h1 className="font-serif text-4xl md:text-5xl text-neutral-900 tracking-tight font-normal">
+            <h1 className="font-sans text-4xl md:text-5xl text-neutral-900 tracking-tight font-normal">
               Page Not Found
             </h1>
             <p className="text-sm text-neutral-600 max-w-md mx-auto leading-relaxed">

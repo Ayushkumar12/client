@@ -215,7 +215,7 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
           {/* Title & Price Header Row */}
           <div className="flex items-start justify-between gap-1 sm:gap-2">
             <Link to={getProductUrl(product)} className="flex-1 min-w-0">
-              <h3 className="font-serif text-xs sm:text-sm md:text-base font-bold text-neutral-900 line-clamp-1 hover:text-[#5A1827] transition-colors leading-tight">
+              <h3 className="font-sans text-xs sm:text-sm md:text-base font-bold text-neutral-900 line-clamp-1 hover:text-[#5A1827] transition-colors leading-tight">
                 {product.title}
               </h3>
             </Link>

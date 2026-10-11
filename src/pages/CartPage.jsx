@@ -48,7 +48,7 @@ export function CartPage() {
         {/* Header Title */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
           <div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
+            <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
               Shopping Bag
             </h1>
             <p className="text-xs text-neutral-500 mt-1">
@@ -77,7 +77,7 @@ export function CartPage() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="font-serif text-xl sm:text-2xl font-bold text-neutral-900">
+              <h2 className="font-sans text-xl sm:text-2xl font-bold text-neutral-900">
                 Your Shopping Bag is Empty
               </h2>
               <p className="text-xs sm:text-sm text-neutral-500 max-w-md mx-auto leading-relaxed">
@@ -144,7 +144,7 @@ export function CartPage() {
 
                         <div className="space-y-1.5 flex-1 min-w-0">
                           <Link to={getProductUrl(item)}>
-                            <h3 className="font-serif text-sm sm:text-base font-bold text-neutral-900 hover:text-brand-maroon transition-colors line-clamp-1">
+                            <h3 className="font-sans text-sm sm:text-base font-bold text-neutral-900 hover:text-brand-maroon transition-colors line-clamp-1">
                               {item.title}
                             </h3>
                           </Link>
@@ -244,17 +244,17 @@ export function CartPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4">
                 <div className="p-3.5 rounded-sm bg-white border border-neutral-200/80 text-center space-y-1">
                   <ShieldCheck className="w-5 h-5 text-brand-maroon mx-auto" />
-                  <p className="font-serif text-xs font-bold text-neutral-900">100% Authentic Fabric</p>
+                  <p className="font-sans text-xs font-bold text-neutral-900">100% Authentic Fabric</p>
                   <p className="text-[11px] text-neutral-500">Direct from heritage artisans</p>
                 </div>
                 <div className="p-3.5 rounded-sm bg-white border border-neutral-200/80 text-center space-y-1">
                   <RotateCcw className="w-5 h-5 text-brand-maroon mx-auto" />
-                  <p className="font-serif text-xs font-bold text-neutral-900">7-Day Easy Returns</p>
+                  <p className="font-sans text-xs font-bold text-neutral-900">7-Day Easy Returns</p>
                   <p className="text-[11px] text-neutral-500">Hassle-free doorstep pickup</p>
                 </div>
                 <div className="p-3.5 rounded-sm bg-white border border-neutral-200/80 text-center space-y-1">
                   <Truck className="w-5 h-5 text-brand-maroon mx-auto" />
-                  <p className="font-serif text-xs font-bold text-neutral-900">Express Delivery</p>
+                  <p className="font-sans text-xs font-bold text-neutral-900">Express Delivery</p>
                   <p className="text-[11px] text-neutral-500">Real-time GPS tracking</p>
                 </div>
               </div>
@@ -264,7 +264,7 @@ export function CartPage() {
             <div className="lg:col-span-4 space-y-6 sticky top-24">
               {/* Price Summary Breakdown */}
               <div className="bg-white rounded-sm border border-neutral-200/90 p-5 sm:p-6 shadow-xs space-y-4">
-                <h2 className="font-serif text-base font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+                <h2 className="font-sans text-base font-bold text-neutral-900 border-b border-neutral-100 pb-3">
                   Order Summary
                 </h2>
 

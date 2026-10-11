@@ -66,7 +66,7 @@ export function AdminCoupons() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+          <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
             Coupons & Marketing Offers
           </h1>
           <p className="text-xs text-neutral-500 mt-1">
@@ -136,7 +136,7 @@ export function AdminCoupons() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
           <div className="bg-white rounded-sm p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="font-serif font-bold text-base text-neutral-900">Create New Promo Code</h3>
+            <h3 className="font-sans font-bold text-base text-neutral-900">Create New Promo Code</h3>
             <form onSubmit={handleCreate} className="space-y-3 text-xs">
               <div>
                 <label className="block font-bold text-neutral-700 mb-1">Coupon Code (e.g. OCT15) *</label>

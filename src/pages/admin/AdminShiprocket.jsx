@@ -226,7 +226,7 @@ export function AdminShiprocket() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-200">
         <div>
           <div className="flex items-center space-x-2">
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+            <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
               Shiprocket Logistics Hub
             </h1>
             {configForm.sandbox_mode ? (
@@ -530,7 +530,7 @@ export function AdminShiprocket() {
                 <Truck className="w-5 h-5" />
               </div>
             </div>
-            <div className="font-serif text-3xl font-bold text-neutral-900 mt-2">
+            <div className="font-sans text-3xl font-bold text-neutral-900 mt-2">
               {stats?.total_manifested || manifests.length || 0}
             </div>
             <span className="text-[11px] text-emerald-700 font-semibold mt-1 inline-flex items-center">
@@ -545,7 +545,7 @@ export function AdminShiprocket() {
                 <Clock className="w-5 h-5" />
               </div>
             </div>
-            <div className="font-serif text-3xl font-bold text-neutral-900 mt-2">
+            <div className="font-sans text-3xl font-bold text-neutral-900 mt-2">
               {stats?.in_transit || 0}
             </div>
             <span className="text-[11px] text-neutral-500 mt-1 block">Live tracking updates</span>
@@ -558,7 +558,7 @@ export function AdminShiprocket() {
                 <CheckCircle2 className="w-5 h-5" />
               </div>
             </div>
-            <div className="font-serif text-3xl font-bold text-neutral-900 mt-2">
+            <div className="font-sans text-3xl font-bold text-neutral-900 mt-2">
               {stats?.delivered || 0}
             </div>
             <span className="text-[11px] text-emerald-700 font-semibold mt-1 block">100% Success rate</span>
@@ -571,7 +571,7 @@ export function AdminShiprocket() {
                 <Package className="w-5 h-5" />
               </div>
             </div>
-            <div className="font-serif text-3xl font-bold text-neutral-900 mt-2">
+            <div className="font-sans text-3xl font-bold text-neutral-900 mt-2">
               {stats?.active_couriers || 6}+
             </div>
             <span className="text-[11px] text-neutral-500 mt-1 block">BlueDart, Delhivery, DTDC</span>
@@ -585,7 +585,7 @@ export function AdminShiprocket() {
         <div className="bg-white rounded-sm border border-brand-border p-6 shadow-2xs space-y-4">
           <div className="flex items-center space-x-2">
             <Search className="w-5 h-5 text-purple-600" />
-            <h3 className="font-serif font-bold text-base text-neutral-900">
+            <h3 className="font-sans font-bold text-base text-neutral-900">
               Shiprocket Live Waybill Tracking
             </h3>
           </div>
@@ -620,7 +620,7 @@ export function AdminShiprocket() {
         <div className="bg-white rounded-sm border border-brand-border p-6 shadow-2xs space-y-4">
           <div className="flex items-center space-x-2">
             <MapPin className="w-5 h-5 text-purple-600" />
-            <h3 className="font-serif font-bold text-base text-neutral-900">
+            <h3 className="font-sans font-bold text-base text-neutral-900">
               Courier Serviceability & TAT Tester
             </h3>
           </div>
@@ -667,7 +667,7 @@ export function AdminShiprocket() {
       <div className="bg-white rounded-sm border border-brand-border p-6 shadow-2xs space-y-4">
         <div className="flex items-center space-x-2">
           <Calculator className="w-5 h-5 text-purple-600" />
-          <h3 className="font-serif font-bold text-base text-neutral-900">
+          <h3 className="font-sans font-bold text-base text-neutral-900">
             Shipping Rate Calculator
           </h3>
         </div>
@@ -738,7 +738,7 @@ export function AdminShiprocket() {
       <div className="bg-white rounded-sm border border-brand-border p-6 shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="font-serif font-bold text-base text-neutral-900">
+            <h3 className="font-sans font-bold text-base text-neutral-900">
               Shiprocket Manifests & Dispatches
             </h3>
             <p className="text-xs text-neutral-500">

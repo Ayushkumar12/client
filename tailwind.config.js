@@ -23,7 +23,7 @@ export default {
         }
       },
       fontFamily: {
-        serif: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+        serif: ['"Plus Jakarta Sans"', '"Inter"', 'sans-serif'],
         sans: ['"Plus Jakarta Sans"', '"Inter"', 'sans-serif'],
       },
       boxShadow: {

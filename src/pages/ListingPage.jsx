@@ -428,7 +428,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
             </div>
 
             <div className="flex items-baseline space-x-3">
-              <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
+              <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
                 {config.heading}
               </h1>
               <span className="text-xs text-neutral-500 font-medium">
@@ -493,7 +493,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
             <div className="flex items-center justify-between pb-3 border-b border-neutral-200/40">
               <div className="flex items-center space-x-2">
                 <SlidersHorizontal className="w-4 h-4 text-brand-maroon" />
-                <span className="font-serif font-bold text-sm">Filters</span>
+                <span className="font-sans font-bold text-sm">Filters</span>
               </div>
               {activeFiltersCount > 0 && (
                 <button
@@ -668,7 +668,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
                 <div className="w-14 h-14 rounded-sm bg-neutral-100 mx-auto flex items-center justify-center">
                   <SlidersHorizontal className="w-7 h-7 text-neutral-400" />
                 </div>
-                <h3 className="font-serif text-lg font-bold">No matching products found</h3>
+                <h3 className="font-sans text-lg font-bold">No matching products found</h3>
                 <p className="text-xs opacity-75 max-w-sm mx-auto">
                   Try clearing some filters to explore our full product collection.
                 </p>
@@ -729,7 +729,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
           <div className="relative ml-auto w-4/5 max-w-xs h-full shadow-2xl p-5 overflow-y-auto flex flex-col justify-between bg-white text-neutral-900">
             <div className="space-y-5">
               <div className="flex items-center justify-between pb-3 border-b border-neutral-200/30">
-                <span className="font-serif font-bold text-base">Filters</span>
+                <span className="font-sans font-bold text-base">Filters</span>
                 <button onClick={() => setIsMobileFilterOpen(false)} className="p-1 opacity-70 hover:opacity-100">
                   <X className="w-5 h-5" />
                 </button>

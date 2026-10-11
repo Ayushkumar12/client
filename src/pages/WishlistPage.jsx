@@ -15,7 +15,7 @@ export function WishlistPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between pb-6 border-b border-brand-border">
           <div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-neutral-900">
+            <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
               My Saved Wishlist
             </h1>
             <p className="text-xs text-neutral-500 mt-0.5">
@@ -37,7 +37,7 @@ export function WishlistPage() {
             <div className="w-14 h-14 rounded-full bg-[#FAF7F2] text-brand-maroon flex items-center justify-center mx-auto">
               <Heart className="w-7 h-7" />
             </div>
-            <h3 className="font-serif text-lg font-bold text-neutral-800">Your Wishlist is Empty</h3>
+            <h3 className="font-sans text-lg font-bold text-neutral-800">Your Wishlist is Empty</h3>
             <p className="text-xs text-neutral-500">
               Explore our artisanal suits, sarees, and festive wear and save your favorites here.
             </p>

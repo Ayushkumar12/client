@@ -26,7 +26,7 @@ export function ShippingPolicyPage() {
           <p className="text-xs uppercase tracking-widest text-neutral-500 font-semibold">
             {page.badge || 'Customer Care'}
           </p>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
+          <h1 className="font-sans text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
             {page.title || 'Shipping & Delivery Policy'}
           </h1>
           <p className="text-sm text-neutral-600 leading-relaxed max-w-2xl">
@@ -40,7 +40,7 @@ export function ShippingPolicyPage() {
             <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold block mb-1">
               Free Shipping
             </span>
-            <p className="text-lg font-serif font-bold text-neutral-900">
+            <p className="text-lg font-sans font-bold text-neutral-900">
               All Orders
             </p>
             <p className="text-xs text-neutral-500 mt-0.5">Prepaid & COD Orders</p>
@@ -50,7 +50,7 @@ export function ShippingPolicyPage() {
             <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold block mb-1">
               Ready to Wear
             </span>
-            <p className="text-lg font-serif font-bold text-neutral-900">
+            <p className="text-lg font-sans font-bold text-neutral-900">
               {page.dispatch_ready || '24–48 Hrs'}
             </p>
             <p className="text-xs text-neutral-500 mt-0.5">Dispatch Window</p>
@@ -60,7 +60,7 @@ export function ShippingPolicyPage() {
             <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold block mb-1">
               Metro Cities
             </span>
-            <p className="text-lg font-serif font-bold text-neutral-900">
+            <p className="text-lg font-sans font-bold text-neutral-900">
               {page.delivery_metro || '2–4 Days'}
             </p>
             <p className="text-xs text-neutral-500 mt-0.5">Express Air</p>
@@ -70,7 +70,7 @@ export function ShippingPolicyPage() {
             <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold block mb-1">
               Rest of India
             </span>
-            <p className="text-lg font-serif font-bold text-neutral-900">
+            <p className="text-lg font-sans font-bold text-neutral-900">
               {page.delivery_rest || '4–7 Days'}
             </p>
             <p className="text-xs text-neutral-500 mt-0.5">Standard Delivery</p>
@@ -95,7 +95,7 @@ export function ShippingPolicyPage() {
         <div className="space-y-8 text-neutral-800">
           {sections.map((sec, idx) => (
             <div key={idx} className="space-y-2">
-              <h2 className="font-serif text-lg font-bold text-neutral-900">
+              <h2 className="font-sans text-lg font-bold text-neutral-900">
                 {sec.title}
               </h2>
               <p className="text-sm text-neutral-600 leading-relaxed font-normal">

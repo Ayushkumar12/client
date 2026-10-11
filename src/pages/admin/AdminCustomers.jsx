@@ -82,7 +82,7 @@ export function AdminCustomers() {
       {/* Header */}
       <div className="border-b border-neutral-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-neutral-900">Customer Directory</h1>
+          <h1 className="font-sans text-2xl font-bold text-neutral-900">Customer Directory</h1>
           <p className="text-xs text-neutral-500 mt-0.5">
             Registered customer accounts, order history and lifetime spending.
           </p>
@@ -93,22 +93,22 @@ export function AdminCustomers() {
       <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-neutral-200 border border-neutral-200 bg-white">
         <div className="p-4 space-y-1">
           <p className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">Total Customers</p>
-          <p className="text-2xl font-bold font-serif text-neutral-900">{totalCustomers.toLocaleString('en-IN')}</p>
+          <p className="text-2xl font-bold font-sans text-neutral-900">{totalCustomers.toLocaleString('en-IN')}</p>
           <p className="text-[10px] text-neutral-500">{repeatBuyers} repeat buyers</p>
         </div>
         <div className="p-4 space-y-1">
           <p className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">Total Revenue</p>
-          <p className="text-2xl font-bold font-serif text-brand-maroon">₹{Math.round(totalRevenue).toLocaleString('en-IN')}</p>
+          <p className="text-2xl font-bold font-sans text-brand-maroon">₹{Math.round(totalRevenue).toLocaleString('en-IN')}</p>
           <p className="text-[10px] text-neutral-500">from all orders</p>
         </div>
         <div className="p-4 space-y-1">
           <p className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">Total Orders</p>
-          <p className="text-2xl font-bold font-serif text-neutral-900">{totalOrders.toLocaleString('en-IN')}</p>
+          <p className="text-2xl font-bold font-sans text-neutral-900">{totalOrders.toLocaleString('en-IN')}</p>
           <p className="text-[10px] text-neutral-500">confirmed orders</p>
         </div>
         <div className="p-4 space-y-1">
           <p className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">Avg. Spend / User</p>
-          <p className="text-2xl font-bold font-serif text-neutral-900">₹{Math.round(avgSpend).toLocaleString('en-IN')}</p>
+          <p className="text-2xl font-bold font-sans text-neutral-900">₹{Math.round(avgSpend).toLocaleString('en-IN')}</p>
           <p className="text-[10px] text-neutral-500">lifetime average</p>
         </div>
       </div>
@@ -161,7 +161,7 @@ export function AdminCustomers() {
                     </td>
                     <td className="p-3.5">
                       <div className="flex items-center space-x-2.5">
-                        <div className="w-7 h-7 rounded-full bg-[#FAF7F2] text-[#5A1827] font-bold flex items-center justify-center font-serif text-xs shrink-0 border border-[#EFE8DC]">
+                        <div className="w-7 h-7 rounded-full bg-[#FAF7F2] text-[#5A1827] font-bold flex items-center justify-center font-sans text-xs shrink-0 border border-[#EFE8DC]">
                           {c.name ? c.name[0].toUpperCase() : 'U'}
                         </div>
                         <div>

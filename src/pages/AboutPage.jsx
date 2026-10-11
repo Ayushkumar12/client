@@ -28,7 +28,7 @@ export function AboutPage() {
           <p className="text-[11px] font-medium uppercase tracking-[0.25em] text-neutral-400">
             {page.badge || 'Heritage & Craft'}
           </p>
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-neutral-900 tracking-tight">
+          <h1 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-normal text-neutral-900 tracking-tight">
             {page.title || 'About OCT9'}
           </h1>
           <p className="text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
@@ -39,7 +39,7 @@ export function AboutPage() {
         {/* Brand Story Section */}
         <div className="space-y-6 max-w-3xl mx-auto">
           <div className="space-y-1">
-            <h2 className="font-serif text-2xl sm:text-3xl font-normal text-neutral-900">
+            <h2 className="font-sans text-2xl sm:text-3xl font-normal text-neutral-900">
               Our Story &amp; Craftsmanship
             </h2>
             <p className="text-xs uppercase tracking-widest text-neutral-400">
@@ -61,7 +61,7 @@ export function AboutPage() {
                   <span className="text-xs font-mono font-semibold text-neutral-400 block tracking-widest">
                     0{idx + 1}
                   </span>
-                  <h3 className="font-serif text-lg font-semibold text-neutral-900">
+                  <h3 className="font-sans text-lg font-semibold text-neutral-900">
                     {v.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
@@ -78,7 +78,7 @@ export function AboutPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             {pillars.map((p, idx) => (
               <div key={idx} className="space-y-1">
-                <h4 className="font-serif text-sm font-semibold text-neutral-900">
+                <h4 className="font-sans text-sm font-semibold text-neutral-900">
                   {p.title}
                 </h4>
                 <p className="text-xs text-neutral-500 leading-relaxed">
@@ -94,7 +94,7 @@ export function AboutPage() {
           <p className="text-[11px] font-medium uppercase tracking-[0.25em] text-neutral-400">
             Ready-to-Wear &amp; Handloom
           </p>
-          <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-neutral-900 tracking-tight">
+          <h3 className="font-sans text-2xl sm:text-3xl lg:text-4xl font-normal text-neutral-900 tracking-tight">
             Experience Timeless Indian Craft
           </h3>
           <p className="text-xs sm:text-sm text-neutral-600 max-w-md mx-auto leading-relaxed">

@@ -49,7 +49,7 @@ export function FaqPage() {
           <p className="text-xs uppercase tracking-widest text-neutral-500 font-semibold">
             {page.badge || 'Help & Support'}
           </p>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
+          <h1 className="font-sans text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
             {page.title || 'Frequently Asked Questions'}
           </h1>
           <p className="text-sm text-neutral-600 leading-relaxed max-w-2xl">

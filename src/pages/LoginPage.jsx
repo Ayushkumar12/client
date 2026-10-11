@@ -96,7 +96,7 @@ export function LoginPage() {
               className="h-10 w-auto rounded-lg object-contain shadow-md border border-white/20 transition-transform group-hover:scale-105"
             />
             <div className="flex flex-col">
-              <span className="font-serif text-2xl font-bold tracking-widest text-white leading-tight">
+              <span className="font-sans text-2xl font-bold tracking-widest text-white leading-tight">
                 OCT9
               </span>
               <span className="text-[10px] uppercase tracking-[0.2em] text-[#E8CA85] font-medium">
@@ -120,7 +120,7 @@ export function LoginPage() {
               <span className="text-white/40">•</span>
               <span className="text-neutral-300 text-xs">Suit Sets & Sarees</span>
             </div>
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-white font-normal leading-snug">
+            <h2 className="font-sans text-2xl sm:text-3xl lg:text-4xl text-white font-normal leading-snug">
               Handcrafted ethnic wear for every festive occasion.
             </h2>
             <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-light">
@@ -174,9 +174,9 @@ export function LoginPage() {
             <div className="space-y-2">
               <div className="lg:hidden flex items-center space-x-2.5 mb-3">
                 <img src="/oct9-logo.jpg" alt="OCT9" className="h-9 w-auto rounded-lg object-contain border border-neutral-200" />
-                <span className="font-serif text-xl font-bold tracking-widest text-neutral-900">OCT9</span>
+                <span className="font-sans text-xl font-bold tracking-widest text-neutral-900">OCT9</span>
               </div>
-              <h1 className="font-serif text-3xl sm:text-4xl font-normal text-neutral-900 tracking-tight">
+              <h1 className="font-sans text-3xl sm:text-4xl font-normal text-neutral-900 tracking-tight">
                 Welcome Back
               </h1>
               <p className="text-xs sm:text-sm text-neutral-600">
@@ -322,7 +322,7 @@ export function LoginPage() {
               </div>
 
               <div>
-                <h3 className="font-serif text-xl font-bold text-neutral-900">Reset Your Password</h3>
+                <h3 className="font-sans text-xl font-bold text-neutral-900">Reset Your Password</h3>
                 <p className="text-xs text-neutral-500 mt-1">
                   Enter your registered email address. We'll send instructions to reset your password.
                 </p>

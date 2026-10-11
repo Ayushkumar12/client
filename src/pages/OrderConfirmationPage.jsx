@@ -57,7 +57,7 @@ export function OrderConfirmationPage() {
   if (!order) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
-        <h2 className="font-serif text-2xl font-bold">Order Not Found</h2>
+        <h2 className="font-sans text-2xl font-bold">Order Not Found</h2>
         <p className="text-xs text-neutral-500">We could not locate details for order #{orderNumber}.</p>
         <Link to="/" className="inline-block px-6 py-2.5 bg-brand-maroon text-white text-xs font-semibold rounded-lg">
           Return to Store
@@ -82,7 +82,7 @@ export function OrderConfirmationPage() {
           <span className="text-xs uppercase tracking-widest font-bold text-brand-maroon block">
             ORDER CONFIRMED
           </span>
-          <h1 className="font-serif text-3xl font-bold text-neutral-900">
+          <h1 className="font-sans text-3xl font-bold text-neutral-900">
             Thank You For Your Order!
           </h1>
           <p className="text-xs sm:text-sm text-neutral-600 max-w-lg mx-auto leading-relaxed">
@@ -119,7 +119,7 @@ export function OrderConfirmationPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Truck className="w-5 h-5 text-brand-maroon" />
-              <h2 className="font-serif text-xl font-bold text-neutral-900">
+              <h2 className="font-sans text-xl font-bold text-neutral-900">
                 Delivery & Tracking Details
               </h2>
             </div>
@@ -148,7 +148,7 @@ export function OrderConfirmationPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Shipping Address */}
           <div className="bg-white rounded-sm p-6 border border-neutral-200 shadow-xs space-y-3">
-            <h3 className="font-serif font-bold text-sm text-neutral-900 flex items-center space-x-2">
+            <h3 className="font-sans font-bold text-sm text-neutral-900 flex items-center space-x-2">
               <MapPin className="w-4 h-4 text-brand-maroon" />
               <span>Delivery Address</span>
             </h3>
@@ -162,7 +162,7 @@ export function OrderConfirmationPage() {
 
           {/* Ordered Items Summary */}
           <div className="bg-white rounded-sm p-6 border border-neutral-200 shadow-xs space-y-3">
-            <h3 className="font-serif font-bold text-sm text-neutral-900 flex items-center space-x-2">
+            <h3 className="font-sans font-bold text-sm text-neutral-900 flex items-center space-x-2">
               <Package className="w-4 h-4 text-brand-maroon" />
               <span>Ordered Items ({order.items?.length || 0})</span>
             </h3>

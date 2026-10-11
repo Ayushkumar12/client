@@ -376,7 +376,7 @@ export function AdminOrders() {
 
             {/* Items */}
             <div>
-              <h4 className="font-serif font-bold text-sm text-neutral-900 mb-2">Order Items</h4>
+              <h4 className="font-sans font-bold text-sm text-neutral-900 mb-2">Order Items</h4>
               <div className="divide-y border rounded-md overflow-hidden">
                 {(selectedOrder.items || []).map((it, idx) => (
                   <div key={idx} className="p-3 flex items-center justify-between text-xs bg-white">

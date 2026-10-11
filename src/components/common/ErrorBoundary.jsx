@@ -38,7 +38,7 @@ export class ErrorBoundary extends React.Component {
               <span className="text-[11px] uppercase tracking-widest text-neutral-500 font-medium">
                 System Notice
               </span>
-              <h1 className="font-serif text-3xl md:text-4xl text-neutral-900 tracking-tight">
+              <h1 className="font-sans text-3xl md:text-4xl text-neutral-900 tracking-tight">
                 Something Went Wrong
               </h1>
               <p className="text-sm text-neutral-600 max-w-md mx-auto leading-relaxed">

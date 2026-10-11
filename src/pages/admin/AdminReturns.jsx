@@ -125,7 +125,7 @@ export function AdminReturns() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-serif font-bold text-neutral-900 flex items-center gap-2">
+          <h1 className="text-xl font-sans font-bold text-neutral-900 flex items-center gap-2">
             <RotateCcw className="w-5 h-5 text-purple-700" />
             <span>Returns & Exchanges Management</span>
           </h1>
@@ -506,7 +506,7 @@ export function AdminReturns() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn overflow-y-auto">
           <div className="relative w-full max-w-2xl bg-white rounded-sm shadow-2xl border border-neutral-200 overflow-hidden my-8">
             <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 bg-neutral-50/80">
-              <h3 className="text-base font-serif font-bold text-neutral-900">
+              <h3 className="text-base font-sans font-bold text-neutral-900">
                 Review Return Request: #{selectedReturn.order_number}
               </h3>
               <button

@@ -392,8 +392,81 @@ export const api = {
 
   // Forms (Contact & Returns)
   getFormConfig: () => request('/forms/config'),
-  submitContactForm: (formData) => request('/forms/contact', { method: 'POST', body: JSON.stringify(formData) }),
-  submitReturnRequest: (formData) => request('/forms/return', { method: 'POST', body: JSON.stringify(formData) }),
+  submitContactForm: async (formData) => {
+    let web3Status = 'skipped_no_key';
+    try {
+      const config = await request('/forms/config').catch(() => null);
+      const key = config?.contactKey || config?.accessKey || import.meta.env?.VITE_WEB3FORMS_KEY || 'f648dc37-46c2-4308-94bc-e8547da52026';
+      if (key && key !== 'YOUR_CONTACT_ACCESS_KEY_HERE') {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            access_key: key,
+            subject: `[OCT9 Customer Contact] ${formData.subject || 'General Inquiry'}`,
+            from_name: formData.name,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone || 'Not provided',
+            order_number: formData.orderNumber || 'N/A',
+            category: formData.subject || 'General Inquiry',
+            message: formData.message
+          })
+        });
+        const data = await response.json().catch(() => null);
+        web3Status = data?.success ? 'sent' : `failed_${data?.message || 'api_error'}`;
+      }
+    } catch (err) {
+      console.warn('[Web3Forms Client Dispatch Warning]:', err);
+      web3Status = 'client_network_error';
+    }
+
+    // Always persist to backend database
+    return request('/forms/contact', {
+      method: 'POST',
+      body: JSON.stringify({ ...formData, web3forms_status: web3Status })
+    });
+  },
+  submitReturnRequest: async (formData) => {
+    let web3Status = 'skipped_no_key';
+    try {
+      const config = await request('/forms/config').catch(() => null);
+      const key = config?.returnKey || config?.accessKey || import.meta.env?.VITE_WEB3FORMS_KEY || 'f648dc37-46c2-4308-94bc-e8547da52026';
+      if (key && key !== 'YOUR_RETURN_ACCESS_KEY_HERE') {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            access_key: key,
+            subject: `[OCT9 Return / Exchange Request] ${formData.reason || 'Return'} - Order #${formData.orderId || 'N/A'}`,
+            from_name: formData.name,
+            name: formData.name,
+            email: formData.email,
+            order_id: formData.orderId,
+            reason: formData.reason || 'Not specified',
+            message: formData.message || 'No additional details'
+          })
+        });
+        const data = await response.json().catch(() => null);
+        web3Status = data?.success ? 'sent' : `failed_${data?.message || 'api_error'}`;
+      }
+    } catch (err) {
+      console.warn('[Web3Forms Return Dispatch Warning]:', err);
+      web3Status = 'client_network_error';
+    }
+
+    // Always persist to backend database
+    return request('/forms/return', {
+      method: 'POST',
+      body: JSON.stringify({ ...formData, web3forms_status: web3Status })
+    });
+  },
 
   // Admin & Analytics
   getPublicSettings: () => request('/admin/settings/public'),
@@ -408,6 +481,10 @@ export const api = {
   }),
   getDashboardMetrics: () => request('/admin/dashboard'),
   getCustomers: () => request('/admin/customers'),
+  adminGetInquiries: () => request('/admin/inquiries'),
+  adminDeleteInquiry: (id) => request(`/admin/inquiries/${id}`, { method: 'DELETE' }),
+  adminGetReturnRequests: () => request('/admin/return-requests'),
+  adminDeleteReturnRequest: (id) => request(`/admin/return-requests/${id}`, { method: 'DELETE' }),
   formatImageUrl,
 };
 

@@ -49,6 +49,7 @@ import { AdminProducts } from './pages/admin/AdminProducts.jsx';
 import { AdminCustomers } from './pages/admin/AdminCustomers.jsx';
 import { AdminContentManager } from './pages/admin/AdminContentManager.jsx';
 import { AdminInventory } from './pages/admin/AdminInventory.jsx';
+import { AdminInquiries } from './pages/admin/AdminInquiries.jsx';
 
 function MainLayout({ children }) {
   const location = useLocation();
@@ -127,6 +128,7 @@ export default function App() {
                         <Route path="products" element={<AdminProducts />} />
                         <Route path="coupons" element={<Navigate to="/admin" replace />} />
                         <Route path="customers" element={<AdminCustomers />} />
+                        <Route path="inquiries" element={<AdminInquiries />} />
                         <Route path="content" element={<AdminContentManager />} />
                       </Route>
 

@@ -12,7 +12,8 @@ import {
   ShieldCheck,
   LogOut,
   Palette,
-  Boxes
+  Boxes,
+  Mail
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 
@@ -51,6 +52,7 @@ export function AdminLayout() {
   const navItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
     { label: 'Inventory Management', path: '/admin/inventory', icon: Boxes },
+    { label: 'Customer Inquiries', path: '/admin/inquiries', icon: Mail },
     { label: 'Site Content & Policies', path: '/admin/content', icon: Palette },
     { label: 'Analytics & Ratings', path: '/admin/analytics', icon: BarChart3 },
     { label: 'Orders & Fulfillment', path: '/admin/orders', icon: Package },
@@ -59,6 +61,7 @@ export function AdminLayout() {
     { label: 'Product Catalog', path: '/admin/products', icon: ShoppingBag },
     { label: 'Customers', path: '/admin/customers', icon: Users },
   ];
+
 
   return (
     <div className="min-h-screen bg-neutral-100 flex flex-col md:flex-row font-sans">

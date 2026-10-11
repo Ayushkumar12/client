@@ -11,6 +11,8 @@ import { TopAnnouncementBar } from './components/common/TopAnnouncementBar.jsx';
 import { Header } from './components/common/Header.jsx';
 import { Footer } from './components/common/Footer.jsx';
 import { PwaBottomNav } from './components/common/PwaBottomNav.jsx';
+import { CookieConsentBanner } from './components/common/CookieConsentBanner.jsx';
+import { ScrollToTop } from './components/common/ScrollToTop.jsx';
 
 // Pages
 import { HomePage } from './pages/HomePage.jsx';
@@ -33,6 +35,7 @@ import { FaqPage } from './pages/FaqPage.jsx';
 import { TermsPage } from './pages/TermsPage.jsx';
 import { PrivacyPage } from './pages/PrivacyPage.jsx';
 import { AboutPage } from './pages/AboutPage.jsx';
+import { CookiePolicyPage } from './pages/CookiePolicyPage.jsx';
 
 // Admin Pages
 import { AdminLayout } from './pages/admin/AdminLayout.jsx';
@@ -63,6 +66,7 @@ function MainLayout({ children }) {
         <main>{children}</main>
       </div>
       <Footer />
+      <CookieConsentBanner />
       <PwaBottomNav />
     </div>
   );
@@ -75,6 +79,7 @@ export default function App() {
         <CartProvider>
           <WishlistProvider>
             <ContentProvider>
+              <ScrollToTop />
               <MainLayout>
                 <Routes>
                   {/* Storefront Routes */}
@@ -100,7 +105,12 @@ export default function App() {
                   <Route path="/size-guide" element={<SizeGuidePage />} />
                   <Route path="/faq" element={<FaqPage />} />
                   <Route path="/terms" element={<TermsPage />} />
+                  <Route path="/terms-and-conditions" element={<TermsPage />} />
                   <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="/privacy-policy" element={<PrivacyPage />} />
+                  <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+                  <Route path="/cookies" element={<CookiePolicyPage />} />
+                  <Route path="/refund-policy" element={<ReturnsPage />} />
                   <Route path="/about" element={<AboutPage />} />
 
                   {/* Admin Routes */}

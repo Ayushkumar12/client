@@ -546,7 +546,60 @@ export const DEFAULT_SITE_CONTENT = {
         { title: 'Pure Fabrics Only', desc: 'We source only tested pure silks, organic cottons, and breathable organza fabrics.' },
         { title: 'Tailored Perfection', desc: 'Every stitch is inspected by master tailors to guarantee impeccable drape and enduring longevity.' }
       ]
+    },
+    cookie: {
+      badge: 'Cookie & Tracking Policy',
+      title: 'Cookie Policy',
+      subtitle: 'Clear disclosure of how cookies and local storage are utilized on OCT9 to deliver a secure, compliant, and personalized shopping experience.',
+      last_updated: 'October 2026',
+      sections: [
+        {
+          title: '1. What Are Cookies & Web Storage?',
+          content: 'Cookies and local storage items are small data files placed on your device when you browse oct9.com. We utilize them strictly to retain your active shopping cart items, preserve wishlist selections, ensure secure authentication, and optimize platform navigation.'
+        },
+        {
+          title: '2. Essential & Security Cookies (Strictly Necessary)',
+          content: 'These cookies are strictly required for security and core e-commerce functionality, including keeping your customer account session authenticated, protecting against CSRF attacks, securing checkout payments, and tracking item quantities in your bag. These cannot be disabled without breaking website functionality.'
+        },
+        {
+          title: '3. Preferences & Functional Cookies',
+          content: 'Preference cookies remember your chosen delivery pincode, size selections, and recently viewed handcrafted outfits to offer a smooth, personalized shopping experience across sessions.'
+        },
+        {
+          title: '4. Performance & Telemetry Cookies',
+          content: 'We use anonymized telemetry to assess server latency, monitor page load speeds, and detect broken links. These cookies collect aggregated data without tracking individual identities or financial payment credentials.'
+        },
+        {
+          title: '5. How to Manage & Opt-Out of Cookies',
+          content: 'You can adjust or block non-essential cookies at any time through your browser settings (Chrome, Safari, Firefox, Edge). Please note that clearing or blocking all cookies may disable your shopping cart and user account login.'
+        },
+        {
+          title: '6. Cookie Queries & Data Privacy Support',
+          content: 'If you have any questions regarding our cookie practices, or wish to exercise your data preferences, contact our Data Protection Desk at care@oct9.com.'
+        }
+      ]
     }
+  },
+  cookie_banner: {
+    enabled: true,
+    title: 'Cookie & Privacy Preferences',
+    message: 'We use essential cookies to ensure our website functions securely and to personalize your shopping experience. By continuing to browse, you agree to our Cookie Policy and Privacy Policy.',
+    accept_text: 'Accept All',
+    decline_text: 'Essential Only',
+    link_text: 'Cookie Policy'
+  },
+  business_details: {
+    legal_name: 'OCT9 Retail Private Limited',
+    trade_name: 'OCT9',
+    cin_or_reg: 'U18109DL2026PTC123456',
+    gstin: '07AAFCO9999P1Z1',
+    registered_address: 'OCT9 Flagship Studio, Fashion Hub, Shahpur Jat, New Delhi 110049',
+    operating_address: 'Plot 42, Okhla Industrial Area Phase-III, New Delhi 110020',
+    grievance_officer_name: 'Customer Grievance Officer',
+    grievance_email: 'care@oct9.com',
+    grievance_phone: '+91 98765 43210',
+    support_email: 'support@oct9.com',
+    dispute_jurisdiction: 'Courts of New Delhi, India'
   }
 };
 
@@ -566,6 +619,8 @@ export function ContentProvider({ children }) {
           ...data.content,
           brand: { ...DEFAULT_SITE_CONTENT.brand, ...(data.content.brand || {}) },
           sections: { ...DEFAULT_SITE_CONTENT.sections, ...(data.content.sections || {}) },
+          cookie_banner: { ...DEFAULT_SITE_CONTENT.cookie_banner, ...(data.content.cookie_banner || {}) },
+          business_details: { ...DEFAULT_SITE_CONTENT.business_details, ...(data.content.business_details || {}) },
           page_availability: { ...DEFAULT_SITE_CONTENT.page_availability, ...(data.content.page_availability || {}) },
           pages: {
             ...DEFAULT_SITE_CONTENT.pages,
@@ -577,7 +632,8 @@ export function ContentProvider({ children }) {
             faq: { ...DEFAULT_SITE_CONTENT.pages.faq, ...(data.content.pages?.faq || {}) },
             terms: { ...DEFAULT_SITE_CONTENT.pages.terms, ...(data.content.pages?.terms || {}) },
             privacy: { ...DEFAULT_SITE_CONTENT.pages.privacy, ...(data.content.pages?.privacy || {}) },
-            about: { ...DEFAULT_SITE_CONTENT.pages.about, ...(data.content.pages?.about || {}) }
+            about: { ...DEFAULT_SITE_CONTENT.pages.about, ...(data.content.pages?.about || {}) },
+            cookie: { ...DEFAULT_SITE_CONTENT.pages.cookie, ...(data.content.pages?.cookie || {}) }
           }
         }));
       }
@@ -690,6 +746,16 @@ export function ContentProvider({ children }) {
     return content.pillars || DEFAULT_SITE_CONTENT.pillars;
   };
 
+  // Helper: Get Statutory Business & Grievance Details
+  const getBusinessDetails = () => {
+    return content.business_details || DEFAULT_SITE_CONTENT.business_details;
+  };
+
+  // Helper: Get Cookie Consent Banner Settings
+  const getCookieBanner = () => {
+    return content.cookie_banner || DEFAULT_SITE_CONTENT.cookie_banner;
+  };
+
   const value = {
     content,
     loading,
@@ -704,7 +770,9 @@ export function ContentProvider({ children }) {
     getPageContent,
     getHeroSlides,
     getJharokhaCategories,
-    getPillars
+    getPillars,
+    getBusinessDetails,
+    getCookieBanner
   };
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;

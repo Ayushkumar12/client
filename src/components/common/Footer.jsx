@@ -151,6 +151,7 @@ export function Footer() {
               <li><Link to="/contact" className="text-neutral-600 hover:text-brand-maroon transition-colors">Contact Us</Link></li>
               <li><Link to="/shipping-policy" className="text-neutral-600 hover:text-brand-maroon transition-colors">Shipping & Delivery</Link></li>
               <li><Link to="/returns" className="text-neutral-600 hover:text-brand-maroon transition-colors">Returns & Exchanges</Link></li>
+              <li><Link to="/refund-policy" className="text-neutral-600 hover:text-brand-maroon transition-colors">Refund & Cancellation</Link></li>
               <li><Link to="/size-guide" className="text-neutral-600 hover:text-brand-maroon transition-colors">Size Guide & Tailoring</Link></li>
               <li><Link to="/faq" className="text-neutral-600 hover:text-brand-maroon transition-colors">FAQs</Link></li>
             </ul>
@@ -221,6 +222,8 @@ export function Footer() {
             <Link to="/privacy" className="hover:text-brand-maroon transition-colors">Privacy Policy</Link>
             <span className="text-neutral-300">•</span>
             <Link to="/terms" className="hover:text-brand-maroon transition-colors">Terms of Service</Link>
+            <span className="text-neutral-300">•</span>
+            <Link to="/cookie-policy" className="hover:text-brand-maroon transition-colors">Cookie Policy</Link>
           </div>
         </div>
       </div>

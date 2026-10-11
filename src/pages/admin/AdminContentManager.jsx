@@ -98,6 +98,26 @@ export function AdminContentManager() {
     }));
   };
 
+  const updateBusinessField = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      business_details: {
+        ...(prev.business_details || DEFAULT_SITE_CONTENT.business_details || {}),
+        [field]: value
+      }
+    }));
+  };
+
+  const updateCookieBannerField = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      cookie_banner: {
+        ...(prev.cookie_banner || DEFAULT_SITE_CONTENT.cookie_banner || {}),
+        [field]: value
+      }
+    }));
+  };
+
   const updateSectionField = (sec, field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -1409,7 +1429,7 @@ export function AdminContentManager() {
                 { id: 'returns', label: 'Returns & Exchanges (/returns)', link: '/returns' },
                 { id: 'size_guide', label: 'Size Guide (/size-guide)', link: '/size-guide' },
                 { id: 'faq', label: 'FAQs (/faq)', link: '/faq' },
-                { id: 'legal', label: 'Terms, Privacy & About', link: '/terms' }
+                { id: 'legal', label: 'Terms, Privacy, Cookies & Entity', link: '/terms' }
               ].map((subtab) => (
                 <button
                   key={subtab.id}
@@ -2277,6 +2297,249 @@ export function AdminContentManager() {
                       />
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Cookie Policy Sections */}
+              <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                  <div>
+                    <h3 className="font-serif text-base font-bold text-neutral-900">Cookie Policy (/cookie-policy)</h3>
+                    <p className="text-xs text-neutral-500">Edit cookies, storage technologies, and user consent disclosures.</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAddLegalSection('cookie')}
+                      className="flex items-center space-x-1 px-2.5 py-1 bg-neutral-900 text-white text-xs font-bold rounded-lg cursor-pointer"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Add Clause</span>
+                    </button>
+                    <a
+                      href="/cookie-policy"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-xs font-semibold"
+                    >
+                      <span>View Live</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs mb-3">
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">Heading Title:</label>
+                    <input
+                      type="text"
+                      value={formData.pages?.cookie?.title || ''}
+                      onChange={(e) => updatePageData('cookie', 'title', e.target.value)}
+                      className="w-full p-2 rounded-lg border border-neutral-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">Subtitle:</label>
+                    <input
+                      type="text"
+                      value={formData.pages?.cookie?.subtitle || ''}
+                      onChange={(e) => updatePageData('cookie', 'subtitle', e.target.value)}
+                      className="w-full p-2 rounded-lg border border-neutral-300"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {(formData.pages?.cookie?.sections || DEFAULT_SITE_CONTENT.pages?.cookie?.sections || []).map((sec, idx) => (
+                    <div key={idx} className="bg-[#FAF7F2] p-4 rounded-xl border border-neutral-200 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <input
+                          type="text"
+                          value={sec.title || ''}
+                          onChange={(e) => handleUpdateLegalSection('cookie', idx, 'title', e.target.value)}
+                          placeholder="Clause Title"
+                          className="font-bold text-neutral-900 bg-white p-2 rounded-lg border border-neutral-300 flex-1 mr-3"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteLegalSection('cookie', idx)}
+                          className="text-red-500 p-1 cursor-pointer hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <textarea
+                        rows={3}
+                        value={sec.content || ''}
+                        onChange={(e) => handleUpdateLegalSection('cookie', idx, 'content', e.target.value)}
+                        className="w-full p-2 rounded-lg border border-neutral-300 bg-white font-sans text-xs leading-relaxed"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cookie Consent Banner Controls */}
+              <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                  <div>
+                    <h3 className="font-serif text-base font-bold text-neutral-900">Cookie Consent Banner Notice</h3>
+                    <p className="text-xs text-neutral-500">Configure the statutory consent prompt shown to first-time storefront visitors.</p>
+                  </div>
+                  <label className="flex items-center space-x-2 text-xs font-semibold text-neutral-800 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.cookie_banner?.enabled !== false}
+                      onChange={(e) => updateCookieBannerField('enabled', e.target.checked)}
+                      className="w-4 h-4 rounded text-neutral-900 focus:ring-neutral-900"
+                    />
+                    <span>Banner Active</span>
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">Banner Title:</label>
+                    <input
+                      type="text"
+                      value={formData.cookie_banner?.title || ''}
+                      onChange={(e) => updateCookieBannerField('title', e.target.value)}
+                      className="w-full p-2 rounded-lg border border-neutral-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">Target Policy Link URL:</label>
+                    <input
+                      type="text"
+                      value={formData.cookie_banner?.policy_url || '/cookie-policy'}
+                      onChange={(e) => updateCookieBannerField('policy_url', e.target.value)}
+                      className="w-full p-2 rounded-lg border border-neutral-300"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="font-bold text-neutral-700 block mb-1">Consent Message Body:</label>
+                    <textarea
+                      rows={2}
+                      value={formData.cookie_banner?.message || ''}
+                      onChange={(e) => updateCookieBannerField('message', e.target.value)}
+                      className="w-full p-2 rounded-lg border border-neutral-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">Accept Button Label:</label>
+                    <input
+                      type="text"
+                      value={formData.cookie_banner?.accept_text || 'Accept All'}
+                      onChange={(e) => updateCookieBannerField('accept_text', e.target.value)}
+                      className="w-full p-2 rounded-lg border border-neutral-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">Essential / Decline Button Label:</label>
+                    <input
+                      type="text"
+                      value={formData.cookie_banner?.decline_text || 'Essential Only'}
+                      onChange={(e) => updateCookieBannerField('decline_text', e.target.value)}
+                      className="w-full p-2 rounded-lg border border-neutral-300"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Statutory Business Details & Grievance Redressal */}
+              <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                  <div>
+                    <h3 className="font-serif text-base font-bold text-neutral-900">
+                      Statutory Business Details &amp; Grievance Redressal
+                    </h3>
+                    <p className="text-xs text-neutral-500">
+                      Mandatory under India Digital Personal Data Protection Act 2023 &amp; Consumer Protection (E-Commerce) Rules 2020.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">Registered Legal Entity Name:</label>
+                    <input
+                      type="text"
+                      value={formData.business_details?.legal_name || ''}
+                      onChange={(e) => updateBusinessField('legal_name', e.target.value)}
+                      placeholder="e.g. OCT9 Retail Private Limited"
+                      className="w-full p-2 rounded-lg border border-neutral-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">GSTIN Number:</label>
+                    <input
+                      type="text"
+                      value={formData.business_details?.gstin || ''}
+                      onChange={(e) => updateBusinessField('gstin', e.target.value)}
+                      placeholder="e.g. 24AAAAA0000A1Z5"
+                      className="w-full p-2 rounded-lg border border-neutral-300 font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">CIN / Business Registration No:</label>
+                    <input
+                      type="text"
+                      value={formData.business_details?.cin_or_reg || ''}
+                      onChange={(e) => updateBusinessField('cin_or_reg', e.target.value)}
+                      placeholder="e.g. U17120GJ2023PTC123456"
+                      className="w-full p-2 rounded-lg border border-neutral-300 font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">Dispute Jurisdiction Court:</label>
+                    <input
+                      type="text"
+                      value={formData.business_details?.dispute_jurisdiction || ''}
+                      onChange={(e) => updateBusinessField('dispute_jurisdiction', e.target.value)}
+                      placeholder="Surat, Gujarat, India"
+                      className="w-full p-2 rounded-lg border border-neutral-300"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="font-bold text-neutral-700 block mb-1">Statutory Registered Office Address:</label>
+                    <input
+                      type="text"
+                      value={formData.business_details?.registered_address || ''}
+                      onChange={(e) => updateBusinessField('registered_address', e.target.value)}
+                      placeholder="Full official registered address"
+                      className="w-full p-2 rounded-lg border border-neutral-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">Designated Grievance Officer Name:</label>
+                    <input
+                      type="text"
+                      value={formData.business_details?.grievance_officer_name || ''}
+                      onChange={(e) => updateBusinessField('grievance_officer_name', e.target.value)}
+                      placeholder="Compliance Officer Name"
+                      className="w-full p-2 rounded-lg border border-neutral-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">Grievance / DPO Official Email:</label>
+                    <input
+                      type="email"
+                      value={formData.business_details?.grievance_email || ''}
+                      onChange={(e) => updateBusinessField('grievance_email', e.target.value)}
+                      placeholder="care@oct9.com"
+                      className="w-full p-2 rounded-lg border border-neutral-300 font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-neutral-700 block mb-1">Grievance Support Phone / Helpline:</label>
+                    <input
+                      type="text"
+                      value={formData.business_details?.grievance_phone || ''}
+                      onChange={(e) => updateBusinessField('grievance_phone', e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="w-full p-2 rounded-lg border border-neutral-300 font-mono"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

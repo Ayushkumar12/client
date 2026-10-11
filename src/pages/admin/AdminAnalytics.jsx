@@ -8,8 +8,7 @@ import {
   Truck,
   RefreshCw,
   Search,
-  CheckCircle2,
-  AlertTriangle
+  CheckCircle2
 } from 'lucide-react';
 import { AgGridReact } from 'ag-grid-react';
 import { AgCharts } from 'ag-charts-react';
@@ -44,10 +43,6 @@ export function AdminAnalytics() {
   const [productQuickFilter, setProductQuickFilter] = useState('');
   const [reviewQuickFilter, setReviewQuickFilter] = useState('');
 
-  useEffect(() => {
-    loadAnalytics();
-  }, []);
-
   const loadAnalytics = async () => {
     setLoading(true);
     try {
@@ -61,6 +56,10 @@ export function AdminAnalytics() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadAnalytics();
+  }, []);
 
   const handleToggleRatings = async () => {
     setTogglingRatings(true);

@@ -19,11 +19,6 @@ export function CartProvider({ children }) {
     localStorage.setItem('oct9_cart', JSON.stringify(cart));
   }, [cart]);
 
-  useEffect(() => {
-    // Clean up any previously stored coupon
-    localStorage.removeItem('oct9_coupon');
-  }, []);
-
   const addToCart = (product, size = 'M', color = 'Standard', quantity = 1) => {
     setCart(prevCart => {
       const existingIndex = prevCart.findIndex(
@@ -81,11 +76,7 @@ export function CartProvider({ children }) {
     setCart([]);
   };
 
-  // Safe dummy functions for backward compatibility if called
-  const applyCoupon = async () => false;
-  const removeCoupon = () => {};
-
-  // Calculations: Free shipping on all orders, no GST surcharge, no coupons
+  // Calculations: Free shipping on all orders, no GST surcharge
   const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
   const discountAmount = 0;
@@ -106,11 +97,6 @@ export function CartProvider({ children }) {
         setIsCartOpen,
         openCart: () => setIsCartOpen(true),
         closeCart: () => setIsCartOpen(false),
-        appliedCoupon: null,
-        applyCoupon,
-        removeCoupon,
-        couponError: '',
-        couponLoading: false,
         subtotal,
         totalItems,
         discountAmount,

@@ -228,7 +228,7 @@ export function AdminDatabase() {
             <span>Delete All Data Completely From All Tables</span>
           </div>
           <p className="text-xs text-red-800/90 max-w-3xl leading-relaxed">
-            This operation truncates all database tables including <strong>Products, Orders, Order Items, Channels Listings, Inventory Audit Logs, Customer Reviews, Wishlists, Coupons, and Customer Accounts</strong>. Foreign key checks are safely bypassed during execution.
+            This operation truncates all database tables including <strong>Products, Orders, Order Items, Channels Listings, Inventory Audit Logs, Customer Reviews, Wishlists, and Customer Accounts</strong>. Foreign key checks are safely bypassed during execution.
           </p>
         </div>
 
@@ -329,7 +329,7 @@ export function AdminDatabase() {
                 <li>All products, sizes, categories, and inventory listings</li>
                 <li>All orders, shipments, waybills, and order line items</li>
                 <li>All multi-channel sync logs (Flipkart, Amazon, Myntra)</li>
-                <li>All customer reviews, wishlists, and promotional coupons</li>
+                <li>All customer reviews and wishlists</li>
                 <li>All customer accounts and saved shipping addresses</li>
                 <li>All contact messages and return requests</li>
               </ul>

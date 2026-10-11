@@ -127,7 +127,6 @@ export default function App() {
                         <Route path="shiprocket" element={<AdminShiprocket />} />
                         <Route path="delhivery" element={<AdminShiprocket />} />
                         <Route path="products" element={<AdminProducts />} />
-                        <Route path="coupons" element={<Navigate to="/admin" replace />} />
                         <Route path="customers" element={<AdminCustomers />} />
                         <Route path="inquiries" element={<AdminInquiries />} />
                         <Route path="content" element={<AdminContentManager />} />

@@ -312,15 +312,6 @@ export const api = {
   testShiprocketConnection: (data) => request('/shiprocket/config/test', { method: 'POST', body: JSON.stringify(data) }),
   syncShiprocketDeliveryStatus: (params = {}) => request('/shiprocket/sync-status', { method: 'POST', body: JSON.stringify(params) }),
 
-  // Coupons
-  validateCoupon: (code, cartTotal) => request('/coupons/validate', {
-    method: 'POST',
-    body: JSON.stringify({ code, cart_total: cartTotal }),
-  }),
-  getAllCoupons: () => request('/coupons/admin/all'),
-  createCoupon: (coupon) => request('/coupons/admin/create', { method: 'POST', body: JSON.stringify(coupon) }),
-  deleteCoupon: (id) => request(`/coupons/admin/${id}`, { method: 'DELETE' }),
-
   // Media & Image Upload
   uploadImage: async (file) => {
     const formData = new FormData();

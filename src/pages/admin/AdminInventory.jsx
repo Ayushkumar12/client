@@ -729,12 +729,12 @@ export function AdminInventory() {
                       <td className="py-3 px-3 text-center">
                         <div className="flex flex-col items-center justify-center space-y-1">
                           <span
-                            className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                            className={`text-xs font-semibold ${
                               p.stock <= 0
-                                ? 'bg-red-50 text-red-700 border border-red-200'
+                                ? 'text-red-600'
                                 : p.stock <= 10
-                                ? 'bg-amber-50 text-amber-800 border border-amber-200'
-                                : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                ? 'text-amber-600'
+                                : 'text-neutral-900'
                             }`}
                           >
                             {p.stock} units
@@ -779,14 +779,15 @@ export function AdminInventory() {
                             </button>
                           </div>
                           <div className="flex items-center justify-between text-[11px]">
-                            <span className="text-neutral-500">Stock: <strong className={fk.allocated_stock <= 0 ? 'text-red-600' : 'text-neutral-800'}>{fk.allocated_stock}</strong></span>
+                            <span className="text-neutral-500">Stock: <strong className={fk.allocated_stock <= 0 ? 'text-red-600 font-medium' : 'text-neutral-800 font-medium'}>{fk.allocated_stock}</strong></span>
                             <span className="font-medium text-neutral-800">₹{fk.channel_price}</span>
                           </div>
-                          <span className={`text-[10px] px-1 py-0.2 rounded font-medium inline-block ${
-                            fk.listing_status === 'active' ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'
+                          <div className={`text-[11px] flex items-center space-x-1.5 ${
+                            fk.listing_status === 'active' ? 'text-neutral-600' : 'text-red-600 font-medium'
                           }`}>
-                            {fk.listing_status === 'active' ? '● Synced' : '○ Out of stock'}
-                          </span>
+                            <span className={`w-1.5 h-1.5 rounded-full ${fk.listing_status === 'active' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                            <span>{fk.listing_status === 'active' ? 'Synced' : 'Out of stock'}</span>
+                          </div>
                         </div>
                       </td>
 
@@ -803,14 +804,15 @@ export function AdminInventory() {
                             </button>
                           </div>
                           <div className="flex items-center justify-between text-[11px]">
-                            <span className="text-neutral-500">Stock: <strong className={amz.allocated_stock <= 0 ? 'text-red-600' : 'text-neutral-800'}>{amz.allocated_stock}</strong></span>
+                            <span className="text-neutral-500">Stock: <strong className={amz.allocated_stock <= 0 ? 'text-red-600 font-medium' : 'text-neutral-800 font-medium'}>{amz.allocated_stock}</strong></span>
                             <span className="font-medium text-neutral-800">₹{amz.channel_price}</span>
                           </div>
-                          <span className={`text-[10px] px-1 py-0.2 rounded font-medium inline-block ${
-                            amz.listing_status === 'active' ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'
+                          <div className={`text-[11px] flex items-center space-x-1.5 ${
+                            amz.listing_status === 'active' ? 'text-neutral-600' : 'text-red-600 font-medium'
                           }`}>
-                            {amz.listing_status === 'active' ? '● Synced' : '○ Out of stock'}
-                          </span>
+                            <span className={`w-1.5 h-1.5 rounded-full ${amz.listing_status === 'active' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                            <span>{amz.listing_status === 'active' ? 'Synced' : 'Out of stock'}</span>
+                          </div>
                         </div>
                       </td>
 
@@ -827,14 +829,15 @@ export function AdminInventory() {
                             </button>
                           </div>
                           <div className="flex items-center justify-between text-[11px]">
-                            <span className="text-neutral-500">Stock: <strong className={mee.allocated_stock <= 0 ? 'text-red-600' : 'text-neutral-800'}>{mee.allocated_stock}</strong></span>
+                            <span className="text-neutral-500">Stock: <strong className={mee.allocated_stock <= 0 ? 'text-red-600 font-medium' : 'text-neutral-800 font-medium'}>{mee.allocated_stock}</strong></span>
                             <span className="font-medium text-neutral-800">₹{mee.channel_price}</span>
                           </div>
-                          <span className={`text-[10px] px-1 py-0.2 rounded font-medium inline-block ${
-                            mee.listing_status === 'active' ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'
+                          <div className={`text-[11px] flex items-center space-x-1.5 ${
+                            mee.listing_status === 'active' ? 'text-neutral-600' : 'text-red-600 font-medium'
                           }`}>
-                            {mee.listing_status === 'active' ? '● Synced' : '○ Out of stock'}
-                          </span>
+                            <span className={`w-1.5 h-1.5 rounded-full ${mee.listing_status === 'active' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                            <span>{mee.listing_status === 'active' ? 'Synced' : 'Out of stock'}</span>
+                          </div>
                         </div>
                       </td>
 
@@ -843,17 +846,18 @@ export function AdminInventory() {
                         <div className="space-y-0.5">
                           <div className="flex items-center justify-between">
                             <span className="font-mono text-[10px] text-neutral-700 font-semibold">{store.channel_product_id || 'OCT9-LIV'}</span>
-                            <span className="text-[10px] text-emerald-700 font-medium">Live</span>
+                            <span className="text-[10px] text-neutral-500 font-medium">Live</span>
                           </div>
                           <div className="flex items-center justify-between text-[11px]">
-                            <span className="text-neutral-500">Avail: <strong className={p.stock <= 0 ? 'text-red-600' : 'text-neutral-800'}>{p.stock}</strong></span>
+                            <span className="text-neutral-500">Avail: <strong className={p.stock <= 0 ? 'text-red-600 font-medium' : 'text-neutral-800 font-medium'}>{p.stock}</strong></span>
                             <span className="font-medium text-neutral-800">₹{p.price}</span>
                           </div>
-                          <span className={`text-[10px] px-1 py-0.2 rounded font-medium inline-block ${
-                            p.stock > 0 ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'
+                          <div className={`text-[11px] flex items-center space-x-1.5 ${
+                            p.stock > 0 ? 'text-neutral-600' : 'text-red-600 font-medium'
                           }`}>
-                            {p.stock > 0 ? '● Active' : '○ Sold Out'}
-                          </span>
+                            <span className={`w-1.5 h-1.5 rounded-full ${p.stock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                            <span>{p.stock > 0 ? 'Active' : 'Sold Out'}</span>
+                          </div>
                         </div>
                       </td>
 
@@ -865,7 +869,7 @@ export function AdminInventory() {
                             className="px-2 py-1 bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-700 rounded text-[11px] font-medium flex items-center space-x-1 cursor-pointer"
                             title="Simulate marketplace order"
                           >
-                            <Zap className="w-3 h-3 text-amber-600" />
+                            <Play className="w-3 h-3 text-neutral-500" />
                             <span className="hidden xl:inline">Simulate</span>
                           </button>
 
@@ -1496,7 +1500,7 @@ export function AdminInventory() {
                   disabled={simulating}
                   className="px-4 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-medium rounded flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
                 >
-                  {simulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                  {simulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
                   <span>{simulating ? 'Placing...' : 'Place Test Order'}</span>
                 </button>
               </div>

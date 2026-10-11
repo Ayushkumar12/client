@@ -396,7 +396,7 @@ export const api = {
     let web3Status = 'skipped_no_key';
     try {
       const config = await request('/forms/config').catch(() => null);
-      const key = config?.contactKey || config?.accessKey || import.meta.env?.VITE_WEB3FORMS_KEY || 'f648dc37-46c2-4308-94bc-e8547da52026';
+      const key = config?.contactKey || import.meta.env?.VITE_WEB3FORMS_CONTACT_KEY || import.meta.env?.VITE_WEB3FORMS_KEY || 'be8b6a73-cedd-47ae-a97b-5273e8405f6e';
       if (key && key !== 'YOUR_CONTACT_ACCESS_KEY_HERE') {
         const response = await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
@@ -434,8 +434,9 @@ export const api = {
     let web3Status = 'skipped_no_key';
     try {
       const config = await request('/forms/config').catch(() => null);
-      const key = config?.returnKey || config?.accessKey || import.meta.env?.VITE_WEB3FORMS_KEY || 'f648dc37-46c2-4308-94bc-e8547da52026';
+      const key = config?.returnKey || import.meta.env?.VITE_WEB3FORMS_RETURN_KEY || import.meta.env?.VITE_WEB3FORMS_KEY || '97ae731d-aa4b-4e9d-b586-ef022673f223';
       if (key && key !== 'YOUR_RETURN_ACCESS_KEY_HERE') {
+
         const response = await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
           headers: {

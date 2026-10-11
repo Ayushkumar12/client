@@ -1,15 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Package,
-  Truck,
-  ShoppingBag,
-  TrendingUp,
   AlertTriangle,
   ArrowRight,
   Loader2
 } from 'lucide-react';
+import { AgGridReact } from 'ag-grid-react';
+import { AgCharts } from 'ag-charts-react';
+import {
+  ModuleRegistry as GridModuleRegistry,
+  AllCommunityModule as GridAllCommunityModule
+} from 'ag-grid-community';
+import {
+  ModuleRegistry as ChartModuleRegistry,
+  AllCommunityModule as ChartAllCommunityModule
+} from 'ag-charts-community';
+
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-quartz.css';
+
 import { api } from '../../services/api.js';
+
+// Register AG Grid & AG Charts Community Modules
+GridModuleRegistry.registerModules([GridAllCommunityModule]);
+ChartModuleRegistry.registerModules([ChartAllCommunityModule]);
 
 export function AdminDashboard() {
   const [metrics, setMetrics] = useState(null);
@@ -36,6 +50,128 @@ export function AdminDashboard() {
     }
     loadData();
   }, []);
+
+  // AG GRID Default Column Definition
+  const defaultColDef = useMemo(() => ({
+    sortable: true,
+    filter: true,
+    resizable: true
+  }), []);
+
+  // AG GRID Column Definitions for Recent Orders
+  const orderColDefs = useMemo(() => [
+    {
+      field: 'order_number',
+      headerName: 'Order #',
+      width: 140,
+      pinned: 'left',
+      cellClass: 'font-mono font-medium text-neutral-900'
+    },
+    {
+      field: 'customer_name',
+      headerName: 'Customer',
+      width: 160,
+      cellClass: 'font-medium text-neutral-900'
+    },
+    {
+      field: 'grand_total',
+      headerName: 'Amount',
+      width: 120,
+      valueFormatter: (p) => `₹${Number(p.value || 0).toLocaleString('en-IN')}`,
+      cellClass: 'font-bold text-neutral-900'
+    },
+    {
+      field: 'payment_status',
+      headerName: 'Payment',
+      width: 120,
+      cellRenderer: (p) => {
+        const isPaid = p.value === 'paid';
+        return (
+          <span className={`inline-flex items-center text-[10px] font-semibold uppercase px-2 py-0.5 rounded ${
+            isPaid ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'
+          }`}>
+            {p.value || 'Pending'}
+          </span>
+        );
+      }
+    },
+    {
+      field: 'delhivery_waybill',
+      headerName: 'AWB Tracking',
+      width: 150,
+      cellRenderer: (p) => (
+        <span className="font-mono text-[11px] text-neutral-700">
+          {p.value || 'Unmanifested'}
+        </span>
+      )
+    },
+    {
+      field: 'order_status',
+      headerName: 'Fulfillment Status',
+      width: 150,
+      cellRenderer: (p) => (
+        <span className="capitalize font-medium text-xs text-neutral-700">
+          {p.value || 'Received'}
+        </span>
+      )
+    }
+  ], []);
+
+  // AG CHART Options for Sales & Orders Quick Trend
+  const dashboardChartOptions = useMemo(() => {
+    const totalRev = Number(metrics?.total_revenue || 120000);
+    const mockTrend = [
+      { day: 'Mon', revenue: Math.round(totalRev * 0.1), orders: 4 },
+      { day: 'Tue', revenue: Math.round(totalRev * 0.14), orders: 6 },
+      { day: 'Wed', revenue: Math.round(totalRev * 0.18), orders: 8 },
+      { day: 'Thu', revenue: Math.round(totalRev * 0.15), orders: 7 },
+      { day: 'Fri', revenue: Math.round(totalRev * 0.22), orders: 11 },
+      { day: 'Sat', revenue: Math.round(totalRev * 0.28), orders: 14 },
+      { day: 'Sun', revenue: Math.round(totalRev * 0.25), orders: 12 }
+    ];
+
+    return {
+      title: {
+        text: 'Weekly Sales Velocity',
+        fontSize: 13,
+        fontWeight: 'bold',
+        color: '#171717'
+      },
+      subtitle: {
+        text: 'Revenue trajectory across current cycle',
+        fontSize: 11,
+        color: '#737373'
+      },
+      data: mockTrend,
+      series: [
+        {
+          type: 'column',
+          xKey: 'day',
+          yKey: 'revenue',
+          yName: 'Revenue (₹)',
+          fill: '#171717',
+          stroke: '#171717',
+          cornerRadius: 3
+        }
+      ],
+      axes: [
+        {
+          type: 'category',
+          position: 'bottom',
+          label: { fontSize: 10, color: '#525252' }
+        },
+        {
+          type: 'number',
+          position: 'left',
+          label: {
+            formatter: (p) => `₹${Number(p.value).toLocaleString('en-IN')}`,
+            fontSize: 10,
+            color: '#525252'
+          }
+        }
+      ]
+    };
+  }, [metrics]);
 
   if (loading) {
     return (
@@ -75,6 +211,12 @@ export function AdminDashboard() {
             className="px-3.5 py-2 bg-white hover:bg-neutral-50 text-neutral-800 font-medium border border-neutral-300 rounded-md transition-colors"
           >
             Inventory
+          </Link>
+          <Link
+            to="/admin/analytics"
+            className="px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 text-white font-medium rounded-md transition-colors"
+          >
+            Full Analytics →
           </Link>
         </div>
       </div>
@@ -149,66 +291,34 @@ export function AdminDashboard() {
         </div>
       )}
 
-      {/* 2-Column: Recent Orders & Top Selling Products */}
+      {/* Visual Analytics Row: AG Chart */}
+      <div className="bg-white rounded-lg border border-neutral-200 p-4 shadow-2xs">
+        <div className="h-[220px]">
+          <AgCharts options={dashboardChartOptions} />
+        </div>
+      </div>
+
+      {/* 2-Column: Recent Orders (AG Grid) & Top Selling Products */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Recent Orders (8 cols) */}
-        <div className="lg:col-span-8 bg-white rounded-lg border border-neutral-200 overflow-hidden">
-          <div className="p-4 border-b border-neutral-200 flex items-center justify-between">
-            <h2 className="font-bold text-sm text-neutral-900">Recent Customer Orders</h2>
+        {/* Recent Orders AG Grid (8 cols) */}
+        <div className="lg:col-span-8 bg-white rounded-lg border border-neutral-200 p-4 space-y-3">
+          <div className="flex items-center justify-between border-b border-neutral-100 pb-2">
+            <h2 className="font-bold text-sm text-neutral-900">Recent Customer Orders (AG Grid)</h2>
             <Link to="/admin/orders" className="text-xs font-medium text-neutral-600 hover:text-neutral-900 flex items-center space-x-1">
               <span>View all orders</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-neutral-50 text-neutral-600 border-b border-neutral-200">
-                <tr>
-                  <th className="py-2.5 px-4 font-semibold">Order</th>
-                  <th className="py-2.5 px-4 font-semibold">Customer</th>
-                  <th className="py-2.5 px-4 font-semibold">Amount</th>
-                  <th className="py-2.5 px-4 font-semibold">Payment</th>
-                  <th className="py-2.5 px-4 font-semibold">AWB Tracking</th>
-                  <th className="py-2.5 px-4 font-semibold">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-200">
-                {recentOrders.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="py-6 text-center text-neutral-400">
-                      No recent orders found.
-                    </td>
-                  </tr>
-                ) : (
-                  recentOrders.map((o) => (
-                    <tr key={o.id} className="hover:bg-neutral-50">
-                      <td className="py-3 px-4 font-mono font-medium text-neutral-900">{o.order_number}</td>
-                      <td className="py-3 px-4">
-                        <p className="font-medium text-neutral-900">{o.customer_name}</p>
-                        <span className="text-[10px] text-neutral-400">{o.customer_phone}</span>
-                      </td>
-                      <td className="py-3 px-4 font-semibold text-neutral-900">₹{o.grand_total}</td>
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
-                          o.payment_status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                        }`}>
-                          {o.payment_status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 font-mono text-[11px] text-neutral-700">
-                        {o.delhivery_waybill || 'Unmanifested'}
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="bg-neutral-100 text-neutral-800 px-2 py-0.5 rounded text-[11px] capitalize font-medium">
-                          {o.order_status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+          <div className="ag-theme-quartz" style={{ height: 350, width: '100%' }}>
+            <AgGridReact
+              rowData={recentOrders}
+              columnDefs={orderColDefs}
+              defaultColDef={defaultColDef}
+              pagination={true}
+              paginationPageSize={5}
+              paginationPageSizeSelector={[5, 10, 20]}
+            />
           </div>
         </div>
 

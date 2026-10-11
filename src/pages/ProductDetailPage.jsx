@@ -3,22 +3,15 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Star,
   Heart,
-  ShoppingBag,
   Truck,
   RotateCcw,
   ShieldCheck,
-  Check,
   Share2,
   Ruler,
-  AlertCircle,
-  MessageSquarePlus,
   Loader2,
   ChevronDown,
   ChevronUp,
-  Sparkles,
-  Scissors,
   CheckCircle2,
-  PackageCheck,
   XCircle,
   AlertTriangle
 } from 'lucide-react';
@@ -29,7 +22,7 @@ import { ShiprocketPincodeChecker } from '../components/common/ShiprocketPincode
 import { ProductCard } from '../components/common/ProductCard.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { api } from '../services/api.js';
-import { decodeProductSlug, getProductUrl, encodeProductSlug } from '../utils/productUrl.js';
+import { decodeProductSlug, encodeProductSlug } from '../utils/productUrl.js';
 
 export function ProductDetailPage() {
   const { slug: rawParam } = useParams();

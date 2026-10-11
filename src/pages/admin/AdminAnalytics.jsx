@@ -286,7 +286,7 @@ export function AdminAnalytics() {
         }
       ]
     };
-  }, [breakdown]);
+  }, [analytics?.ratings_analytics]);
 
   // 5. Chart: Category Sales Revenue Contribution
   const categorySalesChartOptions = useMemo(() => {

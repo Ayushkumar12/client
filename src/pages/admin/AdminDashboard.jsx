@@ -175,9 +175,37 @@ export function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center space-y-2">
-        <Loader2 className="w-6 h-6 text-neutral-600 animate-spin" />
-        <p className="text-xs text-neutral-500">Loading dashboard...</p>
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-200">
+          <div className="space-y-1">
+            <div className="h-6 bg-neutral-200/80 rounded w-32 skeleton-shimmer" />
+            <div className="h-3 bg-neutral-200/80 rounded w-64 skeleton-shimmer" />
+          </div>
+        </div>
+
+        {/* 4 Metrics Cards Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white border border-neutral-200 p-4 space-y-3">
+              <div className="h-3 bg-neutral-200/80 rounded w-24 skeleton-shimmer" />
+              <div className="h-7 bg-neutral-200/80 rounded w-20 skeleton-shimmer" />
+              <div className="h-2.5 bg-neutral-200/80 rounded w-32 skeleton-shimmer" />
+            </div>
+          ))}
+        </div>
+
+        {/* Chart Skeleton */}
+        <div className="bg-white border border-neutral-200 p-4 space-y-3">
+          <div className="h-4 bg-neutral-200/80 rounded w-36 skeleton-shimmer" />
+          <div className="h-[280px] bg-neutral-100 rounded skeleton-shimmer" />
+        </div>
+
+        {/* Recent Orders Table Skeleton */}
+        <div className="bg-white border border-neutral-200 p-4 space-y-3">
+          <div className="h-4 bg-neutral-200/80 rounded w-32 skeleton-shimmer" />
+          <div className="h-[200px] bg-neutral-100 rounded skeleton-shimmer" />
+        </div>
       </div>
     );
   }

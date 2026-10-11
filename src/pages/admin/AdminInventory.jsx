@@ -19,6 +19,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { api } from '../../services/api.js';
+import { TableSkeleton } from '../../components/common/Skeleton.jsx';
 
 export function AdminInventory() {
   const [overview, setOverview] = useState(null);
@@ -375,7 +376,7 @@ export function AdminInventory() {
             Multi-Channel Inventory
           </h1>
           <p className="text-xs text-neutral-500 mt-0.5">
-            Master stock synchronized live across Flipkart, Amazon, Meesho, and Storefront.
+            Master stock synchronized live across Flipkart, Amazon, Myntra, and Storefront.
           </p>
         </div>
 
@@ -536,32 +537,32 @@ export function AdminInventory() {
           </div>
         </div>
 
-        {/* Meesho */}
+        {/* Myntra */}
         <div className="p-3.5 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-xs text-neutral-900">Meesho Supplier</span>
+            <span className="font-semibold text-xs text-neutral-900">Myntra Supplier</span>
             <span className="inline-flex items-center space-x-1.5 text-[11px] text-neutral-500">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
               <span>Connected</span>
             </span>
           </div>
           <div className="text-[11px] text-neutral-500 flex justify-between">
-            <span>ID: <strong className="text-neutral-700 font-normal">MEE_SUPP_77192</strong></span>
+            <span>ID: <strong className="text-neutral-700 font-normal">MYN_SUPP_88291</strong></span>
             <span>Hub: Okhla</span>
           </div>
           <div className="flex items-center space-x-2 pt-1 border-t border-neutral-100 text-xs">
             <button
-              onClick={() => handleTestConnection('meesho')}
-              disabled={testingChannelKey === 'meesho'}
+              onClick={() => handleTestConnection('myntra')}
+              disabled={testingChannelKey === 'myntra'}
               className="text-neutral-600 hover:text-neutral-900 text-[11px] font-medium flex items-center space-x-1 cursor-pointer"
             >
-              {testingChannelKey === 'meesho' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3 text-neutral-400" />}
+              {testingChannelKey === 'myntra' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3 text-neutral-400" />}
               <span>Test Ping</span>
             </button>
             <span className="text-neutral-300">|</span>
             <button
               onClick={() => {
-                setActiveConfigTab('meesho');
+                setActiveConfigTab('myntra');
                 setShowConfigModal(true);
               }}
               className="text-neutral-600 hover:text-neutral-900 text-[11px] font-medium cursor-pointer"
@@ -669,10 +670,7 @@ export function AdminInventory() {
       {/* 5. Clean Enterprise Inventory Table */}
       <div className="border border-neutral-200 bg-white rounded overflow-hidden shadow-2xs">
         {loading ? (
-          <div className="py-20 text-center">
-            <Loader2 className="w-6 h-6 text-neutral-500 animate-spin mx-auto" />
-            <p className="text-xs text-neutral-500 mt-2">Loading multi-channel inventory records...</p>
-          </div>
+          <TableSkeleton rows={8} columns={5} />
         ) : products.length === 0 ? (
           <div className="py-16 text-center text-xs text-neutral-500 space-y-1">
             <Boxes className="w-8 h-8 text-neutral-300 mx-auto mb-1" />
@@ -688,7 +686,7 @@ export function AdminInventory() {
                   <th className="py-3 px-3 text-center">Warehouse Stock</th>
                   <th className="py-3 px-3 border-l border-neutral-200">Flipkart</th>
                   <th className="py-3 px-3 border-l border-neutral-200">Amazon</th>
-                  <th className="py-3 px-3 border-l border-neutral-200">Meesho</th>
+                  <th className="py-3 px-3 border-l border-neutral-200">Myntra</th>
                   <th className="py-3 px-3 border-l border-neutral-200">Storefront</th>
                   <th className="py-3 px-3 text-right">Actions</th>
                 </tr>
@@ -697,7 +695,7 @@ export function AdminInventory() {
                 {products.map((p) => {
                   const fk = p.channels?.flipkart || {};
                   const amz = p.channels?.amazon || {};
-                  const mee = p.channels?.meesho || {};
+                  const myn = p.channels?.myntra || p.channels?.meesho || {};
                   const store = p.channels?.storefront || {};
 
                   return (
@@ -816,27 +814,27 @@ export function AdminInventory() {
                         </div>
                       </td>
 
-                      {/* Meesho Channel Column */}
+                      {/* Myntra Channel Column */}
                       <td className="py-3 px-3 border-l border-neutral-200 bg-neutral-50/30">
                         <div className="space-y-0.5">
                           <div className="flex items-center justify-between">
-                            <span className="font-mono text-[10px] text-neutral-700 font-semibold">{mee.channel_product_id || 'MEE-PENDING'}</span>
+                            <span className="font-mono text-[10px] text-neutral-700 font-semibold">{myn.channel_product_id || 'MYN-PENDING'}</span>
                             <button
-                              onClick={() => openChannelListingModal(p, 'meesho')}
+                              onClick={() => openChannelListingModal(p, 'myntra')}
                               className="text-[10px] text-neutral-600 hover:text-neutral-900 font-medium underline cursor-pointer"
                             >
                               Edit
                             </button>
                           </div>
                           <div className="flex items-center justify-between text-[11px]">
-                            <span className="text-neutral-500">Stock: <strong className={mee.allocated_stock <= 0 ? 'text-red-600 font-medium' : 'text-neutral-800 font-medium'}>{mee.allocated_stock}</strong></span>
-                            <span className="font-medium text-neutral-800">₹{mee.channel_price}</span>
+                            <span className="text-neutral-500">Stock: <strong className={myn.allocated_stock <= 0 ? 'text-red-600 font-medium' : 'text-neutral-800 font-medium'}>{myn.allocated_stock}</strong></span>
+                            <span className="font-medium text-neutral-800">₹{myn.channel_price}</span>
                           </div>
                           <div className={`text-[11px] flex items-center space-x-1.5 ${
-                            mee.listing_status === 'active' ? 'text-neutral-600' : 'text-red-600 font-medium'
+                            myn.listing_status === 'active' ? 'text-neutral-600' : 'text-red-600 font-medium'
                           }`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${mee.listing_status === 'active' ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                            <span>{mee.listing_status === 'active' ? 'Synced' : 'Out of stock'}</span>
+                            <span className={`w-1.5 h-1.5 rounded-full ${myn.listing_status === 'active' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                            <span>{myn.listing_status === 'active' ? 'Synced' : 'Out of stock'}</span>
                           </div>
                         </div>
                       </td>
@@ -931,7 +929,7 @@ export function AdminInventory() {
                   className="w-full px-3 py-2 border border-neutral-300 rounded font-semibold text-sm bg-white focus:outline-none focus:border-neutral-900"
                 />
                 <p className="text-[10px] text-neutral-500 mt-1">
-                  Updated stock immediately propagates to Flipkart, Amazon, Meesho, and Storefront.
+                  Updated stock immediately propagates to Flipkart, Amazon, Myntra, and Storefront.
                 </p>
               </div>
 
@@ -1082,7 +1080,7 @@ export function AdminInventory() {
               {[
                 { id: 'flipkart', name: 'Flipkart' },
                 { id: 'amazon', name: 'Amazon SP-API' },
-                { id: 'meesho', name: 'Meesho' },
+                { id: 'myntra', name: 'Myntra Supplier' },
                 { id: 'storefront', name: 'Storefront' }
               ].map(tab => (
                 <button
@@ -1227,16 +1225,16 @@ export function AdminInventory() {
               </div>
             )}
 
-            {/* Tab Form: Meesho */}
-            {activeConfigTab === 'meesho' && (
+            {/* Tab Form: Myntra */}
+            {activeConfigTab === 'myntra' && (
               <div className="space-y-3 text-xs">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block font-medium text-neutral-700 mb-1">Supplier ID</label>
                     <input
                       type="text"
-                      value={configForms.meesho?.supplier_id || ''}
-                      onChange={(e) => setConfigForms({ ...configForms, meesho: { ...configForms.meesho, supplier_id: e.target.value } })}
+                      value={configForms.myntra?.supplier_id || ''}
+                      onChange={(e) => setConfigForms({ ...configForms, myntra: { ...configForms.myntra, supplier_id: e.target.value } })}
                       className="w-full px-3 py-1.5 border border-neutral-300 rounded font-mono text-xs focus:outline-none focus:border-neutral-900"
                     />
                   </div>
@@ -1244,19 +1242,19 @@ export function AdminInventory() {
                     <label className="block font-medium text-neutral-700 mb-1">Warehouse Pincode</label>
                     <input
                       type="text"
-                      value={configForms.meesho?.warehouse_pincode || '110020'}
-                      onChange={(e) => setConfigForms({ ...configForms, meesho: { ...configForms.meesho, warehouse_pincode: e.target.value } })}
+                      value={configForms.myntra?.warehouse_pincode || '110020'}
+                      onChange={(e) => setConfigForms({ ...configForms, myntra: { ...configForms.myntra, warehouse_pincode: e.target.value } })}
                       className="w-full px-3 py-1.5 border border-neutral-300 rounded font-mono text-xs focus:outline-none focus:border-neutral-900"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block font-medium text-neutral-700 mb-1">API Key</label>
+                  <label className="block font-medium text-neutral-700 mb-1">API Key / PPMP Token</label>
                   <input
                     type="password"
-                    value={configForms.meesho?.api_key || ''}
-                    onChange={(e) => setConfigForms({ ...configForms, meesho: { ...configForms.meesho, api_key: e.target.value } })}
+                    value={configForms.myntra?.api_key || ''}
+                    onChange={(e) => setConfigForms({ ...configForms, myntra: { ...configForms.myntra, api_key: e.target.value } })}
                     className="w-full px-3 py-1.5 border border-neutral-300 rounded font-mono text-xs focus:outline-none focus:border-neutral-900"
                   />
                 </div>
@@ -1264,17 +1262,17 @@ export function AdminInventory() {
                 <div className="flex items-center space-x-2 pt-2 border-t border-neutral-200">
                   <button
                     type="button"
-                    onClick={() => handleTestConnection('meesho')}
-                    disabled={testingChannelKey === 'meesho'}
+                    onClick={() => handleTestConnection('myntra')}
+                    disabled={testingChannelKey === 'myntra'}
                     className="px-3 py-1.5 border border-neutral-300 rounded text-neutral-700 hover:bg-neutral-50 font-medium flex items-center space-x-1 cursor-pointer"
                   >
-                    {testingChannelKey === 'meesho' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Activity className="w-3.5 h-3.5 text-neutral-500" />}
+                    {testingChannelKey === 'myntra' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Activity className="w-3.5 h-3.5 text-neutral-500" />}
                     <span>Test Ping</span>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => handleSaveChannelConfig('meesho')}
+                    onClick={() => handleSaveChannelConfig('myntra')}
                     disabled={savingConfig}
                     className="px-4 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded font-medium ml-auto cursor-pointer"
                   >
@@ -1459,7 +1457,7 @@ export function AdminInventory() {
                   >
                     <option value="flipkart">Flipkart</option>
                     <option value="amazon">Amazon</option>
-                    <option value="meesho">Meesho</option>
+                    <option value="myntra">Myntra Supplier</option>
                     <option value="storefront">Storefront</option>
                   </select>
                 </div>

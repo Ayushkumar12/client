@@ -20,6 +20,7 @@ import { useWishlist } from '../context/WishlistContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { ShiprocketPincodeChecker } from '../components/common/ShiprocketPincodeChecker.jsx';
 import { ProductCard } from '../components/common/ProductCard.jsx';
+import { ProductDetailSkeleton } from '../components/common/Skeleton.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { api } from '../services/api.js';
 import { decodeProductSlug, encodeProductSlug } from '../utils/productUrl.js';
@@ -101,11 +102,7 @@ export function ProductDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center bg-[#FAF7F2]">
-        <Loader2 className="w-10 h-10 text-brand-maroon animate-spin" />
-      </div>
-    );
+    return <ProductDetailSkeleton />;
   }
 
   if (!product) {

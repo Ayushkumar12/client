@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Users, Mail, Phone, ShoppingBag, Loader2, Search, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
+import { TableSkeleton } from '../../components/common/Skeleton.jsx';
 import { api } from '../../services/api.js';
 
 export function AdminCustomers() {
@@ -128,9 +129,7 @@ export function AdminCustomers() {
       {/* Table */}
       <div className="bg-white border border-neutral-200 overflow-hidden">
         {loading ? (
-          <div className="py-16 text-center">
-            <Loader2 className="w-8 h-8 text-brand-maroon animate-spin mx-auto" />
-          </div>
+          <TableSkeleton rows={6} columns={6} />
         ) : filtered.length === 0 ? (
           <div className="py-16 text-center text-xs text-neutral-400">No customers found.</div>
         ) : (

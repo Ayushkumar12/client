@@ -18,6 +18,7 @@ import {
   Trash2
 } from 'lucide-react';
 import { api } from '../../services/api.js';
+import { TableSkeleton } from '../../components/common/Skeleton.jsx';
 
 export function AdminReturns() {
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'direct'
@@ -353,10 +354,7 @@ export function AdminReturns() {
 
       {/* Returns Table */}
       {loading ? (
-        <div className="py-20 text-center space-y-2">
-          <Loader2 className="w-8 h-8 text-purple-700 animate-spin mx-auto" />
-          <p className="text-xs text-neutral-500">Loading return requests...</p>
-        </div>
+        <TableSkeleton rows={6} columns={6} />
       ) : filteredReturns.length === 0 ? (
         <div className="bg-white border border-neutral-200 rounded-sm p-12 text-center space-y-3">
           <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />

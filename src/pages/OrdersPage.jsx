@@ -20,6 +20,7 @@ import {
   ShoppingBag
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO.jsx';
+import { OrderCardSkeleton } from '../components/common/Skeleton.jsx';
 import { ShiprocketTrackerModal } from '../components/common/ShiprocketTrackerModal.jsx';
 import { CancelOrderModal } from '../components/common/CancelOrderModal.jsx';
 import { ReturnOrderModal } from '../components/common/ReturnOrderModal.jsx';
@@ -250,9 +251,10 @@ export function OrdersPage() {
 
         {/* Orders Listing */}
         {loading ? (
-          <div className="py-20 text-center space-y-3">
-            <Loader2 className="w-8 h-8 text-brand-maroon animate-spin mx-auto" />
-            <p className="text-xs text-neutral-500 font-medium">Loading your orders & tracking telemetry...</p>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <OrderCardSkeleton key={i} />
+            ))}
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="bg-white border border-brand-border rounded-sm p-12 text-center space-y-4 shadow-sm">

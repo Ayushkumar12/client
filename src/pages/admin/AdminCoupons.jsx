@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tag, Plus, Trash2, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { TableSkeleton } from '../../components/common/Skeleton.jsx';
 import { api } from '../../services/api.js';
 
 export function AdminCoupons() {
@@ -85,9 +86,7 @@ export function AdminCoupons() {
 
       <div className="bg-white rounded-sm border border-brand-border shadow-2xs overflow-hidden">
         {loading ? (
-          <div className="py-16 text-center">
-            <Loader2 className="w-8 h-8 text-brand-maroon animate-spin mx-auto" />
-          </div>
+          <TableSkeleton rows={5} columns={6} />
         ) : (
           <table className="w-full text-xs text-left">
             <thead>

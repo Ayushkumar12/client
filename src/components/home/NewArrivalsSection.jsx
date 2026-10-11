@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ChevronRight } from 'lucide-react';
 import { ProductCard } from '../common/ProductCard.jsx';
+import { ProductCardSkeleton } from '../common/Skeleton.jsx';
 import { useContent } from '../../context/ContentContext.jsx';
 
 const FILTER_TABS = [
@@ -68,14 +69,7 @@ export function NewArrivalsSection({ products = [], loading = false }) {
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-              <div
-                key={n}
-                className="bg-white h-64 sm:h-96 animate-pulse border border-neutral-200/80 p-3 space-y-3"
-              >
-                <div className="w-full h-3/4 bg-neutral-200 rounded" />
-                <div className="h-3 bg-neutral-200 rounded w-3/4" />
-                <div className="h-3 bg-neutral-200 rounded w-1/2" />
-              </div>
+              <ProductCardSkeleton key={n} />
             ))}
           </div>
         ) : filteredProducts.length === 0 ? (

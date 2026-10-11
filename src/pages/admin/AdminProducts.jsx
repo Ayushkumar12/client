@@ -16,6 +16,7 @@ import {
 import { api } from '../../services/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { ImageUploader } from '../../components/common/ImageUploader.jsx';
+import { TableSkeleton } from '../../components/common/Skeleton.jsx';
 
 export function AdminProducts() {
   const { showPublicRatings, refreshSettings } = useAuth();
@@ -283,9 +284,7 @@ export function AdminProducts() {
       {/* Catalog Table */}
       <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
         {loading ? (
-          <div className="py-20 text-center">
-            <Loader2 className="w-8 h-8 text-brand-maroon animate-spin mx-auto" />
-          </div>
+          <TableSkeleton rows={7} columns={6} />
         ) : products.length === 0 ? (
           <div className="py-16 text-center text-xs text-neutral-500">
             No products found. Click "+ Add New Product" to create one.

@@ -23,6 +23,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { ProductCard } from '../components/common/ProductCard.jsx';
+import { ProductGridSkeleton } from '../components/common/Skeleton.jsx';
 import { ComingSoonPage } from '../components/common/ComingSoonPage.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { useContent } from '../context/ContentContext.jsx';
@@ -658,11 +659,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
           {/* PRODUCT GRID */}
           <main className="lg:col-span-3">
             {loading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-                {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <div key={n} className="rounded-sm h-64 sm:h-96 animate-pulse border bg-white border-neutral-200" />
-                ))}
-              </div>
+              <ProductGridSkeleton count={9} />
             ) : products.length === 0 ? (
               <div className="p-12 text-center rounded-sm border bg-white border-brand-border space-y-4">
                 <div className="w-14 h-14 rounded-sm bg-neutral-100 mx-auto flex items-center justify-center">

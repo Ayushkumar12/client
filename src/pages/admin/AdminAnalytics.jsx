@@ -94,7 +94,6 @@ export function AdminAnalytics() {
   };
 
   const ratingsData = analytics?.ratings_analytics || {};
-  const breakdown = ratingsData.rating_breakdown || {};
   const summary = analytics?.summary || {};
   const revenueData = analytics?.revenue_analytics || {};
   const inventoryData = analytics?.inventory_and_products || {};
@@ -241,12 +240,13 @@ export function AdminAnalytics() {
 
   // 4. Chart: Star Ratings Distribution
   const starRatingsChartOptions = useMemo(() => {
+    const bd = analytics?.ratings_analytics?.rating_breakdown || {};
     const rawData = [
-      { star: '5 Stars', count: breakdown.star_5?.count || 110, percentage: breakdown.star_5?.percentage || 78 },
-      { star: '4 Stars', count: breakdown.star_4?.count || 24, percentage: breakdown.star_4?.percentage || 17 },
-      { star: '3 Stars', count: breakdown.star_3?.count || 6, percentage: breakdown.star_3?.percentage || 4 },
-      { star: '2 Stars', count: breakdown.star_2?.count || 2, percentage: breakdown.star_2?.percentage || 1 },
-      { star: '1 Star', count: breakdown.star_1?.count || 0, percentage: breakdown.star_1?.percentage || 0 }
+      { star: '5 Stars', count: bd.star_5?.count || 110, percentage: bd.star_5?.percentage || 78 },
+      { star: '4 Stars', count: bd.star_4?.count || 24, percentage: bd.star_4?.percentage || 17 },
+      { star: '3 Stars', count: bd.star_3?.count || 6, percentage: bd.star_3?.percentage || 4 },
+      { star: '2 Stars', count: bd.star_2?.count || 2, percentage: bd.star_2?.percentage || 1 },
+      { star: '1 Star', count: bd.star_1?.count || 0, percentage: bd.star_1?.percentage || 0 }
     ];
 
     return {
@@ -286,7 +286,7 @@ export function AdminAnalytics() {
         }
       ]
     };
-  }, [analytics?.ratings_analytics]);
+  }, [analytics]);
 
   // 5. Chart: Category Sales Revenue Contribution
   const categorySalesChartOptions = useMemo(() => {
@@ -616,9 +616,32 @@ export function AdminAnalytics() {
 
   if (loading && !analytics) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-2">
-        <RefreshCw className="w-5 h-5 text-neutral-500 animate-spin" />
-        <p className="text-xs text-neutral-500">Loading interactive analytics...</p>
+      <div className="space-y-6 pb-12 font-sans">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-200">
+          <div className="space-y-1">
+            <div className="h-6 bg-neutral-200/80 rounded w-44 skeleton-shimmer" />
+            <div className="h-3 bg-neutral-200/80 rounded w-80 skeleton-shimmer" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white border border-neutral-200 p-4 space-y-3">
+              <div className="h-3 bg-neutral-200/80 rounded w-24 skeleton-shimmer" />
+              <div className="h-7 bg-neutral-200/80 rounded w-20 skeleton-shimmer" />
+              <div className="h-2.5 bg-neutral-200/80 rounded w-32 skeleton-shimmer" />
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white border border-neutral-200 p-4 space-y-3">
+            <div className="h-4 bg-neutral-200/80 rounded w-36 skeleton-shimmer" />
+            <div className="h-[280px] bg-neutral-100 rounded skeleton-shimmer" />
+          </div>
+          <div className="bg-white border border-neutral-200 p-4 space-y-3">
+            <div className="h-4 bg-neutral-200/80 rounded w-36 skeleton-shimmer" />
+            <div className="h-[280px] bg-neutral-100 rounded skeleton-shimmer" />
+          </div>
+        </div>
       </div>
     );
   }

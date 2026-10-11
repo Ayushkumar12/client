@@ -14,6 +14,7 @@ import {
   FileText
 } from 'lucide-react';
 import { ShiprocketTrackerModal } from '../../components/common/ShiprocketTrackerModal.jsx';
+import { TableSkeleton } from '../../components/common/Skeleton.jsx';
 import { downloadOrderInvoicePdf } from '../../utils/invoicePdf.js';
 import { api } from '../../services/api.js';
 
@@ -197,9 +198,7 @@ export function AdminOrders() {
       {/* Orders Table */}
       <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
         {loading ? (
-          <div className="py-20 text-center">
-            <Loader2 className="w-8 h-8 text-brand-maroon animate-spin mx-auto" />
-          </div>
+          <TableSkeleton rows={7} columns={6} />
         ) : orders.length === 0 ? (
           <div className="py-16 text-center text-xs text-neutral-500 space-y-2">
             <Package className="w-10 h-10 text-neutral-400 mx-auto" />

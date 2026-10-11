@@ -518,8 +518,16 @@ export function AdminShiprocket() {
 
       {/* Metrics Row */}
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-neutral-700 animate-spin" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white p-5 border border-neutral-200 animate-pulse space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="h-3 bg-neutral-200/80 rounded w-24 skeleton-shimmer" />
+                <div className="w-8 h-8 bg-neutral-200/80 rounded skeleton-shimmer" />
+              </div>
+              <div className="h-7 bg-neutral-200/80 rounded w-16 skeleton-shimmer" />
+            </div>
+          ))}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

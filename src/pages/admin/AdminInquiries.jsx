@@ -171,12 +171,16 @@ export function AdminInquiries() {
           </thead>
           <tbody className="divide-y divide-neutral-200">
             {loading ? (
-              <tr>
-                <td colSpan="6" className="py-8 text-center text-neutral-500">
-                  <div className="inline-block w-4 h-4 border-2 border-neutral-400 border-t-neutral-900 rounded-full animate-spin mr-2 align-middle" />
-                  Loading inquiries...
-                </td>
-              </tr>
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx} className="animate-pulse">
+                  <td className="py-3 px-3"><div className="h-3 bg-neutral-200/80 rounded w-16 skeleton-shimmer" /></td>
+                  <td className="py-3 px-3"><div className="h-3 bg-neutral-200/80 rounded w-28 skeleton-shimmer" /></td>
+                  <td className="py-3 px-3"><div className="h-3 bg-neutral-200/80 rounded w-24 skeleton-shimmer" /></td>
+                  <td className="py-3 px-3"><div className="h-3 bg-neutral-200/80 rounded w-40 skeleton-shimmer" /></td>
+                  <td className="py-3 px-3"><div className="h-4 bg-neutral-200/80 rounded-full w-14 skeleton-shimmer" /></td>
+                  <td className="py-3 px-3 text-right"><div className="h-4 bg-neutral-200/80 rounded w-8 ml-auto skeleton-shimmer" /></td>
+                </tr>
+              ))
             ) : filteredInquiries.length === 0 ? (
               <tr>
                 <td colSpan="6" className="py-8 text-center text-neutral-500">

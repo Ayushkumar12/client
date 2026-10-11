@@ -354,7 +354,7 @@ export const api = {
     body: JSON.stringify({ section })
   }),
 
-  // Multi-Channel Inventory Management (Flipkart, Amazon, Meesho, Storefront)
+  // Multi-Channel Inventory Management (Flipkart, Amazon, Myntra, Storefront)
   getInventoryOverview: () => request('/inventory/overview'),
   getInventoryProducts: (params = {}) => {
     const query = new URLSearchParams();

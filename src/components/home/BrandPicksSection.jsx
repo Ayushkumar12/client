@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { ProductCard } from '../common/ProductCard.jsx';
+import { ProductCardSkeleton } from '../common/Skeleton.jsx';
 import { useContent } from '../../context/ContentContext.jsx';
 
 export function BrandPicksSection({ products = [], loading = false }) {
@@ -34,11 +35,7 @@ export function BrandPicksSection({ products = [], loading = false }) {
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="bg-white rounded-sm h-64 sm:h-96 animate-pulse border border-neutral-200/80 p-2 sm:p-3 space-y-2 sm:space-y-3">
-                <div className="w-full h-3/4 bg-neutral-200 rounded-sm" />
-                <div className="h-4 bg-neutral-200 rounded-xs w-3/4" />
-                <div className="h-4 bg-neutral-200 rounded-xs w-1/2" />
-              </div>
+              <ProductCardSkeleton key={n} />
             ))}
           </div>
         ) : (

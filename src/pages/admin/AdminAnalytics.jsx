@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Star,
   Eye,
@@ -6,13 +6,37 @@ import {
   DollarSign,
   Package,
   Truck,
-  AlertTriangle,
   RefreshCw,
   CreditCard,
-  CheckCircle2
+  Download,
+  Search,
+  CheckCircle2,
+  SlidersHorizontal,
+  BarChart3,
+  Layers
 } from 'lucide-react';
+import { AgCharts } from 'ag-charts-react';
+import { AgGridReact } from 'ag-grid-react';
+import { ModuleRegistry, AllCommunityModule, themeQuartz } from 'ag-grid-community';
 import { api } from '../../services/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
+
+// Register AG Grid Community Modules
+ModuleRegistry.registerModules([AllCommunityModule]);
+
+// Customized Crisp High-Density Enterprise Theme for AG Grid
+const enterpriseTheme = themeQuartz.withParams({
+  fontFamily: '"Plus Jakarta Sans", "Inter", -apple-system, sans-serif',
+  fontSize: 12,
+  headerFontSize: 11,
+  headerFontWeight: 600,
+  rowHeight: 42,
+  headerHeight: 38,
+  borderColor: '#E5E7EB',
+  headerBackgroundColor: '#F9FAFB',
+  rowHoverColor: '#F9FAFB',
+  selectedRowBackgroundColor: '#F3F4F6'
+});
 
 export function AdminAnalytics() {
   const { showPublicRatings, showProductBadges, refreshSettings } = useAuth();
@@ -20,7 +44,13 @@ export function AdminAnalytics() {
   const [loading, setLoading] = useState(true);
   const [togglingRatings, setTogglingRatings] = useState(false);
   const [togglingBadges, setTogglingBadges] = useState(false);
-  const [activeTab, setActiveTab] = useState('ratings'); // 'ratings' | 'financial' | 'inventory' | 'logistics'
+  const [activeTab, setActiveTab] = useState('financial'); // 'financial' | 'ratings' | 'inventory' | 'logistics'
+
+  // Search & grid refs
+  const [productsQuickFilter, setProductsQuickFilter] = useState('');
+  const [reviewsQuickFilter, setReviewsQuickFilter] = useState('');
+  const topProductsGridRef = useRef(null);
+  const reviewsGridRef = useRef(null);
 
   useEffect(() => {
     loadAnalytics();
@@ -72,21 +102,410 @@ export function AdminAnalytics() {
     }
   };
 
-  if (loading && !analytics) {
-    return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-2">
-        <RefreshCw className="w-5 h-5 text-neutral-500 animate-spin" />
-        <p className="text-xs text-neutral-500">Loading analytics...</p>
-      </div>
-    );
-  }
+  // Export handlers for AG Grid
+  const exportTopProductsCsv = () => {
+    if (topProductsGridRef.current?.api) {
+      topProductsGridRef.current.api.exportDataAsCsv({
+        fileName: `oct9_top_products_${new Date().toISOString().slice(0, 10)}.csv`
+      });
+    }
+  };
 
+  const exportReviewsCsv = () => {
+    if (reviewsGridRef.current?.api) {
+      reviewsGridRef.current.api.exportDataAsCsv({
+        fileName: `oct9_reviews_${new Date().toISOString().slice(0, 10)}.csv`
+      });
+    }
+  };
+
+  // Data extractions
   const ratingsData = analytics?.ratings_analytics || {};
   const breakdown = ratingsData.rating_breakdown || {};
   const summary = analytics?.summary || {};
   const revenueData = analytics?.revenue_analytics || {};
   const inventoryData = analytics?.inventory_and_products || {};
   const logisticsData = analytics?.logistics_analytics || {};
+
+  // ==========================================
+  // AG CHARTS CONFIGURATIONS
+  // ==========================================
+
+  // 1. Revenue & Order Volume Dual Trend (AG Charts)
+  const revenueChartOptions = useMemo(() => {
+    const rawData = revenueData.monthly_trend || [];
+    return {
+      theme: {
+        baseTheme: 'ag-default',
+        overrides: {
+          common: {
+            fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif',
+            title: { fontSize: 13, fontWeight: 'bold', color: '#111827' },
+            subtitle: { fontSize: 11, color: '#6B7280' }
+          }
+        }
+      },
+      title: { text: 'Monthly Revenue & Order Volume' },
+      subtitle: { text: 'Sales momentum across recent billing cycles' },
+      data: rawData,
+      series: [
+        {
+          type: 'area',
+          xKey: 'month',
+          yKey: 'revenue',
+          yName: 'Revenue (₹)',
+          fill: 'rgba(24, 24, 27, 0.08)',
+          stroke: '#18181B',
+          strokeWidth: 2,
+          marker: { fill: '#18181B', size: 5 },
+          tooltip: {
+            renderer: ({ datum, xKey, yKey }) => ({
+              title: datum[xKey],
+              content: `Revenue: ₹${Number(datum[yKey] || 0).toLocaleString('en-IN')}`
+            })
+          }
+        },
+        {
+          type: 'line',
+          xKey: 'month',
+          yKey: 'orders',
+          yName: 'Orders Placed',
+          stroke: '#D97706',
+          strokeWidth: 2,
+          marker: { fill: '#D97706', size: 5 },
+          tooltip: {
+            renderer: ({ datum, xKey, yKey }) => ({
+              title: datum[xKey],
+              content: `Orders: ${datum[yKey]}`
+            })
+          }
+        }
+      ],
+      axes: [
+        {
+          type: 'category',
+          position: 'bottom',
+          label: { fontSize: 11, color: '#4B5563' }
+        },
+        {
+          type: 'number',
+          position: 'left',
+          keys: ['revenue'],
+          label: {
+            fontSize: 11,
+            color: '#4B5563',
+            formatter: ({ value }) => `₹${(value / 1000).toFixed(0)}k`
+          }
+        },
+        {
+          type: 'number',
+          position: 'right',
+          keys: ['orders'],
+          label: {
+            fontSize: 11,
+            color: '#4B5563',
+            formatter: ({ value }) => `${value}`
+          }
+        }
+      ],
+      legend: {
+        position: 'bottom',
+        item: { label: { fontSize: 11, color: '#4B5563' } }
+      }
+    };
+  }, [revenueData.monthly_trend]);
+
+  // 2. Payment Methods Share (AG Charts Donut)
+  const paymentChartOptions = useMemo(() => {
+    const rawData = revenueData.payment_methods || [];
+    return {
+      theme: {
+        baseTheme: 'ag-default',
+        overrides: {
+          common: {
+            fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif',
+            title: { fontSize: 13, fontWeight: 'bold', color: '#111827' },
+            subtitle: { fontSize: 11, color: '#6B7280' }
+          }
+        }
+      },
+      title: { text: 'Payment Method Distribution' },
+      subtitle: { text: 'Share of successful checkouts' },
+      data: rawData,
+      series: [
+        {
+          type: 'pie',
+          angleKey: 'total',
+          legendItemKey: 'method',
+          innerRadiusRatio: 0.65,
+          fills: ['#18181B', '#D97706', '#059669', '#4F46E5'],
+          strokes: ['#FFFFFF'],
+          strokeWidth: 2,
+          calloutLabel: {
+            enabled: true,
+            formatter: ({ datum }) => `${datum.percentage}%`
+          },
+          tooltip: {
+            renderer: ({ datum }) => ({
+              title: datum.method,
+              content: `Total: ₹${Number(datum.total || 0).toLocaleString('en-IN')} (${datum.count} orders)`
+            })
+          }
+        }
+      ],
+      legend: {
+        position: 'bottom',
+        item: { label: { fontSize: 11, color: '#4B5563' } }
+      }
+    };
+  }, [revenueData.payment_methods]);
+
+  // 3. Customer Ratings Distribution (AG Charts Horizontal Bar)
+  const ratingsChartOptions = useMemo(() => {
+    const ratingDistribution = [
+      { star: '5 Stars', count: breakdown.star_5?.count || 110, percentage: breakdown.star_5?.percentage || 78 },
+      { star: '4 Stars', count: breakdown.star_4?.count || 24, percentage: breakdown.star_4?.percentage || 17 },
+      { star: '3 Stars', count: breakdown.star_3?.count || 6, percentage: breakdown.star_3?.percentage || 4 },
+      { star: '2 Stars', count: breakdown.star_2?.count || 2, percentage: breakdown.star_2?.percentage || 1 },
+      { star: '1 Star', count: breakdown.star_1?.count || 0, percentage: breakdown.star_1?.percentage || 0 }
+    ];
+
+    return {
+      theme: {
+        baseTheme: 'ag-default',
+        overrides: {
+          common: {
+            fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif',
+            title: { fontSize: 13, fontWeight: 'bold', color: '#111827' }
+          }
+        }
+      },
+      title: { text: 'Customer Review Rating Distribution' },
+      data: ratingDistribution,
+      series: [
+        {
+          type: 'bar',
+          direction: 'horizontal',
+          xKey: 'star',
+          yKey: 'count',
+          yName: 'Reviews',
+          fill: '#18181B',
+          label: {
+            enabled: true,
+            formatter: ({ value }) => `${value} reviews`,
+            fontSize: 10,
+            color: '#111827'
+          }
+        }
+      ],
+      axes: [
+        { type: 'category', position: 'left', label: { fontSize: 11 } },
+        { type: 'number', position: 'bottom', label: { fontSize: 10 } }
+      ]
+    };
+  }, [breakdown]);
+
+  // 4. Category Sales Performance (AG Charts Column)
+  const categoryChartOptions = useMemo(() => {
+    const raw = inventoryData.category_sales || [];
+    const chartData = raw.map(c => ({
+      category: (c.category_slug || 'Ethnic').replace('-', ' ').toUpperCase(),
+      revenue: Number(c.category_revenue || 0),
+      units: c.units_sold || 0
+    }));
+
+    return {
+      theme: {
+        baseTheme: 'ag-default',
+        overrides: {
+          common: {
+            fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif',
+            title: { fontSize: 13, fontWeight: 'bold', color: '#111827' }
+          }
+        }
+      },
+      title: { text: 'Category Sales Performance' },
+      data: chartData,
+      series: [
+        {
+          type: 'bar',
+          xKey: 'category',
+          yKey: 'revenue',
+          yName: 'Revenue (₹)',
+          fill: '#18181B',
+          label: {
+            enabled: true,
+            formatter: ({ value }) => `₹${(value / 1000).toFixed(0)}k`,
+            fontSize: 10
+          }
+        }
+      ],
+      axes: [
+        { type: 'category', position: 'bottom', label: { fontSize: 11 } },
+        {
+          type: 'number',
+          position: 'left',
+          label: { formatter: ({ value }) => `₹${(value / 1000).toFixed(0)}k`, fontSize: 11 }
+        }
+      ]
+    };
+  }, [inventoryData.category_sales]);
+
+  // ==========================================
+  // AG GRID COLUMN DEFINITIONS
+  // ==========================================
+
+  // Top Performing Products Grid
+  const topProductsColDefs = useMemo(() => [
+    {
+      field: 'id',
+      headerName: 'SKU / ID',
+      width: 90,
+      pinned: 'left',
+      cellRenderer: (params) => (
+        <span className="font-mono text-[11px] text-neutral-500 font-medium">
+          #{params.value}
+        </span>
+      )
+    },
+    {
+      field: 'title',
+      headerName: 'Product Name',
+      flex: 2,
+      minWidth: 220,
+      filter: 'agTextColumnFilter',
+      cellRenderer: (params) => (
+        <div className="font-semibold text-neutral-900 truncate">
+          {params.value}
+        </div>
+      )
+    },
+    {
+      field: 'category_slug',
+      headerName: 'Category',
+      flex: 1,
+      minWidth: 120,
+      filter: 'agTextColumnFilter',
+      valueFormatter: (params) => (params.value ? params.value.replace('-', ' ') : 'Ethnic')
+    },
+    {
+      field: 'price',
+      headerName: 'Unit Price',
+      width: 110,
+      filter: 'agNumberColumnFilter',
+      valueFormatter: (params) => `₹${Number(params.value || 0).toLocaleString('en-IN')}`
+    },
+    {
+      field: 'total_sold',
+      headerName: 'Units Sold',
+      width: 110,
+      filter: 'agNumberColumnFilter',
+      cellStyle: { fontWeight: '600', color: '#111827' }
+    },
+    {
+      field: 'total_revenue',
+      headerName: 'Gross Revenue',
+      width: 140,
+      filter: 'agNumberColumnFilter',
+      cellStyle: { fontWeight: '700', color: '#047857' },
+      valueFormatter: (params) => `₹${Number(params.value || 0).toLocaleString('en-IN')}`
+    },
+    {
+      field: 'stock',
+      headerName: 'Stock',
+      width: 110,
+      filter: 'agNumberColumnFilter',
+      cellRenderer: (params) => {
+        const val = Number(params.value || 0);
+        return (
+          <span className={`text-[11px] font-medium flex items-center space-x-1 ${
+            val <= 0 ? 'text-red-600' : val <= 10 ? 'text-amber-600' : 'text-neutral-700'
+          }`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${
+              val <= 0 ? 'bg-red-500' : val <= 10 ? 'bg-amber-500' : 'bg-emerald-500'
+            }`} />
+            <span>{val} units</span>
+          </span>
+        );
+      }
+    },
+    {
+      field: 'rating',
+      headerName: 'Rating',
+      width: 100,
+      filter: 'agNumberColumnFilter',
+      cellRenderer: (params) => (
+        <span className="font-medium text-neutral-800 flex items-center">
+          {params.value || 5.0} ★
+        </span>
+      )
+    }
+  ], []);
+
+  // Customer Reviews Grid
+  const reviewsColDefs = useMemo(() => [
+    {
+      field: 'user_name',
+      headerName: 'Customer Name',
+      width: 150,
+      filter: 'agTextColumnFilter',
+      cellRenderer: (params) => (
+        <span className="font-semibold text-neutral-900">{params.value}</span>
+      )
+    },
+    {
+      field: 'product_title',
+      headerName: 'Outfit / Product',
+      flex: 1.5,
+      minWidth: 180,
+      filter: 'agTextColumnFilter'
+    },
+    {
+      field: 'rating',
+      headerName: 'Rating',
+      width: 110,
+      filter: 'agNumberColumnFilter',
+      cellRenderer: (params) => (
+        <span className="font-bold text-amber-700 flex items-center space-x-1">
+          <span>{params.value}</span>
+          <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+        </span>
+      )
+    },
+    {
+      field: 'comment',
+      headerName: 'Feedback / Comment',
+      flex: 2,
+      minWidth: 260,
+      filter: 'agTextColumnFilter',
+      cellRenderer: (params) => (
+        <span className="text-neutral-700 italic">"{params.value}"</span>
+      )
+    },
+    {
+      field: 'created_at',
+      headerName: 'Submitted Date',
+      width: 130,
+      valueFormatter: (params) =>
+        params.value ? new Date(params.value).toLocaleDateString('en-IN') : 'Recent'
+    }
+  ], []);
+
+  // Default Grid Options
+  const defaultColDef = useMemo(() => ({
+    sortable: true,
+    resizable: true,
+    filter: true
+  }), []);
+
+  if (loading && !analytics) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-2">
+        <RefreshCw className="w-5 h-5 text-neutral-500 animate-spin" />
+        <p className="text-xs text-neutral-500">Loading analytics & report grids...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-12 font-sans">
@@ -97,7 +516,7 @@ export function AdminAnalytics() {
             Analytics & Reports
           </h1>
           <p className="text-xs text-neutral-500 mt-0.5">
-            Store performance metrics, customer reviews, and storefront visibility settings.
+            AG Grid & AG Charts enterprise metrics for revenue, order velocity, and storefront visibility.
           </p>
         </div>
 
@@ -124,7 +543,7 @@ export function AdminAnalytics() {
             onClick={handleToggleBadges}
             disabled={togglingBadges}
             className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white border border-neutral-300 hover:bg-neutral-50 rounded text-xs font-medium text-neutral-700 transition-colors disabled:opacity-50 cursor-pointer"
-            title="Toggle product ribbon badges (New Arrival, Bestseller, etc.) on public product cards"
+            title="Toggle product ribbon badges on public product cards"
           >
             {togglingBadges ? (
               <RefreshCw className="w-3.5 h-3.5 animate-spin text-neutral-500" />
@@ -207,10 +626,10 @@ export function AdminAnalytics() {
       {/* 3. Tab Navigation */}
       <div className="flex border-b border-neutral-200 overflow-x-auto text-xs font-medium space-x-4">
         {[
+          { id: 'financial', label: 'Revenue & Orders (AG Charts)' },
+          { id: 'inventory', label: 'Top Products (AG Grid)' },
           { id: 'ratings', label: 'Ratings & Reviews' },
-          { id: 'financial', label: 'Revenue & Orders' },
-          { id: 'inventory', label: 'Top Products' },
-          { id: 'logistics', label: 'Logistics' },
+          { id: 'logistics', label: 'Logistics Overview' }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -226,48 +645,111 @@ export function AdminAnalytics() {
         ))}
       </div>
 
-      {/* TAB 1: RATINGS & REVIEWS */}
-      {activeTab === 'ratings' && (
+      {/* ========================================================= */}
+      {/* TAB 1: REVENUE & ORDERS (AG CHARTS)                       */}
+      {/* ========================================================= */}
+      {activeTab === 'financial' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Rating Breakdown Bars (7 cols) */}
-            <div className="lg:col-span-7 bg-white p-5 rounded border border-neutral-200 space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
-                <div>
-                  <h3 className="font-semibold text-sm text-neutral-900">Rating Breakdown</h3>
-                  <p className="text-xs text-neutral-500">Distribution across all customer reviews</p>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-neutral-900">{ratingsData.catalog_average_rating || 4.8} / 5.0</div>
-                  <div className="text-[10px] text-neutral-500">{ratingsData.sentiment_score || 96.4}% positive</div>
-                </div>
-              </div>
+          {/* Main Dual Area/Line Chart */}
+          <div className="bg-white p-5 rounded border border-neutral-200">
+            <div className="h-[360px] w-full">
+              <AgCharts options={revenueChartOptions} />
+            </div>
+          </div>
 
-              {/* Progress bars for 5★ down to 1★ */}
-              <div className="space-y-2.5 pt-1">
-                {[
-                  { star: 5, data: breakdown.star_5 || { count: 110, percentage: 78 } },
-                  { star: 4, data: breakdown.star_4 || { count: 24, percentage: 17 } },
-                  { star: 3, data: breakdown.star_3 || { count: 6, percentage: 4 } },
-                  { star: 2, data: breakdown.star_2 || { count: 2, percentage: 1 } },
-                  { star: 1, data: breakdown.star_1 || { count: 0, percentage: 0 } },
-                ].map(({ star, data }) => (
-                  <div key={star} className="flex items-center space-x-3 text-xs">
-                    <span className="w-10 text-neutral-600 font-medium">{star} stars</span>
-                    <div className="flex-1 h-2 bg-neutral-100 rounded overflow-hidden">
-                      <div
-                        className="h-full bg-neutral-800 rounded transition-all"
-                        style={{ width: `${data.percentage}%` }}
-                      />
-                    </div>
-                    <span className="w-10 text-right text-neutral-700 font-medium">{data.percentage}%</span>
-                    <span className="w-12 text-right text-neutral-400 text-[11px]">({data.count})</span>
-                  </div>
-                ))}
+          {/* 2 Side-by-side AG Charts: Payment Share & Category Revenue */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Payment Method Donut (5 cols) */}
+            <div className="lg:col-span-5 bg-white p-5 rounded border border-neutral-200">
+              <div className="h-[320px] w-full">
+                <AgCharts options={paymentChartOptions} />
               </div>
             </div>
 
-            {/* Public Display Settings Status (5 cols) */}
+            {/* Category Performance Bar (7 cols) */}
+            <div className="lg:col-span-7 bg-white p-5 rounded border border-neutral-200">
+              <div className="h-[320px] w-full">
+                <AgCharts options={categoryChartOptions} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* TAB 2: TOP PRODUCTS & INVENTORY (AG GRID)                 */}
+      {/* ========================================================= */}
+      {activeTab === 'inventory' && (
+        <div className="bg-white rounded border border-neutral-200 overflow-hidden space-y-4 p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-200">
+            <div>
+              <h3 className="font-semibold text-sm text-neutral-900">
+                Top Performing Products (AG Grid Enterprise View)
+              </h3>
+              <p className="text-xs text-neutral-500">
+                Interactive datagrid with sorting, floating filters, and CSV export.
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Filter products..."
+                  value={productsQuickFilter}
+                  onChange={(e) => {
+                    setProductsQuickFilter(e.target.value);
+                    if (topProductsGridRef.current?.api) {
+                      topProductsGridRef.current.api.setGridOption('quickFilterText', e.target.value);
+                    }
+                  }}
+                  className="pl-8 pr-3 py-1.5 text-xs border border-neutral-300 rounded bg-white text-neutral-900 focus:outline-none focus:border-neutral-900 w-48 sm:w-60"
+                />
+              </div>
+
+              <button
+                onClick={exportTopProductsCsv}
+                className="px-3 py-1.5 bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-700 text-xs font-medium rounded flex items-center space-x-1.5 cursor-pointer"
+                title="Export current table to CSV"
+              >
+                <Download className="w-3.5 h-3.5 text-neutral-600" />
+                <span>Export CSV</span>
+              </button>
+            </div>
+          </div>
+
+          {/* AG Grid Container */}
+          <div className="w-full h-[450px]">
+            <AgGridReact
+              ref={topProductsGridRef}
+              theme={enterpriseTheme}
+              rowData={inventoryData.top_sellers || []}
+              columnDefs={topProductsColDefs}
+              defaultColDef={defaultColDef}
+              pagination={true}
+              paginationPageSize={10}
+              paginationPageSizeSelector={[10, 20, 50]}
+              animateRows={true}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* TAB 3: RATINGS & REVIEWS (AG CHARTS + AG GRID)            */}
+      {/* ========================================================= */}
+      {activeTab === 'ratings' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* AG Chart: Rating Distribution (7 cols) */}
+            <div className="lg:col-span-7 bg-white p-5 rounded border border-neutral-200">
+              <div className="h-[280px] w-full">
+                <AgCharts options={ratingsChartOptions} />
+              </div>
+            </div>
+
+            {/* Storefront Display Controls (5 cols) */}
             <div className="lg:col-span-5 bg-white p-5 rounded border border-neutral-200 space-y-3">
               <h3 className="font-semibold text-sm text-neutral-900">Storefront Display Controls</h3>
               <p className="text-xs text-neutral-500">
@@ -310,216 +792,94 @@ export function AdminAnalytics() {
             </div>
           </div>
 
-          {/* Highest vs Lowest Rated Products Tables */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Top Rated */}
-            <div className="bg-white rounded border border-neutral-200 overflow-hidden">
-              <div className="p-3.5 border-b border-neutral-200 bg-neutral-50 flex items-center justify-between">
-                <h4 className="font-semibold text-xs text-neutral-900">Highest Rated Outfits</h4>
-                <span className="text-[11px] text-neutral-500">Based on verified reviews</span>
-              </div>
-              <div className="divide-y divide-neutral-100">
-                {(ratingsData.highest_rated || []).map((p) => (
-                  <div key={p.id} className="p-3 flex items-center justify-between text-xs">
-                    <div>
-                      <p className="font-medium text-neutral-900 truncate max-w-xs">{p.title}</p>
-                      <span className="text-[11px] text-neutral-500 capitalize">{p.category_slug} • ₹{p.price}</span>
-                    </div>
-                    <div className="text-right text-xs shrink-0 ml-3">
-                      <span className="font-semibold text-neutral-900">{p.rating} ★</span>
-                      <span className="text-neutral-400 text-[11px] block">({p.reviews_count || 12} reviews)</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Lowest Rated */}
-            <div className="bg-white rounded border border-neutral-200 overflow-hidden">
-              <div className="p-3.5 border-b border-neutral-200 bg-neutral-50 flex items-center justify-between">
-                <h4 className="font-semibold text-xs text-neutral-900">Needs Attention / Review</h4>
-                <span className="text-[11px] text-neutral-500">Lower feedback scores</span>
-              </div>
-              <div className="divide-y divide-neutral-100">
-                {(ratingsData.lowest_rated || []).map((p) => (
-                  <div key={p.id} className="p-3 flex items-center justify-between text-xs">
-                    <div>
-                      <p className="font-medium text-neutral-900 truncate max-w-xs">{p.title}</p>
-                      <span className="text-[11px] text-neutral-500 capitalize">{p.category_slug} • Stock: {p.stock}</span>
-                    </div>
-                    <div className="text-right text-xs shrink-0 ml-3">
-                      <span className="font-semibold text-neutral-900">{p.rating} ★</span>
-                      <span className="text-neutral-400 text-[11px] block">({p.reviews_count || 4} reviews)</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Reviews Feed */}
-          {ratingsData.recent_reviews && ratingsData.recent_reviews.length > 0 && (
-            <div className="bg-white rounded border border-neutral-200 overflow-hidden">
-              <div className="p-3.5 border-b border-neutral-200 bg-neutral-50">
-                <h4 className="font-semibold text-xs text-neutral-900">Recent Customer Reviews</h4>
-              </div>
-              <div className="divide-y divide-neutral-100">
-                {ratingsData.recent_reviews.slice(0, 6).map((rev) => (
-                  <div key={rev.id} className="p-3.5 space-y-1 text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-neutral-900">{rev.user_name}</span>
-                      <span className="text-neutral-600 font-medium">{rev.rating} ★</span>
-                    </div>
-                    <p className="text-neutral-700">"{rev.comment}"</p>
-                    <span className="text-[11px] text-neutral-400 block pt-0.5">
-                      Product: {rev.product_title}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* TAB 2: REVENUE & ORDERS */}
-      {activeTab === 'financial' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Monthly Trend (8 cols) */}
-            <div className="lg:col-span-8 bg-white p-5 rounded border border-neutral-200 space-y-4">
+          {/* Customer Reviews AG Grid DataGrid */}
+          <div className="bg-white rounded border border-neutral-200 p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-200">
               <div>
-                <h3 className="font-semibold text-sm text-neutral-900">Monthly Revenue Trend</h3>
-                <p className="text-xs text-neutral-500">Sales performance over past months</p>
+                <h4 className="font-semibold text-xs text-neutral-900">
+                  Customer Reviews Feed (AG Grid)
+                </h4>
+                <p className="text-[11px] text-neutral-500">
+                  Detailed review logs with instant keyword and rating filtration.
+                </p>
               </div>
 
-              <div className="space-y-3 pt-2">
-                {(revenueData.monthly_trend || []).map((m) => {
-                  const maxRev = Math.max(...(revenueData.monthly_trend || []).map((t) => t.revenue || 1));
-                  const percentage = Math.max(15, Math.round((m.revenue / (maxRev || 1)) * 100));
-                  return (
-                    <div key={m.month} className="space-y-1 text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-neutral-800">{m.month}</span>
-                        <div className="space-x-3 text-neutral-600">
-                          <span>{m.orders} orders</span>
-                          <span className="font-semibold text-neutral-900">₹{Number(m.revenue).toLocaleString('en-IN')}</span>
-                        </div>
-                      </div>
-                      <div className="h-2.5 bg-neutral-100 rounded overflow-hidden">
-                        <div
-                          className="h-full bg-neutral-800 rounded transition-all"
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="flex items-center space-x-2">
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search reviews..."
+                    value={reviewsQuickFilter}
+                    onChange={(e) => {
+                      setReviewsQuickFilter(e.target.value);
+                      if (reviewsGridRef.current?.api) {
+                        reviewsGridRef.current.api.setGridOption('quickFilterText', e.target.value);
+                      }
+                    }}
+                    className="pl-8 pr-3 py-1.5 text-xs border border-neutral-300 rounded bg-white text-neutral-900 focus:outline-none focus:border-neutral-900 w-48"
+                  />
+                </div>
+
+                <button
+                  onClick={exportReviewsCsv}
+                  className="px-3 py-1.5 bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-700 text-xs font-medium rounded flex items-center space-x-1.5 cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5 text-neutral-600" />
+                  <span>CSV</span>
+                </button>
               </div>
             </div>
 
-            {/* Payment Method Breakdown (4 cols) */}
-            <div className="lg:col-span-4 bg-white p-5 rounded border border-neutral-200 space-y-4">
-              <div>
-                <h3 className="font-semibold text-sm text-neutral-900">Payment Methods</h3>
-                <p className="text-xs text-neutral-500">Breakdown of completed orders</p>
-              </div>
-
-              <div className="space-y-2">
-                {(revenueData.payment_methods || []).map((pm, idx) => (
-                  <div key={idx} className="p-3 rounded bg-neutral-50 border border-neutral-200 text-xs space-y-1">
-                    <div className="flex items-center justify-between font-medium text-neutral-800">
-                      <span className="flex items-center space-x-1.5">
-                        <CreditCard className="w-3.5 h-3.5 text-neutral-500" />
-                        <span>{pm.method}</span>
-                      </span>
-                      <span>{pm.percentage || 50}%</span>
-                    </div>
-                    <div className="flex items-center justify-between text-[11px] text-neutral-500">
-                      <span>{pm.count} orders</span>
-                      <span className="font-semibold text-neutral-900">₹{Number(pm.total || 0).toLocaleString('en-IN')}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="w-full h-[360px]">
+              <AgGridReact
+                ref={reviewsGridRef}
+                theme={enterpriseTheme}
+                rowData={ratingsData.recent_reviews || []}
+                columnDefs={reviewsColDefs}
+                defaultColDef={defaultColDef}
+                pagination={true}
+                paginationPageSize={10}
+                animateRows={true}
+              />
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 3: TOP PRODUCTS */}
-      {activeTab === 'inventory' && (
-        <div className="bg-white rounded border border-neutral-200 overflow-hidden">
-          <div className="p-3.5 border-b border-neutral-200 bg-neutral-50 flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-xs text-neutral-900">Top Selling Products</h3>
-              <p className="text-[11px] text-neutral-500">Ranked by units sold</p>
-            </div>
-            <span className="text-xs text-neutral-500">
-              Total Catalog: {summary.total_products || 24} items
-            </span>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left border-collapse">
-              <thead>
-                <tr className="border-b border-neutral-200 bg-neutral-50 text-neutral-600 font-semibold">
-                  <th className="py-2.5 px-3">#</th>
-                  <th className="py-2.5 px-3">Product</th>
-                  <th className="py-2.5 px-3">Category</th>
-                  <th className="py-2.5 px-3">Price</th>
-                  <th className="py-2.5 px-3">Units Sold</th>
-                  <th className="py-2.5 px-3">Revenue</th>
-                  <th className="py-2.5 px-3">Stock</th>
-                  <th className="py-2.5 px-3">Rating</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-200">
-                {(inventoryData.top_sellers || []).map((p, idx) => (
-                  <tr key={p.id} className="hover:bg-neutral-50 transition-colors">
-                    <td className="py-2.5 px-3 text-neutral-400 font-mono text-[11px]">{idx + 1}</td>
-                    <td className="py-2.5 px-3 font-medium text-neutral-900">{p.title}</td>
-                    <td className="py-2.5 px-3 capitalize text-neutral-500">{p.category_slug}</td>
-                    <td className="py-2.5 px-3 font-semibold text-neutral-900">₹{p.price}</td>
-                    <td className="py-2.5 px-3 text-neutral-700">{p.total_sold || 0}</td>
-                    <td className="py-2.5 px-3 font-semibold text-neutral-900">
-                      ₹{Number(p.total_revenue || 0).toLocaleString('en-IN')}
-                    </td>
-                    <td className="py-2.5 px-3">
-                      <span className={p.stock <= 10 ? 'text-amber-700 font-medium' : 'text-neutral-700'}>
-                        {p.stock}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3 font-medium text-neutral-800">
-                      {p.rating} ★
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 4: LOGISTICS */}
+      {/* ========================================================= */}
+      {/* TAB 4: LOGISTICS OVERVIEW                                 */}
+      {/* ========================================================= */}
       {activeTab === 'logistics' && (
         <div className="space-y-6">
           <div className="border border-neutral-200 bg-white rounded divide-y sm:divide-y-0 sm:divide-x divide-neutral-200 grid grid-cols-1 sm:grid-cols-3">
             <div className="p-4">
-              <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wide">Shipments Manifested</span>
-              <div className="text-xl font-bold text-neutral-900 mt-1">{logisticsData.total_manifests || 8}</div>
+              <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wide">
+                Shipments Manifested
+              </span>
+              <div className="text-xl font-bold text-neutral-900 mt-1">
+                {logisticsData.total_manifests || 8}
+              </div>
               <p className="text-[11px] text-neutral-500 mt-0.5">AWBs generated via Shiprocket</p>
             </div>
 
             <div className="p-4">
-              <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wide">In-Transit / Out for Delivery</span>
-              <div className="text-xl font-bold text-neutral-900 mt-1">{logisticsData.in_transit || 3}</div>
+              <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wide">
+                In-Transit / Out for Delivery
+              </span>
+              <div className="text-xl font-bold text-neutral-900 mt-1">
+                {logisticsData.in_transit || 3}
+              </div>
               <p className="text-[11px] text-neutral-500 mt-0.5">Active courier tracking</p>
             </div>
 
             <div className="p-4">
-              <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wide">Successful Deliveries</span>
-              <div className="text-xl font-bold text-neutral-900 mt-1">{logisticsData.delivered || 5}</div>
+              <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wide">
+                Successful Deliveries
+              </span>
+              <div className="text-xl font-bold text-neutral-900 mt-1">
+                {logisticsData.delivered || 5}
+              </div>
               <p className="text-[11px] text-neutral-500 mt-0.5">Completed door deliveries</p>
             </div>
           </div>
@@ -527,7 +887,9 @@ export function AdminAnalytics() {
           <div className="p-4 bg-white rounded border border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div>
               <h4 className="font-semibold text-neutral-900">Shiprocket Logistics Manager</h4>
-              <p className="text-neutral-500">Generate shipping labels, track courier waybills, and manage pickup locations.</p>
+              <p className="text-neutral-500">
+                Generate shipping labels, track courier waybills, and manage pickup locations.
+              </p>
             </div>
             <a
               href="/admin/shiprocket"

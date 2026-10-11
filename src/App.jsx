@@ -12,9 +12,11 @@ import { Footer } from './components/common/Footer.jsx';
 import { PwaBottomNav } from './components/common/PwaBottomNav.jsx';
 import { CookieConsentBanner } from './components/common/CookieConsentBanner.jsx';
 import { ScrollToTop } from './components/common/ScrollToTop.jsx';
+import { ErrorBoundary } from './components/common/ErrorBoundary.jsx';
 
 // Pages
 import { HomePage } from './pages/HomePage.jsx';
+import { NotFoundPage } from './pages/NotFoundPage.jsx';
 import { ListingPage } from './pages/ListingPage.jsx';
 import { ProductDetailPage } from './pages/ProductDetailPage.jsx';
 import { CartPage } from './pages/CartPage.jsx';
@@ -72,69 +74,72 @@ function MainLayout({ children }) {
 
 export default function App() {
   return (
-    <HelmetProvider>
-      <AuthProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <ContentProvider>
-              <ScrollToTop />
-              <MainLayout>
-                <Routes>
-                  {/* Storefront Routes */}
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/new-arrivals" element={<ListingPage isNewArrivals={true} />} />
-                  <Route path="/category/:categorySlug" element={<ListingPage />} />
-                  <Route path="/product/:slug" element={<ProductDetailPage />} />
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/checkout" element={<CheckoutPage />} />
-                  <Route path="/order-success/:orderNumber" element={<OrderConfirmationPage />} />
-                  <Route path="/track-order" element={<TrackOrderPage />} />
-                  <Route path="/orders" element={<OrdersPage />} />
-                  <Route path="/orders/:orderNumber" element={<OrdersPage />} />
-                  <Route path="/wishlist" element={<WishlistPage />} />
-                  <Route path="/account" element={<AccountPage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
+    <ErrorBoundary>
+      <HelmetProvider>
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <ContentProvider>
+                <ScrollToTop />
+                <MainLayout>
+                  <ErrorBoundary>
+                    <Routes>
+                      {/* Storefront Routes */}
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/new-arrivals" element={<ListingPage isNewArrivals={true} />} />
+                      <Route path="/category/:categorySlug" element={<ListingPage />} />
+                      <Route path="/product/:slug" element={<ProductDetailPage />} />
+                      <Route path="/cart" element={<CartPage />} />
+                      <Route path="/checkout" element={<CheckoutPage />} />
+                      <Route path="/order-success/:orderNumber" element={<OrderConfirmationPage />} />
+                      <Route path="/track-order" element={<TrackOrderPage />} />
+                      <Route path="/orders" element={<OrdersPage />} />
+                      <Route path="/orders/:orderNumber" element={<OrdersPage />} />
+                      <Route path="/wishlist" element={<WishlistPage />} />
+                      <Route path="/account" element={<AccountPage />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/register" element={<RegisterPage />} />
 
-                  {/* Customer Care & Policy Pages */}
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
-                  <Route path="/returns" element={<ReturnsPage />} />
-                  <Route path="/size-guide" element={<SizeGuidePage />} />
-                  <Route path="/faq" element={<FaqPage />} />
-                  <Route path="/terms" element={<TermsPage />} />
-                  <Route path="/terms-and-conditions" element={<TermsPage />} />
-                  <Route path="/privacy" element={<PrivacyPage />} />
-                  <Route path="/privacy-policy" element={<PrivacyPage />} />
-                  <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-                  <Route path="/cookies" element={<CookiePolicyPage />} />
-                  <Route path="/refund-policy" element={<ReturnsPage />} />
-                  <Route path="/about" element={<AboutPage />} />
+                      {/* Customer Care & Policy Pages */}
+                      <Route path="/contact" element={<ContactPage />} />
+                      <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
+                      <Route path="/returns" element={<ReturnsPage />} />
+                      <Route path="/size-guide" element={<SizeGuidePage />} />
+                      <Route path="/faq" element={<FaqPage />} />
+                      <Route path="/terms" element={<TermsPage />} />
+                      <Route path="/terms-and-conditions" element={<TermsPage />} />
+                      <Route path="/privacy" element={<PrivacyPage />} />
+                      <Route path="/privacy-policy" element={<PrivacyPage />} />
+                      <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+                      <Route path="/cookies" element={<CookiePolicyPage />} />
+                      <Route path="/refund-policy" element={<ReturnsPage />} />
+                      <Route path="/about" element={<AboutPage />} />
 
-                  {/* Admin Routes */}
-                  <Route path="/admin" element={<AdminLayout />}>
-                    <Route index element={<AdminDashboard />} />
-                    <Route path="inventory" element={<AdminInventory />} />
-                    <Route path="analytics" element={<AdminAnalytics />} />
-                    <Route path="orders" element={<AdminOrders />} />
-                    <Route path="returns" element={<AdminReturns />} />
-                    <Route path="shiprocket" element={<AdminShiprocket />} />
-                    <Route path="delhivery" element={<AdminShiprocket />} />
-                    <Route path="products" element={<AdminProducts />} />
-                    <Route path="coupons" element={<Navigate to="/admin" replace />} />
-                    <Route path="customers" element={<AdminCustomers />} />
-                    <Route path="content" element={<AdminContentManager />} />
-                  </Route>
+                      {/* Admin Routes */}
+                      <Route path="/admin" element={<AdminLayout />}>
+                        <Route index element={<AdminDashboard />} />
+                        <Route path="inventory" element={<AdminInventory />} />
+                        <Route path="analytics" element={<AdminAnalytics />} />
+                        <Route path="orders" element={<AdminOrders />} />
+                        <Route path="returns" element={<AdminReturns />} />
+                        <Route path="shiprocket" element={<AdminShiprocket />} />
+                        <Route path="delhivery" element={<AdminShiprocket />} />
+                        <Route path="products" element={<AdminProducts />} />
+                        <Route path="coupons" element={<Navigate to="/admin" replace />} />
+                        <Route path="customers" element={<AdminCustomers />} />
+                        <Route path="content" element={<AdminContentManager />} />
+                      </Route>
 
-
-                  {/* 404 Fallback */}
-                  <Route path="*" element={<HomePage />} />
-                </Routes>
-              </MainLayout>
-            </ContentProvider>
-          </WishlistProvider>
-        </CartProvider>
-      </AuthProvider>
-    </HelmetProvider>
+                      {/* 404 Fallback */}
+                      <Route path="*" element={<NotFoundPage />} />
+                    </Routes>
+                  </ErrorBoundary>
+                </MainLayout>
+              </ContentProvider>
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   );
 }

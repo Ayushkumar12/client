@@ -43,6 +43,8 @@ export function AdminContentManager() {
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [showSubscribersModal, setShowSubscribersModal] = useState(false);
   const [loadingSubscribers, setLoadingSubscribers] = useState(false);
+  const [broadcastingEmail, setBroadcastingEmail] = useState(false);
+  const [testingSmtp, setTestingSmtp] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [toastType, setToastType] = useState('success');
@@ -67,6 +69,42 @@ export function AdminContentManager() {
       console.warn('Failed to load subscribers:', e);
     } finally {
       setLoadingSubscribers(false);
+    }
+  };
+
+  const handleBroadcastLaunchEmail = async () => {
+    if (!window.confirm('Send the official "Store is LIVE" announcement email to all VIP subscribers and registered users right now?')) {
+      return;
+    }
+    try {
+      setBroadcastingEmail(true);
+      const res = await api.broadcastLaunchEmail();
+      if (res.success) {
+        showToast(res.message || 'Launch announcement emails dispatched successfully!', 'success');
+        loadSubscribers();
+      } else {
+        showToast(res.message || 'Failed to dispatch broadcast emails.', 'error');
+      }
+    } catch (err) {
+      showToast(err.message || 'Error triggering broadcast.', 'error');
+    } finally {
+      setBroadcastingEmail(false);
+    }
+  };
+
+  const handleTestSmtp = async () => {
+    try {
+      setTestingSmtp(true);
+      const res = await api.testSmtp('info@oct9.in');
+      if (res.success) {
+        showToast('SMTP connected & verified successfully (mail.oct9.in:587 info@oct9.in)!', 'success');
+      } else {
+        showToast(`SMTP test failed: ${res.error || res.message}`, 'error');
+      }
+    } catch (err) {
+      showToast(`SMTP error: ${err.message}`, 'error');
+    } finally {
+      setTestingSmtp(false);
     }
   };
 
@@ -546,11 +584,11 @@ export function AdminContentManager() {
                   <button
                     type="button"
                     onClick={async () => {
-                      if (window.confirm('Set the store LIVE? All customers will immediately see the full storefront.')) {
+                      if (window.confirm('Set the store LIVE? All customers will immediately see the full storefront and announcement emails will be sent to VIP subscribers via info@oct9.in.')) {
                         setSaving(true);
                         await updateSiteMode('live');
                         setSaving(false);
-                        showToast('Store is now LIVE for all visitors!', 'success');
+                        showToast('Store is now LIVE! Launch announcement emails dispatched.', 'success');
                       }
                     }}
                     className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold cursor-pointer transition-colors"
@@ -558,6 +596,28 @@ export function AdminContentManager() {
                     Set Store to Live Now
                   </button>
                 )}
+
+                <button
+                  type="button"
+                  disabled={broadcastingEmail}
+                  onClick={handleBroadcastLaunchEmail}
+                  className="px-3 py-2 bg-[#5A1827] hover:bg-[#43121D] text-white rounded text-xs font-semibold cursor-pointer transition-colors flex items-center space-x-1.5 disabled:opacity-50"
+                  title="Send launch announcement email to all VIP subscribers using info@oct9.in"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>{broadcastingEmail ? 'Sending...' : 'Broadcast Live Email'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  disabled={testingSmtp}
+                  onClick={handleTestSmtp}
+                  className="px-3 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-300 rounded text-xs font-medium cursor-pointer transition-colors flex items-center space-x-1.5 disabled:opacity-50"
+                  title="Test SMTP handshake with mail.oct9.in:587 info@oct9.in"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{testingSmtp ? 'Testing...' : 'Test SMTP'}</span>
+                </button>
 
                 <button
                   type="button"

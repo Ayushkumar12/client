@@ -205,11 +205,13 @@ export function ProductDetailPage() {
         name: 'OCT9 Luxury Ethnic Wear'
       }
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: product.rating || 4.8,
-      reviewCount: product.reviews_count || 12
-    }
+    ...(Number(product.reviews_count || 0) > 0 && Number(product.rating || 0) > 0 ? {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: Number(product.rating),
+        reviewCount: Number(product.reviews_count)
+      }
+    } : {})
   };
 
   const hasDiscount = product.discount_percent > 0 || (product.original_price && product.original_price > product.price);
@@ -344,10 +346,14 @@ export function ProductDetailPage() {
               {/* Rating & Rate Action */}
               {(isAdmin || showPublicRatings) && (
                 <div className="flex items-center space-x-3 mt-2.5">
-                  <div className="flex items-center space-x-1 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-sm text-xs font-bold text-amber-900">
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                    <span>{product.rating || 5.0}</span>
-                  </div>
+                  {(product.reviews?.length || product.reviews_count || 0) > 0 && Number(product.rating || 0) > 0 ? (
+                    <div className="flex items-center space-x-1 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-sm text-xs font-bold text-amber-900">
+                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      <span>{product.rating}</span>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-neutral-400 font-medium">No reviews yet</span>
+                  )}
                   {isAdmin ? (
                     <span className="text-xs text-neutral-500">
                       Based on <strong>{product.reviews?.length || product.reviews_count || 0}</strong> customer reviews (Admin View)
@@ -738,19 +744,31 @@ export function ProductDetailPage() {
                   {openAccordions.reviews && (
                     <div className="mt-3 space-y-3 animate-fadeIn">
                       <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
-                        <div className="flex items-center space-x-2">
-                          <span className="font-sans text-2xl font-bold">{product.rating || 5.0}</span>
-                          <div className="flex text-amber-400">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                            ))}
+                        {product.reviews && product.reviews.length > 0 && Number(product.rating || 0) > 0 ? (
+                          <div className="flex items-center space-x-2">
+                            <span className="font-sans text-2xl font-bold">{product.rating}</span>
+                            <div className="flex text-amber-400">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-3.5 h-3.5 ${
+                                    i < Math.round(Number(product.rating))
+                                      ? 'fill-amber-400 text-amber-400'
+                                      : 'fill-neutral-200 text-neutral-200'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-xs text-neutral-500">({product.reviews.length})</span>
                           </div>
-                        </div>
+                        ) : (
+                          <span className="text-xs text-neutral-500">No reviews yet. Be the first to review this product.</span>
+                        )}
                         <button
                           onClick={() => setShowReviewModal(true)}
                           className="text-xs font-bold text-brand-maroon hover:underline cursor-pointer"
                         >
-                          Add Review
+                          Write a Review
                         </button>
                       </div>
 
@@ -776,8 +794,8 @@ export function ProductDetailPage() {
                     </div>
                   )}
                 </div>
-              ) : (
-                /* Customer View: Rate & Add Review Only (Customer reviews hidden from public users) */
+              ) : showPublicRatings ? (
+                /* Customer View: Only visible when admin allows public ratings */
                 <div className="py-4">
                   <button
                     type="button"
@@ -815,7 +833,7 @@ export function ProductDetailPage() {
                     </div>
                   )}
                 </div>
-              )}
+              ) : null}
             </div>
 
             {/* Trust Features Strip - Clean Human Editorial Layout */}

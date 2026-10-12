@@ -99,7 +99,7 @@ export function Footer() {
                   {brand.name || 'OCT9'}
                 </span>
                 <span className="text-[10px] sm:text-xs tracking-wider uppercase text-neutral-500 font-medium">
-                  {brand.tagline || 'Luxury Ethnic Wear'}
+                  {brand.tagline || 'Luxury Without Noise'}
                 </span>
               </div>
             </Link>

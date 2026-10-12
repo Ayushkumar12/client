@@ -297,13 +297,14 @@ export function AdminProducts() {
                   <th className="p-4">Category & Sub</th>
                   <th className="p-4">Price / Discount</th>
                   <th className="p-4">Stock</th>
-                  <th className="p-4">Admin Ratings</th>
+                  <th className="p-4">Ratings</th>
                   <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
                 {products.map((p) => {
                   const img = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : '';
+                  const hasReviews = Number(p.reviews_count || 0) > 0 && Number(p.rating || 0) > 0;
                   return (
                     <tr key={p.id} className="hover:bg-neutral-50/80 transition-colors">
                       <td className="p-4">
@@ -340,11 +341,15 @@ export function AdminProducts() {
                       </td>
 
                       <td className="p-4">
-                        <div className="flex items-center space-x-1 text-amber-600 font-bold">
-                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                          <span>{p.rating || 4.8}</span>
-                          <span className="text-[10px] text-neutral-400 font-normal">({p.reviews_count || 12})</span>
-                        </div>
+                        {hasReviews ? (
+                          <div className="flex items-center space-x-1 text-amber-600 font-bold">
+                            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                            <span>{p.rating}</span>
+                            <span className="text-[10px] text-neutral-400 font-normal">({p.reviews_count})</span>
+                          </div>
+                        ) : (
+                          <span className="text-neutral-400 text-xs font-normal">No reviews</span>
+                        )}
                       </td>
 
                       <td className="p-4 text-right space-x-2">

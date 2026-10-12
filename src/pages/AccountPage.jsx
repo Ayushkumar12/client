@@ -65,7 +65,8 @@ export function AccountPage() {
     updateAddress,
     setDefaultAddress,
     deleteAddress,
-    isAdmin
+    isAdmin,
+    showPublicRatings
   } = useAuth();
 
   const { wishlist, toggleWishlist, wishlistCount } = useWishlist();
@@ -1403,14 +1404,16 @@ export function AccountPage() {
                               )}
                             </div>
 
-                            {/* Rating & Reviews */}
-                            <div className="flex items-center space-x-1 text-[10px] text-neutral-500">
-                              <div className="flex items-center text-amber-500">
-                                <Star className="w-3 h-3 fill-amber-400" />
+                            {/* Rating & Reviews (Strictly hidden until admin allows) */}
+                            {showPublicRatings && Number(item.rating || 0) > 0 && (
+                              <div className="flex items-center space-x-1 text-[10px] text-neutral-500">
+                                <div className="flex items-center text-amber-500">
+                                  <Star className="w-3 h-3 fill-amber-400" />
+                                </div>
+                                <span className="font-bold text-neutral-700">{item.rating}</span>
+                                {item.reviews_count ? <span>({item.reviews_count})</span> : null}
                               </div>
-                              <span className="font-bold text-neutral-700">{item.rating || '4.7'}</span>
-                              <span>(120)</span>
-                            </div>
+                            )}
 
                             {/* Color Swatches */}
                             <div className="flex items-center space-x-1 pt-1">
@@ -2397,7 +2400,7 @@ function getSampleWishlist() {
       price: 3499,
       original_price: 5499,
       discount_percent: 36,
-      rating: 4.7,
+      rating: 0,
       image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80'
     },
     {
@@ -2407,7 +2410,7 @@ function getSampleWishlist() {
       price: 4299,
       original_price: 6999,
       discount_percent: 39,
-      rating: 4.8,
+      rating: 0,
       image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80'
     },
     {
@@ -2417,7 +2420,7 @@ function getSampleWishlist() {
       price: 1999,
       original_price: 2999,
       discount_percent: 33,
-      rating: 4.5,
+      rating: 0,
       image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=600&q=80'
     },
     {
@@ -2427,7 +2430,7 @@ function getSampleWishlist() {
       price: 899,
       original_price: 1299,
       discount_percent: 31,
-      rating: 4.4,
+      rating: 0,
       image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=600&q=80'
     },
     {
@@ -2437,7 +2440,7 @@ function getSampleWishlist() {
       price: 799,
       original_price: 1299,
       discount_percent: 36,
-      rating: 4.6,
+      rating: 0,
       image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80'
     },
     {

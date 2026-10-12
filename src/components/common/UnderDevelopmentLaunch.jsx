@@ -105,7 +105,7 @@ export function UnderDevelopmentLaunch() {
           OCT9
         </h1>
         <p className="text-[11px] sm:text-xs tracking-[0.28em] uppercase text-[#52525B] mt-1 font-medium">
-          Artisanal Pret &bull; Stitched Suits &bull; Festive Couture
+          Luxury Without Noise &bull; Artisanal Ethnic Pret
         </p>
       </header>
 

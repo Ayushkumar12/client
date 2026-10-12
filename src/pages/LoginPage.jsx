@@ -69,7 +69,7 @@ export function LoginPage() {
   return (
     <div className="min-h-screen w-full flex bg-[#FDFBF7] text-neutral-800 font-sans selection:bg-[#5A1827] selection:text-white">
       <SEO
-        title="Sign In | OCT9 Fashion & Ethnic Wear"
+        title="Sign In | OCT9 — Luxury Without Noise"
         description="Sign in to your OCT9 account to track orders, manage saved addresses, and access your wishlist."
       />
 

@@ -475,6 +475,11 @@ export const api = {
     body: JSON.stringify({ page_availability }),
   }),
   getLaunchSubscribers: () => request('/admin/launch-subscribers'),
+  broadcastLaunchEmail: () => request('/admin/launch-broadcast', { method: 'POST' }),
+  testSmtp: (email) => request('/admin/test-smtp', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  }),
   submitLaunchSubscribe: (data) => request('/forms/launch-subscribe', {
     method: 'POST',
     body: JSON.stringify(data),

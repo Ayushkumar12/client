@@ -88,7 +88,7 @@ export function RegisterPage() {
   return (
     <div className="min-h-screen w-full flex bg-[#FDFBF7] text-neutral-800 font-sans selection:bg-[#5A1827] selection:text-white">
       <SEO
-        title="Create Account | OCT9 Fashion & Ethnic Wear"
+        title="Create Account | OCT9 — Luxury Without Noise"
         description="Create your OCT9 account for seamless shopping, live order tracking, and exclusive festive drop access."
       />
 

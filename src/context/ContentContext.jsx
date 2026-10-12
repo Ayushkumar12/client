@@ -6,8 +6,8 @@ const ContentContext = createContext(null);
 export const DEFAULT_SITE_CONTENT = {
   brand: {
     name: 'OCT9',
-    tagline: 'Fashion & Ethnic Wear',
-    sub_tagline: 'Women\'s Ethnic Wear & Dresses',
+    tagline: 'Luxury Without Noise',
+    sub_tagline: 'Luxury Indian Pret & Ethnic Wear',
     announcement_bar: '',
     support_phone: '+91 98765 43210',
     support_email: 'support@oct9.com',

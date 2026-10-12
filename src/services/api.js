@@ -1,67 +1,42 @@
 // Configured Primary & Fallback API endpoints
-const DEVTUNNEL_API = 'https://backend.oct9.in/api';
+const LIVE_BACKEND_API = 'https://backend.oct9.in/api';
 const LOCALHOST_API = 'http://localhost:5000/api';
 
-// Resolve primary API based on current hostname / environment
+// Check if website is running locally (localhost, 127.0.0.1, or local area network)
+export function isLocalWebsite() {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '127.0.0.1' || host === '::1' || /^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host);
+}
+
+// Resolve primary API based strictly on current website host
 function resolveInitialBase() {
   if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
     const port = window.location.port;
 
-    // 1. If running on Vite dev server (port 5173 or 3000)
-    // Use relative '/api' which Vite dev server proxies to backendTarget
-    if (port === '5173' || port === '3000') {
-      return '/api';
+    // Rule: If website = localhost, then use localhost backend
+    if (isLocalWebsite()) {
+      if (port === '5173' || port === '3000') {
+        return '/api'; // Proxied to http://localhost:5000 via Vite dev server
+      }
+      return LOCALHOST_API;
     }
 
-    // 2. Direct localhost or loopback
-    if (host === 'localhost' || host === '127.0.0.1') {
-      return import.meta.env?.VITE_API_URL || LOCALHOST_API;
-    }
-
-    // 3. If accessed from local area network (LAN/WiFi testing on mobile phone, e.g. 192.168.x.x)
-    if (/^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host)) {
-      return `http://${host}:5000/api`;
-    }
-
-    // 4. Production domain host (oct9.in, www.oct9.in, admin.oct9.in)
-    // The backend is hosted on the dedicated subdomain https://backend.oct9.in/api
-    if (host.endsWith('oct9.in')) {
-      return DEVTUNNEL_API;
-    }
-
-    // 5. If running on Vercel preview or custom production host
-    if (import.meta.env?.VITE_API_URL) {
-      return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
-    }
-
-    if (host.endsWith('.vercel.app')) {
-      return DEVTUNNEL_API;
-    }
+    // Otherwise website is live production (oct9.in, vercel, etc.) -> use live backend
+    return LIVE_BACKEND_API;
   }
 
-  if (import.meta.env?.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
-  }
-
-  return DEVTUNNEL_API;
+  return LIVE_BACKEND_API;
 }
 
 let CURRENT_API_BASE = resolveInitialBase();
 
 function getFallbackBase() {
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (CURRENT_API_BASE === '/api') {
-      return host.endsWith('oct9.in')
-        ? DEVTUNNEL_API
-        : (host === 'localhost' || host === '127.0.0.1' ? LOCALHOST_API : DEVTUNNEL_API);
-    }
-    if (CURRENT_API_BASE === LOCALHOST_API) {
-      return DEVTUNNEL_API;
-    }
+  if (isLocalWebsite()) {
+    // Keep strictly on localhost when website is on localhost
+    return CURRENT_API_BASE === '/api' ? LOCALHOST_API : '/api';
   }
-  return CURRENT_API_BASE === DEVTUNNEL_API ? LOCALHOST_API : DEVTUNNEL_API;
+  return LIVE_BACKEND_API;
 }
 
 export const API_BASE = CURRENT_API_BASE;
@@ -110,13 +85,13 @@ async function fetchWithFallback(endpoint, fetchOptions = {}) {
   try {
     const response = await fetch(primaryUrl, optionsWithCredentials);
 
-    // If primary returned 404 or server gateway error and we're not yet on DEVTUNNEL_API, attempt fallback
-    if (!response.ok && (response.status === 404 || response.status >= 500) && CURRENT_API_BASE !== DEVTUNNEL_API) {
+    // If website is live and returned gateway error, attempt fallback to LIVE_BACKEND_API
+    if (!response.ok && (response.status === 404 || response.status >= 500) && !isLocalWebsite() && CURRENT_API_BASE !== LIVE_BACKEND_API) {
       try {
-        const fallbackUrl = `${DEVTUNNEL_API}${cleanEndpoint}`;
+        const fallbackUrl = `${LIVE_BACKEND_API}${cleanEndpoint}`;
         const fallbackResponse = await fetch(fallbackUrl, optionsWithCredentials);
         if (fallbackResponse.ok || fallbackResponse.status < 500) {
-          CURRENT_API_BASE = DEVTUNNEL_API;
+          CURRENT_API_BASE = LIVE_BACKEND_API;
           return fallbackResponse;
         }
       } catch (e) {}
@@ -124,22 +99,15 @@ async function fetchWithFallback(endpoint, fetchOptions = {}) {
 
     return response;
   } catch (err) {
-    // If primary network fetch fails (e.g. localhost offline), try fallback endpoint
+    // If primary network fetch fails, try fallback
     const fallbackBase = getFallbackBase();
     if (fallbackBase && fallbackBase !== CURRENT_API_BASE) {
       const fallbackUrl = `${fallbackBase}${cleanEndpoint}`;
       try {
         const fallbackResponse = await fetch(fallbackUrl, optionsWithCredentials);
-        CURRENT_API_BASE = fallbackBase; // switch active base
+        CURRENT_API_BASE = fallbackBase;
         return fallbackResponse;
       } catch (fallbackErr) {
-        if (fallbackBase !== DEVTUNNEL_API && CURRENT_API_BASE !== DEVTUNNEL_API) {
-          try {
-            const tunnelResponse = await fetch(`${DEVTUNNEL_API}${cleanEndpoint}`, optionsWithCredentials);
-            CURRENT_API_BASE = DEVTUNNEL_API;
-            return tunnelResponse;
-          } catch (tunnelErr) {}
-        }
         throw err;
       }
     }

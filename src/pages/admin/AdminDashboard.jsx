@@ -144,7 +144,8 @@ export function AdminDashboard() {
       data: mockTrend,
       series: [
         {
-          type: 'column',
+          type: 'bar',
+          direction: 'vertical',
           xKey: 'day',
           yKey: 'revenue',
           yName: 'Revenue (₹)',
@@ -153,13 +154,13 @@ export function AdminDashboard() {
           cornerRadius: 3
         }
       ],
-      axes: [
-        {
+      axes: {
+        x: {
           type: 'category',
           position: 'bottom',
           label: { fontSize: 10, color: '#525252' }
         },
-        {
+        y: {
           type: 'number',
           position: 'left',
           label: {
@@ -168,7 +169,7 @@ export function AdminDashboard() {
             color: '#525252'
           }
         }
-      ]
+      }
     };
   }, [metrics]);
 

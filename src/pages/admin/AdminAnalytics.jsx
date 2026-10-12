@@ -125,7 +125,8 @@ export function AdminAnalytics() {
       data: rawData,
       series: [
         {
-          type: 'column',
+          type: 'bar',
+          direction: 'vertical',
           xKey: 'month',
           yKey: 'revenue',
           yName: 'Revenue (₹)',
@@ -134,13 +135,13 @@ export function AdminAnalytics() {
           cornerRadius: 4
         }
       ],
-      axes: [
-        {
+      axes: {
+        x: {
           type: 'category',
           position: 'bottom',
           label: { fontSize: 11, color: '#525252' }
         },
-        {
+        y: {
           type: 'number',
           position: 'left',
           label: {
@@ -149,7 +150,7 @@ export function AdminAnalytics() {
             color: '#525252'
           }
         }
-      ]
+      }
     };
   }, [revenueData.monthly_trend]);
 
@@ -180,18 +181,18 @@ export function AdminAnalytics() {
           marker: { fill: '#5A1827', size: 6 }
         }
       ],
-      axes: [
-        {
+      axes: {
+        x: {
           type: 'category',
           position: 'bottom',
           label: { fontSize: 11, color: '#525252' }
         },
-        {
+        y: {
           type: 'number',
           position: 'left',
           label: { fontSize: 11, color: '#525252' }
         }
-      ]
+      }
     };
   }, [revenueData.monthly_trend]);
 
@@ -265,6 +266,7 @@ export function AdminAnalytics() {
       series: [
         {
           type: 'bar',
+          direction: 'horizontal',
           xKey: 'star',
           yKey: 'count',
           yName: 'Review Count',
@@ -273,18 +275,18 @@ export function AdminAnalytics() {
           cornerRadius: 4
         }
       ],
-      axes: [
-        {
+      axes: {
+        x: {
           type: 'category',
           position: 'left',
           label: { fontSize: 11, color: '#525252' }
         },
-        {
+        y: {
           type: 'number',
           position: 'bottom',
           label: { fontSize: 11, color: '#525252' }
         }
-      ]
+      }
     };
   }, [analytics]);
 
@@ -316,7 +318,8 @@ export function AdminAnalytics() {
       ],
       series: [
         {
-          type: 'column',
+          type: 'bar',
+          direction: 'vertical',
           xKey: 'category',
           yKey: 'revenue',
           yName: 'Sales Revenue (₹)',
@@ -325,13 +328,13 @@ export function AdminAnalytics() {
           cornerRadius: 4
         }
       ],
-      axes: [
-        {
+      axes: {
+        x: {
           type: 'category',
           position: 'bottom',
           label: { fontSize: 10, color: '#525252' }
         },
-        {
+        y: {
           type: 'number',
           position: 'left',
           label: {
@@ -340,7 +343,7 @@ export function AdminAnalytics() {
             color: '#525252'
           }
         }
-      ]
+      }
     };
   }, [inventoryData.category_sales]);
 
@@ -366,7 +369,8 @@ export function AdminAnalytics() {
       data: rawData,
       series: [
         {
-          type: 'column',
+          type: 'bar',
+          direction: 'vertical',
           xKey: 'city',
           yKey: 'count',
           yName: 'Shipments',
@@ -375,18 +379,18 @@ export function AdminAnalytics() {
           cornerRadius: 4
         }
       ],
-      axes: [
-        {
+      axes: {
+        x: {
           type: 'category',
           position: 'bottom',
           label: { fontSize: 11, color: '#525252' }
         },
-        {
+        y: {
           type: 'number',
           position: 'left',
           label: { fontSize: 11, color: '#525252' }
         }
-      ]
+      }
     };
   }, [logisticsData.top_cities]);
 

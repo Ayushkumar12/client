@@ -19,7 +19,7 @@ import {
 import { useAuth } from '../../context/AuthContext.jsx';
 
 export function AdminLayout() {
-  const { user, isAdmin, loading: authLoading, logout } = useAuth();
+  const { user, isAdmin, loading: authLoading, logout, siteMode, updateSiteMode } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -149,6 +149,68 @@ export function AdminLayout() {
 
       {/* Main Content */}
       <main className="flex-1 p-3.5 sm:p-6 md:p-8 overflow-y-auto max-w-7xl w-full">
+        {/* Store Live / Under Development Global Status Indicator */}
+        <div className="mb-6 bg-white border border-neutral-200 rounded-md p-3 px-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-xs">
+          <div className="flex items-center space-x-2.5">
+            <span
+              className={`w-2.5 h-2.5 rounded-full ${
+                siteMode === 'live' ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'
+              }`}
+            />
+            <div>
+              <div className="text-xs font-bold text-neutral-900 tracking-wide uppercase flex items-center gap-1.5">
+                <span>Store Status:</span>
+                <span
+                  className={
+                    siteMode === 'live'
+                      ? 'text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200'
+                      : 'text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200'
+                  }
+                >
+                  {siteMode === 'live' ? 'LIVE (Open to Public)' : 'UNDER DEVELOPMENT (Launch Page Active)'}
+                </span>
+              </div>
+              <p className="text-[11px] text-neutral-500 mt-0.5">
+                {siteMode === 'live'
+                  ? 'All customers can browse collections, add to cart, and checkout.'
+                  : 'Visitors see the launch countdown announcement. Only logged-in administrators can preview.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2 shrink-0">
+            {siteMode === 'live' ? (
+              <button
+                onClick={async () => {
+                  if (window.confirm('Set store back to Under Development mode? Public visitors will see the launch page.')) {
+                    await updateSiteMode('under_development');
+                  }
+                }}
+                className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded text-xs font-semibold transition-colors cursor-pointer"
+              >
+                Set Under Development
+              </button>
+            ) : (
+              <button
+                onClick={async () => {
+                  if (window.confirm('Set store to LIVE? All customers will immediately see the full storefront.')) {
+                    await updateSiteMode('live');
+                  }
+                }}
+                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold transition-colors cursor-pointer"
+              >
+                Publish Store as Live
+              </button>
+            )}
+            <Link
+              to="/admin/content"
+              className="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-300 rounded text-xs font-medium transition-colors"
+            >
+              Page Statuses
+            </Link>
+          </div>
+        </div>
+
         <Outlet />
       </main>
     </div>

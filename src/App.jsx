@@ -51,19 +51,64 @@ import { AdminContentManager } from './pages/admin/AdminContentManager.jsx';
 import { AdminInventory } from './pages/admin/AdminInventory.jsx';
 import { AdminInquiries } from './pages/admin/AdminInquiries.jsx';
 import { AdminDatabase } from './pages/admin/AdminDatabase.jsx';
+import { UnderDevelopmentLaunch } from './components/common/UnderDevelopmentLaunch.jsx';
+import { useAuth } from './context/AuthContext.jsx';
+import { Link } from 'react-router-dom';
 
 function MainLayout({ children }) {
   const location = useLocation();
-  const isAdmin = location.pathname.startsWith('/admin');
+  const { siteMode, isAdmin, updateSiteMode } = useAuth();
+  const isDevMode = siteMode === 'under_development';
+
+  const isExplicitAdminRoute = location.pathname.startsWith('/admin');
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
-  if (isAdmin || isAuthPage) {
+  // 1. Admin pages & Login/Register are ALWAYS accessible
+  if (isExplicitAdminRoute || isAuthPage) {
     return <>{children}</>;
   }
 
+  // 2. Under Development Mode:
+  // If not live yet, non-admins see the UnderDevelopmentLaunch page based on launch.html
+  if (isDevMode && !isAdmin) {
+    return <UnderDevelopmentLaunch />;
+  }
+
+  // 3. Storefront layout (with admin preview alert if store is under development)
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-brand-cream pb-14 lg:pb-0">
+    <div className="min-h-screen flex flex-col justify-between bg-brand-cream pb-14 lg:pb-0 font-sans">
       <div>
+        {isDevMode && isAdmin && (
+          <div className="bg-amber-950 text-amber-100 text-xs px-4 py-2 border-b border-amber-800 flex flex-wrap items-center justify-between gap-2 z-50 sticky top-0">
+            <div className="flex items-center space-x-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <span className="font-semibold tracking-wide">
+                STORE STATUS: UNDER DEVELOPMENT (LAUNCH PAGE ACTIVE FOR PUBLIC)
+              </span>
+              <span className="hidden md:inline text-amber-300">
+                — You can preview the storefront because you are signed in as Administrator.
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Link
+                to="/admin/content"
+                className="px-2.5 py-1 bg-amber-800 hover:bg-amber-700 text-white rounded text-[11px] font-medium"
+              >
+                Admin Panel
+              </Link>
+              <button
+                onClick={async () => {
+                  if (window.confirm('Make the store LIVE for all visitors now?')) {
+                    await updateSiteMode('live');
+                  }
+                }}
+                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-semibold cursor-pointer"
+              >
+                Set Store to Live
+              </button>
+            </div>
+          </div>
+        )}
         <Header />
         <main>{children}</main>
       </div>

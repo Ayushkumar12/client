@@ -569,7 +569,11 @@ export function AdminShiprocket() {
             <div className="font-sans text-3xl font-bold text-neutral-900 mt-2">
               {stats?.delivered || 0}
             </div>
-            <span className="text-[11px] text-emerald-700 font-semibold mt-1 block">100% Success rate</span>
+            <span className="text-[11px] text-neutral-500 mt-1 block">
+              {(stats?.total_manifested || manifests.length || 0) > 0
+                ? `${Math.round(((stats?.delivered || 0) / (stats?.total_manifested || manifests.length || 1)) * 100)}% Success rate`
+                : 'No shipments delivered'}
+            </span>
           </div>
 
           <div className="bg-white p-5 border border-neutral-200">
@@ -580,9 +584,11 @@ export function AdminShiprocket() {
               </div>
             </div>
             <div className="font-sans text-3xl font-bold text-neutral-900 mt-2">
-              {stats?.active_couriers || 6}+
+              {stats?.active_couriers || 0}
             </div>
-            <span className="text-[11px] text-neutral-500 mt-1 block">BlueDart, Delhivery, DTDC</span>
+            <span className="text-[11px] text-neutral-500 mt-1 block">
+              {stats?.active_couriers ? 'BlueDart, Delhivery, DTDC' : 'Available upon dispatch'}
+            </span>
           </div>
         </div>
       )}

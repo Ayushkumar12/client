@@ -216,10 +216,7 @@ export function AdminAnalytics() {
         fontSize: 11,
         color: '#737373'
       },
-      data: rawData.length > 0 ? rawData : [
-        { method: 'Razorpay / Prepaid', total: 65000, count: 28 },
-        { method: 'Cash on Delivery (COD)', total: 35000, count: 18 }
-      ],
+      data: rawData,
       series: [
         {
           type: 'donut',
@@ -243,10 +240,10 @@ export function AdminAnalytics() {
   const starRatingsChartOptions = useMemo(() => {
     const bd = analytics?.ratings_analytics?.rating_breakdown || {};
     const rawData = [
-      { star: '5 Stars', count: bd.star_5?.count || 110, percentage: bd.star_5?.percentage || 78 },
-      { star: '4 Stars', count: bd.star_4?.count || 24, percentage: bd.star_4?.percentage || 17 },
-      { star: '3 Stars', count: bd.star_3?.count || 6, percentage: bd.star_3?.percentage || 4 },
-      { star: '2 Stars', count: bd.star_2?.count || 2, percentage: bd.star_2?.percentage || 1 },
+      { star: '5 Stars', count: bd.star_5?.count || 0, percentage: bd.star_5?.percentage || 0 },
+      { star: '4 Stars', count: bd.star_4?.count || 0, percentage: bd.star_4?.percentage || 0 },
+      { star: '3 Stars', count: bd.star_3?.count || 0, percentage: bd.star_3?.percentage || 0 },
+      { star: '2 Stars', count: bd.star_2?.count || 0, percentage: bd.star_2?.percentage || 0 },
       { star: '1 Star', count: bd.star_1?.count || 0, percentage: bd.star_1?.percentage || 0 }
     ];
 
@@ -310,12 +307,7 @@ export function AdminAnalytics() {
         fontSize: 11,
         color: '#737373'
       },
-      data: rawData.length > 0 ? rawData : [
-        { category: 'DESIGNER SUITS', revenue: 145000, units: 35 },
-        { category: 'STITCHED SUITS', revenue: 98000, units: 28 },
-        { category: 'SAREES', revenue: 84000, units: 20 },
-        { category: 'UNSTITCHED', revenue: 42000, units: 14 }
-      ],
+      data: rawData,
       series: [
         {
           type: 'bar',
@@ -731,11 +723,11 @@ export function AdminAnalytics() {
             <Star className="w-3.5 h-3.5 text-amber-500" />
           </div>
           <div className="text-xl font-bold text-neutral-900 mt-1 flex items-baseline space-x-1">
-            <span>{ratingsData.catalog_average_rating || '4.8'}</span>
+            <span>{ratingsData.catalog_average_rating || '0.0'}</span>
             <span className="text-xs text-neutral-400 font-normal">/ 5.0</span>
           </div>
           <span className="text-[11px] text-neutral-500">
-            {ratingsData.total_catalog_reviews || 142} verified reviews
+            {ratingsData.total_catalog_reviews || 0} verified reviews
           </span>
         </div>
 
@@ -760,7 +752,7 @@ export function AdminAnalytics() {
             <Truck className="w-3.5 h-3.5 text-emerald-600" />
           </div>
           <div className="text-xl font-bold text-neutral-900 mt-1">
-            {logisticsData.on_time_rate || 98.4}%
+            {logisticsData.on_time_rate || 0}%
           </div>
           <span className="text-[11px] text-neutral-500">Shiprocket Logistics</span>
         </div>
@@ -801,19 +793,33 @@ export function AdminAnalytics() {
             </div>
 
             {/* AG Chart: Payment Settlement Donut */}
-            <div className="lg:col-span-4 bg-white p-4 rounded border border-neutral-200 shadow-2xs">
-              <div className="h-[340px]">
-                <AgCharts options={paymentMethodsChartOptions} />
-              </div>
+            <div className="lg:col-span-4 bg-white p-4 rounded border border-neutral-200 shadow-2xs flex flex-col justify-center">
+              {(revenueData.payment_methods || []).length > 0 ? (
+                <div className="h-[340px]">
+                  <AgCharts options={paymentMethodsChartOptions} />
+                </div>
+              ) : (
+                <div className="h-[340px] flex flex-col items-center justify-center text-center p-6 space-y-1">
+                  <h4 className="text-sm font-bold text-neutral-900">Payment Settlement Share</h4>
+                  <p className="text-xs text-neutral-400 max-w-[200px]">No payment records yet. Prepaid and COD shares will display after customer orders.</p>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* AG Chart: Category Revenue Contribution */}
-            <div className="lg:col-span-7 bg-white p-4 rounded border border-neutral-200 shadow-2xs">
-              <div className="h-[320px]">
-                <AgCharts options={categorySalesChartOptions} />
-              </div>
+            <div className="lg:col-span-7 bg-white p-4 rounded border border-neutral-200 shadow-2xs flex flex-col justify-center">
+              {(inventoryData.category_sales || []).length > 0 ? (
+                <div className="h-[320px]">
+                  <AgCharts options={categorySalesChartOptions} />
+                </div>
+              ) : (
+                <div className="h-[320px] flex flex-col items-center justify-center text-center p-6 space-y-1">
+                  <h4 className="text-sm font-bold text-neutral-900">Category Revenue Contribution</h4>
+                  <p className="text-xs text-neutral-400 max-w-[280px]">No sales recorded yet across collection categories.</p>
+                </div>
+              )}
             </div>
 
             {/* AG Chart: Order Volume Growth Line Chart */}
@@ -888,7 +894,7 @@ export function AdminAnalytics() {
                 <p className="text-xs text-neutral-500">Full catalog rating scores, reviews count, and stock status</p>
               </div>
               <span className="text-xs font-medium text-neutral-500">
-                Average Rating: {ratingsData.catalog_average_rating || 4.8} ★
+                Average Rating: {ratingsData.catalog_average_rating || 0} ★
               </span>
             </div>
 
@@ -988,9 +994,16 @@ export function AdminAnalytics() {
         <div className="space-y-6">
           {/* AG Chart: Category Sales Comparison */}
           <div className="bg-white p-4 rounded border border-neutral-200 shadow-2xs">
-            <div className="h-[280px]">
-              <AgCharts options={categorySalesChartOptions} />
-            </div>
+            {(inventoryData.category_sales || []).length > 0 ? (
+              <div className="h-[280px]">
+                <AgCharts options={categorySalesChartOptions} />
+              </div>
+            ) : (
+              <div className="h-[180px] flex flex-col items-center justify-center text-center p-4 space-y-1">
+                <h4 className="text-sm font-bold text-neutral-900">Category Sales Revenue</h4>
+                <p className="text-xs text-neutral-400 max-w-[280px]">No collection category sales recorded yet.</p>
+              </div>
+            )}
           </div>
 
           {/* AG GRID: Top Selling Products Master Grid */}
@@ -1035,19 +1048,19 @@ export function AdminAnalytics() {
           <div className="border border-neutral-200 bg-white rounded divide-y sm:divide-y-0 sm:divide-x divide-neutral-200 grid grid-cols-1 sm:grid-cols-3 shadow-2xs">
             <div className="p-4">
               <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wide">Shipments Manifested</span>
-              <div className="text-xl font-bold text-neutral-900 mt-1">{logisticsData.total_manifests || 8}</div>
+              <div className="text-xl font-bold text-neutral-900 mt-1">{logisticsData.total_manifests || 0}</div>
               <p className="text-[11px] text-neutral-500 mt-0.5">AWBs created via Shiprocket</p>
             </div>
 
             <div className="p-4">
               <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wide">In-Transit / Out for Delivery</span>
-              <div className="text-xl font-bold text-neutral-900 mt-1">{logisticsData.in_transit || 3}</div>
+              <div className="text-xl font-bold text-neutral-900 mt-1">{logisticsData.in_transit || 0}</div>
               <p className="text-[11px] text-neutral-500 mt-0.5">Active courier transit</p>
             </div>
 
             <div className="p-4">
               <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wide">Delivered Successfully</span>
-              <div className="text-xl font-bold text-emerald-700 mt-1">{logisticsData.delivered || 5}</div>
+              <div className="text-xl font-bold text-emerald-700 mt-1">{logisticsData.delivered || 0}</div>
               <p className="text-[11px] text-neutral-500 mt-0.5">Completed customer deliveries</p>
             </div>
           </div>
@@ -1055,9 +1068,16 @@ export function AdminAnalytics() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* AG Chart: Regional Destinations */}
             <div className="lg:col-span-6 bg-white p-4 rounded border border-neutral-200 shadow-2xs">
-              <div className="h-[300px]">
-                <AgCharts options={logisticsHubsChartOptions} />
-              </div>
+              {(logisticsData.top_cities || []).length > 0 ? (
+                <div className="h-[300px]">
+                  <AgCharts options={logisticsHubsChartOptions} />
+                </div>
+              ) : (
+                <div className="h-[300px] flex flex-col items-center justify-center text-center p-6 space-y-1">
+                  <h4 className="text-sm font-bold text-neutral-900">Regional Delivery Destinations</h4>
+                  <p className="text-xs text-neutral-400 max-w-[260px]">No delivery destinations recorded yet. Consignments will populate once orders are dispatched.</p>
+                </div>
+              )}
             </div>
 
             {/* AG Grid: Regional Performance Table */}

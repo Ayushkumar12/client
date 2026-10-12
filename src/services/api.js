@@ -462,6 +462,23 @@ export const api = {
 
   // Admin & Analytics
   getPublicSettings: () => request('/admin/settings/public'),
+  setSiteMode: (site_mode) => request('/admin/settings/site-mode', {
+    method: 'POST',
+    body: JSON.stringify({ site_mode }),
+  }),
+  updateLaunchSettings: (data) => request('/admin/settings/launch-settings', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  updatePageStatuses: (page_availability) => request('/admin/settings/page-statuses', {
+    method: 'POST',
+    body: JSON.stringify({ page_availability }),
+  }),
+  getLaunchSubscribers: () => request('/admin/launch-subscribers'),
+  submitLaunchSubscribe: (data) => request('/forms/launch-subscribe', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
   getFullAnalytics: () => request('/admin/analytics'),
   togglePublicRatings: (show_public_ratings) => request('/admin/settings/toggle-ratings', {
     method: 'POST',

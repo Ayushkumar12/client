@@ -29,6 +29,7 @@ export function AdminDashboard() {
   const [lowStock, setLowStock] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
+  const [weeklyTrend, setWeeklyTrend] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export function AdminDashboard() {
           setLowStock(res.low_stock_products || []);
           setRecentOrders(res.recent_orders || []);
           setTopProducts(res.top_products || []);
+          setWeeklyTrend(res.weekly_trend || []);
         }
       } catch (e) {
         console.error('Failed to load admin metrics:', e);
@@ -118,15 +120,14 @@ export function AdminDashboard() {
 
   // AG CHART Options for Sales & Orders Quick Trend
   const dashboardChartOptions = useMemo(() => {
-    const totalRev = Number(metrics?.total_revenue || 120000);
-    const mockTrend = [
-      { day: 'Mon', revenue: Math.round(totalRev * 0.1), orders: 4 },
-      { day: 'Tue', revenue: Math.round(totalRev * 0.14), orders: 6 },
-      { day: 'Wed', revenue: Math.round(totalRev * 0.18), orders: 8 },
-      { day: 'Thu', revenue: Math.round(totalRev * 0.15), orders: 7 },
-      { day: 'Fri', revenue: Math.round(totalRev * 0.22), orders: 11 },
-      { day: 'Sat', revenue: Math.round(totalRev * 0.28), orders: 14 },
-      { day: 'Sun', revenue: Math.round(totalRev * 0.25), orders: 12 }
+    const chartData = weeklyTrend.length > 0 ? weeklyTrend : [
+      { day: 'Mon', revenue: 0, orders: 0 },
+      { day: 'Tue', revenue: 0, orders: 0 },
+      { day: 'Wed', revenue: 0, orders: 0 },
+      { day: 'Thu', revenue: 0, orders: 0 },
+      { day: 'Fri', revenue: 0, orders: 0 },
+      { day: 'Sat', revenue: 0, orders: 0 },
+      { day: 'Sun', revenue: 0, orders: 0 }
     ];
 
     return {
@@ -141,7 +142,7 @@ export function AdminDashboard() {
         fontSize: 11,
         color: '#737373'
       },
-      data: mockTrend,
+      data: chartData,
       series: [
         {
           type: 'bar',
@@ -171,7 +172,7 @@ export function AdminDashboard() {
         }
       }
     };
-  }, [metrics]);
+  }, [weeklyTrend]);
 
   if (loading) {
     return (
@@ -380,7 +381,7 @@ export function AdminDashboard() {
                     <div className="flex-1 min-w-0 text-xs">
                       <p className="font-medium text-neutral-900 truncate">{p.title}</p>
                       <p className="text-neutral-500">₹{p.price}</p>
-                      <span className="text-[10px] text-emerald-700 font-semibold">{p.total_sold || 12} Sold</span>
+                      <span className="text-[10px] text-emerald-700 font-semibold">{p.total_sold || 0} Sold</span>
                     </div>
                   </div>
                 );

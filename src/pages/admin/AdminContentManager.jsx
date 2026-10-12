@@ -28,17 +28,52 @@ import {
   Search
 } from 'lucide-react';
 import { useContent, DEFAULT_SITE_CONTENT } from '../../context/ContentContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { api } from '../../services/api.js';
 import { ImageUploader } from '../../components/common/ImageUploader.jsx';
 
 export function AdminContentManager() {
   const { content, updateContent, resetSection, refreshContent } = useContent();
+  const { siteMode, updateSiteMode, launchSettings, refreshSettings: refreshAuthSettings } = useAuth();
 
   const [activeTab, setActiveTab] = useState('page_availability');
   const [activePolicySubtab, setActivePolicySubtab] = useState('contact');
   const [formData, setFormData] = useState(content || DEFAULT_SITE_CONTENT);
+  const [localLaunchSettings, setLocalLaunchSettings] = useState(launchSettings || {});
+  const [subscribers, setSubscribers] = useState([]);
+  const [subscriberCount, setSubscriberCount] = useState(0);
+  const [showSubscribersModal, setShowSubscribersModal] = useState(false);
+  const [loadingSubscribers, setLoadingSubscribers] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [toastType, setToastType] = useState('success');
+
+  // Keep local launch settings in sync
+  useEffect(() => {
+    if (launchSettings) {
+      setLocalLaunchSettings(launchSettings);
+    }
+  }, [launchSettings]);
+
+  // Load VIP launch subscribers
+  const loadSubscribers = async () => {
+    try {
+      setLoadingSubscribers(true);
+      const res = await api.getLaunchSubscribers();
+      if (res.success) {
+        setSubscribers(res.subscribers || []);
+        setSubscriberCount(res.count || 0);
+      }
+    } catch (e) {
+      console.warn('Failed to load subscribers:', e);
+    } finally {
+      setLoadingSubscribers(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSubscribers();
+  }, []);
 
   // Keep local state in sync when content loads
   useEffect(() => {
@@ -58,8 +93,20 @@ export function AdminContentManager() {
     setSaving(true);
     try {
       const res = await updateContent(formData);
+
+      // Also persist launch settings & page statuses to database
+      if (activeTab === 'page_availability') {
+        try {
+          await api.updateLaunchSettings(localLaunchSettings);
+          await api.updatePageStatuses(formData.page_availability);
+          if (refreshAuthSettings) refreshAuthSettings();
+        } catch (e) {
+          console.warn('Launch settings save warning:', e);
+        }
+      }
+
       if (res.success) {
-        showToast('Website content & page availability updated successfully!', 'success');
+        showToast('Website content, launch settings & page statuses saved to database!', 'success');
         refreshContent();
       } else {
         showToast(res.message || 'Failed to save changes', 'error');
@@ -454,18 +501,150 @@ export function AdminContentManager() {
       {/* ========================================================================= */}
       {/* TAB 1: PAGE AVAILABILITY & COMING SOON MANAGER */}
       {/* ========================================================================= */}
+      {/* ========================================================================= */}
+      {/* TAB 1: PAGE AVAILABILITY & COMING SOON MANAGER */}
+      {/* ========================================================================= */}
       {activeTab === 'page_availability' && (
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-sm border border-neutral-200 shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
+          {/* Master Store Launch Switch Card */}
+          <div className="bg-white p-5 rounded-md border border-neutral-200 shadow-xs space-y-5">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-neutral-200">
               <div>
-                <h2 className="font-sans text-lg font-bold text-neutral-900">
-                  Page Availability & Coming Soon Controller
-                </h2>
-                <p className="text-xs text-neutral-500">
-                  Toggle whether category pages are live and ready to shop or displaying a luxury <strong>Coming Soon / Launching Soon</strong> preview with countdown & waitlist notify form.
+                <div className="flex items-center space-x-2">
+                  <span
+                    className={`w-3 h-3 rounded-full ${
+                      siteMode === 'live' ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'
+                    }`}
+                  />
+                  <h2 className="font-sans text-base font-bold text-neutral-900 tracking-wide uppercase">
+                    Master Store Status: {siteMode === 'live' ? 'LIVE (Open to Public)' : 'UNDER DEVELOPMENT (Launch Page Active)'}
+                  </h2>
+                </div>
+                <p className="text-xs text-neutral-500 mt-1">
+                  {siteMode === 'live'
+                    ? 'The store is live. Customers can browse products, add items to cart, and complete checkouts.'
+                    : 'The storefront is under development. Visitors see the launch countdown & VIP signup based on launch.html. Admins can log in and preview.'}
                 </p>
               </div>
+
+              <div className="flex items-center space-x-2 shrink-0">
+                {siteMode === 'live' ? (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (window.confirm('Switch store back to Under Development mode? Public visitors will see the launch page.')) {
+                        setSaving(true);
+                        await updateSiteMode('under_development');
+                        setSaving(false);
+                        showToast('Store switched to UNDER DEVELOPMENT. Launch page is now active.', 'success');
+                      }
+                    }}
+                    className="px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 text-white rounded text-xs font-semibold cursor-pointer transition-colors"
+                  >
+                    Switch to Under Development
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (window.confirm('Set the store LIVE? All customers will immediately see the full storefront.')) {
+                        setSaving(true);
+                        await updateSiteMode('live');
+                        setSaving(false);
+                        showToast('Store is now LIVE for all visitors!', 'success');
+                      }
+                    }}
+                    className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold cursor-pointer transition-colors"
+                  >
+                    Set Store to Live Now
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setShowSubscribersModal(true)}
+                  className="px-3 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-300 rounded text-xs font-medium cursor-pointer transition-colors flex items-center space-x-1.5"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>VIP Subscribers ({subscriberCount})</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Launch Settings Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+              <div>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-neutral-600 block mb-1">
+                  Target Launch Date (ISO / IST)
+                </label>
+                <input
+                  type="text"
+                  value={localLaunchSettings.launch_target_date || ''}
+                  onChange={(e) =>
+                    setLocalLaunchSettings((prev) => ({ ...prev, launch_target_date: e.target.value }))
+                  }
+                  placeholder="2026-10-18T10:00:00+05:30"
+                  className="w-full text-xs px-3 py-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-900 bg-white"
+                />
+                <span className="text-[10px] text-neutral-400 mt-0.5 block">Format: YYYY-MM-DDTHH:mm:ss+05:30</span>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-neutral-600 block mb-1">
+                  Launch Headline
+                </label>
+                <input
+                  type="text"
+                  value={localLaunchSettings.launch_headline || ''}
+                  onChange={(e) =>
+                    setLocalLaunchSettings((prev) => ({ ...prev, launch_headline: e.target.value }))
+                  }
+                  placeholder="The Grand Launch"
+                  className="w-full text-xs px-3 py-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-900 bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-neutral-600 block mb-1">
+                  Launch Subheadline / Date Tag
+                </label>
+                <input
+                  type="text"
+                  value={localLaunchSettings.launch_subheadline || ''}
+                  onChange={(e) =>
+                    setLocalLaunchSettings((prev) => ({ ...prev, launch_subheadline: e.target.value }))
+                  }
+                  placeholder="18 October"
+                  className="w-full text-xs px-3 py-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-900 bg-white"
+                />
+              </div>
+
+              <div className="md:col-span-3">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-neutral-600 block mb-1">
+                  Launch Announcement Description
+                </label>
+                <textarea
+                  rows={2}
+                  value={localLaunchSettings.launch_description || ''}
+                  onChange={(e) =>
+                    setLocalLaunchSettings((prev) => ({ ...prev, launch_description: e.target.value }))
+                  }
+                  placeholder="We are preparing an exclusive curation of hand-embroidered silhouettes..."
+                  className="w-full text-xs px-3 py-2 border border-neutral-300 rounded focus:outline-none focus:border-neutral-900 bg-white"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section Divider & Per-Page Controls */}
+          <div className="bg-white p-4 rounded-md border border-neutral-200 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h3 className="font-sans text-sm font-bold text-neutral-900">
+                Individual Page Availability &amp; Teaser Status
+              </h3>
+              <p className="text-xs text-neutral-500">
+                Control the status of each collection page: Active, Coming Soon (Launch countdown), or Maintenance. Saved in database.
+              </p>
             </div>
           </div>
 
@@ -2544,6 +2723,82 @@ export function AdminContentManager() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* VIP Launch Subscribers Modal */}
+      {showSubscribersModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-md border border-neutral-300 max-w-2xl w-full max-h-[85vh] flex flex-col shadow-xl">
+            <div className="p-4 border-b border-neutral-200 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-neutral-900 uppercase tracking-wide">
+                  VIP Early Access Subscribers ({subscriberCount})
+                </h3>
+                <p className="text-xs text-neutral-500">
+                  Customers who requested launch day catalog and early access on the launch page.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowSubscribersModal(false)}
+                className="text-xs font-bold px-2 py-1 bg-neutral-100 hover:bg-neutral-200 rounded text-neutral-700 cursor-pointer"
+              >
+                ✕ Close
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto flex-1">
+              {loadingSubscribers ? (
+                <div className="py-8 text-center text-xs text-neutral-400">Loading subscribers...</div>
+              ) : subscribers.length === 0 ? (
+                <div className="py-8 text-center text-xs text-neutral-500">
+                  No early access subscribers registered yet. As visitors enter their email on the launch page, they will appear here.
+                </div>
+              ) : (
+                <table className="w-full text-xs text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-neutral-200 text-neutral-500 uppercase text-[10px]">
+                      <th className="py-2 px-2">#</th>
+                      <th className="py-2 px-2">Email</th>
+                      <th className="py-2 px-2">Source</th>
+                      <th className="py-2 px-2">Registered At</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-100 font-mono">
+                    {subscribers.map((sub, idx) => (
+                      <tr key={sub.id || idx} className="hover:bg-neutral-50">
+                        <td className="py-2 px-2 text-neutral-400">{idx + 1}</td>
+                        <td className="py-2 px-2 font-medium text-neutral-900">{sub.email}</td>
+                        <td className="py-2 px-2 text-neutral-500 font-sans">{sub.source || 'launch_page'}</td>
+                        <td className="py-2 px-2 text-neutral-500 text-[11px]">
+                          {sub.created_at ? new Date(sub.created_at).toLocaleString('en-IN') : 'N/A'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            <div className="p-3 border-t border-neutral-200 bg-neutral-50 flex items-center justify-between text-xs">
+              <span className="text-neutral-500 text-[11px]">Total: {subscriberCount} VIPs</span>
+              <button
+                onClick={() => {
+                  const csv = ['Email,Registered At', ...subscribers.map(s => `"${s.email}","${s.created_at}"`)].join('\n');
+                  const blob = new Blob([csv], { type: 'text/csv' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `oct9-vip-subscribers-${new Date().toISOString().slice(0, 10)}.csv`;
+                  a.click();
+                }}
+                disabled={subscribers.length === 0}
+                className="px-3 py-1 bg-neutral-900 text-white rounded text-[11px] font-semibold hover:bg-neutral-800 disabled:opacity-40 cursor-pointer"
+              >
+                Export CSV
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

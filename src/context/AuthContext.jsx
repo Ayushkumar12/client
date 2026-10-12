@@ -9,6 +9,15 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [showPublicRatings, setShowPublicRatings] = useState(false);
   const [showProductBadges, setShowProductBadges] = useState(false);
+  const [siteMode, setSiteMode] = useState('under_development'); // 'under_development' or 'live'
+  const [launchSettings, setLaunchSettings] = useState({
+    launch_target_date: '2026-10-18T10:00:00+05:30',
+    launch_title: 'OCT9 | Official Launch — 18 October',
+    launch_headline: 'The Grand Launch',
+    launch_subheadline: '18 October',
+    launch_description: 'We are preparing an exclusive curation of hand-embroidered silhouettes, timeless festive ensembles, and modern ethnic pret. Experience the unveiling on 18 October.',
+    launch_categories: ['Stitched Suits', 'Festive Anarkalis', 'Artisanal Sarees', 'Occasion Pret']
+  });
 
   const refreshSettings = async () => {
     try {
@@ -16,9 +25,34 @@ export function AuthProvider({ children }) {
       if (res.success && res.settings) {
         setShowPublicRatings(Boolean(res.settings.show_public_ratings));
         setShowProductBadges(Boolean(res.settings.show_product_badges));
+        if (res.settings.site_mode) {
+          setSiteMode(res.settings.site_mode);
+        }
+        setLaunchSettings((prev) => ({
+          ...prev,
+          launch_target_date: res.settings.launch_target_date || prev.launch_target_date,
+          launch_title: res.settings.launch_title || prev.launch_title,
+          launch_headline: res.settings.launch_headline || prev.launch_headline,
+          launch_subheadline: res.settings.launch_subheadline || prev.launch_subheadline,
+          launch_description: res.settings.launch_description !== undefined ? res.settings.launch_description : prev.launch_description,
+          launch_categories: res.settings.launch_categories || prev.launch_categories,
+        }));
       }
     } catch (e) {
       console.warn('Failed to load store display settings:', e.message);
+    }
+  };
+
+  const updateSiteMode = async (newMode) => {
+    try {
+      const res = await api.setSiteMode(newMode);
+      if (res.success) {
+        setSiteMode(res.site_mode);
+        return { success: true, message: res.message };
+      }
+      return { success: false, message: res.message || 'Failed to update site mode' };
+    } catch (e) {
+      return { success: false, message: e.message };
     }
   };
 
@@ -171,6 +205,10 @@ export function AuthProvider({ children }) {
         isAdmin,
         showPublicRatings,
         showProductBadges,
+        siteMode,
+        setSiteMode,
+        launchSettings,
+        updateSiteMode,
         refreshSettings,
         login,
         register,

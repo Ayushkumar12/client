@@ -71,6 +71,9 @@ export function ReturnsPage() {
           <p className="text-sm text-neutral-600 leading-relaxed max-w-2xl">
             {page.subtitle || 'Enjoy peace of mind with our 7-day doorstep return and size exchange guarantee.'}
           </p>
+          <p className="text-xs text-neutral-400 pt-1">
+            Last updated: {page.last_updated || 'October 2026'}
+          </p>
         </div>
 
         {/* Clean Editorial Summary Strip */}

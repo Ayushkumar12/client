@@ -32,6 +32,9 @@ export function ShippingPolicyPage() {
           <p className="text-sm text-neutral-600 leading-relaxed max-w-2xl">
             {page.subtitle || 'Insured express shipping across India powered by Shiprocket & premium air courier partners.'}
           </p>
+          <p className="text-xs text-neutral-400 pt-1">
+            Last updated: {page.last_updated || 'October 2026'}
+          </p>
         </div>
 
         {/* Clean Editorial Summary Strip (Non-AI clean border-divided layout) */}

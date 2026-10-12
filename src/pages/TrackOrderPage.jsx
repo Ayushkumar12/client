@@ -18,6 +18,7 @@ import { ShiprocketLiveMap } from '../components/common/ShiprocketLiveMap.jsx';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
 import { parseAddress } from '../utils/addressUtils.js';
 import { api } from '../services/api.js';
+import { CopyButton } from '../components/common/CopyButton.jsx';
 
 export function TrackOrderPage() {
   const [searchParams] = useSearchParams();
@@ -145,9 +146,17 @@ export function TrackOrderPage() {
             {/* Delivery Map & Stepper */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-sans font-bold text-lg text-neutral-900">
-                  Shipment Progress
-                </h3>
+                <div>
+                  <h3 className="font-sans font-bold text-lg text-neutral-900">
+                    Shipment Progress
+                  </h3>
+                  {currentWaybill && (
+                    <div className="flex items-center space-x-1.5 mt-0.5 text-xs text-neutral-600 font-mono">
+                      <span>AWB: {currentWaybill}</span>
+                      <CopyButton text={currentWaybill} label="Copy AWB" />
+                    </div>
+                  )}
+                </div>
                 <div className="flex items-center space-x-2">
                   {orderDetails && (
                     <button

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { ProductCard } from '../common/ProductCard.jsx';
 import { ProductCardSkeleton } from '../common/Skeleton.jsx';
 import { useContent } from '../../context/ContentContext.jsx';

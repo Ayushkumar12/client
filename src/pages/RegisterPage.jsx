@@ -13,7 +13,6 @@ import {
   Package,
   Heart,
   Truck,
-  Sparkles,
   AlertCircle,
   Loader2
 } from 'lucide-react';

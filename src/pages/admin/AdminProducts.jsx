@@ -7,7 +7,6 @@ import {
   Search,
   Check,
   Star,
-  Sparkles,
   Loader2,
   Eye,
   EyeOff,

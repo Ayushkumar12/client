@@ -31,7 +31,7 @@ import {
   ArrowRight,
   ShoppingBag,
   RotateCcw,
-  Sparkles,
+  QrCode,
   FileText,
   Building,
   Home,
@@ -1663,7 +1663,7 @@ export function AccountPage() {
                         key: 'upi',
                         title: 'UPI',
                         desc: 'Google Pay, PhonePe, Paytm',
-                        icon: Sparkles
+                        icon: QrCode
                       },
                       {
                         key: 'netbanking',

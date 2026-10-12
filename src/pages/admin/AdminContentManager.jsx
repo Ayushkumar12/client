@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Save,
   RotateCcw,
-  Sparkles,
   Layers,
   Image as ImageIcon,
   Type,

@@ -9,7 +9,6 @@ import {
   LayoutGrid,
   Check,
   RotateCcw,
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   Truck,

@@ -214,7 +214,7 @@ export function Footer() {
         {/* Copyright Bottom Bar */}
         <div className="pt-4 sm:pt-8 border-t border-neutral-200/80 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left text-xs text-neutral-500">
           <div>
-            © 2026 {brand.name || 'OCT9'}. All Rights Reserved.
+            &copy; {new Date().getFullYear()} {brand.name || 'OCT9'}. All Rights Reserved.
           </div>
           <div className="flex flex-wrap items-center justify-center sm:justify-end gap-x-3 gap-y-1 text-neutral-600 font-medium text-xs">
             <Link to="/about" className="hover:text-brand-maroon transition-colors">About Us</Link>

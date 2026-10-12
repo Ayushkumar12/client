@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { useContent } from '../context/ContentContext.jsx';
 import { api } from '../services/api.js';
+import { CopyButton } from '../components/common/CopyButton.jsx';
 
 export function ContactPage() {
   const { getPageContent, getBrand } = useContent();
@@ -102,7 +103,10 @@ export function ContactPage() {
 
           <div>
             <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold block mb-1">Telephone</span>
-            <p className="text-sm font-semibold text-neutral-900">{phone}</p>
+            <div className="flex items-center space-x-2">
+              <p className="text-sm font-semibold text-neutral-900">{phone}</p>
+              <CopyButton text={phone} label="Copy" />
+            </div>
             <a
               href={`tel:${phone}`}
               className="text-xs text-brand-maroon font-semibold hover:underline inline-block mt-2"
@@ -113,7 +117,10 @@ export function ContactPage() {
 
           <div>
             <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold block mb-1">Email Support</span>
-            <p className="text-sm font-semibold text-neutral-900 truncate">{email}</p>
+            <div className="flex items-center space-x-2">
+              <p className="text-sm font-semibold text-neutral-900 truncate">{email}</p>
+              <CopyButton text={email} label="Copy" />
+            </div>
             <a
               href={`mailto:${email}`}
               className="text-xs text-brand-maroon font-semibold hover:underline inline-block mt-2"

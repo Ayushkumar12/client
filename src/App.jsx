@@ -52,6 +52,10 @@ import { AdminInventory } from './pages/admin/AdminInventory.jsx';
 import { AdminInquiries } from './pages/admin/AdminInquiries.jsx';
 import { AdminDatabase } from './pages/admin/AdminDatabase.jsx';
 import { UnderDevelopmentLaunch } from './components/common/UnderDevelopmentLaunch.jsx';
+import { BackToTopButton } from './components/common/BackToTopButton.jsx';
+import { ScrollProgressBar } from './components/common/ScrollProgressBar.jsx';
+import { FloatingContactButton } from './components/common/FloatingContactButton.jsx';
+import { captureUtmParams } from './utils/utmTracking.js';
 import { useAuth } from './context/AuthContext.jsx';
 import { Link } from 'react-router-dom';
 
@@ -77,6 +81,10 @@ function MainLayout({ children }) {
   // 3. Storefront layout (with admin preview alert if store is under development)
   return (
     <div className="min-h-screen flex flex-col justify-between bg-brand-cream pb-14 lg:pb-0 font-sans">
+      <ScrollProgressBar />
+      <a href="#main-content" className="skip-to-content">
+        Skip to content
+      </a>
       <div>
         {isDevMode && isAdmin && (
           <div className="bg-amber-950 text-amber-100 text-xs px-4 py-2 border-b border-amber-800 flex flex-wrap items-center justify-between gap-2 z-50 sticky top-0">
@@ -110,16 +118,24 @@ function MainLayout({ children }) {
           </div>
         )}
         <Header />
-        <main>{children}</main>
+        <main id="main-content" tabIndex="-1" className="outline-none">
+          {children}
+        </main>
       </div>
       <Footer />
       <CookieConsentBanner />
       <PwaBottomNav />
+      <FloatingContactButton />
+      <BackToTopButton />
     </div>
   );
 }
 
 export default function App() {
+  React.useEffect(() => {
+    captureUtmParams();
+  }, []);
+
   return (
     <ErrorBoundary>
       <HelmetProvider>

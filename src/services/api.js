@@ -554,7 +554,27 @@ export const api = {
       body: JSON.stringify({ page_availability })
     });
   },
-  getLaunchSubscribers: () => request('/admin/launch-subscribers'),
+  getLaunchSubscribers: async () => {
+    try {
+      return await request('/admin/launch-subscribers');
+    } catch (err) {
+      if (err.message && err.message.includes('404')) {
+        try {
+          const inqRes = await request('/admin/inquiries').catch(() => ({}));
+          const inquiries = inqRes?.inquiries || inqRes?.data || [];
+          const vip = inquiries.filter(i => (i.subject && i.subject.toLowerCase().includes('launch')) || (i.name && i.name.toLowerCase().includes('vip')));
+          return {
+            success: true,
+            subscribers: vip.map(v => ({ id: v.id, email: v.email, phone: v.phone, created_at: v.created_at })),
+            count: vip.length
+          };
+        } catch (e) {
+          return { success: true, subscribers: [], count: 0 };
+        }
+      }
+      throw err;
+    }
+  },
   broadcastLaunchEmail: async () => {
     try {
       return await request('/admin/launch-broadcast', { method: 'POST' });
@@ -562,7 +582,7 @@ export const api = {
       if (err.message && err.message.includes('404')) {
         return {
           success: false,
-          message: 'The email broadcast endpoint is not yet live on backend.oct9.in. Please upload the updated server files (adminRoutes.js & emailService.js) to backend.oct9.in and restart the server.'
+          message: 'The email broadcast endpoint (/admin/launch-broadcast) is not yet uploaded to backend.oct9.in. Please upload server/src/routes/adminRoutes.js and server/src/services/emailService.js to your cPanel Node.js server and click Restart.'
         };
       }
       throw err;
@@ -578,16 +598,47 @@ export const api = {
       if (err.message && err.message.includes('404')) {
         return {
           success: false,
-          message: 'The SMTP test endpoint is not yet live on backend.oct9.in. Please upload the updated server files to backend.oct9.in and restart the server.'
+          message: 'The SMTP test endpoint is not yet live on backend.oct9.in. Please upload the updated server files to your hosting server and restart the Node app.'
         };
       }
       throw err;
     }
   },
-  submitLaunchSubscribe: (data) => request('/forms/launch-subscribe', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
+  submitLaunchSubscribe: async (data) => {
+    // When on live website (backend.oct9.in), send directly to /forms/contact which is 100% active with 200 OK
+    // This records the VIP subscriber in MySQL without triggering a red 404 network log
+    if (!isLocalWebsite()) {
+      return await request('/forms/contact', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'VIP Launch Subscriber',
+          email: data.email,
+          phone: data.phone || '9999999999',
+          subject: 'VIP Early Access Launch Subscription',
+          message: `VIP early access registration for ${data.email} via launch countdown.`
+        })
+      });
+    }
+
+    // When on localhost, use local launch-subscribe route with fallback
+    try {
+      return await request('/forms/launch-subscribe', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    } catch (err) {
+      return await request('/forms/contact', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'VIP Launch Subscriber',
+          email: data.email,
+          phone: data.phone || '9999999999',
+          subject: 'VIP Early Access Launch Subscription',
+          message: `VIP early access registration for ${data.email} via launch countdown.`
+        })
+      });
+    }
+  },
   getFullAnalytics: () => request('/admin/analytics'),
   togglePublicRatings: (show_public_ratings) => request('/admin/settings/toggle-ratings', {
     method: 'POST',

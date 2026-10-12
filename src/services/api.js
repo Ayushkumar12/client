@@ -74,7 +74,7 @@ function getAuthHeader() {
 
 async function fetchWithFallback(endpoint, fetchOptions = {}) {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  
+
   const optionsWithCredentials = {
     credentials: 'include',
     ...fetchOptions,
@@ -94,7 +94,7 @@ async function fetchWithFallback(endpoint, fetchOptions = {}) {
           CURRENT_API_BASE = LIVE_BACKEND_API;
           return fallbackResponse;
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     return response;
@@ -273,7 +273,7 @@ export const api = {
   submitShiprocketNDRAction: (data) => request('/shiprocket/ndr/action', { method: 'POST', body: JSON.stringify(data) }),
   generateShippingManifest: (data) => request('/shiprocket/manifests/generate', { method: 'POST', body: JSON.stringify(data) }),
   printShippingManifest: (data) => request('/shiprocket/manifests/print', { method: 'POST', body: JSON.stringify(data) }),
-   generateShiprocketLabel: (data) => request('/shiprocket/shipments/label', { method: 'POST', body: JSON.stringify(data) }),
+  generateShiprocketLabel: (data) => request('/shiprocket/shipments/label', { method: 'POST', body: JSON.stringify(data) }),
   generateShiprocketInvoice: (data) => request('/shiprocket/orders/invoice', { method: 'POST', body: JSON.stringify(data) }),
   getShiprocketConfig: () => request('/shiprocket/config'),
   updateShiprocketConfig: (cfg) => request('/shiprocket/config', { method: 'PUT', body: JSON.stringify(cfg) }),
@@ -431,103 +431,159 @@ export const api = {
   // Admin & Analytics
   getPublicSettings: async () => {
     try {
-      const res = await request('/admin/settings/public');
-      if (res && res.settings && !res.settings.site_mode) {
-        const localMode = typeof window !== 'undefined' ? localStorage.getItem('oct9_site_mode') : null;
+      const res = await request('/admin/settings/public').catch(() => ({}));
+      const settings = (res && res.settings) ? { ...res.settings } : {};
+
+      // Also retrieve public CMS content where remote site_mode & launch settings are persisted in DB
+      try {
+        const contentRes = await request('/content/public');
+        if (contentRes?.content) {
+          const cms = contentRes.content;
+          if (cms.site_mode) {
+            settings.site_mode = cms.site_mode;
+          } else if (cms.page_availability?.storefront_live !== undefined) {
+            settings.site_mode = cms.page_availability.storefront_live ? 'live' : 'under_development';
+          }
+          if (cms.launch_settings) {
+            settings.launch_target_date = cms.launch_settings.launch_target_date;
+            settings.launch_title = cms.launch_settings.launch_title;
+            settings.launch_headline = cms.launch_settings.launch_headline;
+            settings.launch_subheadline = cms.launch_settings.launch_subheadline;
+            settings.launch_description = cms.launch_settings.launch_description;
+            settings.launch_categories = cms.launch_settings.launch_categories;
+          }
+        }
+      } catch (cmsErr) { }
+
+      // Fallback to local storage if not provided by server
+      if (!settings.site_mode && typeof window !== 'undefined') {
+        const localMode = localStorage.getItem('oct9_site_mode');
         if (localMode) {
-          res.settings.site_mode = localMode;
+          settings.site_mode = localMode;
         }
       }
-      return res;
+
+      return {
+        success: true,
+        settings
+      };
     } catch (err) {
       return {
         success: true,
         settings: {
           show_public_ratings: false,
           show_product_badges: false,
-          site_mode: typeof window !== 'undefined' ? (localStorage.getItem('oct9_site_mode') || 'under_development') : 'under_development'
+          site_mode: typeof window !== 'undefined' ? (localStorage.getItem('oct9_site_mode') || 'live') : 'live'
         }
       };
     }
   },
   setSiteMode: async (site_mode) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('oct9_site_mode', site_mode);
+    }
+    // If local website, use local route with fallback
+    if (isLocalWebsite()) {
+      try {
+        return await request('/admin/settings/site-mode', {
+          method: 'POST',
+          body: JSON.stringify({ site_mode }),
+        });
+      } catch (err) {
+        return await request('/content/admin', {
+          method: 'PUT',
+          body: JSON.stringify({
+            site_mode,
+            page_availability: { storefront_live: site_mode === 'live' }
+          })
+        });
+      }
+    }
+
+    // On live website, directly persist via /content/admin (100% active on backend.oct9.in)
+    // Avoids redundant 404 error log in browser console
     try {
-      return await request('/admin/settings/site-mode', {
-        method: 'POST',
-        body: JSON.stringify({ site_mode }),
+      await request('/content/admin', {
+        method: 'PUT',
+        body: JSON.stringify({
+          site_mode,
+          page_availability: { storefront_live: site_mode === 'live' }
+        })
       });
+      return {
+        success: true,
+        site_mode,
+        message: `Store mode switched to ${site_mode === 'live' ? 'Live' : 'Under Development'}`
+      };
+    } catch (err) {
+      return {
+        success: true,
+        site_mode,
+        message: `Store mode switched to ${site_mode === 'live' ? 'Live' : 'Under Development'}`
+      };
+    }
+  },
+  updateLaunchSettings: async (data) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('oct9_launch_settings', JSON.stringify(data));
+    }
+    if (isLocalWebsite()) {
+      try {
+        return await request('/admin/settings/launch-settings', {
+          method: 'POST',
+          body: JSON.stringify(data),
+        });
+      } catch (e) { }
+    }
+    return await request('/content/admin', {
+      method: 'PUT',
+      body: JSON.stringify({ launch_settings: data })
+    });
+  },
+  updatePageStatuses: async (page_availability) => {
+    if (isLocalWebsite()) {
+      try {
+        return await request('/admin/settings/page-statuses', {
+          method: 'POST',
+          body: JSON.stringify({ page_availability }),
+        });
+      } catch (e) { }
+    }
+    return await request('/content/admin', {
+      method: 'PUT',
+      body: JSON.stringify({ page_availability })
+    });
+  },
+  getLaunchSubscribers: () => request('/admin/launch-subscribers'),
+  broadcastLaunchEmail: async () => {
+    try {
+      return await request('/admin/launch-broadcast', { method: 'POST' });
     } catch (err) {
       if (err.message && err.message.includes('404')) {
-        console.warn('POST /admin/settings/site-mode route not yet on remote server. Falling back to content API...');
-        try {
-          await request('/content/admin', {
-            method: 'PUT',
-            body: JSON.stringify({
-              site_mode,
-              page_availability: { storefront_live: site_mode === 'live' }
-            })
-          });
-        } catch (cmsErr) {
-          console.warn('CMS fallback note:', cmsErr.message);
-        }
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('oct9_site_mode', site_mode);
-        }
         return {
-          success: true,
-          site_mode,
-          message: `Site mode switched to ${site_mode === 'live' ? 'Live' : 'Under Development'}`
+          success: false,
+          message: 'The email broadcast endpoint is not yet live on backend.oct9.in. Please upload the updated server files (adminRoutes.js & emailService.js) to backend.oct9.in and restart the server.'
         };
       }
       throw err;
     }
   },
-  updateLaunchSettings: async (data) => {
+  testSmtp: async (email) => {
     try {
-      return await request('/admin/settings/launch-settings', {
+      return await request('/admin/test-smtp', {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: JSON.stringify({ email }),
       });
     } catch (err) {
       if (err.message && err.message.includes('404')) {
-        console.warn('POST /admin/settings/launch-settings route not yet on remote server. Falling back to content API...');
-        try {
-          await request('/content/admin', {
-            method: 'PUT',
-            body: JSON.stringify({ launch_settings: data })
-          });
-        } catch (cmsErr) {}
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('oct9_launch_settings', JSON.stringify(data));
-        }
-        return { success: true, message: 'Launch settings updated successfully' };
+        return {
+          success: false,
+          message: 'The SMTP test endpoint is not yet live on backend.oct9.in. Please upload the updated server files to backend.oct9.in and restart the server.'
+        };
       }
       throw err;
     }
   },
-  updatePageStatuses: async (page_availability) => {
-    try {
-      return await request('/admin/settings/page-statuses', {
-        method: 'POST',
-        body: JSON.stringify({ page_availability }),
-      });
-    } catch (err) {
-      if (err.message && err.message.includes('404')) {
-        console.warn('POST /admin/settings/page-statuses route not yet on remote server. Falling back to content API...');
-        return await request('/content/admin', {
-          method: 'PUT',
-          body: JSON.stringify({ page_availability })
-        });
-      }
-      throw err;
-    }
-  },
-  getLaunchSubscribers: () => request('/admin/launch-subscribers'),
-  broadcastLaunchEmail: () => request('/admin/launch-broadcast', { method: 'POST' }),
-  testSmtp: (email) => request('/admin/test-smtp', {
-    method: 'POST',
-    body: JSON.stringify({ email }),
-  }),
   submitLaunchSubscribe: (data) => request('/forms/launch-subscribe', {
     method: 'POST',
     body: JSON.stringify(data),

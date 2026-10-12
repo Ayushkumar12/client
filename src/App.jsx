@@ -57,12 +57,20 @@ import { ScrollProgressBar } from './components/common/ScrollProgressBar.jsx';
 import { FloatingContactButton } from './components/common/FloatingContactButton.jsx';
 import { captureUtmParams } from './utils/utmTracking.js';
 import { useAuth } from './context/AuthContext.jsx';
+import { useContent } from './context/ContentContext.jsx';
 import { Link } from 'react-router-dom';
 
 function MainLayout({ children }) {
   const location = useLocation();
   const { siteMode, isAdmin, updateSiteMode } = useAuth();
-  const isDevMode = siteMode === 'under_development';
+  const { content } = useContent();
+
+  // If either CMS content or siteMode reports live, store is live for all visitors
+  const isCmsLive = content?.site_mode === 'live' || content?.page_availability?.storefront_live === true;
+  const isCmsDev = content?.site_mode === 'under_development' || (content?.page_availability?.storefront_live === false && content?.site_mode !== 'live');
+  
+  // By default, if siteMode is 'live' or CMS content is 'live', the store is live
+  const isDevMode = (siteMode === 'under_development' || isCmsDev) && !isCmsLive && siteMode !== 'live';
 
   const isExplicitAdminRoute = location.pathname.startsWith('/admin');
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';

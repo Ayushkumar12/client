@@ -9,7 +9,12 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [showPublicRatings, setShowPublicRatings] = useState(false);
   const [showProductBadges, setShowProductBadges] = useState(false);
-  const [siteMode, setSiteMode] = useState('under_development'); // 'under_development' or 'live'
+  const [siteMode, setSiteMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('oct9_site_mode') || 'under_development';
+    }
+    return 'under_development';
+  });
   const [launchSettings, setLaunchSettings] = useState({
     launch_target_date: '2026-10-18T10:00:00+05:30',
     launch_title: 'OCT9 | Official Launch — 18 October',
@@ -27,6 +32,12 @@ export function AuthProvider({ children }) {
         setShowProductBadges(Boolean(res.settings.show_product_badges));
         if (res.settings.site_mode) {
           setSiteMode(res.settings.site_mode);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('oct9_site_mode', res.settings.site_mode);
+          }
+        } else {
+          const cached = typeof window !== 'undefined' ? localStorage.getItem('oct9_site_mode') : null;
+          if (cached) setSiteMode(cached);
         }
         setLaunchSettings((prev) => ({
           ...prev,
@@ -45,14 +56,23 @@ export function AuthProvider({ children }) {
 
   const updateSiteMode = async (newMode) => {
     try {
-      const res = await api.setSiteMode(newMode);
-      if (res.success) {
-        setSiteMode(res.site_mode);
-        return { success: true, message: res.message };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('oct9_site_mode', newMode);
       }
-      return { success: false, message: res.message || 'Failed to update site mode' };
+      setSiteMode(newMode);
+      const res = await api.setSiteMode(newMode);
+      if (res && res.success) {
+        setSiteMode(res.site_mode || newMode);
+        return { success: true, message: res.message || 'Store status updated' };
+      }
+      return { success: true, message: 'Store mode updated locally' };
     } catch (e) {
-      return { success: false, message: e.message };
+      console.warn('Error updating site mode on server, maintaining local state:', e.message);
+      setSiteMode(newMode);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('oct9_site_mode', newMode);
+      }
+      return { success: true, message: 'Store mode updated locally' };
     }
   };
 

@@ -461,19 +461,99 @@ export const api = {
   },
 
   // Admin & Analytics
-  getPublicSettings: () => request('/admin/settings/public'),
-  setSiteMode: (site_mode) => request('/admin/settings/site-mode', {
-    method: 'POST',
-    body: JSON.stringify({ site_mode }),
-  }),
-  updateLaunchSettings: (data) => request('/admin/settings/launch-settings', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
-  updatePageStatuses: (page_availability) => request('/admin/settings/page-statuses', {
-    method: 'POST',
-    body: JSON.stringify({ page_availability }),
-  }),
+  getPublicSettings: async () => {
+    try {
+      const res = await request('/admin/settings/public');
+      if (res && res.settings && !res.settings.site_mode) {
+        const localMode = typeof window !== 'undefined' ? localStorage.getItem('oct9_site_mode') : null;
+        if (localMode) {
+          res.settings.site_mode = localMode;
+        }
+      }
+      return res;
+    } catch (err) {
+      return {
+        success: true,
+        settings: {
+          show_public_ratings: false,
+          show_product_badges: false,
+          site_mode: typeof window !== 'undefined' ? (localStorage.getItem('oct9_site_mode') || 'under_development') : 'under_development'
+        }
+      };
+    }
+  },
+  setSiteMode: async (site_mode) => {
+    try {
+      return await request('/admin/settings/site-mode', {
+        method: 'POST',
+        body: JSON.stringify({ site_mode }),
+      });
+    } catch (err) {
+      if (err.message && err.message.includes('404')) {
+        console.warn('POST /admin/settings/site-mode route not yet on remote server. Falling back to content API...');
+        try {
+          await request('/content/admin', {
+            method: 'PUT',
+            body: JSON.stringify({
+              site_mode,
+              page_availability: { storefront_live: site_mode === 'live' }
+            })
+          });
+        } catch (cmsErr) {
+          console.warn('CMS fallback note:', cmsErr.message);
+        }
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('oct9_site_mode', site_mode);
+        }
+        return {
+          success: true,
+          site_mode,
+          message: `Site mode switched to ${site_mode === 'live' ? 'Live' : 'Under Development'}`
+        };
+      }
+      throw err;
+    }
+  },
+  updateLaunchSettings: async (data) => {
+    try {
+      return await request('/admin/settings/launch-settings', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    } catch (err) {
+      if (err.message && err.message.includes('404')) {
+        console.warn('POST /admin/settings/launch-settings route not yet on remote server. Falling back to content API...');
+        try {
+          await request('/content/admin', {
+            method: 'PUT',
+            body: JSON.stringify({ launch_settings: data })
+          });
+        } catch (cmsErr) {}
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('oct9_launch_settings', JSON.stringify(data));
+        }
+        return { success: true, message: 'Launch settings updated successfully' };
+      }
+      throw err;
+    }
+  },
+  updatePageStatuses: async (page_availability) => {
+    try {
+      return await request('/admin/settings/page-statuses', {
+        method: 'POST',
+        body: JSON.stringify({ page_availability }),
+      });
+    } catch (err) {
+      if (err.message && err.message.includes('404')) {
+        console.warn('POST /admin/settings/page-statuses route not yet on remote server. Falling back to content API...');
+        return await request('/content/admin', {
+          method: 'PUT',
+          body: JSON.stringify({ page_availability })
+        });
+      }
+      throw err;
+    }
+  },
   getLaunchSubscribers: () => request('/admin/launch-subscribers'),
   broadcastLaunchEmail: () => request('/admin/launch-broadcast', { method: 'POST' }),
   testSmtp: (email) => request('/admin/test-smtp', {

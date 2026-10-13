@@ -29,6 +29,11 @@ export function AdminProducts() {
   const [submitting, setSubmitting] = useState(false);
 
   const [customSizeInput, setCustomSizeInput] = useState('');
+  const [colorInput, setColorInput] = useState({
+    name: '',
+    hex: '#5A1827',
+    image: ''
+  });
 
   const [formData, setFormData] = useState({
     title: '',
@@ -37,19 +42,34 @@ export function AdminProducts() {
     price: '',
     original_price: '',
     category_slug: 'stitched-suits',
-    sub_category: 'Anarkali Suits',
-    fabric: 'Georgette',
-    occasion: 'Wedding',
+    sub_category: '',
+    fabric: '',
+    occasion: '',
     sku: '',
-    stock: 50,
+    stock: 25,
     is_featured: false,
-    is_new_arrival: true,
+    is_new_arrival: false,
     is_bestseller: false,
     sections: [],
-    images: ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=85'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    colors: [{ name: 'Royal Blue', hex: '#1E3A8A' }]
+    images: [],
+    sizes: [],
+    colors: []
   });
+
+  const ETHNIC_COLOR_PRESETS = [
+    { name: 'Deep Wine', hex: '#5A1827' },
+    { name: 'Crimson Red', hex: '#991B1B' },
+    { name: 'Emerald Green', hex: '#065F46' },
+    { name: 'Royal Blue', hex: '#1E3A8A' },
+    { name: 'Midnight Black', hex: '#111827' },
+    { name: 'Ivory White', hex: '#FAF7F2' },
+    { name: 'Mustard Yellow', hex: '#D97706' },
+    { name: 'Blush Pink', hex: '#EC4899' },
+    { name: 'Lavender', hex: '#A855F7' },
+    { name: 'Rust Orange', hex: '#C2410C' },
+    { name: 'Beige / Gold', hex: '#D4AF37' },
+    { name: 'Teal', hex: '#0D9488' }
+  ];
 
   const ALL_CATEGORIES = [
     { value: 'stitched-suits', label: 'Stitched Suits' },
@@ -84,6 +104,56 @@ export function AdminProducts() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Color management helpers
+  const handleAddColor = (e) => {
+    if (e) e.preventDefault();
+    const cleanName = colorInput.name.trim();
+    if (!cleanName) {
+      alert('Please enter a color name (e.g. Wine, Olive, Navy Blue).');
+      return;
+    }
+    const current = formData.colors || [];
+    if (current.some(c => (c.name || '').toLowerCase() === cleanName.toLowerCase())) {
+      alert(`Color "${cleanName}" is already added.`);
+      return;
+    }
+    const newColor = {
+      name: cleanName,
+      hex: colorInput.hex || '#111827',
+      image: colorInput.image || ''
+    };
+    setFormData(prev => ({
+      ...prev,
+      colors: [...(prev.colors || []), newColor]
+    }));
+    setColorInput({ name: '', hex: '#5A1827', image: '' });
+  };
+
+  const handleApplyColorPreset = (preset) => {
+    const current = formData.colors || [];
+    if (current.some(c => (c.name || '').toLowerCase() === preset.name.toLowerCase())) {
+      return;
+    }
+    setFormData(prev => ({
+      ...prev,
+      colors: [...(prev.colors || []), { name: preset.name, hex: preset.hex, image: '' }]
+    }));
+  };
+
+  const handleRemoveColor = (colorName) => {
+    setFormData(prev => ({
+      ...prev,
+      colors: (prev.colors || []).filter(c => c.name !== colorName)
+    }));
+  };
+
+  const handleUpdateColorImage = (colorName, imageSrc) => {
+    setFormData(prev => ({
+      ...prev,
+      colors: (prev.colors || []).map(c => c.name === colorName ? { ...c, image: imageSrc } : c)
+    }));
   };
 
   // Size management helpers
@@ -128,6 +198,7 @@ export function AdminProducts() {
   const openAddModal = () => {
     setEditingProduct(null);
     setCustomSizeInput('');
+    setColorInput({ name: '', hex: '#5A1827', image: '' });
     setFormData({
       title: '',
       description: '',
@@ -135,18 +206,18 @@ export function AdminProducts() {
       price: '',
       original_price: '',
       category_slug: 'stitched-suits',
-      sub_category: 'Anarkali Suits',
-      fabric: 'Georgette',
-      occasion: 'Wedding',
+      sub_category: '',
+      fabric: '',
+      occasion: '',
       sku: `OCT-${Date.now().toString().slice(-4)}`,
-      stock: 50,
+      stock: 25,
       is_featured: false,
-      is_new_arrival: true,
+      is_new_arrival: false,
       is_bestseller: false,
       sections: [],
-      images: ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=85'],
-      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-      colors: [{ name: 'Royal Blue', hex: '#1E3A8A' }]
+      images: [],
+      sizes: [],
+      colors: []
     });
     setShowModal(true);
   };
@@ -154,7 +225,9 @@ export function AdminProducts() {
   const openEditModal = (p) => {
     setEditingProduct(p);
     setCustomSizeInput('');
-    let parsedSizes = ['S', 'M', 'L', 'XL'];
+    setColorInput({ name: '', hex: '#5A1827', image: '' });
+
+    let parsedSizes = [];
     if (Array.isArray(p.sizes)) {
       parsedSizes = p.sizes;
     } else if (typeof p.sizes === 'string') {
@@ -165,25 +238,47 @@ export function AdminProducts() {
       }
     }
 
+    let parsedColors = [];
+    if (Array.isArray(p.colors)) {
+      parsedColors = p.colors;
+    } else if (typeof p.colors === 'string') {
+      try {
+        parsedColors = JSON.parse(p.colors);
+      } catch (e) {
+        parsedColors = [];
+      }
+    }
+
+    let parsedImages = [];
+    if (Array.isArray(p.images)) {
+      parsedImages = p.images;
+    } else if (typeof p.images === 'string') {
+      try {
+        parsedImages = JSON.parse(p.images);
+      } catch (e) {
+        parsedImages = p.images ? [p.images] : [];
+      }
+    }
+
     setFormData({
-      title: p.title,
-      description: p.description,
+      title: p.title || '',
+      description: p.description || '',
       short_description: p.short_description || '',
-      price: p.price,
-      original_price: p.original_price,
-      category_slug: p.category_slug,
+      price: p.price || '',
+      original_price: p.original_price || '',
+      category_slug: p.category_slug || 'stitched-suits',
       sub_category: p.sub_category || '',
       fabric: p.fabric || '',
       occasion: p.occasion || '',
       sku: p.sku || '',
-      stock: p.stock,
-      is_featured: p.is_featured,
-      is_new_arrival: p.is_new_arrival,
-      is_bestseller: p.is_bestseller,
+      stock: p.stock !== undefined && p.stock !== null ? Number(p.stock) : 25,
+      is_featured: Boolean(p.is_featured),
+      is_new_arrival: Boolean(p.is_new_arrival),
+      is_bestseller: Boolean(p.is_bestseller),
       sections: p.sections || [],
-      images: p.images || [],
+      images: parsedImages,
       sizes: parsedSizes,
-      colors: p.colors || []
+      colors: parsedColors
     });
     setShowModal(true);
   };
@@ -202,9 +297,18 @@ export function AdminProducts() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.images || formData.images.length === 0) {
+      alert('Please upload at least one product photo.');
+      return;
+    }
     if (!formData.sizes || formData.sizes.length === 0) {
       alert('Please select or add at least one size for this product.');
       return;
+    }
+    if (Number(formData.stock) <= 0) {
+      if (!window.confirm('Stock is currently set to 0. This product will show as OUT OF STOCK on the storefront. Proceed anyway?')) {
+        return;
+      }
     }
     setSubmitting(true);
     try {
@@ -790,6 +894,193 @@ export function AdminProducts() {
                   label="Product Photos"
                   helperText="Upload multi-angle photos from your device."
                 />
+              </div>
+
+              {/* Product Colors & Variant Images Section */}
+              <div className="border border-neutral-200 bg-neutral-50/70 p-4 rounded-lg space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="block font-bold text-neutral-900 text-xs">
+                      Color Variants &amp; Variant Images <span className="font-normal text-neutral-500">({formData.colors?.length || 0} active)</span>
+                    </label>
+                    <p className="text-[11px] text-neutral-500">
+                      Add available product colors. Link each color to its own dedicated photo to switch images on click.
+                    </p>
+                  </div>
+
+                  {/* Preset Colors Shortcut Buttons */}
+                  <div className="flex items-center flex-wrap gap-1">
+                    <span className="text-[10px] font-semibold text-neutral-500 mr-1">Quick Add:</span>
+                    {ETHNIC_COLOR_PRESETS.slice(0, 7).map((preset) => (
+                      <button
+                        key={preset.name}
+                        type="button"
+                        onClick={() => handleApplyColorPreset(preset)}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-white hover:bg-neutral-100 text-neutral-700 rounded border border-neutral-300 transition-colors cursor-pointer"
+                      >
+                        <span className="w-2.5 h-2.5 rounded-full border border-neutral-300" style={{ backgroundColor: preset.hex }} />
+                        <span>{preset.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Active Configured Colors List */}
+                <div>
+                  <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-wider block mb-1.5">
+                    Configured Color Variants:
+                  </span>
+                  {formData.colors && formData.colors.length > 0 ? (
+                    <div className="space-y-2">
+                      {formData.colors.map((c, idx) => (
+                        <div
+                          key={c.name || idx}
+                          className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-white border border-neutral-200 rounded-md"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <span
+                              className="w-5 h-5 rounded-full border border-neutral-300 shrink-0 shadow-2xs"
+                              style={{ backgroundColor: c.hex || '#000000' }}
+                            />
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-bold text-neutral-900">{c.name}</span>
+                                <span className="text-[10px] font-mono text-neutral-500 uppercase">{c.hex}</span>
+                              </div>
+                              <span className="text-[10px] text-neutral-500">
+                                {c.image ? 'Custom photo attached' : 'No photo linked (uses primary photo)'}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Image Assignment for this Color */}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {c.image ? (
+                              <div className="flex items-center gap-2 bg-neutral-50 p-1 rounded border border-neutral-200">
+                                <img
+                                  src={c.image}
+                                  alt={c.name}
+                                  className="w-7 h-9 object-cover rounded border border-neutral-300"
+                                />
+                                <span className="text-[10px] text-neutral-600 max-w-[120px] truncate">{c.image}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateColorImage(c.name, '')}
+                                  className="text-[10px] text-red-600 hover:underline px-1 cursor-pointer font-medium"
+                                  title="Detach photo from this color"
+                                >
+                                  Detach
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1.5">
+                                {formData.images && formData.images.length > 0 ? (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-[10px] text-neutral-500">Attach photo:</span>
+                                    {formData.images.map((img, i) => (
+                                      <button
+                                        key={i}
+                                        type="button"
+                                        onClick={() => handleUpdateColorImage(c.name, img)}
+                                        title={`Attach Photo #${i + 1}`}
+                                        className="w-7 h-8 rounded border border-neutral-300 hover:border-neutral-900 overflow-hidden cursor-pointer"
+                                      >
+                                        <img src={img} alt={`#${i + 1}`} className="w-full h-full object-cover" />
+                                      </button>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <span className="text-[10px] text-neutral-400 italic">Upload photos above to attach</span>
+                                )}
+                              </div>
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveColor(c.name)}
+                              className="p-1 hover:bg-red-50 text-neutral-400 hover:text-red-600 rounded transition-colors cursor-pointer ml-1"
+                              title={`Remove ${c.name}`}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-neutral-500 italic bg-white p-2.5 rounded border border-dashed border-neutral-200">
+                      No colors added. Enter a color below or click quick presets.
+                    </p>
+                  )}
+                </div>
+
+                {/* Add New Color Form Row */}
+                <div className="pt-2 border-t border-neutral-200">
+                  <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-wider block mb-1.5">
+                    Add New Color:
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+                    <div className="sm:col-span-4">
+                      <input
+                        type="text"
+                        value={colorInput.name}
+                        onChange={(e) => setColorInput(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="Color name (e.g. Royal Blue)..."
+                        className="w-full p-1.5 text-xs bg-white border border-neutral-300 rounded focus:outline-none focus:border-neutral-800"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-3 flex items-center gap-1.5">
+                      <input
+                        type="color"
+                        value={colorInput.hex}
+                        onChange={(e) => setColorInput(prev => ({ ...prev, hex: e.target.value }))}
+                        className="w-8 h-7 p-0 border border-neutral-300 rounded cursor-pointer bg-white"
+                        title="Pick color hex"
+                      />
+                      <input
+                        type="text"
+                        value={colorInput.hex}
+                        onChange={(e) => setColorInput(prev => ({ ...prev, hex: e.target.value }))}
+                        placeholder="#5A1827"
+                        className="w-full p-1.5 text-xs font-mono bg-white border border-neutral-300 rounded focus:outline-none focus:border-neutral-800"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-3">
+                      {formData.images && formData.images.length > 0 ? (
+                        <select
+                          value={colorInput.image}
+                          onChange={(e) => setColorInput(prev => ({ ...prev, image: e.target.value }))}
+                          className="w-full p-1.5 text-xs bg-white border border-neutral-300 rounded text-neutral-700 focus:outline-none"
+                        >
+                          <option value="">Attach photo (Optional)</option>
+                          {formData.images.map((img, i) => (
+                            <option key={i} value={img}>Photo #{i + 1}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          value={colorInput.image}
+                          onChange={(e) => setColorInput(prev => ({ ...prev, image: e.target.value }))}
+                          placeholder="Photo URL (Optional)"
+                          className="w-full p-1.5 text-xs bg-white border border-neutral-300 rounded focus:outline-none"
+                        />
+                      )}
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <button
+                        type="button"
+                        onClick={handleAddColor}
+                        className="w-full py-1.5 px-3 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold rounded transition-colors cursor-pointer"
+                      >
+                        + Add Color
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div>

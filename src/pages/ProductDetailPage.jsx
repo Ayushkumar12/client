@@ -256,7 +256,7 @@ export function ProductDetailPage() {
         {/* Product Details Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-12 items-start">
           {/* Left Column: Side Mini Thumbnails Strip + Main Image Viewport (Always side-by-side & Screen Fit) */}
-          <div className="lg:col-span-7 flex flex-row gap-2 sm:gap-3 md:gap-4 items-stretch w-full h-[50vh] sm:h-[58vh] min-h-[320px] max-h-[430px] sm:max-h-[520px] lg:h-[620px] lg:max-h-[640px] lg:sticky lg:top-24">
+          <div className="lg:col-span-7 flex flex-row gap-2 sm:gap-3 md:gap-4 items-stretch w-full h-[58vh] sm:h-[68vh] lg:h-[calc(100vh-6.5rem)] max-h-[calc(100vh-6.5rem)] min-h-[340px] lg:sticky lg:top-20">
             {/* 1. Vertical Side Thumbnail Gallery Strip (Only shown if multiple photos exist) */}
             {images.length > 1 && (
               <div
@@ -277,7 +277,7 @@ export function ProductDetailPage() {
                         setSelectedImage(idx);
                         setActiveColorImage(null);
                       }}
-                      className={`relative aspect-[3/4] w-full rounded-lg sm:rounded-xl overflow-hidden border transition-all shrink-0 cursor-pointer bg-neutral-100 ${isActive
+                      className={`relative aspect-[3/4] w-full rounded-sm overflow-hidden border transition-all shrink-0 cursor-pointer bg-neutral-50 p-0.5 flex items-center justify-center ${isActive
                           ? 'border-neutral-900 ring-2 ring-neutral-900/30 shadow-sm scale-102'
                           : 'border-neutral-200/90 opacity-70 hover:opacity-100 hover:border-neutral-500'
                         }`}
@@ -286,7 +286,7 @@ export function ProductDetailPage() {
                       <img
                         src={img}
                         alt={`Thumbnail ${idx + 1}`}
-                        className="w-full h-full object-cover object-top"
+                        className="w-full h-full object-contain"
                         loading="lazy"
                       />
                       {isActive && (
@@ -298,9 +298,9 @@ export function ProductDetailPage() {
               </div>
             )}
 
-            {/* 2. Main Big Image Canvas with Magnifier Zoom & Clean Screen Fit */}
+            {/* 2. Main Big Image Canvas with Magnifier Zoom & Clean Screen Fit (Full Uncut Image) */}
             <div
-              className="relative flex-1 w-full h-full rounded-sm overflow-hidden bg-neutral-100 border border-neutral-200 shadow-2xs group select-none cursor-crosshair flex items-center justify-center"
+              className="relative flex-1 w-full h-full rounded-sm overflow-hidden bg-[#FAF7F2]/60 border border-neutral-200/90 shadow-2xs group select-none cursor-crosshair flex items-center justify-center p-1 sm:p-2"
               onMouseEnter={() => setIsZoomed(true)}
               onMouseLeave={() => setIsZoomed(false)}
               onMouseMove={handleMouseMove}
@@ -308,7 +308,7 @@ export function ProductDetailPage() {
               <img
                 src={currentMainImage}
                 alt={product.title}
-                className={`w-full h-full object-cover object-top transition-transform duration-300 ${isZoomed ? 'scale-150 origin-[var(--zoom-x)_var(--zoom-y)]' : 'scale-100'
+                className={`w-full h-full object-contain transition-transform duration-300 pointer-events-none ${isZoomed ? 'scale-175 origin-[var(--zoom-x)_var(--zoom-y)]' : 'scale-100'
                   }`}
                 style={{
                   '--zoom-x': `${zoomPos.x}%`,
@@ -570,6 +570,7 @@ export function ProductDetailPage() {
                 <span>Size Chart</span>
               </button>
             </div>
+          )}
 
             {/* 7. Quantity Stepper */}
             {(() => {
@@ -666,15 +667,14 @@ export function ProductDetailPage() {
                 </button>
                 {openAccordions.description && (
                   <div className="mt-3 text-xs text-neutral-600 leading-relaxed space-y-2.5 animate-fadeIn">
-                    <p>{product.description}</p>
+                    {product.description ? (
+                      <p className="whitespace-pre-line">{product.description}</p>
+                    ) : (
+                      <p className="text-neutral-400 italic">No detailed description provided.</p>
+                    )}
                     {product.short_description && product.short_description !== product.description && (
                       <p className="text-neutral-500">{product.short_description}</p>
                     )}
-                    <ul className="list-disc list-inside space-y-1 text-neutral-600 pt-1">
-                      <li>Artisan handcrafted silhouette with heritage embroidery techniques.</li>
-                      <li>Includes matching luxury dupatta and tailored bottom trousers/sharara.</li>
-                      <li>Breathable inner mulmul lining for supreme festive comfort.</li>
-                    </ul>
                   </div>
                 )}
               </div>
@@ -695,11 +695,11 @@ export function ProductDetailPage() {
                 </button>
                 {openAccordions.care && (
                   <div className="mt-3 text-xs text-neutral-600 leading-relaxed space-y-2 animate-fadeIn">
-                    <p>To maintain the sheen, intricate zari work, and delicate weaves of this luxury garment:</p>
+                    <p>To maintain the fine craftsmanship and delicate weaves of this luxury garment:</p>
                     <ul className="list-disc list-inside space-y-1 text-neutral-600">
-                      <li><strong>Dry Clean Only:</strong> We recommend professional dry clean for best longevity.</li>
+                      <li><strong>Dry Clean Only:</strong> We recommend professional dry cleaning for longevity.</li>
                       <li><strong>Storage:</strong> Store wrapped in pure breathable muslin or cotton cloth.</li>
-                      <li><strong>Ironing:</strong> Steam iron on reverse at low-to-medium heat; avoid direct contact on zari.</li>
+                      <li><strong>Ironing:</strong> Steam iron on reverse at low-to-medium heat.</li>
                       <li><strong>Perfumes:</strong> Avoid spraying perfumes or deodorants directly onto embroidery or fabric.</li>
                     </ul>
                   </div>
@@ -721,13 +721,31 @@ export function ProductDetailPage() {
                   )}
                 </button>
                 {openAccordions.specifications && (
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-neutral-700 animate-fadeIn bg-white p-4 rounded-xl border border-neutral-200/70">
-                    <div><strong className="text-neutral-900">Fabric:</strong> {product.fabric || 'Pure Georgette & Silk'}</div>
-                    <div><strong className="text-neutral-900">Occasion:</strong> {product.occasion || 'Wedding, Festive, Reception'}</div>
-                    <div><strong className="text-neutral-900">SKU:</strong> {product.sku || 'OCT9-LUX-2026'}</div>
-                    <div><strong className="text-neutral-900">Work Type:</strong> Hand Zardozi, Tilla & Sequins</div>
-                    <div><strong className="text-neutral-900">Neckline:</strong> Sweetheart / V-Notch Neck</div>
-                    <div><strong className="text-neutral-900">Sleeve Length:</strong> Elbow / Full Sleeves</div>
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-neutral-700 animate-fadeIn bg-white p-4 rounded-sm border border-neutral-200">
+                    {product.sku && (
+                      <div><strong className="text-neutral-900">SKU:</strong> {product.sku}</div>
+                    )}
+                    {product.category_slug && (
+                      <div><strong className="text-neutral-900">Category:</strong> <span className="capitalize">{product.category_slug.replace(/-/g, ' ')}</span></div>
+                    )}
+                    {product.sub_category && (
+                      <div><strong className="text-neutral-900">Subcategory:</strong> {product.sub_category}</div>
+                    )}
+                    {product.fabric && (
+                      <div><strong className="text-neutral-900">Fabric:</strong> {product.fabric}</div>
+                    )}
+                    {product.occasion && (
+                      <div><strong className="text-neutral-900">Occasion:</strong> {product.occasion}</div>
+                    )}
+                    {availableProductSizes && availableProductSizes.length > 0 && (
+                      <div><strong className="text-neutral-900">Sizes:</strong> {availableProductSizes.join(', ')}</div>
+                    )}
+                    {product.colors && product.colors.length > 0 && (
+                      <div><strong className="text-neutral-900">Colors:</strong> {product.colors.map(c => c.name).join(', ')}</div>
+                    )}
+                    {product.weight_grams && (
+                      <div><strong className="text-neutral-900">Weight:</strong> {product.weight_grams}g</div>
+                    )}
                   </div>
                 )}
               </div>

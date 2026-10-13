@@ -6,54 +6,11 @@ import { useWishlist } from '../../context/WishlistContext.jsx';
 import { getProductUrl } from '../../utils/productUrl.js';
 
 function getProductSilhouetteLabel(product) {
-  if (!product) return 'Designer Suit';
-
-  const sub = (product.sub_category || '').trim();
-  const title = (product.title || '').toLowerCase();
-  const slug = (product.category_slug || '').toLowerCase();
-  const fabric = (product.fabric || '').trim();
-
-  // 1. High-priority silhouette matching from title & sub_category
-  if (title.includes('farshi') || sub.toLowerCase().includes('farshi')) return 'Farshi Suit';
-  if (title.includes('sharara') || sub.toLowerCase().includes('sharara')) return 'Sharara Suit';
-  if (title.includes('anarkali') || sub.toLowerCase().includes('anarkali')) return 'Anarkali Suit';
-  if (title.includes('palazzo') || sub.toLowerCase().includes('palazzo')) return 'Palazzo Suit';
-  if (title.includes('pakistani') || sub.toLowerCase().includes('pakistani')) return 'Pakistani Suit';
-  if (title.includes('straight') || title.includes('kurti') || sub.toLowerCase().includes('straight')) return 'Straight Suit';
-  if (title.includes('mulberry') || sub.toLowerCase().includes('mulberry')) return 'Mulberry Silk Suit';
-  if (title.includes('roman') || sub.toLowerCase().includes('roman')) return 'Roman Silk Suit';
-  if (title.includes('cotton') || sub.toLowerCase().includes('cotton')) return 'Cotton Suit';
-  if (title.includes('velvet') || sub.toLowerCase().includes('velvet')) return 'Velvet Suit';
-
-  // Saree classifications
-  if (title.includes('saree') || slug.includes('saree') || sub.toLowerCase().includes('saree')) {
-    if (title.includes('banarasi') || fabric.toLowerCase().includes('banarasi')) return 'Banarasi Saree';
-    if (title.includes('kanjivaram') || fabric.toLowerCase().includes('kanjivaram')) return 'Kanjivaram Saree';
-    if (title.includes('organza') || fabric.toLowerCase().includes('organza')) return 'Organza Saree';
-    if (title.includes('chiffon') || fabric.toLowerCase().includes('chiffon')) return 'Chiffon Saree';
-    if (title.includes('silk') || fabric.toLowerCase().includes('silk')) return 'Silk Saree';
-    return 'Silk Saree';
-  }
-
-  // Accessories classifications
-  if (title.includes('ring') || sub.toLowerCase().includes('ring')) return 'Kundan Ring';
-  if (title.includes('earring') || title.includes('chaandbaali') || title.includes('jhumka') || title.includes('kaan') || sub.toLowerCase().includes('earring')) return 'Earrings';
-  if (title.includes('necklace') || title.includes('choker') || sub.toLowerCase().includes('necklace')) return 'Necklace Set';
-  if (title.includes('bangle') || title.includes('kada') || sub.toLowerCase().includes('bangle')) return 'Bangles & Kadas';
-  if (title.includes('potli') || title.includes('bag') || sub.toLowerCase().includes('potli')) return 'Potli Bag';
-  if (title.includes('jutti') || title.includes('mojari') || slug.includes('jutti')) return 'Embroidered Jutti';
-
-  // 2. Clean up sub_category if valid and not containing festival/wear words
-  if (sub && !/holi|diwali|eid|navratri|festival|festive|party|reception|cocktail|casual|daily|wedding|wear/i.test(sub)) {
-    return sub;
-  }
-
-  // 3. Fallback based on fabric or clean silhouette
-  if (fabric) return `${fabric} Suit`;
-  return 'Designer Suit';
+  if (!product) return '';
+  return (product.sub_category || '').trim() || (product.category_slug ? product.category_slug.replace(/-/g, ' ') : '');
 }
 
-const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=800&q=80';
+const FALLBACK_PRODUCT_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500' viewBox='0 0 400 500' fill='%23F5F5F5'%3E%3Crect width='400' height='500' fill='%23F5F5F5'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='13' fill='%239CA3AF'%3ENo Image%3C/text%3E%3C/svg%3E";
 
 export function ProductCard({ product, showDescription = true, showInstantBuy = true, compact = false }) {
   const { addToCart } = useCart();
@@ -74,7 +31,7 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
     ? product.sizes
     : [];
 
-  const [selectedSize, setSelectedSize] = useState(() => availableSizes[0] || 'Standard');
+  const [selectedSize, setSelectedSize] = useState(() => availableSizes[0] || '');
   const [isAdded, setIsAdded] = useState(false);
 
   // Category Tag - Clean silhouette/product name in Title Case

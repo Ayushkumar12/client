@@ -246,7 +246,7 @@ export function ProductDetailPage() {
         {/* Product Details Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-12 items-start">
           {/* Left Column: Side Mini Thumbnails Strip + Main Image Viewport (Always side-by-side & Screen Fit) */}
-          <div className="lg:col-span-7 flex flex-row gap-2 sm:gap-3 md:gap-4 items-stretch w-full h-[50vh] sm:h-[58vh] min-h-[320px] max-h-[430px] sm:max-h-[520px] lg:h-[620px] lg:max-h-[640px] lg:sticky lg:top-24">
+          <div className="lg:col-span-7 flex flex-row gap-2 sm:gap-3 md:gap-4 items-stretch w-full lg:sticky lg:top-20 h-[62vh] sm:h-[70vh] lg:h-[calc(100vh-6.5rem)] max-h-[calc(100vh-6.5rem)] min-h-[350px]">
             {/* 1. Vertical Side Thumbnail Gallery Strip (Rendered only when product has 2 or more images) */}
             {images.length > 1 && (
               <div
@@ -267,20 +267,20 @@ export function ProductDetailPage() {
                         setSelectedImage(idx);
                         setActiveColorImage(null);
                       }}
-                      className={`relative aspect-[3/4] w-full rounded-lg sm:rounded-xl overflow-hidden border transition-all shrink-0 cursor-pointer bg-neutral-100 ${isActive
-                          ? 'border-neutral-900 ring-2 ring-neutral-900/30 shadow-sm scale-102'
-                          : 'border-neutral-200/90 opacity-70 hover:opacity-100 hover:border-neutral-500'
+                      className={`relative aspect-[3/4] w-full rounded-sm overflow-hidden border transition-all shrink-0 cursor-pointer bg-white ${isActive
+                          ? 'border-neutral-900 ring-2 ring-neutral-900/30 shadow-xs scale-102'
+                          : 'border-neutral-200 opacity-75 hover:opacity-100 hover:border-neutral-500'
                         }`}
                       aria-label={`Product thumbnail view ${idx + 1}`}
                     >
                       <img
                         src={img}
                         alt={`Thumbnail ${idx + 1}`}
-                        className="w-full h-full object-cover object-top"
+                        className="w-full h-full object-contain object-center p-0.5 bg-white"
                         loading="lazy"
                       />
                       {isActive && (
-                        <span className="absolute inset-0 bg-neutral-900/10 pointer-events-none" />
+                        <span className="absolute inset-0 bg-neutral-900/5 pointer-events-none" />
                       )}
                     </button>
                   );
@@ -293,7 +293,7 @@ export function ProductDetailPage() {
               const currentMainImage = activeColorImage || images[selectedImage] || images[0] || '';
               return (
                 <div
-                  className={`relative flex-1 w-full h-full rounded-sm overflow-hidden bg-neutral-100 border border-neutral-200 shadow-2xs group select-none flex items-center justify-center ${
+                  className={`relative flex-1 w-full h-full rounded-sm overflow-hidden bg-white border border-neutral-200/90 shadow-2xs group select-none flex items-center justify-center p-2 sm:p-3 ${
                     currentMainImage ? 'cursor-crosshair' : ''
                   }`}
                   onMouseEnter={() => { if (currentMainImage) setIsZoomed(true); }}
@@ -304,8 +304,8 @@ export function ProductDetailPage() {
                     <img
                       src={currentMainImage}
                       alt={product.title}
-                      className={`w-full h-full object-cover object-top transition-transform duration-300 ${
-                        isZoomed ? 'scale-150 origin-[var(--zoom-x)_var(--zoom-y)]' : 'scale-100'
+                      className={`w-full h-full object-contain object-center transition-transform duration-300 ${
+                        isZoomed ? 'scale-160 origin-[var(--zoom-x)_var(--zoom-y)]' : 'scale-100'
                       }`}
                       style={{
                         '--zoom-x': `${zoomPos.x}%`,

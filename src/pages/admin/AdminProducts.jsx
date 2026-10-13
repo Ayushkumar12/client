@@ -29,6 +29,7 @@ export function AdminProducts() {
   const [submitting, setSubmitting] = useState(false);
 
   const [customSizeInput, setCustomSizeInput] = useState('');
+  const [newColor, setNewColor] = useState({ name: '', hex: '#5A1827', image: '' });
 
   const [formData, setFormData] = useState({
     title: '',
@@ -37,18 +38,18 @@ export function AdminProducts() {
     price: '',
     original_price: '',
     category_slug: 'stitched-suits',
-    sub_category: 'Anarkali Suits',
-    fabric: 'Georgette',
-    occasion: 'Wedding',
+    sub_category: '',
+    fabric: '',
+    occasion: '',
     sku: '',
-    stock: 50,
+    stock: '',
     is_featured: false,
-    is_new_arrival: true,
+    is_new_arrival: false,
     is_bestseller: false,
     sections: [],
-    images: ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=85'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    colors: [{ name: 'Royal Blue', hex: '#1E3A8A' }]
+    images: [],
+    sizes: [],
+    colors: []
   });
 
   const ALL_CATEGORIES = [
@@ -131,9 +132,36 @@ export function AdminProducts() {
     }
   };
 
+  // Color management helpers
+  const handleAddColor = () => {
+    const cleanName = (newColor.name || '').trim();
+    if (!cleanName) {
+      alert('Please enter a color name (e.g. Wine Red, Emerald Green).');
+      return;
+    }
+    const colorObj = {
+      name: cleanName,
+      hex: (newColor.hex || '#1E1E1E').trim(),
+      ...(newColor.image ? { image: newColor.image.trim() } : {})
+    };
+    setFormData(prev => ({
+      ...prev,
+      colors: [...(prev.colors || []), colorObj]
+    }));
+    setNewColor({ name: '', hex: '#5A1827', image: '' });
+  };
+
+  const removeColor = (idx) => {
+    setFormData(prev => ({
+      ...prev,
+      colors: (prev.colors || []).filter((_, i) => i !== idx)
+    }));
+  };
+
   const openAddModal = () => {
     setEditingProduct(null);
     setCustomSizeInput('');
+    setNewColor({ name: '', hex: '#5A1827', image: '' });
     setFormData({
       title: '',
       description: '',
@@ -141,18 +169,18 @@ export function AdminProducts() {
       price: '',
       original_price: '',
       category_slug: 'stitched-suits',
-      sub_category: 'Anarkali Suits',
-      fabric: 'Georgette',
-      occasion: 'Wedding',
+      sub_category: '',
+      fabric: '',
+      occasion: '',
       sku: `OCT-${Date.now().toString().slice(-4)}`,
-      stock: 50,
+      stock: '',
       is_featured: false,
-      is_new_arrival: true,
+      is_new_arrival: false,
       is_bestseller: false,
       sections: [],
-      images: ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=85'],
-      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-      colors: [{ name: 'Royal Blue', hex: '#1E3A8A' }]
+      images: [],
+      sizes: [],
+      colors: []
     });
     setShowModal(true);
   };
@@ -160,6 +188,7 @@ export function AdminProducts() {
   const openEditModal = (p) => {
     setEditingProduct(p);
     setCustomSizeInput('');
+    setNewColor({ name: '', hex: '#5A1827', image: '' });
     let parsedSizes = ['S', 'M', 'L', 'XL'];
     if (Array.isArray(p.sizes)) {
       parsedSizes = p.sizes;
@@ -168,6 +197,17 @@ export function AdminProducts() {
         parsedSizes = JSON.parse(p.sizes);
       } catch (e) {
         parsedSizes = p.sizes.split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
+
+    let parsedColors = [];
+    if (Array.isArray(p.colors)) {
+      parsedColors = p.colors;
+    } else if (typeof p.colors === 'string') {
+      try {
+        parsedColors = JSON.parse(p.colors);
+      } catch (e) {
+        parsedColors = [];
       }
     }
 
@@ -187,9 +227,9 @@ export function AdminProducts() {
       is_new_arrival: p.is_new_arrival,
       is_bestseller: p.is_bestseller,
       sections: p.sections || [],
-      images: p.images || [],
+      images: Array.isArray(p.images) ? p.images : [],
       sizes: parsedSizes,
-      colors: p.colors || []
+      colors: parsedColors
     });
     setShowModal(true);
   };
@@ -805,6 +845,194 @@ export function AdminProducts() {
                   label="Product Photos"
                   helperText="Upload multi-angle photos from your device."
                 />
+              </div>
+
+              {/* Product Colors & Variant Images Section */}
+              <div className="border border-neutral-200 bg-neutral-50/70 p-4 rounded-lg space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="block font-bold text-neutral-900 text-xs">
+                      Product Colors &amp; Separate Images <span className="font-normal text-neutral-500">({formData.colors?.length || 0} active)</span>
+                    </label>
+                    <p className="text-[11px] text-neutral-500">
+                      Add colors available for this product. You can link a separate image to each color so clicking the color on the product page switches to that photo.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Quick Color Presets */}
+                <div className="flex items-center flex-wrap gap-1.5 pt-1">
+                  <span className="text-[10px] font-semibold text-neutral-500 mr-1">Quick Presets:</span>
+                  {[
+                    { name: 'Deep Wine', hex: '#5A1827' },
+                    { name: 'Emerald Green', hex: '#065F46' },
+                    { name: 'Royal Blue', hex: '#1E3A8A' },
+                    { name: 'Mustard Gold', hex: '#D97706' },
+                    { name: 'Rani Pink', hex: '#DB2777' },
+                    { name: 'Rust Orange', hex: '#C2410C' },
+                    { name: 'Ivory White', hex: '#FAF7F2' },
+                    { name: 'Noir Black', hex: '#171717' }
+                  ].map((preset) => (
+                    <button
+                      key={preset.name}
+                      type="button"
+                      onClick={() => setNewColor(prev => ({ ...prev, name: preset.name, hex: preset.hex }))}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-white hover:bg-neutral-100 border border-neutral-300 rounded text-[10px] font-medium transition-colors cursor-pointer"
+                    >
+                      <span className="w-2.5 h-2.5 rounded-full border border-neutral-300 shrink-0" style={{ backgroundColor: preset.hex }} />
+                      <span>{preset.name}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Active Colors List */}
+                {formData.colors && formData.colors.length > 0 ? (
+                  <div className="space-y-1.5 pt-1">
+                    <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-wider block">
+                      Active Colors for this Product:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {formData.colors.map((c, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between p-2.5 bg-white border border-neutral-200 rounded-md shadow-2xs"
+                        >
+                          <div className="flex items-center space-x-2.5 min-w-0">
+                            {c.image ? (
+                              <img
+                                src={c.image}
+                                alt={c.name}
+                                className="w-8 h-8 rounded object-cover border border-neutral-300 shrink-0"
+                              />
+                            ) : (
+                              <span
+                                className="w-6 h-6 rounded border border-neutral-300 shrink-0"
+                                style={{ backgroundColor: c.hex }}
+                              />
+                            )}
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-neutral-900 truncate">{c.name}</p>
+                              <div className="flex items-center space-x-1.5 text-[10px] text-neutral-500">
+                                <span>{c.hex}</span>
+                                {c.image ? (
+                                  <span className="text-emerald-700 font-semibold">• Dedicated Photo</span>
+                                ) : (
+                                  <span className="text-neutral-400">• Main Photo</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => removeColor(idx)}
+                            className="p-1 text-neutral-400 hover:text-red-600 rounded cursor-pointer transition-colors shrink-0"
+                            title={`Remove color ${c.name}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-neutral-500 italic bg-white p-2.5 rounded border border-neutral-200">
+                    No custom colors configured. Add colors below if this product comes in different color variants.
+                  </p>
+                )}
+
+                {/* Add New Color Form */}
+                <div className="p-3 bg-white border border-neutral-200 rounded-md space-y-2.5">
+                  <span className="text-[11px] font-bold text-neutral-900 block">
+                    + Add Color Variant
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+                    <div className="sm:col-span-5">
+                      <input
+                        type="text"
+                        value={newColor.name}
+                        onChange={(e) => setNewColor(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="Color name (e.g. Wine Red)"
+                        className="w-full p-1.5 text-xs border border-neutral-300 rounded focus:border-neutral-800"
+                      />
+                    </div>
+                    <div className="sm:col-span-3 flex items-center gap-1.5">
+                      <input
+                        type="color"
+                        value={newColor.hex}
+                        onChange={(e) => setNewColor(prev => ({ ...prev, hex: e.target.value }))}
+                        className="w-8 h-8 p-0 border border-neutral-300 rounded cursor-pointer shrink-0"
+                      />
+                      <input
+                        type="text"
+                        value={newColor.hex}
+                        onChange={(e) => setNewColor(prev => ({ ...prev, hex: e.target.value }))}
+                        placeholder="#5A1827"
+                        className="w-full p-1.5 text-xs font-mono border border-neutral-300 rounded"
+                      />
+                    </div>
+                    <div className="sm:col-span-4">
+                      <button
+                        type="button"
+                        onClick={handleAddColor}
+                        className="w-full py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold rounded cursor-pointer transition-colors"
+                      >
+                        + Add Color
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Optional Color Image Picker */}
+                  <div className="space-y-1.5 pt-1 border-t border-neutral-100">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-semibold text-neutral-700">
+                        Separate Image for this Color (Optional):
+                      </label>
+                      {newColor.image && (
+                        <button
+                          type="button"
+                          onClick={() => setNewColor(prev => ({ ...prev, image: '' }))}
+                          className="text-[10px] text-red-600 hover:underline cursor-pointer"
+                        >
+                          Clear Image
+                        </button>
+                      )}
+                    </div>
+
+                    <input
+                      type="text"
+                      value={newColor.image}
+                      onChange={(e) => setNewColor(prev => ({ ...prev, image: e.target.value }))}
+                      placeholder="Paste image URL or click one from uploaded photos below..."
+                      className="w-full p-1.5 text-xs border border-neutral-300 rounded focus:border-neutral-800"
+                    />
+
+                    {formData.images && formData.images.length > 0 && (
+                      <div className="space-y-1 pt-1">
+                        <span className="text-[10px] text-neutral-500 font-medium">
+                          Or click an uploaded photo to assign to this color:
+                        </span>
+                        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                          {formData.images.map((imgUrl, imgIdx) => (
+                            <button
+                              key={imgIdx}
+                              type="button"
+                              onClick={() => setNewColor(prev => ({ ...prev, image: imgUrl }))}
+                              className={`relative w-10 h-10 rounded border-2 overflow-hidden shrink-0 cursor-pointer transition-all ${
+                                newColor.image === imgUrl
+                                  ? 'border-neutral-900 ring-2 ring-neutral-900/30'
+                                  : 'border-neutral-200 hover:border-neutral-400 opacity-70 hover:opacity-100'
+                              }`}
+                              title={`Assign photo ${imgIdx + 1} to this color`}
+                            >
+                              <img src={imgUrl} alt={`Photo ${imgIdx + 1}`} className="w-full h-full object-cover" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div>

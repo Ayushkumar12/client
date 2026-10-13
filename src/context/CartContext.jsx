@@ -19,10 +19,14 @@ export function CartProvider({ children }) {
     localStorage.setItem('oct9_cart', JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product, size = 'M', color = 'Standard', quantity = 1, customImage = null) => {
+  const addToCart = (product, size = '', color = '', quantity = 1, customImage = null) => {
+    const finalSize = size || (Array.isArray(product.sizes) && product.sizes.length > 0 ? product.sizes[0] : '');
+    const finalColor = color || (Array.isArray(product.colors) && product.colors.length > 0 && product.colors[0]?.name ? product.colors[0].name : '');
+    const finalQty = Math.max(1, Number(quantity) || 1);
+
     setCart(prevCart => {
       const existingIndex = prevCart.findIndex(
-        item => item.product_id === product.id && item.size === size && item.color === color
+        item => item.product_id === product.id && item.size === finalSize && item.color === finalColor
       );
 
       const img = customImage || (Array.isArray(product.images) && product.images.length > 0
@@ -31,7 +35,7 @@ export function CartProvider({ children }) {
 
       if (existingIndex > -1) {
         const updated = [...prevCart];
-        updated[existingIndex].quantity += quantity;
+        updated[existingIndex].quantity += finalQty;
         return updated;
       } else {
         return [
@@ -42,11 +46,11 @@ export function CartProvider({ children }) {
             title: product.title,
             slug: product.slug,
             image: img,
-            size,
-            color,
+            size: finalSize,
+            color: finalColor,
             price: Number(product.price),
             original_price: Number(product.original_price || product.price),
-            quantity: Number(quantity),
+            quantity: finalQty,
           }
         ];
       }

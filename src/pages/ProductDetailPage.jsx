@@ -21,8 +21,29 @@ import { ShiprocketPincodeChecker } from '../components/common/ShiprocketPincode
 import { ProductCard } from '../components/common/ProductCard.jsx';
 import { ProductDetailSkeleton } from '../components/common/Skeleton.jsx';
 import { SEO } from '../components/common/SEO.jsx';
-import { api } from '../services/api.js';
+import { api, formatImageUrl } from '../services/api.js';
 import { decodeProductSlug, encodeProductSlug } from '../utils/productUrl.js';
+
+// Helper to extract clean path for robust image URL comparison
+function normalizeImgPath(url) {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  try {
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      const parsed = new URL(trimmed);
+      return parsed.pathname;
+    }
+  } catch (e) {}
+  return trimmed;
+}
+
+function urlsMatch(u1, u2) {
+  if (!u1 || !u2) return false;
+  if (u1 === u2 || u1.trim() === u2.trim()) return true;
+  const p1 = normalizeImgPath(u1);
+  const p2 = normalizeImgPath(u2);
+  return Boolean(p1 && p2 && p1 === p2);
+}
 
 export function ProductDetailPage() {
   const { slug: rawParam } = useParams();
@@ -126,10 +147,64 @@ export function ProductDetailPage() {
     );
   }
 
-  // Only display authentic images added by admin - if 1 image is added, show ONLY 1 image!
-  const images = (Array.isArray(product.images) && product.images.length > 0)
+  // 1. Extract raw images from product
+  const rawImages = (Array.isArray(product.images) && product.images.length > 0)
     ? product.images
     : (product.image ? [product.image] : []);
+
+  // 2. Identify images that belong to OTHER color variants (which must NOT be shown)
+  const otherColorsImages = [];
+  if (Array.isArray(product.colors)) {
+    product.colors.forEach((c) => {
+      if (c && c.name && selectedColor && c.name.trim().toLowerCase() !== selectedColor.trim().toLowerCase()) {
+        if (c.image) otherColorsImages.push(c.image);
+        if (Array.isArray(c.images)) {
+          c.images.forEach((img) => img && otherColorsImages.push(img));
+        }
+      }
+    });
+  }
+
+  // 3. Find images assigned specifically to the selected color
+  const selectedColorObj = Array.isArray(product.colors)
+    ? product.colors.find((c) => c && c.name && selectedColor && c.name.trim().toLowerCase() === selectedColor.trim().toLowerCase())
+    : null;
+
+  const selectedColorImages = [];
+  if (selectedColorObj?.image) {
+    selectedColorImages.push(selectedColorObj.image);
+  }
+  if (Array.isArray(selectedColorObj?.images)) {
+    selectedColorObj.images.forEach((img) => {
+      if (img && !selectedColorImages.some((existing) => urlsMatch(existing, img))) {
+        selectedColorImages.push(img);
+      }
+    });
+  }
+
+  // 4. Filter out any image belonging to other colors
+  let colorSpecificImages = rawImages.filter(
+    (img) => !otherColorsImages.some((otherImg) => urlsMatch(img, otherImg))
+  );
+
+  // 5. If the selected color has its own image(s), ensure they are present and prioritized at the top
+  selectedColorImages.forEach((colImg) => {
+    const matchIdx = colorSpecificImages.findIndex((img) => urlsMatch(img, colImg));
+    if (matchIdx === -1) {
+      colorSpecificImages.unshift(colImg);
+    } else if (matchIdx > 0) {
+      const [matched] = colorSpecificImages.splice(matchIdx, 1);
+      colorSpecificImages.unshift(matched);
+    }
+  });
+
+  // 6. Safe fallback: if filtering emptied the list, use selected color images or raw images
+  if (colorSpecificImages.length === 0) {
+    colorSpecificImages = selectedColorImages.length > 0 ? selectedColorImages : rawImages;
+  }
+
+  const images = colorSpecificImages;
+  const safeSelectedImage = (selectedImage >= 0 && selectedImage < images.length) ? selectedImage : 0;
 
   const isWishlisted = isInWishlist(product.id);
 
@@ -140,16 +215,15 @@ export function ProductDetailPage() {
 
   const allDisplaySizes = availableProductSizes;
 
-  const currentMainImage = activeColorImage || images[selectedImage] || images[0] || product.image || '';
+  const currentMainImage = formatImageUrl(
+    images[safeSelectedImage] || activeColorImage || images[0] || product.image || ''
+  );
 
   const handleColorSelect = (c) => {
     setSelectedColor(c.name);
+    setSelectedImage(0); // Reset to first photo of this color variant
     if (c.image) {
       setActiveColorImage(c.image);
-      const matchedIdx = images.findIndex((img) => img === c.image);
-      if (matchedIdx !== -1) {
-        setSelectedImage(matchedIdx);
-      }
     } else {
       setActiveColorImage(null);
     }
@@ -257,25 +331,26 @@ export function ProductDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-12 items-start">
           {/* Left Column: Side Mini Thumbnails Strip + Main Image Viewport (Always side-by-side & Screen Fit) */}
           <div className="lg:col-span-7 flex flex-row gap-2 sm:gap-3 md:gap-4 items-stretch w-full h-[58vh] sm:h-[68vh] lg:h-[calc(100vh-6.5rem)] max-h-[calc(100vh-6.5rem)] min-h-[340px] lg:sticky lg:top-20">
-            {/* 1. Vertical Side Thumbnail Gallery Strip (Only shown if multiple photos exist) */}
+            {/* 1. Vertical Side Thumbnail Gallery Strip (Only shown if multiple photos exist for the selected color) */}
             {images.length > 1 && (
               <div
                 ref={thumbnailContainerRef}
                 className="flex flex-col gap-1.5 sm:gap-2 overflow-y-auto no-scrollbar shrink-0 w-12 sm:w-16 md:w-20 lg:w-24 h-full py-0.5"
               >
                 {images.map((img, idx) => {
-                  const isActive = selectedImage === idx && !activeColorImage;
+                  const isActive = safeSelectedImage === idx;
+                  const formattedImg = formatImageUrl(img);
                   return (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => {
                         setSelectedImage(idx);
-                        setActiveColorImage(null);
+                        setActiveColorImage(img);
                       }}
                       onMouseEnter={() => {
                         setSelectedImage(idx);
-                        setActiveColorImage(null);
+                        setActiveColorImage(img);
                       }}
                       className={`relative aspect-[3/4] w-full rounded-sm overflow-hidden border transition-all shrink-0 cursor-pointer bg-neutral-50 p-0.5 flex items-center justify-center ${isActive
                           ? 'border-neutral-900 ring-2 ring-neutral-900/30 shadow-sm scale-102'
@@ -284,10 +359,13 @@ export function ProductDetailPage() {
                       aria-label={`Product thumbnail view ${idx + 1}`}
                     >
                       <img
-                        src={img}
+                        src={formattedImg}
                         alt={`Thumbnail ${idx + 1}`}
                         className="w-full h-full object-contain"
                         loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
                       />
                       {isActive && (
                         <span className="absolute inset-0 bg-neutral-900/10 pointer-events-none" />
@@ -335,11 +413,11 @@ export function ProductDetailPage() {
                 </div>
               )}
 
-              {/* Image Counter Pill (Only shown if multiple images and not viewing separate color photo) */}
-              {images.length > 1 && !activeColorImage && (
+              {/* Image Counter Pill (Only shown if multiple images exist for the selected color) */}
+              {images.length > 1 && (
                 <div className="absolute bottom-2.5 sm:bottom-4 right-2.5 sm:right-4 z-20">
                   <span className="bg-black/60 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-mono font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-white/20 shadow-2xs">
-                    {selectedImage + 1} / {images.length}
+                    {safeSelectedImage + 1} / {images.length}
                   </span>
                 </div>
               )}
@@ -420,7 +498,7 @@ export function ProductDetailPage() {
 
             {/* 3. Real-Time Stock Availability Indicator */}
             {(() => {
-              const stockCount = Number(product.stock !== undefined ? product.stock : 50);
+              const stockCount = Number(product.stock !== undefined && product.stock !== null ? product.stock : 0);
               const isOutOfStock = stockCount <= 0;
               const isLowStock = stockCount > 0 && stockCount <= 10;
 
@@ -466,19 +544,38 @@ export function ProductDetailPage() {
               );
             })()}
 
-            {/* 4. Dispatch Timeline, Color Accuracy & Ready to Ship Banner (Matching Reference) */}
-            <div className="space-y-2 text-xs text-neutral-600 leading-relaxed border-t border-b border-neutral-200/80 py-3.5">
-              <p>
-                <strong className="text-neutral-800">Dispatch Timeline:</strong> This article is expected to be shipped in 2-4 working days.
-              </p>
-              <p className="text-neutral-500 text-[11px]">
-                <strong className="text-neutral-700">Color Accuracy:</strong> Please note that slight color variations may occur due to photography lighting and screen calibration.
-              </p>
-              <div className="flex items-center space-x-2 text-neutral-900 font-bold text-sm tracking-tight pt-1">
-                <Truck className="w-5 h-5 text-neutral-900 shrink-0" />
-                <span>Ready to Ship</span>
-              </div>
-            </div>
+            {/* 4. Dispatch Timeline & Stock Status Banner */}
+            {(() => {
+              const stockCount = Number(product.stock !== undefined && product.stock !== null ? product.stock : 0);
+              if (stockCount <= 0) {
+                return (
+                  <div className="space-y-1.5 text-xs text-neutral-600 leading-relaxed border-t border-b border-neutral-200/80 py-3.5">
+                    <div className="flex items-center space-x-2 text-red-700 font-bold text-xs tracking-tight">
+                      <XCircle className="w-4 h-4 text-red-600 shrink-0" />
+                      <span>Sold Out / Out of Stock</span>
+                    </div>
+                    <p className="text-neutral-500 text-[11px]">
+                      This piece is currently sold out. Save to wishlist or contact customer care for restocking inquiry.
+                    </p>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="space-y-2 text-xs text-neutral-600 leading-relaxed border-t border-b border-neutral-200/80 py-3.5">
+                  <p>
+                    <strong className="text-neutral-800">Dispatch Timeline:</strong> This article is expected to be shipped in 2-4 working days.
+                  </p>
+                  <p className="text-neutral-500 text-[11px]">
+                    <strong className="text-neutral-700">Color Accuracy:</strong> Please note that slight color variations may occur due to photography lighting and screen calibration.
+                  </p>
+                  <div className="flex items-center space-x-2 text-neutral-900 font-bold text-sm tracking-tight pt-1">
+                    <Truck className="w-5 h-5 text-neutral-900 shrink-0" />
+                    <span>Ready to Ship</span>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* 5. Color Selection (with separate image support) */}
             {product.colors && product.colors.length > 0 && (
@@ -502,7 +599,7 @@ export function ProductDetailPage() {
                           }`}
                       >
                         {c.image ? (
-                          <img src={c.image} alt={c.name} className="w-4 h-4 rounded-xs object-cover border border-neutral-300 shrink-0" />
+                          <img src={formatImageUrl(c.image)} alt={c.name} className="w-4 h-4 rounded-xs object-cover border border-neutral-300 shrink-0" />
                         ) : (
                           <span className="w-3.5 h-3.5 rounded-xs border border-neutral-300 shrink-0" style={{ backgroundColor: c.hex || '#000000' }} />
                         )}
@@ -519,14 +616,14 @@ export function ProductDetailPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-neutral-800 tracking-wide uppercase">Select Size</span>
-                  <span className={`text-[11px] font-semibold ${Number(product.stock !== undefined && product.stock !== null ? product.stock : 50) > 0 ? 'text-emerald-700' : 'text-red-600'}`}>
-                    {Number(product.stock !== undefined && product.stock !== null ? product.stock : 50) > 0 ? `In Stock (${Number(product.stock !== undefined && product.stock !== null ? product.stock : 50)} units)` : 'Out of Stock'}
+                  <span className={`text-[11px] font-semibold ${Number(product.stock !== undefined && product.stock !== null ? product.stock : 0) > 0 ? 'text-emerald-700' : 'text-red-600'}`}>
+                    {Number(product.stock !== undefined && product.stock !== null ? product.stock : 0) > 0 ? `In Stock (${Number(product.stock !== undefined && product.stock !== null ? product.stock : 0)} units)` : 'Out of Stock'}
                   </span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
                   {allDisplaySizes.map((sz) => {
-                    const stockNum = Number(product.stock !== undefined && product.stock !== null ? product.stock : 50);
+                    const stockNum = Number(product.stock !== undefined && product.stock !== null ? product.stock : 0);
                     const isAvailable = stockNum > 0;
                     const isSelected = selectedSize === sz;
 
@@ -560,21 +657,23 @@ export function ProductDetailPage() {
                   })}
                 </div>
 
-              {/* Tape measure Size Chart Link */}
-              <button
-                type="button"
-                onClick={() => setShowSizeGuide(true)}
-                className="flex items-center space-x-1.5 text-xs text-neutral-800 hover:text-black font-medium underline underline-offset-4 cursor-pointer pt-1"
-              >
-                <Ruler className="w-4 h-4" />
-                <span>Size Chart</span>
-              </button>
+              {/* Tape measure Size Chart Link (Only shown when apparel sizes exist) */}
+              {allDisplaySizes.some(s => ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'].includes(String(s).toUpperCase())) && (
+                <button
+                  type="button"
+                  onClick={() => setShowSizeGuide(true)}
+                  className="flex items-center space-x-1.5 text-xs text-neutral-800 hover:text-black font-medium underline underline-offset-4 cursor-pointer pt-1"
+                >
+                  <Ruler className="w-4 h-4" />
+                  <span>Size Chart</span>
+                </button>
+              )}
             </div>
           )}
 
             {/* 7. Quantity Stepper */}
             {(() => {
-              const stockNum = Number(product.stock !== undefined ? product.stock : 50);
+              const stockNum = Number(product.stock !== undefined && product.stock !== null ? product.stock : 0);
               const isOut = stockNum <= 0;
 
               return (
@@ -606,7 +705,7 @@ export function ProductDetailPage() {
 
             {/* 8. Action Buttons (Clean editorial luxury buttons) */}
             {(() => {
-              const stockNum = Number(product.stock !== undefined ? product.stock : 50);
+              const stockNum = Number(product.stock !== undefined && product.stock !== null ? product.stock : 0);
               const isOut = stockNum <= 0;
 
               if (isOut) {
@@ -679,32 +778,28 @@ export function ProductDetailPage() {
                 )}
               </div>
 
-              {/* Accordion 2: PRODUCT CARE */}
-              <div className="py-4">
-                <button
-                  type="button"
-                  onClick={() => toggleAccordion('care')}
-                  className="w-full flex items-center justify-between text-left text-xs font-bold uppercase tracking-wider text-neutral-900 cursor-pointer"
-                >
-                  <span>PRODUCT CARE</span>
-                  {openAccordions.care ? (
-                    <ChevronUp className="w-4 h-4 text-neutral-600" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-neutral-600" />
+              {/* Accordion 2: PRODUCT CARE (Only shown if admin provided care instructions) */}
+              {(product.care_instructions || product.care) && (
+                <div className="py-4">
+                  <button
+                    type="button"
+                    onClick={() => toggleAccordion('care')}
+                    className="w-full flex items-center justify-between text-left text-xs font-bold uppercase tracking-wider text-neutral-900 cursor-pointer"
+                  >
+                    <span>PRODUCT CARE</span>
+                    {openAccordions.care ? (
+                      <ChevronUp className="w-4 h-4 text-neutral-600" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-neutral-600" />
+                    )}
+                  </button>
+                  {openAccordions.care && (
+                    <div className="mt-3 text-xs text-neutral-600 leading-relaxed space-y-2 animate-fadeIn whitespace-pre-line">
+                      <p>{product.care_instructions || product.care}</p>
+                    </div>
                   )}
-                </button>
-                {openAccordions.care && (
-                  <div className="mt-3 text-xs text-neutral-600 leading-relaxed space-y-2 animate-fadeIn">
-                    <p>To maintain the fine craftsmanship and delicate weaves of this luxury garment:</p>
-                    <ul className="list-disc list-inside space-y-1 text-neutral-600">
-                      <li><strong>Dry Clean Only:</strong> We recommend professional dry cleaning for longevity.</li>
-                      <li><strong>Storage:</strong> Store wrapped in pure breathable muslin or cotton cloth.</li>
-                      <li><strong>Ironing:</strong> Steam iron on reverse at low-to-medium heat.</li>
-                      <li><strong>Perfumes:</strong> Avoid spraying perfumes or deodorants directly onto embroidery or fabric.</li>
-                    </ul>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Accordion 3: SPECIFICATIONS */}
               <div className="py-4">
@@ -743,7 +838,7 @@ export function ProductDetailPage() {
                     {product.colors && product.colors.length > 0 && (
                       <div><strong className="text-neutral-900">Colors:</strong> {product.colors.map(c => c.name).join(', ')}</div>
                     )}
-                    {product.weight_grams && (
+                    {product.weight_grams && Number(product.weight_grams) > 0 && Number(product.weight_grams) !== 800 && (
                       <div><strong className="text-neutral-900">Weight:</strong> {product.weight_grams}g</div>
                     )}
                   </div>

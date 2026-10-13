@@ -39,6 +39,8 @@ export function AdminProducts() {
     title: '',
     description: '',
     short_description: '',
+    care_instructions: '',
+    weight_grams: '',
     price: '',
     original_price: '',
     category_slug: 'stitched-suits',
@@ -46,7 +48,7 @@ export function AdminProducts() {
     fabric: '',
     occasion: '',
     sku: '',
-    stock: 25,
+    stock: '',
     is_featured: false,
     is_new_arrival: false,
     is_bestseller: false,
@@ -203,6 +205,8 @@ export function AdminProducts() {
       title: '',
       description: '',
       short_description: '',
+      care_instructions: '',
+      weight_grams: '',
       price: '',
       original_price: '',
       category_slug: 'stitched-suits',
@@ -210,7 +214,7 @@ export function AdminProducts() {
       fabric: '',
       occasion: '',
       sku: `OCT-${Date.now().toString().slice(-4)}`,
-      stock: 25,
+      stock: '',
       is_featured: false,
       is_new_arrival: false,
       is_bestseller: false,
@@ -264,6 +268,8 @@ export function AdminProducts() {
       title: p.title || '',
       description: p.description || '',
       short_description: p.short_description || '',
+      care_instructions: p.care_instructions || '',
+      weight_grams: p.weight_grams ? String(p.weight_grams) : '',
       price: p.price || '',
       original_price: p.original_price || '',
       category_slug: p.category_slug || 'stitched-suits',
@@ -271,7 +277,7 @@ export function AdminProducts() {
       fabric: p.fabric || '',
       occasion: p.occasion || '',
       sku: p.sku || '',
-      stock: p.stock !== undefined && p.stock !== null ? Number(p.stock) : 25,
+      stock: p.stock !== undefined && p.stock !== null ? p.stock : 0,
       is_featured: Boolean(p.is_featured),
       is_new_arrival: Boolean(p.is_new_arrival),
       is_bestseller: Boolean(p.is_bestseller),
@@ -577,15 +583,7 @@ export function AdminProducts() {
                   <select
                     value={formData.category_slug}
                     onChange={(e) => {
-                      const newCat = e.target.value;
-                      let suggestedSizes = formData.sizes;
-                      if (!editingProduct && (!formData.sizes || formData.sizes.length <= 4)) {
-                        if (newCat === 'unstitched-suits') suggestedSizes = ['Unstitched'];
-                        else if (newCat === 'sarees' || newCat === 'accessories') suggestedSizes = ['Free Size'];
-                        else if (newCat === 'jutti') suggestedSizes = ['36', '37', '38', '39', '40', '41'];
-                        else suggestedSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-                      }
-                      setFormData({ ...formData, category_slug: newCat, sizes: suggestedSizes });
+                      setFormData({ ...formData, category_slug: e.target.value });
                     }}
                     className="w-full p-2.5 border rounded-lg capitalize"
                   >
@@ -680,12 +678,15 @@ export function AdminProducts() {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-neutral-700 mb-1">Stock Quantity</label>
+                  <label className="block font-bold text-neutral-700 mb-1">Stock Quantity *</label>
                   <input
                     type="number"
+                    min="0"
+                    required
                     value={formData.stock}
-                    onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
-                    className="w-full p-2.5 border rounded-lg"
+                    onChange={(e) => setFormData({ ...formData, stock: e.target.value === '' ? '' : Number(e.target.value) })}
+                    placeholder="e.g. 15 (0 for sold out)"
+                    className="w-full p-2.5 border rounded-lg font-bold"
                   />
                 </div>
 
@@ -696,6 +697,18 @@ export function AdminProducts() {
                     value={formData.sku}
                     onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
                     placeholder="OCT-ANK-001"
+                    className="w-full p-2.5 border rounded-lg"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-neutral-700 mb-1">Package Weight (Grams)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.weight_grams}
+                    onChange={(e) => setFormData({ ...formData, weight_grams: e.target.value })}
+                    placeholder="e.g. 650 (Optional)"
                     className="w-full p-2.5 border rounded-lg"
                   />
                 </div>
@@ -1084,12 +1097,34 @@ export function AdminProducts() {
               </div>
 
               <div>
-                <label className="block font-bold text-neutral-700 mb-1">Description</label>
+                <label className="block font-bold text-neutral-700 mb-1">Short Description (Key Highlights)</label>
+                <input
+                  type="text"
+                  value={formData.short_description}
+                  onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
+                  placeholder="e.g. Pure Georgette Anarkali Suit with Zari Embroidery"
+                  className="w-full p-2.5 border rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-neutral-700 mb-1">Detailed Description</label>
                 <textarea
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Describe the silhouette, embroidery details, and styling advice..."
+                  placeholder="Describe the silhouette, embroidery details, styling advice, and cut..."
+                  className="w-full p-2.5 border rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-neutral-700 mb-1">Product Care &amp; Wash Guidelines (Optional)</label>
+                <textarea
+                  rows={2}
+                  value={formData.care_instructions}
+                  onChange={(e) => setFormData({ ...formData, care_instructions: e.target.value })}
+                  placeholder="e.g. Dry clean only. Store wrapped in breathable muslin cloth. Low iron on reverse."
                   className="w-full p-2.5 border rounded-lg"
                 />
               </div>

@@ -55,11 +55,15 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
     setSelectedSize(sz);
   };
 
+  const primaryColor = (Array.isArray(product.colors) && product.colors.length > 0 && product.colors[0]?.name)
+    ? product.colors[0].name
+    : '';
+
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (isOutOfStock) return;
-    addToCart(product, selectedSize, 'Standard', 1);
+    addToCart(product, selectedSize, primaryColor, 1);
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 1800);
   };
@@ -68,7 +72,7 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
     e.preventDefault();
     e.stopPropagation();
     if (isOutOfStock) return;
-    addToCart(product, selectedSize, 'Standard', 1);
+    addToCart(product, selectedSize, primaryColor, 1);
     navigate('/checkout');
   };
 

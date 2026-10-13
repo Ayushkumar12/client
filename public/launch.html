@@ -240,32 +240,12 @@
               py: 1,
               px: { xs: 2, sm: 3 },
               borderBottom: '1px solid rgba(255,255,255,0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
+              textAlign: 'center',
             }}
           >
-            <Box sx={{ display: { xs: 'none', sm: 'block' }, width: '120px' }} />
-            <Typography variant="caption" sx={{ letterSpacing: '0.18em', textTransform: 'uppercase', fontSize: '0.75rem', mx: 'auto', textAlign: 'center' }}>
+            <Typography variant="caption" sx={{ letterSpacing: '0.18em', textTransform: 'uppercase', fontSize: '0.75rem' }}>
               Official Announcement &bull; Autumn / Festive Collection Unveiling
             </Typography>
-            <Box sx={{ width: { xs: 'auto', sm: '120px' }, textAlign: 'right' }}>
-              <Link
-                href="/login"
-                sx={{
-                  color: '#FFFFFF',
-                  fontSize: '0.72rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                  textDecoration: 'underline',
-                  fontWeight: 500,
-                  whiteSpace: 'nowrap',
-                  '&:hover': { opacity: 0.9 }
-                }}
-              >
-                Admin Login &rarr;
-              </Link>
-            </Box>
           </Box>
 
           {/* Editorial Brand Header */}

@@ -82,20 +82,9 @@ export function UnderDevelopmentLaunch() {
   return (
     <div className="min-h-screen flex flex-col justify-between bg-[#FAF7F2] text-[#1F2937] font-sans selection:bg-[#881337] selection:text-white">
       {/* 1. Top Announcement Bar */}
-      <div className="bg-[#881337] text-white py-2 px-4 text-center border-b border-white/10 text-xs tracking-wider flex items-center justify-between">
-        <div className="hidden sm:block w-24"></div>
-        <div className="uppercase tracking-widest text-[11px] font-medium mx-auto">
+      <div className="bg-[#881337] text-white py-2 px-4 text-center border-b border-white/10 text-xs tracking-wider">
+        <div className="uppercase tracking-widest text-[11px] font-medium">
           Official Announcement &bull; Autumn / Festive Collection Unveiling
-        </div>
-        {/* Admin Login Accessibility Link (as requested: admin page accessible with login link until live) */}
-        <div className="text-right shrink-0">
-          <Link
-            to="/login"
-            className="text-[11px] uppercase tracking-wider text-white/90 hover:text-white underline font-medium hover:opacity-100 transition-opacity"
-            title="Administrator Sign In"
-          >
-            Staff / Admin Login &rarr;
-          </Link>
         </div>
       </div>
 

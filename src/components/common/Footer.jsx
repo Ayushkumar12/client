@@ -154,6 +154,7 @@ export function Footer() {
               <li><Link to="/refund-policy" className="text-neutral-600 hover:text-brand-maroon transition-colors">Refund & Cancellation</Link></li>
               <li><Link to="/size-guide" className="text-neutral-600 hover:text-brand-maroon transition-colors">Size Guide & Tailoring</Link></li>
               <li><Link to="/faq" className="text-neutral-600 hover:text-brand-maroon transition-colors">FAQs</Link></li>
+              <li><Link to="/sitemap" className="text-neutral-600 hover:text-brand-maroon transition-colors">Sitemap</Link></li>
             </ul>
           </div>
 
@@ -224,6 +225,8 @@ export function Footer() {
             <Link to="/terms" className="hover:text-brand-maroon transition-colors">Terms of Service</Link>
             <span className="text-neutral-300">•</span>
             <Link to="/cookie-policy" className="hover:text-brand-maroon transition-colors">Cookie Policy</Link>
+            <span className="text-neutral-300">•</span>
+            <Link to="/sitemap" className="hover:text-brand-maroon transition-colors">Sitemap</Link>
           </div>
         </div>
       </div>

@@ -560,7 +560,7 @@ export function AdminContentManager() {
                 <p className="text-xs text-neutral-500 mt-1">
                   {siteMode === 'live'
                     ? 'The store is live. Customers can browse products, add items to cart, and complete checkouts.'
-                    : 'The storefront is under development. Visitors see the launch countdown & VIP signup based on launch.html. Admins can log in and preview.'}
+                    : 'The storefront is under development. Visitors see the launch countdown & VIP signup based on launch.html. SEO pages (/sitemap, /sitemap.xml, /robots.txt, and customer care policies) remain unblocked for search engine crawlers.'}
                 </p>
               </div>
 

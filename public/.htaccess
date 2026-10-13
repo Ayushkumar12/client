@@ -15,6 +15,13 @@ RewriteBase /
 # Stop rewriting if index.html is directly requested
 RewriteRule ^index\.html$ - [L]
 
+# Direct fallback for SEO files to backend if not found locally
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^sitemap\.xml$ https://backend.oct9.in/sitemap.xml [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^robots\.txt$ https://backend.oct9.in/robots.txt [R=301,L]
+
 # Exclude existing physical files, directories, and symlinks
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

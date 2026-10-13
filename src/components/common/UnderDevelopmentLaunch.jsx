@@ -204,6 +204,23 @@ export function UnderDevelopmentLaunch() {
             Customer Support (care@oct9.com)
           </a>
         </p>
+        <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-[11px] text-[#52525B] my-3">
+          <Link to="/sitemap" className="hover:text-[#881337] hover:underline">Sitemap</Link>
+          <span className="text-neutral-300">&bull;</span>
+          <a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="hover:text-[#881337] hover:underline">sitemap.xml</a>
+          <span className="text-neutral-300">&bull;</span>
+          <Link to="/about" className="hover:text-[#881337] hover:underline">About Us</Link>
+          <span className="text-neutral-300">&bull;</span>
+          <Link to="/contact" className="hover:text-[#881337] hover:underline">Contact</Link>
+          <span className="text-neutral-300">&bull;</span>
+          <Link to="/shipping-policy" className="hover:text-[#881337] hover:underline">Shipping Policy</Link>
+          <span className="text-neutral-300">&bull;</span>
+          <Link to="/returns" className="hover:text-[#881337] hover:underline">Returns &amp; Exchanges</Link>
+          <span className="text-neutral-300">&bull;</span>
+          <Link to="/privacy" className="hover:text-[#881337] hover:underline">Privacy Policy</Link>
+          <span className="text-neutral-300">&bull;</span>
+          <Link to="/terms" className="hover:text-[#881337] hover:underline">Terms of Service</Link>
+        </div>
         <p className="text-[11px] text-[#71717A]">
           &copy; {new Date().getFullYear()} OCT9. All Rights Reserved. Official Launch: {subheadline}.
           <span className="mx-2">&bull;</span>

@@ -37,6 +37,7 @@ import { TermsPage } from './pages/TermsPage.jsx';
 import { PrivacyPage } from './pages/PrivacyPage.jsx';
 import { AboutPage } from './pages/AboutPage.jsx';
 import { CookiePolicyPage } from './pages/CookiePolicyPage.jsx';
+import { SitemapPage } from './pages/SitemapPage.jsx';
 
 // Admin Pages
 import { AdminLayout } from './pages/admin/AdminLayout.jsx';
@@ -60,6 +61,29 @@ import { useAuth } from './context/AuthContext.jsx';
 import { useContent } from './context/ContentContext.jsx';
 import { Link } from 'react-router-dom';
 
+// Whitelist of SEO, Policy, and Statutory Compliance routes
+// These pages MUST NEVER be blocked by the Under Development countdown screen
+// so search engine crawlers (Googlebot, Bing) and merchant reviewers have full access.
+const SEO_AND_POLICY_ROUTES = [
+  '/sitemap',
+  '/sitemap.xml',
+  '/robots.txt',
+  '/about',
+  '/contact',
+  '/shipping-policy',
+  '/returns',
+  '/refund-policy',
+  '/size-guide',
+  '/faq',
+  '/terms',
+  '/terms-and-conditions',
+  '/privacy',
+  '/privacy-policy',
+  '/cookie-policy',
+  '/cookies',
+  '/track-order',
+];
+
 function MainLayout({ children }) {
   const location = useLocation();
   const { siteMode, isAdmin, updateSiteMode } = useAuth();
@@ -72,8 +96,10 @@ function MainLayout({ children }) {
   // By default, if siteMode is 'live' or CMS content is 'live', the store is live
   const isDevMode = (siteMode === 'under_development' || isCmsDev) && !isCmsLive && siteMode !== 'live';
 
+  const currentPath = location.pathname.replace(/\/+$/, '') || '/';
   const isExplicitAdminRoute = location.pathname.startsWith('/admin');
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  const isAuthPage = currentPath === '/login' || currentPath === '/register';
+  const isSeoOrPolicyRoute = SEO_AND_POLICY_ROUTES.includes(currentPath);
 
   // 1. Admin pages & Login/Register are ALWAYS accessible
   if (isExplicitAdminRoute || isAuthPage) {
@@ -81,8 +107,8 @@ function MainLayout({ children }) {
   }
 
   // 2. Under Development Mode:
-  // If not live yet, non-admins see the UnderDevelopmentLaunch page based on launch.html
-  if (isDevMode && !isAdmin) {
+  // If not live yet and not an SEO/statutory compliance route, non-admins see the UnderDevelopmentLaunch page
+  if (isDevMode && !isAdmin && !isSeoOrPolicyRoute) {
     return <UnderDevelopmentLaunch />;
   }
 
@@ -172,6 +198,7 @@ export default function App() {
                       <Route path="/register" element={<RegisterPage />} />
 
                       {/* Customer Care & Policy Pages */}
+                      <Route path="/sitemap" element={<SitemapPage />} />
                       <Route path="/contact" element={<ContactPage />} />
                       <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
                       <Route path="/returns" element={<ReturnsPage />} />

@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+Allow: /sitemap.xml
+Allow: /sitemap
+Allow: /about
+Allow: /contact
+Allow: /shipping-policy
+Allow: /returns
+Allow: /refund-policy
+Allow: /size-guide
+Allow: /faq
+Allow: /terms
+Allow: /terms-and-conditions
+Allow: /privacy
+Allow: /privacy-policy
+Allow: /cookie-policy
+Disallow: /admin
+Disallow: /admin/
+Disallow: /checkout
+Disallow: /account
+Disallow: /api/
+
+Sitemap: https://oct9.in/sitemap.xml

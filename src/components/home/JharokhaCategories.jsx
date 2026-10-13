@@ -47,14 +47,13 @@ const getCategoryImageUrl = (cat) => {
 };
 
 export function JharokhaCategories() {
-  const { getJharokhaCategories, getSection } = useContent();
+  const { getJharokhaCategories } = useContent();
   const categories = getJharokhaCategories();
-  const sec = getSection('jharokha') || {};
 
   if (!categories || categories.length === 0) return null;
 
   return (
-    <section className="relative w-full py-3.5 sm:py-6 md:py-8 lg:py-10 bg-gradient-to-b from-[#FAF7F2] via-[#FDFBF7] to-[#FAF7F2] border-y border-[#EFE8DC] overflow-hidden">
+    <section className="relative w-full py-3 sm:py-4 md:py-5 lg:py-6 bg-gradient-to-b from-[#FAF7F2] via-[#FDFBF7] to-[#FAF7F2] border-y border-[#EFE8DC] overflow-hidden">
       {/* Background Subtle Luxury Texture Watermark */}
       <div 
         className="absolute inset-0 opacity-[0.03] pointer-events-none bg-repeat"
@@ -64,31 +63,10 @@ export function JharokhaCategories() {
         }}
       />
 
-      {/* Full-Width Edge-to-Edge Container */}
-      <div className="relative w-full px-2.5 sm:px-6 md:px-8 lg:px-10 xl:px-14">
-        {/* Optional Section Heading Configurable by Admin */}
-        {(sec.title || sec.badge) && (
-          <div className="text-center mb-3 sm:mb-5 md:mb-6">
-            {sec.badge && (
-              <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[#8B6B3D] block mb-1">
-                {sec.badge}
-              </span>
-            )}
-            {sec.title && (
-              <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-medium text-neutral-900 tracking-tight">
-                {sec.title}
-              </h2>
-            )}
-            {sec.subtitle && (
-              <p className="text-xs sm:text-sm text-neutral-500 max-w-xl mx-auto mt-1 font-light">
-                {sec.subtitle}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Full-width responsive flex container */}
-        <div className="flex items-center justify-start lg:justify-center xl:justify-between gap-2.5 sm:gap-4 md:gap-6 lg:gap-5 xl:gap-6 overflow-x-auto pb-2 sm:pb-3 pt-1 no-scrollbar scroll-smooth">
+      {/* Responsive Container */}
+      <div className="relative w-full max-w-7xl mx-auto px-3 sm:px-6 md:px-8 lg:px-10 xl:px-12">
+        {/* Responsive flex container: horizontal touch-scroll on mobile/tablet, balanced auto-fit on desktop */}
+        <div className="flex items-center justify-start lg:justify-between gap-3 sm:gap-4 md:gap-5 lg:gap-3 xl:gap-6 overflow-x-auto pb-1 sm:pb-1.5 pt-0.5 no-scrollbar scroll-smooth">
           {categories.map((cat, idx) => {
             const catId = cat.id || cat.slug || `category-${idx}`;
             const clipId = `jharokha-clip-${catId}`;
@@ -98,11 +76,11 @@ export function JharokhaCategories() {
               <Link
                 key={catId}
                 to={cat.link || `/category/${cat.slug}`}
-                className="group flex flex-col items-center flex-shrink-0 lg:flex-1 min-w-[64px] sm:min-w-[95px] md:min-w-[125px] lg:min-w-[140px] max-w-[185px] focus:outline-none transition-transform duration-300 hover:-translate-y-1 sm:hover:-translate-y-1.5"
+                className="group flex flex-col items-center flex-shrink-0 lg:flex-1 min-w-[64px] sm:min-w-[80px] md:min-w-[90px] lg:min-w-0 max-w-[110px] sm:max-w-[130px] lg:max-w-[145px] xl:max-w-[160px] focus:outline-none transition-transform duration-300 hover:-translate-y-1 sm:hover:-translate-y-1.5"
                 aria-label={cat.name}
               >
-                {/* Royal Jharokha SVG Frame - Compact on small devices, expansive on desktop */}
-                <div className="relative w-14 h-[60px] sm:w-22 sm:h-24 md:w-28 md:h-30 lg:w-34 lg:h-36 xl:w-38 xl:h-40 filter drop-shadow-[0_2px_6px_rgba(184,147,88,0.18)] sm:drop-shadow-[0_4px_12px_rgba(184,147,88,0.18)] group-hover:drop-shadow-[0_8px_20px_rgba(184,147,88,0.35)] transition-all duration-500 ease-out">
+                {/* Royal Jharokha SVG Frame - Scaled proportionally across all screen breakpoints */}
+                <div className="relative w-16 h-[70px] sm:w-20 sm:h-[86px] md:w-22 md:h-[94px] lg:w-24 lg:h-[102px] xl:w-28 xl:h-[118px] 2xl:w-30 2xl:h-[126px] filter drop-shadow-[0_2px_6px_rgba(184,147,88,0.18)] sm:drop-shadow-[0_4px_12px_rgba(184,147,88,0.18)] group-hover:drop-shadow-[0_8px_20px_rgba(184,147,88,0.35)] transition-all duration-500 ease-out">
                   <svg
                     viewBox="0 0 200 210"
                     className="w-full h-full overflow-visible"
@@ -169,8 +147,8 @@ export function JharokhaCategories() {
                 </div>
 
                 {/* Category Title Label */}
-                <div className="mt-1 sm:mt-2.5 text-center px-0.5 w-full">
-                  <span className="text-[10px] sm:text-xs md:text-[13px] lg:text-sm font-semibold tracking-tight sm:tracking-wide text-neutral-800 group-hover:text-brand-maroon transition-colors duration-200 block whitespace-nowrap text-ellipsis overflow-hidden">
+                <div className="mt-1.5 sm:mt-2 text-center px-0.5 w-full">
+                  <span className="text-[11px] sm:text-xs md:text-xs lg:text-[13px] xl:text-sm font-semibold tracking-tight text-neutral-800 group-hover:text-brand-maroon transition-colors duration-200 block truncate leading-tight">
                     {cat.name}
                   </span>
                 </div>

@@ -101,6 +101,15 @@ code, pre, kbd, samp, .font-mono, [data-mono] {
   background: #9CA3AF;
 }
 
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Standard Utility classes */
 .gold-gradient-text {
   color: #B45309;

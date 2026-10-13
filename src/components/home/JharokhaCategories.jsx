@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useContent } from '../../context/ContentContext.jsx';
 
 // 4-Pointed Royal Mughal Jharokha Arch / Medallion Path (Outer Outline)
@@ -50,10 +51,153 @@ export function JharokhaCategories() {
   const { getJharokhaCategories } = useContent();
   const categories = getJharokhaCategories();
 
+  const scrollRef = useRef(null);
+  const singleSetWidthRef = useRef(0);
+  const isPausedRef = useRef(false);
+  const pauseTimeoutRef = useRef(null);
+
+  const [hasOverflow, setHasOverflow] = useState(false);
+
+  // Helper to pause auto-scroll for a specific duration, then smoothly resume
+  const pauseAutoScroll = useCallback((durationMs = 1200) => {
+    isPausedRef.current = true;
+    if (pauseTimeoutRef.current) {
+      clearTimeout(pauseTimeoutRef.current);
+    }
+    if (durationMs > 0) {
+      pauseTimeoutRef.current = setTimeout(() => {
+        isPausedRef.current = false;
+      }, durationMs);
+    }
+  }, []);
+
+  // Measure whether total width of categories exceeds available container space
+  const checkOverflow = useCallback(() => {
+    if (!scrollRef.current || !categories || categories.length === 0) return;
+    const scrollEl = scrollRef.current;
+
+    const items = scrollEl.querySelectorAll('[data-first-set="true"]');
+    if (!items || items.length === 0) return;
+
+    const firstItem = items[0];
+    const lastItem = items[items.length - 1];
+
+    if (firstItem && lastItem) {
+      let gap = 16;
+      if (items.length > 1) {
+        const item1 = items[1];
+        gap = Math.max(8, item1.offsetLeft - (firstItem.offsetLeft + firstItem.offsetWidth));
+      }
+
+      const totalFirstSetWidth = (lastItem.offsetLeft + lastItem.offsetWidth) - firstItem.offsetLeft + gap;
+      singleSetWidthRef.current = totalFirstSetWidth;
+
+      const containerWidth = scrollEl.clientWidth;
+      const isOver = totalFirstSetWidth > containerWidth + 6;
+
+      setHasOverflow(isOver);
+    }
+  }, [categories]);
+
+  // Keep overflow detection reactive to window resizes and font loading
+  useEffect(() => {
+    checkOverflow();
+
+    let resizeObserver;
+    if (typeof ResizeObserver !== 'undefined' && scrollRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        checkOverflow();
+      });
+      resizeObserver.observe(scrollRef.current);
+    }
+
+    const handleResize = () => checkOverflow();
+    window.addEventListener('resize', handleResize);
+
+    const timer = setTimeout(checkOverflow, 250);
+
+    return () => {
+      if (resizeObserver) resizeObserver.disconnect();
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timer);
+      if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    };
+  }, [checkOverflow]);
+
+  // Continuous, silky smooth auto-scroll when content overflows available space
+  useEffect(() => {
+    if (!hasOverflow) {
+      if (scrollRef.current) scrollRef.current.scrollLeft = 0;
+      return;
+    }
+
+    // Respect user's system accessibility motion setting
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    let animationFrameId;
+    let lastTimestamp = performance.now();
+    const speed = 28; // pixels per second for a relaxed luxury gallery pace
+
+    const step = (timestamp) => {
+      const elapsed = (timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+
+      if (!isPausedRef.current && scrollRef.current) {
+        const scrollEl = scrollRef.current;
+        const setWidth = singleSetWidthRef.current;
+
+        if (setWidth > 0) {
+          scrollEl.scrollLeft += speed * elapsed;
+
+          // Seamless loop back when first complete set has passed
+          if (scrollEl.scrollLeft >= setWidth) {
+            scrollEl.scrollLeft -= setWidth;
+          }
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(step);
+    };
+
+    animationFrameId = requestAnimationFrame(step);
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
+  }, [hasOverflow]);
+
+  // Handle manual touch/trackpad swipes with seamless infinite loop normalization
+  const handleScroll = () => {
+    if (!scrollRef.current || !hasOverflow) return;
+    const scrollEl = scrollRef.current;
+    const setWidth = singleSetWidthRef.current;
+
+    if (setWidth > 0) {
+      if (scrollEl.scrollLeft >= setWidth * 1.85) {
+        scrollEl.scrollLeft -= setWidth;
+      } else if (scrollEl.scrollLeft < 0) {
+        scrollEl.scrollLeft += setWidth;
+      }
+    }
+  };
+
+  // Step scroll with Prev / Next Chevron buttons
+  const handleScrollBy = (direction) => {
+    if (!scrollRef.current) return;
+    pauseAutoScroll(3200);
+    const scrollAmount = Math.max(180, scrollRef.current.clientWidth * 0.45);
+    scrollRef.current.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+  };
+
   if (!categories || categories.length === 0) return null;
 
+  // Render duplicated list ONLY when overflowing so it loops endlessly with zero gap
+  const displayCategories = hasOverflow ? [...categories, ...categories] : categories;
+
   return (
-    <section className="relative w-full py-3 sm:py-4 md:py-5 lg:py-6 bg-gradient-to-b from-[#FAF7F2] via-[#FDFBF7] to-[#FAF7F2] border-y border-[#EFE8DC] overflow-hidden">
+    <section className="relative w-full py-3 sm:py-4 md:py-5 lg:py-6 bg-gradient-to-b from-[#FAF7F2] via-[#FDFBF7] to-[#FAF7F2] border-y border-[#EFE8DC] overflow-hidden select-none">
       {/* Background Subtle Luxury Texture Watermark */}
       <div 
         className="absolute inset-0 opacity-[0.03] pointer-events-none bg-repeat"
@@ -63,12 +207,61 @@ export function JharokhaCategories() {
         }}
       />
 
-      {/* Responsive Container */}
-      <div className="relative w-full max-w-7xl mx-auto px-3 sm:px-6 md:px-8 lg:px-10 xl:px-12">
-        {/* Responsive flex container: horizontal touch-scroll on mobile/tablet, balanced auto-fit on desktop */}
-        <div className="flex items-center justify-start lg:justify-between gap-3 sm:gap-4 md:gap-5 lg:gap-3 xl:gap-6 overflow-x-auto pb-1 sm:pb-1.5 pt-0.5 no-scrollbar scroll-smooth">
-          {categories.map((cat, idx) => {
-            const catId = cat.id || cat.slug || `category-${idx}`;
+      {/* Main Relative Container */}
+      <div className="relative w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
+        {/* Subtle Edge Gradient Fades (Shown only when content overflows) */}
+        {hasOverflow && (
+          <>
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 sm:w-12 bg-gradient-to-r from-[#FAF7F2] to-transparent z-10" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 sm:w-12 bg-gradient-to-l from-[#FAF7F2] to-transparent z-10" />
+
+            {/* Previous Chevron Button */}
+            <button
+              type="button"
+              onClick={() => handleScrollBy(-1)}
+              className="hidden sm:flex absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/95 backdrop-blur-xs border border-[#C5A880]/50 shadow-md items-center justify-center text-[#5A1827] hover:bg-white hover:scale-105 active:scale-95 transition-all cursor-pointer focus:outline-none"
+              aria-label="Previous categories"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {/* Next Chevron Button */}
+            <button
+              type="button"
+              onClick={() => handleScrollBy(1)}
+              className="hidden sm:flex absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/95 backdrop-blur-xs border border-[#C5A880]/50 shadow-md items-center justify-center text-[#5A1827] hover:bg-white hover:scale-105 active:scale-95 transition-all cursor-pointer focus:outline-none"
+              aria-label="Next categories"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </>
+        )}
+
+        {/* Scroll Container */}
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          onMouseEnter={() => {
+            isPausedRef.current = true;
+            if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+          }}
+          onMouseLeave={() => pauseAutoScroll(1000)}
+          onTouchStart={() => {
+            isPausedRef.current = true;
+            if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+          }}
+          onTouchEnd={() => pauseAutoScroll(2200)}
+          onWheel={() => pauseAutoScroll(1500)}
+          className={`flex items-center gap-3 sm:gap-4 md:gap-5 lg:gap-6 xl:gap-8 pb-1 sm:pb-1.5 pt-0.5 no-scrollbar ${
+            hasOverflow
+              ? 'justify-start overflow-x-auto cursor-grab active:cursor-grabbing'
+              : 'justify-center lg:justify-between overflow-x-hidden'
+          }`}
+        >
+          {displayCategories.map((cat, idx) => {
+            const isDuplicate = hasOverflow && idx >= categories.length;
+            const originalIdx = idx % categories.length;
+            const catId = isDuplicate ? `dup-${cat.id || cat.slug || originalIdx}-${idx}` : (cat.id || cat.slug || `category-${originalIdx}`);
             const clipId = `jharokha-clip-${catId}`;
             const imageUrl = getCategoryImageUrl(cat);
 
@@ -76,10 +269,14 @@ export function JharokhaCategories() {
               <Link
                 key={catId}
                 to={cat.link || `/category/${cat.slug}`}
-                className="group flex flex-col items-center flex-shrink-0 lg:flex-1 min-w-[64px] sm:min-w-[80px] md:min-w-[90px] lg:min-w-0 max-w-[110px] sm:max-w-[130px] lg:max-w-[145px] xl:max-w-[160px] focus:outline-none transition-transform duration-300 hover:-translate-y-1 sm:hover:-translate-y-1.5"
+                data-first-set={!isDuplicate ? "true" : undefined}
+                data-item-index={originalIdx}
+                tabIndex={isDuplicate ? -1 : 0}
+                aria-hidden={isDuplicate ? "true" : undefined}
+                className="group flex flex-col items-center flex-shrink-0 min-w-[70px] sm:min-w-[88px] md:min-w-[98px] lg:min-w-[110px] xl:min-w-[125px] 2xl:min-w-[135px] max-w-[105px] sm:max-w-[125px] lg:max-w-[145px] xl:max-w-[160px] focus:outline-none transition-transform duration-300 hover:-translate-y-1 sm:hover:-translate-y-1.5"
                 aria-label={cat.name}
               >
-                {/* Royal Jharokha SVG Frame - Scaled proportionally across all screen breakpoints */}
+                {/* Royal Jharokha SVG Frame - Scaled proportionally */}
                 <div className="relative w-16 h-[70px] sm:w-20 sm:h-[86px] md:w-22 md:h-[94px] lg:w-24 lg:h-[102px] xl:w-28 xl:h-[118px] 2xl:w-30 2xl:h-[126px] filter drop-shadow-[0_2px_6px_rgba(184,147,88,0.18)] sm:drop-shadow-[0_4px_12px_rgba(184,147,88,0.18)] group-hover:drop-shadow-[0_8px_20px_rgba(184,147,88,0.35)] transition-all duration-500 ease-out">
                   <svg
                     viewBox="0 0 200 210"
@@ -162,5 +359,3 @@ export function JharokhaCategories() {
 }
 
 export default JharokhaCategories;
-
-

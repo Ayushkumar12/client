@@ -12,8 +12,7 @@ import {
   ChevronUp,
   CheckCircle2,
   XCircle,
-  AlertTriangle,
-  ShoppingBag
+  AlertTriangle
 } from 'lucide-react';
 import { useCart } from '../context/CartContext.jsx';
 import { useWishlist } from '../context/WishlistContext.jsx';
@@ -35,9 +34,8 @@ export function ProductDetailPage() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [activeColorImage, setActiveColorImage] = useState(null);
-  const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedColor, setSelectedColor] = useState('Standard');
   const [quantity, setQuantity] = useState(1);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -72,20 +70,11 @@ export function ProductDetailPage() {
         const res = await api.getProduct(targetIdentifier);
         if (res.success && res.product) {
           setProduct(res.product);
-          setSelectedImage(0);
-          setActiveColorImage(null);
           if (res.product.sizes && res.product.sizes.length > 0) {
             setSelectedSize(res.product.sizes[0]);
-          } else {
-            setSelectedSize('');
           }
           if (res.product.colors && res.product.colors.length > 0) {
             setSelectedColor(res.product.colors[0].name);
-            if (res.product.colors[0].image) {
-              setActiveColorImage(res.product.colors[0].image);
-            }
-          } else {
-            setSelectedColor('');
           }
 
           // Obfuscate URL in address bar if not already encoded
@@ -127,26 +116,31 @@ export function ProductDetailPage() {
     );
   }
 
-  // Multi-image gallery curation: strictly use authentic images provided by admin
-  const rawImages = Array.isArray(product.images) && product.images.length > 0
-    ? product.images.filter(Boolean)
-    : (product.image ? [product.image] : []);
+  // Multi-image gallery curation (ensuring 5-7 multi-angle views)
+  const baseImages = Array.isArray(product.images) && product.images.length > 0
+    ? product.images
+    : [product.image || 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1200&q=85'];
 
-  const images = rawImages;
+  const defaultComplementary = [
+    'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=1200&q=85'
+  ];
+
+  const images = baseImages.length >= 4
+    ? baseImages
+    : [...baseImages, ...defaultComplementary.slice(0, 6 - baseImages.length)];
 
   const isWishlisted = isInWishlist(product.id);
 
   const availableProductSizes = Array.isArray(product.sizes) && product.sizes.length > 0
     ? product.sizes
-    : [];
+    : ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   // Display the authentic configured sizes for this specific product
   const allDisplaySizes = availableProductSizes;
-
-  // Real-time stock status calculations (no fake 50 defaults)
-  const stockCount = Number(product.stock !== undefined && product.stock !== null ? product.stock : 0);
-  const isOutOfStock = stockCount <= 0;
-  const isLowStock = stockCount > 0 && stockCount <= 10;
 
   const handleAddToCart = () => {
     addToCart(product, selectedSize, selectedColor, quantity);
@@ -246,79 +240,57 @@ export function ProductDetailPage() {
         {/* Product Details Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-12 items-start">
           {/* Left Column: Side Mini Thumbnails Strip + Main Image Viewport (Always side-by-side & Screen Fit) */}
-          <div className="lg:col-span-7 flex flex-row gap-2 sm:gap-3 md:gap-4 items-stretch w-full lg:sticky lg:top-20 h-[62vh] sm:h-[70vh] lg:h-[calc(100vh-6.5rem)] max-h-[calc(100vh-6.5rem)] min-h-[350px]">
-            {/* 1. Vertical Side Thumbnail Gallery Strip (Rendered only when product has 2 or more images) */}
-            {images.length > 1 && (
-              <div
-                ref={thumbnailContainerRef}
-                className="flex flex-col gap-1.5 sm:gap-2 overflow-y-auto no-scrollbar shrink-0 w-12 sm:w-16 md:w-20 lg:w-24 h-full py-0.5"
-              >
-                {images.map((img, idx) => {
-                  const isActive = activeColorImage ? images[idx] === activeColorImage : selectedImage === idx;
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => {
-                        setSelectedImage(idx);
-                        setActiveColorImage(null);
-                      }}
-                      onMouseEnter={() => {
-                        setSelectedImage(idx);
-                        setActiveColorImage(null);
-                      }}
-                      className={`relative aspect-[3/4] w-full rounded-sm overflow-hidden border transition-all shrink-0 cursor-pointer bg-white ${isActive
-                          ? 'border-neutral-900 ring-2 ring-neutral-900/30 shadow-xs scale-102'
-                          : 'border-neutral-200 opacity-75 hover:opacity-100 hover:border-neutral-500'
-                        }`}
-                      aria-label={`Product thumbnail view ${idx + 1}`}
-                    >
-                      <img
-                        src={img}
-                        alt={`Thumbnail ${idx + 1}`}
-                        className="w-full h-full object-contain object-center p-0.5 bg-white"
-                        loading="lazy"
-                      />
-                      {isActive && (
-                        <span className="absolute inset-0 bg-neutral-900/5 pointer-events-none" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+          <div className="lg:col-span-7 flex flex-row gap-2 sm:gap-3 md:gap-4 items-stretch w-full h-[50vh] sm:h-[58vh] min-h-[320px] max-h-[430px] sm:max-h-[520px] lg:h-[620px] lg:max-h-[640px] lg:sticky lg:top-24">
+            {/* 1. Vertical Side Thumbnail Gallery Strip */}
+            <div
+              ref={thumbnailContainerRef}
+              className="flex flex-col gap-1.5 sm:gap-2 overflow-y-auto no-scrollbar shrink-0 w-12 sm:w-16 md:w-20 lg:w-24 h-full py-0.5"
+            >
+              {images.map((img, idx) => {
+                const isActive = selectedImage === idx;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setSelectedImage(idx)}
+                    onMouseEnter={() => setSelectedImage(idx)}
+                    className={`relative aspect-[3/4] w-full rounded-lg sm:rounded-xl overflow-hidden border transition-all shrink-0 cursor-pointer bg-neutral-100 ${isActive
+                        ? 'border-neutral-900 ring-2 ring-neutral-900/30 shadow-sm scale-102'
+                        : 'border-neutral-200/90 opacity-70 hover:opacity-100 hover:border-neutral-500'
+                      }`}
+                    aria-label={`Product thumbnail view ${idx + 1}`}
+                  >
+                    <img
+                      src={img}
+                      alt={`Thumbnail ${idx + 1}`}
+                      className="w-full h-full object-cover object-top"
+                      loading="lazy"
+                    />
+                    {isActive && (
+                      <span className="absolute inset-0 bg-neutral-900/10 pointer-events-none" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
             {/* 2. Main Big Image Canvas with Magnifier Zoom & Clean Screen Fit */}
-            {(() => {
-              const currentMainImage = activeColorImage || images[selectedImage] || images[0] || '';
-              return (
-                <div
-                  className={`relative flex-1 w-full h-full rounded-sm overflow-hidden bg-white border border-neutral-200/90 shadow-2xs group select-none flex items-center justify-center p-2 sm:p-3 ${
-                    currentMainImage ? 'cursor-crosshair' : ''
+            <div
+              className="relative flex-1 w-full h-full rounded-sm overflow-hidden bg-neutral-100 border border-neutral-200 shadow-2xs group select-none cursor-crosshair flex items-center justify-center"
+              onMouseEnter={() => setIsZoomed(true)}
+              onMouseLeave={() => setIsZoomed(false)}
+              onMouseMove={handleMouseMove}
+            >
+              <img
+                src={images[selectedImage]}
+                alt={product.title}
+                className={`w-full h-full object-cover object-top transition-transform duration-300 ${isZoomed ? 'scale-150 origin-[var(--zoom-x)_var(--zoom-y)]' : 'scale-100'
                   }`}
-                  onMouseEnter={() => { if (currentMainImage) setIsZoomed(true); }}
-                  onMouseLeave={() => setIsZoomed(false)}
-                  onMouseMove={handleMouseMove}
-                >
-                  {currentMainImage ? (
-                    <img
-                      src={currentMainImage}
-                      alt={product.title}
-                      className={`w-full h-full object-contain object-center transition-transform duration-300 ${
-                        isZoomed ? 'scale-160 origin-[var(--zoom-x)_var(--zoom-y)]' : 'scale-100'
-                      }`}
-                      style={{
-                        '--zoom-x': `${zoomPos.x}%`,
-                        '--zoom-y': `${zoomPos.y}%`
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-neutral-400 p-8 text-center bg-[#FDFBF7]">
-                      <ShoppingBag className="w-12 h-12 stroke-[1.5] mb-2 text-neutral-300" />
-                      <span className="text-xs font-semibold text-neutral-700">No Image Uploaded</span>
-                      <span className="text-[11px] text-neutral-400 mt-0.5">Product photo has not been added yet</span>
-                    </div>
-                  )}
+                style={{
+                  '--zoom-x': `${zoomPos.x}%`,
+                  '--zoom-y': `${zoomPos.y}%`
+                }}
+              />
 
               {/* Top-Right Wishlist Button */}
               <button
@@ -339,17 +311,13 @@ export function ProductDetailPage() {
                 </div>
               )}
 
-                  {/* Image Counter Pill (Only shown when multiple images exist and not viewing a custom color photo) */}
-                  {images.length > 1 && !activeColorImage && (
-                    <div className="absolute bottom-2.5 sm:bottom-4 right-2.5 sm:right-4 z-20">
-                      <span className="bg-black/60 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-mono font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-white/20 shadow-2xs">
-                        {selectedImage + 1} / {images.length}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
+              {/* Image Counter Pill */}
+              <div className="absolute bottom-2.5 sm:bottom-4 right-2.5 sm:right-4 z-20">
+                <span className="bg-black/60 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-mono font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-white/20 shadow-2xs">
+                  {selectedImage + 1} / {images.length}
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Right Column: Information, Specs, Size Selector, CTAs, Accordions (5 cols) */}
@@ -426,6 +394,10 @@ export function ProductDetailPage() {
 
             {/* 3. Real-Time Stock Availability Indicator */}
             {(() => {
+              const stockCount = Number(product.stock !== undefined ? product.stock : 50);
+              const isOutOfStock = stockCount <= 0;
+              const isLowStock = stockCount > 0 && stockCount <= 10;
+
               if (isOutOfStock) {
                 return (
                   <div className="p-4 bg-red-50/90 border border-red-200 rounded-sm flex items-start space-x-3 text-red-900 shadow-2xs">
@@ -482,172 +454,161 @@ export function ProductDetailPage() {
               </div>
             </div>
 
-            {/* 5. Color Selection (Supports dedicated image per color) */}
+            {/* 5. Color Selection */}
             {product.colors && product.colors.length > 0 && (
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="font-semibold text-neutral-800">Color:</span>
                   <span className="font-medium text-brand-maroon">{selectedColor}</span>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  {product.colors.map((c) => {
-                    const isSelected = selectedColor === c.name;
-                    return (
-                      <button
-                        key={c.name}
-                        type="button"
-                        onClick={() => {
-                          setSelectedColor(c.name);
-                          if (c.image) {
-                            setActiveColorImage(c.image);
-                          }
-                        }}
-                        title={c.name}
-                        className={`flex items-center space-x-2 px-3 py-1.5 rounded-sm border text-xs font-medium transition-all cursor-pointer ${isSelected
-                            ? 'border-neutral-900 bg-neutral-900/5 ring-1 ring-neutral-900 font-semibold'
-                            : 'border-neutral-200 bg-white hover:border-neutral-400'
-                          }`}
-                      >
-                        {c.image ? (
-                          <img
-                            src={c.image}
-                            alt={c.name}
-                            className="w-4 h-4 rounded-xs object-cover border border-neutral-300"
-                          />
-                        ) : (
-                          <span
-                            className="w-3.5 h-3.5 rounded-xs border border-neutral-300"
-                            style={{ backgroundColor: c.hex || '#000000' }}
-                          />
-                        )}
-                        <span>{c.name}</span>
-                      </button>
-                    );
-                  })}
+                <div className="flex items-center space-x-2">
+                  {product.colors.map((c) => (
+                    <button
+                      key={c.name}
+                      onClick={() => setSelectedColor(c.name)}
+                      title={c.name}
+                      className={`flex items-center space-x-2 px-3 py-1.5 rounded-sm border text-xs font-medium transition-all cursor-pointer ${selectedColor === c.name
+                          ? 'border-neutral-900 bg-neutral-900/5 ring-1 ring-neutral-900 font-semibold'
+                          : 'border-neutral-200 bg-white hover:border-neutral-400'
+                        }`}
+                    >
+                      <span className="w-3 h-3 rounded-xs border border-neutral-300" style={{ backgroundColor: c.hex }} />
+                      <span>{c.name}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* 6. Size Selector (All configured sizes are in stock when product has positive stock) */}
-            {availableProductSizes.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-neutral-800 tracking-wide uppercase">Select Size</span>
-                  {selectedSize && !isOutOfStock && (
-                    <span className="text-[11px] text-emerald-700 font-semibold flex items-center space-x-1">
-                      <span>✓</span>
-                      <span>In Stock</span>
-                    </span>
-                  )}
-                </div>
+            {/* 6. Size Selector */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-neutral-800 tracking-wide uppercase">Select Size</span>
+              </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  {availableProductSizes.map((sz) => {
-                    const isAvailable = !isOutOfStock;
-                    const isSelected = selectedSize === sz;
+              <div className="flex flex-wrap items-center gap-2">
+                {allDisplaySizes.map((sz) => {
+                  const stockNum = Number(product.stock !== undefined ? product.stock : 50);
+                  const isAvailable = availableProductSizes.includes(sz) && stockNum > 0;
+                  const isSelected = selectedSize === sz;
 
-                    if (!isAvailable) {
-                      return (
-                        <button
-                          key={sz}
-                          type="button"
-                          disabled
-                          title="Out of Stock"
-                          className="min-w-[44px] h-9 px-3 rounded-sm border border-neutral-200 bg-neutral-100/60 text-neutral-400 text-xs font-medium line-through cursor-not-allowed select-none"
-                        >
-                          {sz}
-                        </button>
-                      );
-                    }
-
+                  if (!isAvailable) {
                     return (
                       <button
                         key={sz}
                         type="button"
-                        onClick={() => setSelectedSize(sz)}
-                        className={`min-w-[44px] h-9 px-3 rounded-sm text-xs font-semibold transition-all cursor-pointer border ${isSelected
-                            ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs ring-1 ring-neutral-900'
-                            : 'bg-white text-neutral-800 border-neutral-300 hover:border-neutral-800'
-                          }`}
+                        disabled
+                        title="Out of Stock in this size"
+                        className="min-w-[44px] h-9 px-3 rounded-sm border border-neutral-200 bg-neutral-100/60 text-neutral-400 text-xs font-medium line-through cursor-not-allowed select-none"
                       >
                         {sz}
                       </button>
                     );
-                  })}
-                </div>
+                  }
 
-                {/* Tape measure Size Chart Link */}
-                <button
-                  type="button"
-                  onClick={() => setShowSizeGuide(true)}
-                  className="flex items-center space-x-1.5 text-xs text-neutral-800 hover:text-black font-medium underline underline-offset-4 cursor-pointer pt-1"
-                >
-                  <Ruler className="w-4 h-4" />
-                  <span>Size Chart</span>
-                </button>
+                  return (
+                    <button
+                      key={sz}
+                      type="button"
+                      onClick={() => setSelectedSize(sz)}
+                      className={`min-w-[44px] h-9 px-3 rounded-sm text-xs font-semibold transition-all cursor-pointer border ${isSelected
+                          ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs'
+                          : 'bg-white text-neutral-800 border-neutral-300 hover:border-neutral-800'
+                        }`}
+                    >
+                      {sz}
+                    </button>
+                  );
+                })}
               </div>
-            )}
 
-            {/* 7. Quantity Stepper */}
-            <div className="flex items-center space-x-4 pt-1">
-              <span className="text-xs font-semibold text-neutral-800 uppercase">Quantity:</span>
-              <div className="flex items-center border border-neutral-300 rounded-sm bg-white overflow-hidden">
-                <button
-                  disabled={isOutOfStock || quantity <= 1}
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 font-bold transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  -
-                </button>
-                <span className="px-4 text-xs font-bold text-neutral-900 min-w-[28px] text-center">{isOutOfStock ? 0 : quantity}</span>
-                <button
-                  disabled={isOutOfStock || quantity >= stockCount}
-                  onClick={() => setQuantity(Math.min(stockCount, quantity + 1))}
-                  className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 font-bold transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  +
-                </button>
-              </div>
-              <span className={`text-xs font-medium ${isOutOfStock ? 'text-red-600' : 'text-emerald-700'}`}>
-                {isOutOfStock ? 'Item Sold Out' : 'Ready for immediate dispatch'}
-              </span>
+              {/* Tape measure Size Chart Link */}
+              <button
+                type="button"
+                onClick={() => setShowSizeGuide(true)}
+                className="flex items-center space-x-1.5 text-xs text-neutral-800 hover:text-black font-medium underline underline-offset-4 cursor-pointer pt-1"
+              >
+                <Ruler className="w-4 h-4" />
+                <span>Size Chart</span>
+              </button>
             </div>
 
-            {/* 8. Action Buttons (Clean editorial luxury buttons) */}
-            {isOutOfStock ? (
-              <div className="pt-2">
-                <button
-                  type="button"
-                  disabled
-                  className="w-full py-3.5 px-6 rounded-sm border border-neutral-300 bg-neutral-200 text-neutral-500 font-bold text-xs uppercase tracking-widest cursor-not-allowed flex items-center justify-center space-x-2"
-                >
-                  <XCircle className="w-4 h-4 text-red-500" />
-                  <span>OUT OF STOCK / SOLD OUT</span>
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={handleAddToCart}
-                  className="w-full py-3.5 px-6 rounded-sm border border-neutral-900 bg-white hover:bg-neutral-900 text-neutral-900 hover:text-white font-semibold text-xs uppercase tracking-widest transition-all duration-200 shadow-2xs hover:shadow-sm cursor-pointer flex items-center justify-center"
-                >
-                  {addedAnimation ? (
-                    <span>Added to Bag</span>
-                  ) : (
-                    <span>ADD TO CART</span>
-                  )}
-                </button>
+            {/* 7. Quantity Stepper */}
+            {(() => {
+              const stockNum = Number(product.stock !== undefined ? product.stock : 50);
+              const isOut = stockNum <= 0;
 
-                <button
-                  type="button"
-                  onClick={handleBuyNow}
-                  className="w-full py-3.5 px-6 rounded-sm bg-neutral-900 hover:bg-neutral-800 active:scale-98 text-white font-semibold text-xs uppercase tracking-widest transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer flex items-center justify-center"
-                >
-                  <span>BUY NOW</span>
-                </button>
-              </div>
-            )}
+              return (
+                <div className="flex items-center space-x-4 pt-1">
+                  <span className="text-xs font-semibold text-neutral-800 uppercase">Quantity:</span>
+                  <div className="flex items-center border border-neutral-300 rounded-sm bg-white overflow-hidden">
+                    <button
+                      disabled={isOut || quantity <= 1}
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 font-bold transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      -
+                    </button>
+                    <span className="px-4 text-xs font-bold text-neutral-900 min-w-[28px] text-center">{isOut ? 0 : quantity}</span>
+                    <button
+                      disabled={isOut || quantity >= stockNum}
+                      onClick={() => setQuantity(Math.min(stockNum, quantity + 1))}
+                      className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 font-bold transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span className={`text-xs font-medium ${isOut ? 'text-red-600' : 'text-emerald-700'}`}>
+                    {isOut ? 'Item Sold Out' : 'Ready for immediate dispatch'}
+                  </span>
+                </div>
+              );
+            })()}
+
+            {/* 8. Action Buttons (Clean editorial luxury buttons) */}
+            {(() => {
+              const stockNum = Number(product.stock !== undefined ? product.stock : 50);
+              const isOut = stockNum <= 0;
+
+              if (isOut) {
+                return (
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      disabled
+                      className="w-full py-3.5 px-6 rounded-sm border border-neutral-300 bg-neutral-200 text-neutral-500 font-bold text-xs uppercase tracking-widest cursor-not-allowed flex items-center justify-center space-x-2"
+                    >
+                      <XCircle className="w-4 h-4 text-red-500" />
+                      <span>OUT OF STOCK / SOLD OUT</span>
+                    </button>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="w-full py-3.5 px-6 rounded-sm border border-neutral-900 bg-white hover:bg-neutral-900 text-neutral-900 hover:text-white font-semibold text-xs uppercase tracking-widest transition-all duration-200 shadow-2xs hover:shadow-sm cursor-pointer flex items-center justify-center"
+                  >
+                    {addedAnimation ? (
+                      <span>Added to Bag</span>
+                    ) : (
+                      <span>ADD TO CART</span>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleBuyNow}
+                    className="w-full py-3.5 px-6 rounded-sm bg-neutral-900 hover:bg-neutral-800 active:scale-98 text-white font-semibold text-xs uppercase tracking-widest transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer flex items-center justify-center"
+                  >
+                    <span>BUY NOW</span>
+                  </button>
+                </div>
+              );
+            })()}
 
             {/* 8. Accordion Sections (Matching Reference: DESCRIPTION, PRODUCT CARE, SPECIFICATIONS, SHIPPING & RETURNS) */}
             <div className="border-t border-neutral-300/80 divide-y divide-neutral-200/90 pt-1">
@@ -666,17 +627,16 @@ export function ProductDetailPage() {
                   )}
                 </button>
                 {openAccordions.description && (
-                  <div className="mt-3 text-xs text-neutral-700 leading-relaxed space-y-2 animate-fadeIn whitespace-pre-line">
-                    {product.description ? (
-                      <p>{product.description}</p>
-                    ) : product.short_description ? (
-                      <p>{product.short_description}</p>
-                    ) : (
-                      <p className="text-neutral-500 italic">No description provided for this product.</p>
+                  <div className="mt-3 text-xs text-neutral-600 leading-relaxed space-y-2.5 animate-fadeIn">
+                    <p>{product.description}</p>
+                    {product.short_description && product.short_description !== product.description && (
+                      <p className="text-neutral-500">{product.short_description}</p>
                     )}
-                    {product.short_description && product.description && product.short_description !== product.description && (
-                      <p className="text-neutral-500 pt-1">{product.short_description}</p>
-                    )}
+                    <ul className="list-disc list-inside space-y-1 text-neutral-600 pt-1">
+                      <li>Artisan handcrafted silhouette with heritage embroidery techniques.</li>
+                      <li>Includes matching luxury dupatta and tailored bottom trousers/sharara.</li>
+                      <li>Breathable inner mulmul lining for supreme festive comfort.</li>
+                    </ul>
                   </div>
                 )}
               </div>
@@ -697,18 +657,18 @@ export function ProductDetailPage() {
                 </button>
                 {openAccordions.care && (
                   <div className="mt-3 text-xs text-neutral-600 leading-relaxed space-y-2 animate-fadeIn">
-                    <p>To maintain the quality, weave, and longevity of this piece:</p>
+                    <p>To maintain the sheen, intricate zari work, and delicate weaves of this luxury garment:</p>
                     <ul className="list-disc list-inside space-y-1 text-neutral-600">
-                      <li><strong>Professional Care:</strong> Professional dry clean recommended for best results.</li>
-                      <li><strong>Storage:</strong> Store wrapped in a breathable muslin or cotton bag in a dry space.</li>
-                      <li><strong>Ironing:</strong> Steam iron on reverse at low temperature.</li>
-                      <li><strong>Protection:</strong> Avoid spraying perfumes or deodorants directly onto fabric or trims.</li>
+                      <li><strong>Dry Clean Only:</strong> We recommend professional dry clean for best longevity.</li>
+                      <li><strong>Storage:</strong> Store wrapped in pure breathable muslin or cotton cloth.</li>
+                      <li><strong>Ironing:</strong> Steam iron on reverse at low-to-medium heat; avoid direct contact on zari.</li>
+                      <li><strong>Perfumes:</strong> Avoid spraying perfumes or deodorants directly onto embroidery or fabric.</li>
                     </ul>
                   </div>
                 )}
               </div>
 
-              {/* Accordion 3: SPECIFICATIONS (Strictly data entered by admin) */}
+              {/* Accordion 3: SPECIFICATIONS */}
               <div className="py-4">
                 <button
                   type="button"
@@ -723,36 +683,13 @@ export function ProductDetailPage() {
                   )}
                 </button>
                 {openAccordions.specifications && (
-                  <div className="mt-3 animate-fadeIn bg-white p-4 rounded-sm border border-neutral-200">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-neutral-700">
-                      {(product.category_title || product.category_slug) && (
-                        <div><strong className="text-neutral-900">Category:</strong> {product.category_title || product.category_slug.replace(/-/g, ' ')}</div>
-                      )}
-                      {product.sub_category && (
-                        <div><strong className="text-neutral-900">Sub-Category:</strong> {product.sub_category}</div>
-                      )}
-                      {product.fabric && (
-                        <div><strong className="text-neutral-900">Fabric:</strong> {product.fabric}</div>
-                      )}
-                      {product.occasion && (
-                        <div><strong className="text-neutral-900">Occasion:</strong> {product.occasion}</div>
-                      )}
-                      {product.sku && (
-                        <div><strong className="text-neutral-900">SKU:</strong> {product.sku}</div>
-                      )}
-                      {availableProductSizes.length > 0 && (
-                        <div><strong className="text-neutral-900">Available Sizes:</strong> {availableProductSizes.join(', ')}</div>
-                      )}
-                      {product.colors && product.colors.length > 0 && (
-                        <div><strong className="text-neutral-900">Colors:</strong> {product.colors.map(c => c.name).join(', ')}</div>
-                      )}
-                      <div>
-                        <strong className="text-neutral-900">Availability:</strong>{' '}
-                        <span className={!isOutOfStock ? 'text-emerald-700 font-semibold' : 'text-red-600 font-semibold'}>
-                          {!isOutOfStock ? `In Stock (${stockCount} units)` : 'Out of Stock'}
-                        </span>
-                      </div>
-                    </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-neutral-700 animate-fadeIn bg-white p-4 rounded-xl border border-neutral-200/70">
+                    <div><strong className="text-neutral-900">Fabric:</strong> {product.fabric || 'Pure Georgette & Silk'}</div>
+                    <div><strong className="text-neutral-900">Occasion:</strong> {product.occasion || 'Wedding, Festive, Reception'}</div>
+                    <div><strong className="text-neutral-900">SKU:</strong> {product.sku || 'OCT9-LUX-2026'}</div>
+                    <div><strong className="text-neutral-900">Work Type:</strong> Hand Zardozi, Tilla & Sequins</div>
+                    <div><strong className="text-neutral-900">Neckline:</strong> Sweetheart / V-Notch Neck</div>
+                    <div><strong className="text-neutral-900">Sleeve Length:</strong> Elbow / Full Sleeves</div>
                   </div>
                 )}
               </div>

@@ -28,18 +28,12 @@ import { SEO } from '../components/common/SEO.jsx';
 import { useContent } from '../context/ContentContext.jsx';
 import { api } from '../services/api.js';
 
-export function ListingPage({ defaultCategory = null, isNewArrivals = false, isBestsellers = false, isOnSale = false }) {
+export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   const { categorySlug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { getPageAvailability } = useContent();
 
-  const currentCategory = isNewArrivals
-    ? 'new-arrivals'
-    : isBestsellers
-    ? 'bestsellers'
-    : isOnSale
-    ? 'on-sale'
-    : (categorySlug || defaultCategory || 'all');
+  const currentCategory = isNewArrivals ? 'new-arrivals' : (categorySlug || defaultCategory || 'all');
   const pageAvailability = getPageAvailability(currentCategory);
   const searchParam = searchParams.get('search') || '';
   const subCategoryParam = searchParams.get('sub_category') || '';
@@ -84,9 +78,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false, isB
   const isStitchedSuits = currentCategory === 'stitched-suits' || currentCategory === 'suits';
   const isUnstitchedSuits = currentCategory === 'unstitched-suits';
   const isNewArrivalsPage = isNewArrivals || currentCategory === 'new-arrivals';
-  const isBestsellersPage = isBestsellers || currentCategory === 'bestsellers';
-  const isOnSalePage = isOnSale || currentCategory === 'on-sale' || currentCategory === 'sale';
-  const isSalwarSets = currentCategory === 'salwar-sets';
   const isPartyWear = currentCategory === 'party-wear';
   const isFestiveWear = currentCategory === 'festive-wear';
   const isAccessories = currentCategory === 'accessories';
@@ -302,63 +293,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false, isB
       };
     }
 
-    if (isSalwarSets) {
-      return {
-        title: 'Salwar Sets',
-        heading: 'Salwar Sets',
-        tagline: 'AUTHENTIC ETHNIC SETS',
-        description: 'Graceful salwar kameez, palazzo suits, and kurti sets designed with artisanal charm.',
-        heroImage: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1200&q=85',
-        badges: ['Authentic Tailoring', 'Pure Fabrics', 'Everyday & Festive Ready'],
-        theme: 'cream_luxury',
-        typeFilterTitle: 'Set Style',
-        typeOptions: ['Salwar Kameez', 'Straight Kurta Sets', 'Palazzo Suits', 'Sharara Sets', 'Anarkali Sets'],
-        sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-        fabricOptions: ['Pure Cotton', 'Chanderi', 'Georgette', 'Mulberry Silk', 'Modal Silk'],
-        occasionOptions: ['Daily Wear', 'Festive', 'Office Wear', 'Party Wear'],
-        priceMin: 999,
-        priceMax: 9999
-      };
-    }
-
-    if (isBestsellersPage) {
-      return {
-        title: 'Bestsellers',
-        heading: 'Bestseller Collection',
-        tagline: 'CUSTOMER FAVORITES',
-        description: 'Our most-loved silhouettes, trending ensembles, and client-cherished ethnic wear.',
-        heroImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
-        badges: ['Top Rated', 'Verified Reviews', 'High Demand'],
-        theme: 'maroon_gold',
-        typeFilterTitle: 'Category',
-        typeOptions: ['Stitched Suits', 'Designer Suits', 'Sarees', 'Party Wear', 'Salwar Sets'],
-        sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-        fabricOptions: ['Georgette', 'Silk', 'Chanderi', 'Cotton', 'Velvet'],
-        occasionOptions: ['Wedding', 'Festive', 'Party Wear', 'Celebration'],
-        priceMin: 999,
-        priceMax: 15000
-      };
-    }
-
-    if (isOnSalePage) {
-      return {
-        title: 'On Sale',
-        heading: 'Special Offers & Sale',
-        tagline: 'LIMITED TIME VALUE',
-        description: 'Special seasonal price drops and limited festive promotions on artisanal ethnic pret.',
-        heroImage: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=1200&q=85',
-        badges: ['Special Savings', 'Instant Dispatch', '100% Genuine'],
-        theme: 'cream_luxury',
-        typeFilterTitle: 'Category',
-        typeOptions: ['Stitched Suits', 'Unstitched Suits', 'Sarees', 'Salwar Sets'],
-        sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-        fabricOptions: ['Cotton', 'Silk', 'Georgette', 'Chanderi'],
-        occasionOptions: ['Daily Wear', 'Festive', 'Casual', 'Party Wear'],
-        priceMin: 799,
-        priceMax: 9999
-      };
-    }
-
     // Default fallback
     return {
       title: currentCategory.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
@@ -407,12 +341,9 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false, isB
     try {
       const page = searchParams.get('page') || 1;
       const effectiveMaxPrice = maxPriceParam ? Number(maxPriceParam) : (priceRange < 15000 ? priceRange : undefined);
-      const isCollectionPage = currentCategory === 'all' || currentCategory === 'new-arrivals' || currentCategory === 'bestsellers' || currentCategory === 'on-sale';
       const params = {
-        category: isCollectionPage ? undefined : currentCategory,
+        category: currentCategory === 'all' || currentCategory === 'new-arrivals' ? undefined : currentCategory,
         new_arrival: isNewArrivalsPage ? 'true' : undefined,
-        bestseller: isBestsellersPage ? 'true' : undefined,
-        discount: isOnSalePage ? 'true' : (selectedDiscount || undefined),
         featured: (featuredParam === 'true' || featuredParam === '1') ? 'true' : undefined,
         sub_category: selectedTypes.length > 0 ? selectedTypes.join(',') : (subCategoryParam || undefined),
         search: searchParam || undefined,

@@ -24,9 +24,13 @@ import {
   Mail,
   MessageCircle,
   MapPin,
-  Search
+  Search,
+  ArrowUp,
+  ArrowDown,
+  EyeOff,
+  GripVertical
 } from 'lucide-react';
-import { useContent, DEFAULT_SITE_CONTENT } from '../../context/ContentContext.jsx';
+import { useContent, DEFAULT_SITE_CONTENT, DEFAULT_HOMEPAGE_SECTIONS } from '../../context/ContentContext.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { api } from '../../services/api.js';
 import { ImageUploader } from '../../components/common/ImageUploader.jsx';
@@ -458,12 +462,59 @@ export function AdminContentManager() {
     updatePageData(pageKey, 'sections', updated);
   };
 
+  // Homepage Section Rearrangement Helpers
+  const [draggedSectionIndex, setDraggedSectionIndex] = useState(null);
+
+  const handleMoveSection = (index, direction) => {
+    const list = [...(formData.homepage_sections || DEFAULT_HOMEPAGE_SECTIONS)];
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIndex];
+    list[targetIndex] = temp;
+    setFormData((prev) => ({ ...prev, homepage_sections: list }));
+  };
+
+  const handleToggleSection = (index) => {
+    const list = [...(formData.homepage_sections || DEFAULT_HOMEPAGE_SECTIONS)];
+    list[index] = { ...list[index], enabled: list[index].enabled === false ? true : false };
+    setFormData((prev) => ({ ...prev, homepage_sections: list }));
+  };
+
+  const handleResetSectionOrder = () => {
+    if (window.confirm('Reset homepage sections to their default arrangement?')) {
+      setFormData((prev) => ({ ...prev, homepage_sections: DEFAULT_HOMEPAGE_SECTIONS }));
+      showToast('Section arrangement reset to default. Click "Save Changes" to apply.', 'success');
+    }
+  };
+
+  const handleDragStart = (e, index) => {
+    setDraggedSectionIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e, targetIndex) => {
+    e.preventDefault();
+    if (draggedSectionIndex === null || draggedSectionIndex === targetIndex) return;
+    const list = [...(formData.homepage_sections || DEFAULT_HOMEPAGE_SECTIONS)];
+    const [moved] = list.splice(draggedSectionIndex, 1);
+    list.splice(targetIndex, 0, moved);
+    setFormData((prev) => ({ ...prev, homepage_sections: list }));
+    setDraggedSectionIndex(null);
+  };
+
   const tabs = [
     { id: 'page_availability', label: 'Page Availability' },
-    { id: 'policy_pages', label: 'Policy & Customer Care Pages' },
+    { id: 'section_order', label: 'Arrange Sections' },
+    { id: 'homepage_sections', label: 'Section Headings' },
     { id: 'hero_slides', label: 'Hero Slideshow Banners' },
     { id: 'jharokha', label: 'Category Arches' },
-    { id: 'homepage_sections', label: 'Sections & Headings' },
+    { id: 'policy_pages', label: 'Policy & Customer Care Pages' },
     { id: 'brand_footer', label: 'Brand Info & Footer' }
   ];
 
@@ -1106,10 +1157,176 @@ export function AdminContentManager() {
       )}
 
       {/* ========================================================================= */}
+      {/* TAB: HOMEPAGE SECTION REARRANGEMENT */}
+      {/* ========================================================================= */}
+      {activeTab === 'section_order' && (
+        <div className="space-y-6">
+          <div className="bg-white p-5 rounded-md border border-neutral-200 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-neutral-200">
+              <div>
+                <h2 className="font-sans text-base font-bold text-neutral-900 tracking-wide">
+                  Homepage Section Layout &amp; Display Order
+                </h2>
+                <p className="text-xs text-neutral-500 mt-0.5">
+                  Drag sections or use the Up/Down buttons to reorder how sections appear from top to bottom on the storefront homepage. Toggle the eye button to show or hide a section.
+                </p>
+              </div>
+              <div className="flex items-center space-x-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleResetSectionOrder}
+                  className="px-3 py-1.5 border border-neutral-300 hover:bg-neutral-50 text-neutral-700 text-xs font-medium rounded-sm transition-colors cursor-pointer flex items-center space-x-1"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Reset Order</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="px-4 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold rounded-sm transition-colors cursor-pointer flex items-center space-x-1.5 disabled:opacity-50"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Reorderable Sections List */}
+            <div className="space-y-2.5">
+              {(formData.homepage_sections || DEFAULT_HOMEPAGE_SECTIONS).map((section, idx, arr) => (
+                <div
+                  key={section.id}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, idx)}
+                  onDragOver={(e) => handleDragOver(e, idx)}
+                  onDrop={(e) => handleDrop(e, idx)}
+                  className={`flex items-center justify-between p-3.5 sm:p-4 rounded-sm border transition-all ${
+                    section.enabled !== false
+                      ? 'bg-white border-neutral-200 hover:border-neutral-300 shadow-2xs'
+                      : 'bg-neutral-50 border-neutral-200 opacity-70'
+                  }`}
+                >
+                  {/* Left: Drag Handle + Position Badge + Title + Description */}
+                  <div className="flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1">
+                    <div
+                      className="cursor-grab active:cursor-grabbing text-neutral-400 hover:text-neutral-700 p-1 shrink-0"
+                      title="Drag to reorder"
+                    >
+                      <GripVertical className="w-4 h-4" />
+                    </div>
+
+                    <div className="w-7 h-7 rounded-sm bg-neutral-100 border border-neutral-200 text-neutral-700 font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                      {idx + 1}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-semibold text-xs sm:text-sm text-neutral-900">
+                          {section.name}
+                        </span>
+                        {section.enabled !== false ? (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Active
+                          </span>
+                        ) : (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-neutral-200 text-neutral-600">
+                            Hidden
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-neutral-500 truncate mt-0.5">
+                        {section.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right: Controls (Visibility Toggle + Move Up + Move Down) */}
+                  <div className="flex items-center space-x-1 sm:space-x-2 shrink-0 ml-3">
+                    {/* Toggle Visibility */}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleSection(idx)}
+                      className={`p-2 rounded-sm border text-xs font-medium cursor-pointer transition-colors ${
+                        section.enabled !== false
+                          ? 'border-neutral-300 text-neutral-700 hover:bg-neutral-100'
+                          : 'border-neutral-300 bg-neutral-100 text-neutral-400 hover:text-neutral-700'
+                      }`}
+                      title={section.enabled !== false ? 'Hide section from homepage' : 'Show section on homepage'}
+                      aria-label="Toggle section visibility"
+                    >
+                      {section.enabled !== false ? (
+                        <Eye className="w-4 h-4 text-emerald-600" />
+                      ) : (
+                        <EyeOff className="w-4 h-4 text-neutral-400" />
+                      )}
+                    </button>
+
+                    {/* Move Up */}
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      onClick={() => handleMoveSection(idx, -1)}
+                      className="p-2 rounded-sm border border-neutral-300 text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                      title="Move up"
+                      aria-label="Move section up"
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                    </button>
+
+                    {/* Move Down */}
+                    <button
+                      type="button"
+                      disabled={idx === arr.length - 1}
+                      onClick={() => handleMoveSection(idx, 1)}
+                      className="p-2 rounded-sm border border-neutral-300 text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                      title="Move down"
+                      aria-label="Move section down"
+                    >
+                      <ArrowDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Helpful Hint */}
+            <div className="p-3 bg-[#FAF7F2] rounded-sm border border-[#EFE8DC] text-xs text-neutral-600 flex items-center justify-between">
+              <span>
+                💡 Changes reflect immediately on the storefront homepage after saving.
+              </span>
+              <a
+                href="/"
+                target="_blank"
+                rel="noreferrer"
+                className="text-brand-maroon font-semibold hover:underline flex items-center space-x-1"
+              >
+                <span>Preview Storefront</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
       {/* TAB 4: HOMEPAGE SECTIONS & FIXED TEXTS */}
       {/* ========================================================================= */}
       {activeTab === 'homepage_sections' && (
         <div className="space-y-8">
+          {/* Quick banner linking to section rearrangement */}
+          <div className="p-3.5 bg-neutral-50 rounded-sm border border-neutral-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs">
+            <span className="text-neutral-700">
+              Looking to change the <strong>order</strong> of sections on the homepage? Use the <strong>Arrange Sections</strong> tab.
+            </span>
+            <button
+              type="button"
+              onClick={() => setActiveTab('section_order')}
+              className="px-3 py-1 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-sm text-xs shrink-0 cursor-pointer"
+            >
+              Go to Arrange Sections &rarr;
+            </button>
+          </div>
           {/* Section 0: Category Arches (Jharokha) Section Heading */}
           <div className="bg-white rounded-sm border border-neutral-200 p-6 space-y-4 shadow-xs">
             <div className="border-b border-neutral-200 pb-3 flex items-center justify-between">

@@ -9,8 +9,12 @@ import { AdornedJewelsSection } from '../components/home/AdornedJewelsSection.js
 import { BentoMosaicSection } from '../components/home/BentoMosaicSection.jsx';
 import { api } from '../services/api.js';
 import { useScrollReveal } from '../hooks/useScrollReveal.js';
+import { useContent } from '../context/ContentContext.jsx';
 
 export function HomePage() {
+  const { getHomepageSections } = useContent();
+  const sections = getHomepageSections();
+
   const [newArrivals, setNewArrivals] = useState([]);
   const [brandPicks, setBrandPicks] = useState([]);
   const [jewels, setJewels] = useState([]);
@@ -44,6 +48,41 @@ export function HomePage() {
     fetchData();
   }, []);
 
+  // Section renderers indexed by section id
+  const sectionRenderers = {
+    hero: () => <HeroSlideshow key="hero" />,
+    categories: () => (
+      <div key="categories" ref={categoriesRef}>
+        <JharokhaCategories />
+      </div>
+    ),
+    new_arrivals: () => (
+      <div key="new_arrivals" ref={arrivalsRef}>
+        <NewArrivalsSection products={newArrivals} loading={loading} />
+      </div>
+    ),
+    brand_picks: () => (
+      <div key="brand_picks" ref={picksRef}>
+        <BrandPicksSection products={brandPicks} loading={loading} />
+      </div>
+    ),
+    inside_brand: () => (
+      <div key="inside_brand" ref={brandRef}>
+        <InsideBrandSection />
+      </div>
+    ),
+    adorned_jewels: () => (
+      <div key="adorned_jewels" ref={jewelsRef}>
+        <AdornedJewelsSection products={jewels} loading={loading} />
+      </div>
+    ),
+    bento_mosaic: () => (
+      <div key="bento_mosaic" ref={mosaicRef}>
+        <BentoMosaicSection />
+      </div>
+    )
+  };
+
   return (
     <div className="space-y-12 sm:space-y-16 pb-16">
       <SEO
@@ -54,38 +93,13 @@ export function HomePage() {
       {/* Semantic Top-Level H1 Heading for Accessibility & SEO */}
       <h1 className="sr-only">OCT9 - Women's Ethnic Wear & Fashion Collection</h1>
 
-      {/* 1. Hero Slideshow Section */}
-      <HeroSlideshow />
-
-      {/* 2. Shop by Category */}
-      <div ref={categoriesRef}>
-        <JharokhaCategories />
-      </div>
-
-      {/* 3. New Arrivals Showcase */}
-      <div ref={arrivalsRef}>
-        <NewArrivalsSection products={newArrivals} loading={loading} />
-      </div>
-
-      {/* 4. Featured Picks Showcase */}
-      <div ref={picksRef}>
-        <BrandPicksSection products={brandPicks} loading={loading} />
-      </div>
-
-      {/* 5. About Brand Section */}
-      <div ref={brandRef}>
-        <InsideBrandSection />
-      </div>
-
-      {/* 6. Jewellery & Accessories Section */}
-      <div ref={jewelsRef}>
-        <AdornedJewelsSection products={jewels} loading={loading} />
-      </div>
-
-      {/* 7. Category & Budget Mosaic */}
-      <div ref={mosaicRef}>
-        <BentoMosaicSection />
-      </div>
+      {/* Admin Rearrangeable Homepage Sections */}
+      {sections
+        .filter((sec) => sec.enabled !== false)
+        .map((sec) => {
+          const renderSection = sectionRenderers[sec.id];
+          return renderSection ? renderSection() : null;
+        })}
     </div>
   );
 }

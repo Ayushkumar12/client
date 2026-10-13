@@ -3,7 +3,53 @@ import { api } from '../services/api.js';
 
 const ContentContext = createContext(null);
 
+export const DEFAULT_HOMEPAGE_SECTIONS = [
+  {
+    id: 'hero',
+    name: 'Hero Slideshow',
+    description: 'Full-width luxury banner carousel with seasonal campaigns and CTAs',
+    enabled: true
+  },
+  {
+    id: 'categories',
+    name: 'Shop by Category (Jharokha Arches)',
+    description: 'Royal Mughal arch category medallions with auto-scroll',
+    enabled: true
+  },
+  {
+    id: 'new_arrivals',
+    name: 'New Arrivals Showcase',
+    description: 'Curated 8 latest seasonal pieces with quick-view and pricing',
+    enabled: true
+  },
+  {
+    id: 'brand_picks',
+    name: 'Curated Edit (Brand Picks)',
+    description: 'Featured signature styles handpicked by brand stylists',
+    enabled: true
+  },
+  {
+    id: 'inside_brand',
+    name: 'Inside OCT9 (Brand Story & Craft)',
+    description: 'Heritage atelier story, artisanal philosophy and 3 architectural arches',
+    enabled: true
+  },
+  {
+    id: 'adorned_jewels',
+    name: 'Adorned Jewels (Jewellery & Zewar)',
+    description: 'Handcrafted Kundan, Polki, and statement accessory treasures',
+    enabled: true
+  },
+  {
+    id: 'bento_mosaic',
+    name: 'Shop by Budget & Category (Mosaic)',
+    description: 'Bento-style mosaic grid showcasing price tiers and ready silhouettes',
+    enabled: true
+  }
+];
+
 export const DEFAULT_SITE_CONTENT = {
+  homepage_sections: DEFAULT_HOMEPAGE_SECTIONS,
   brand: {
     name: 'OCT9',
     tagline: 'Luxury Without Noise',
@@ -651,6 +697,9 @@ export function ContentProvider({ children }) {
           ...DEFAULT_SITE_CONTENT,
           ...data.content,
           brand: { ...DEFAULT_SITE_CONTENT.brand, ...(data.content.brand || {}) },
+          homepage_sections: Array.isArray(data.content.homepage_sections) && data.content.homepage_sections.length > 0
+            ? data.content.homepage_sections
+            : (prev.homepage_sections || DEFAULT_HOMEPAGE_SECTIONS),
           sections: { ...DEFAULT_SITE_CONTENT.sections, ...(data.content.sections || {}) },
           cookie_banner: { ...DEFAULT_SITE_CONTENT.cookie_banner, ...(data.content.cookie_banner || {}) },
           business_details: { ...DEFAULT_SITE_CONTENT.business_details, ...(data.content.business_details || {}) },
@@ -791,6 +840,25 @@ export function ContentProvider({ children }) {
     return content.cookie_banner || DEFAULT_SITE_CONTENT.cookie_banner;
   };
 
+  // Helper: Get Ordered Homepage Sections
+  const getHomepageSections = () => {
+    const saved = content.homepage_sections || DEFAULT_SITE_CONTENT.homepage_sections || DEFAULT_HOMEPAGE_SECTIONS;
+    if (!Array.isArray(saved) || saved.length === 0) {
+      return DEFAULT_HOMEPAGE_SECTIONS;
+    }
+    
+    // Ensure all default sections exist even if saved list is missing some
+    const existingIds = new Set(saved.map((s) => s.id));
+    const merged = [...saved];
+    DEFAULT_HOMEPAGE_SECTIONS.forEach((defaultSec) => {
+      if (!existingIds.has(defaultSec.id)) {
+        merged.push(defaultSec);
+      }
+    });
+
+    return merged;
+  };
+
   const value = {
     content,
     loading,
@@ -807,7 +875,9 @@ export function ContentProvider({ children }) {
     getJharokhaCategories,
     getPillars,
     getBusinessDetails,
-    getCookieBanner
+    getCookieBanner,
+    getHomepageSections,
+    DEFAULT_HOMEPAGE_SECTIONS
   };
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;

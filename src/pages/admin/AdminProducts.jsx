@@ -28,13 +28,15 @@ export function AdminProducts() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const [customSizeInput, setCustomSizeInput] = useState('');
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     short_description: '',
     price: '',
     original_price: '',
-    category_slug: 'suits',
+    category_slug: 'stitched-suits',
     sub_category: 'Anarkali Suits',
     fabric: 'Georgette',
     occasion: 'Wedding',
@@ -45,7 +47,7 @@ export function AdminProducts() {
     is_bestseller: false,
     sections: [],
     images: ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=85'],
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: [{ name: 'Royal Blue', hex: '#1E3A8A' }]
   });
 
@@ -72,7 +74,6 @@ export function AdminProducts() {
     { key: 'section_trending', label: 'Trending Now' },
   ];
 
-
   useEffect(() => {
     fetchProducts();
   }, [selectedCategory]);
@@ -91,8 +92,48 @@ export function AdminProducts() {
     }
   };
 
+  // Size management helpers
+  const toggleSize = (sz) => {
+    const current = formData.sizes || [];
+    if (current.includes(sz)) {
+      setFormData(prev => ({ ...prev, sizes: prev.sizes.filter(s => s !== sz) }));
+    } else {
+      setFormData(prev => ({ ...prev, sizes: [...(prev.sizes || []), sz] }));
+    }
+  };
+
+  const handleAddCustomSize = (e) => {
+    if (e) e.preventDefault();
+    const clean = customSizeInput.trim();
+    if (!clean) return;
+    const current = formData.sizes || [];
+    if (!current.includes(clean)) {
+      setFormData(prev => ({ ...prev, sizes: [...(prev.sizes || []), clean] }));
+    }
+    setCustomSizeInput('');
+  };
+
+  const removeSize = (sz) => {
+    setFormData(prev => ({ ...prev, sizes: (prev.sizes || []).filter(s => s !== sz) }));
+  };
+
+  const applySizePreset = (presetKey) => {
+    if (presetKey === 'clear') {
+      setFormData(prev => ({ ...prev, sizes: [] }));
+    } else if (presetKey === 'standard') {
+      setFormData(prev => ({ ...prev, sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'] }));
+    } else if (presetKey === 'unstitched') {
+      setFormData(prev => ({ ...prev, sizes: ['Unstitched'] }));
+    } else if (presetKey === 'freesize') {
+      setFormData(prev => ({ ...prev, sizes: ['Free Size'] }));
+    } else if (presetKey === 'footwear') {
+      setFormData(prev => ({ ...prev, sizes: ['36', '37', '38', '39', '40', '41'] }));
+    }
+  };
+
   const openAddModal = () => {
     setEditingProduct(null);
+    setCustomSizeInput('');
     setFormData({
       title: '',
       description: '',
@@ -110,7 +151,7 @@ export function AdminProducts() {
       is_bestseller: false,
       sections: [],
       images: ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=85'],
-      sizes: ['S', 'M', 'L', 'XL'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
       colors: [{ name: 'Royal Blue', hex: '#1E3A8A' }]
     });
     setShowModal(true);
@@ -118,6 +159,18 @@ export function AdminProducts() {
 
   const openEditModal = (p) => {
     setEditingProduct(p);
+    setCustomSizeInput('');
+    let parsedSizes = ['S', 'M', 'L', 'XL'];
+    if (Array.isArray(p.sizes)) {
+      parsedSizes = p.sizes;
+    } else if (typeof p.sizes === 'string') {
+      try {
+        parsedSizes = JSON.parse(p.sizes);
+      } catch (e) {
+        parsedSizes = p.sizes.split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
+
     setFormData({
       title: p.title,
       description: p.description,
@@ -135,7 +188,7 @@ export function AdminProducts() {
       is_bestseller: p.is_bestseller,
       sections: p.sections || [],
       images: p.images || [],
-      sizes: p.sizes || ['S', 'M', 'L'],
+      sizes: parsedSizes,
       colors: p.colors || []
     });
     setShowModal(true);
@@ -155,6 +208,10 @@ export function AdminProducts() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.sizes || formData.sizes.length === 0) {
+      alert('Please select or add at least one size for this product.');
+      return;
+    }
     setSubmitting(true);
     try {
       if (editingProduct) {
@@ -320,6 +377,21 @@ export function AdminProducts() {
                       <td className="p-4">
                         <span className="font-semibold text-neutral-900 capitalize block">{p.category_slug}</span>
                         <span className="text-[11px] text-neutral-500">{p.sub_category || 'General'}</span>
+                        {Array.isArray(p.sizes) && p.sizes.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1.5 max-w-[200px]">
+                            {p.sizes.slice(0, 4).map((sz) => (
+                              <span
+                                key={sz}
+                                className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-neutral-100 text-neutral-700 border border-neutral-200"
+                              >
+                                {sz}
+                              </span>
+                            ))}
+                            {p.sizes.length > 4 && (
+                              <span className="text-[9px] text-neutral-400 font-medium">+{p.sizes.length - 4}</span>
+                            )}
+                          </div>
+                        )}
                       </td>
 
                       <td className="p-4">
@@ -406,7 +478,17 @@ export function AdminProducts() {
                   <label className="block font-bold text-neutral-700 mb-1">Primary Category *</label>
                   <select
                     value={formData.category_slug}
-                    onChange={(e) => setFormData({ ...formData, category_slug: e.target.value })}
+                    onChange={(e) => {
+                      const newCat = e.target.value;
+                      let suggestedSizes = formData.sizes;
+                      if (!editingProduct && (!formData.sizes || formData.sizes.length <= 4)) {
+                        if (newCat === 'unstitched-suits') suggestedSizes = ['Unstitched'];
+                        else if (newCat === 'sarees' || newCat === 'accessories') suggestedSizes = ['Free Size'];
+                        else if (newCat === 'jutti') suggestedSizes = ['36', '37', '38', '39', '40', '41'];
+                        else suggestedSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                      }
+                      setFormData({ ...formData, category_slug: newCat, sizes: suggestedSizes });
+                    }}
                     className="w-full p-2.5 border rounded-lg capitalize"
                   >
                     {ALL_CATEGORIES.map(cat => (
@@ -415,9 +497,9 @@ export function AdminProducts() {
                   </select>
                 </div>
 
-                {/* Additional Sections / Cross-listing Tags */}
+                {/* Promotional Badges & Collections */}
                 <div className="sm:col-span-2">
-                  <label className="block font-bold text-neutral-700 mb-2">Display Sections <span className="font-normal text-neutral-400 text-[11px]">(select all that apply)</span></label>
+                  <label className="block font-bold text-neutral-700 mb-2">Promotional Badges & Curations <span className="font-normal text-neutral-400 text-[11px]">(select all that apply)</span></label>
                   <div className="flex flex-wrap gap-2">
                     {SECTION_TAGS.map(tag => {
                       const isFlag = ['is_new_arrival', 'is_featured', 'is_bestseller'].includes(tag.key);
@@ -449,7 +531,7 @@ export function AdminProducts() {
                     })}
                   </div>
                   <p className="text-[10px] text-neutral-400 mt-1.5">
-                    Sections control which homepage shelves, filters, and promotional banners this product appears on.
+                    Badges control product card stickers (e.g. New In, Bestseller), promotional filters, and curated collection edits.
                   </p>
                 </div>
 
@@ -527,6 +609,189 @@ export function AdminProducts() {
                     placeholder="OCT-ANK-001"
                     className="w-full p-2.5 border rounded-lg"
                   />
+                </div>
+              </div>
+
+              {/* Product Sizes Section */}
+              <div className="border border-neutral-200 bg-neutral-50/70 p-4 rounded-lg space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="block font-bold text-neutral-900 text-xs">
+                      Product Sizes * <span className="font-normal text-neutral-500">({formData.sizes?.length || 0} active)</span>
+                    </label>
+                    <p className="text-[11px] text-neutral-500">
+                      Configure sizes available for purchase on product cards and product details.
+                    </p>
+                  </div>
+
+                  {/* Preset Shortcuts */}
+                  <div className="flex items-center flex-wrap gap-1">
+                    <button
+                      type="button"
+                      onClick={() => applySizePreset('standard')}
+                      className="px-2 py-1 text-[10px] font-semibold bg-white hover:bg-neutral-100 text-neutral-800 rounded border border-neutral-300 transition-colors cursor-pointer"
+                    >
+                      XS – XXL
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applySizePreset('unstitched')}
+                      className="px-2 py-1 text-[10px] font-semibold bg-white hover:bg-neutral-100 text-neutral-800 rounded border border-neutral-300 transition-colors cursor-pointer"
+                    >
+                      Unstitched
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applySizePreset('freesize')}
+                      className="px-2 py-1 text-[10px] font-semibold bg-white hover:bg-neutral-100 text-neutral-800 rounded border border-neutral-300 transition-colors cursor-pointer"
+                    >
+                      Free Size
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applySizePreset('footwear')}
+                      className="px-2 py-1 text-[10px] font-semibold bg-white hover:bg-neutral-100 text-neutral-800 rounded border border-neutral-300 transition-colors cursor-pointer"
+                    >
+                      Footwear (36–41)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applySizePreset('clear')}
+                      className="px-2 py-1 text-[10px] font-semibold text-red-600 hover:bg-red-50 rounded border border-red-200 transition-colors cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+
+                {/* Selected Active Sizes Chips */}
+                <div>
+                  <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-wider block mb-1.5">
+                    Selected Sizes for this Product:
+                  </span>
+                  {formData.sizes && formData.sizes.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {formData.sizes.map((sz) => (
+                        <span
+                          key={sz}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-neutral-900 text-white rounded text-xs font-semibold"
+                        >
+                          <span>{sz}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeSize(sz)}
+                            className="hover:text-red-300 focus:outline-none cursor-pointer"
+                            title={`Remove size ${sz}`}
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-amber-800 font-medium bg-amber-50 px-2.5 py-1.5 rounded border border-amber-200">
+                      ⚠️ No sizes selected. Please click sizes below or add a custom size.
+                    </p>
+                  )}
+                </div>
+
+                {/* Size Presets by Category */}
+                <div className="space-y-2 pt-2 border-t border-neutral-200 text-xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1.5">
+                    <span className="text-[10px] font-semibold text-neutral-500 sm:w-28 shrink-0">Apparel Sizes:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'].map((sz) => {
+                        const isSelected = (formData.sizes || []).includes(sz);
+                        return (
+                          <button
+                            key={sz}
+                            type="button"
+                            onClick={() => toggleSize(sz)}
+                            className={`px-2.5 py-1 rounded text-xs font-semibold border transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-neutral-800 text-white border-neutral-800'
+                                : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-500'
+                            }`}
+                          >
+                            {isSelected ? '✓ ' : ''}{sz}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1.5">
+                    <span className="text-[10px] font-semibold text-neutral-500 sm:w-28 shrink-0">Ethnic & Drapes:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {['Free Size', 'Unstitched', 'Semi-Stitched'].map((sz) => {
+                        const isSelected = (formData.sizes || []).includes(sz);
+                        return (
+                          <button
+                            key={sz}
+                            type="button"
+                            onClick={() => toggleSize(sz)}
+                            className={`px-2.5 py-1 rounded text-xs font-semibold border transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-neutral-800 text-white border-neutral-800'
+                                : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-500'
+                            }`}
+                          >
+                            {isSelected ? '✓ ' : ''}{sz}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1.5">
+                    <span className="text-[10px] font-semibold text-neutral-500 sm:w-28 shrink-0">Footwear / Jutti:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {['36', '37', '38', '39', '40', '41', '42'].map((sz) => {
+                        const isSelected = (formData.sizes || []).includes(sz);
+                        return (
+                          <button
+                            key={sz}
+                            type="button"
+                            onClick={() => toggleSize(sz)}
+                            className={`px-2.5 py-1 rounded text-xs font-semibold border transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-neutral-800 text-white border-neutral-800'
+                                : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-500'
+                            }`}
+                          >
+                            {isSelected ? '✓ ' : ''}{sz}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Add Custom Size Field */}
+                  <div className="flex items-center gap-2 pt-2 border-t border-neutral-200">
+                    <span className="text-[10px] font-semibold text-neutral-500 sm:w-28 shrink-0">Custom Size:</span>
+                    <div className="flex items-center gap-1.5 flex-1 max-w-sm">
+                      <input
+                        type="text"
+                        value={customSizeInput}
+                        onChange={(e) => setCustomSizeInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddCustomSize();
+                          }
+                        }}
+                        placeholder="Type size (e.g. 44, Tailored, One Size)..."
+                        className="w-full p-1.5 text-xs bg-white border border-neutral-300 rounded focus:outline-none focus:border-neutral-800"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomSize}
+                        className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-900 text-white text-xs font-semibold rounded shrink-0 cursor-pointer"
+                      >
+                        + Add Size
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 

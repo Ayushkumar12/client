@@ -1,48 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { SEO } from '../components/common/SEO.jsx';
 import { HeroSlideshow } from '../components/home/HeroSlideshow.jsx';
 import { JharokhaCategories } from '../components/home/JharokhaCategories.jsx';
-import { NewArrivalsSection } from '../components/home/NewArrivalsSection.jsx';
-import { BrandPicksSection } from '../components/home/BrandPicksSection.jsx';
-import { InsideBrandSection } from '../components/home/InsideBrandSection.jsx';
-import { AdornedJewelsSection } from '../components/home/AdornedJewelsSection.jsx';
 import { BentoMosaicSection } from '../components/home/BentoMosaicSection.jsx';
-import { api } from '../services/api.js';
+import { InsideBrandSection } from '../components/home/InsideBrandSection.jsx';
 import { useScrollReveal } from '../hooks/useScrollReveal.js';
 
 export function HomePage() {
-  const [newArrivals, setNewArrivals] = useState([]);
-  const [brandPicks, setBrandPicks] = useState([]);
-  const [jewels, setJewels] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Scroll-reveal refs for each section
+  // Scroll-reveal refs for sections
   const categoriesRef = useScrollReveal();
-  const arrivalsRef = useScrollReveal({ delay: 60 });
-  const picksRef = useScrollReveal({ delay: 60 });
-  const brandRef = useScrollReveal({ delay: 60 });
-  const jewelsRef = useScrollReveal({ delay: 60 });
   const mosaicRef = useScrollReveal({ delay: 60 });
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [resNew, resPicks, resJewels] = await Promise.all([
-          api.getProducts({ new_arrival: 'true', limit: 8 }),
-          api.getProducts({ category: 'stitched-suits', limit: 4 }),
-          api.getProducts({ category: 'accessories', limit: 4 })
-        ]);
-        if (resNew.success) setNewArrivals(resNew.products);
-        if (resPicks.success) setBrandPicks(resPicks.products);
-        if (resJewels.success) setJewels(resJewels.products);
-      } catch (e) {
-        console.error('Failed to load homepage products:', e);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
+  const brandRef = useScrollReveal({ delay: 60 });
 
   return (
     <div className="space-y-12 sm:space-y-16 pb-16">
@@ -57,34 +25,19 @@ export function HomePage() {
       {/* 1. Hero Slideshow Section */}
       <HeroSlideshow />
 
-      {/* 2. Shop by Category */}
+      {/* 2. Shop by Category (Jharokha Arches) */}
       <div ref={categoriesRef}>
         <JharokhaCategories />
       </div>
 
-      {/* 3. New Arrivals Showcase */}
-      <div ref={arrivalsRef}>
-        <NewArrivalsSection products={newArrivals} loading={loading} />
-      </div>
-
-      {/* 4. Featured Picks Showcase */}
-      <div ref={picksRef}>
-        <BrandPicksSection products={brandPicks} loading={loading} />
-      </div>
-
-      {/* 5. About Brand Section */}
-      <div ref={brandRef}>
-        <InsideBrandSection />
-      </div>
-
-      {/* 6. Jewellery & Accessories Section */}
-      <div ref={jewelsRef}>
-        <AdornedJewelsSection products={jewels} loading={loading} />
-      </div>
-
-      {/* 7. Category & Budget Mosaic */}
+      {/* 3. Explore by Budget & Silhouette (All Categories & Budget Tiers) */}
       <div ref={mosaicRef}>
         <BentoMosaicSection />
+      </div>
+
+      {/* 4. Inside the Brand Editorial Story */}
+      <div ref={brandRef}>
+        <InsideBrandSection />
       </div>
     </div>
   );

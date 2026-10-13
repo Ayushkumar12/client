@@ -139,9 +139,8 @@ export function ProductDetailPage() {
     ? product.sizes
     : ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
-  // Full extended sizes list to demonstrate available & out-of-stock disabled state like screenshot
-  const standardSizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '5XL'];
-  const allDisplaySizes = Array.from(new Set([...availableProductSizes, ...standardSizeOptions]));
+  // Display the authentic configured sizes for this specific product
+  const allDisplaySizes = availableProductSizes;
 
   const handleAddToCart = () => {
     addToCart(product, selectedSize, selectedColor, quantity);

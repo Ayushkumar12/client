@@ -158,6 +158,9 @@ export default function App() {
                       {/* Storefront Routes */}
                       <Route path="/" element={<HomePage />} />
                       <Route path="/new-arrivals" element={<ListingPage isNewArrivals={true} />} />
+                      <Route path="/bestsellers" element={<ListingPage isBestsellers={true} />} />
+                      <Route path="/on-sale" element={<ListingPage isOnSale={true} />} />
+                      <Route path="/sale" element={<ListingPage isOnSale={true} />} />
                       <Route path="/category/:categorySlug" element={<ListingPage />} />
                       <Route path="/product/:slug" element={<ProductDetailPage />} />
                       <Route path="/cart" element={<CartPage />} />

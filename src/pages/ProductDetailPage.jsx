@@ -34,8 +34,9 @@ export function ProductDetailPage() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState('M');
-  const [selectedColor, setSelectedColor] = useState('Standard');
+  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
+  const [activeColorImage, setActiveColorImage] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -70,11 +71,20 @@ export function ProductDetailPage() {
         const res = await api.getProduct(targetIdentifier);
         if (res.success && res.product) {
           setProduct(res.product);
+          setSelectedImage(0);
+          setActiveColorImage(null);
           if (res.product.sizes && res.product.sizes.length > 0) {
             setSelectedSize(res.product.sizes[0]);
+          } else {
+            setSelectedSize('');
           }
           if (res.product.colors && res.product.colors.length > 0) {
             setSelectedColor(res.product.colors[0].name);
+            if (res.product.colors[0].image) {
+              setActiveColorImage(res.product.colors[0].image);
+            }
+          } else {
+            setSelectedColor('');
           }
 
           // Obfuscate URL in address bar if not already encoded
@@ -116,40 +126,46 @@ export function ProductDetailPage() {
     );
   }
 
-  // Multi-image gallery curation (ensuring 5-7 multi-angle views)
-  const baseImages = Array.isArray(product.images) && product.images.length > 0
+  // Only display authentic images added by admin - if 1 image is added, show ONLY 1 image!
+  const images = (Array.isArray(product.images) && product.images.length > 0)
     ? product.images
-    : [product.image || 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1200&q=85'];
-
-  const defaultComplementary = [
-    'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=1200&q=85'
-  ];
-
-  const images = baseImages.length >= 4
-    ? baseImages
-    : [...baseImages, ...defaultComplementary.slice(0, 6 - baseImages.length)];
+    : (product.image ? [product.image] : []);
 
   const isWishlisted = isInWishlist(product.id);
 
-  const availableProductSizes = Array.isArray(product.sizes) && product.sizes.length > 0
+  // Only display authentic sizes added by admin - no fake fallback data!
+  const availableProductSizes = Array.isArray(product.sizes)
     ? product.sizes
-    : ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+    : [];
 
-  // Display the authentic configured sizes for this specific product
   const allDisplaySizes = availableProductSizes;
 
+  const currentMainImage = activeColorImage || images[selectedImage] || images[0] || product.image || '';
+
+  const handleColorSelect = (c) => {
+    setSelectedColor(c.name);
+    if (c.image) {
+      setActiveColorImage(c.image);
+      const matchedIdx = images.findIndex((img) => img === c.image);
+      if (matchedIdx !== -1) {
+        setSelectedImage(matchedIdx);
+      }
+    } else {
+      setActiveColorImage(null);
+    }
+    if (!selectedSize && allDisplaySizes.length > 0) {
+      setSelectedSize(allDisplaySizes[0]);
+    }
+  };
+
   const handleAddToCart = () => {
-    addToCart(product, selectedSize, selectedColor, quantity);
+    addToCart(product, selectedSize, selectedColor, quantity, currentMainImage);
     setAddedAnimation(true);
     setTimeout(() => setAddedAnimation(false), 2000);
   };
 
   const handleBuyNow = () => {
-    addToCart(product, selectedSize, selectedColor, quantity);
+    addToCart(product, selectedSize, selectedColor, quantity, currentMainImage);
     navigate('/checkout');
   };
 
@@ -241,38 +257,46 @@ export function ProductDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-12 items-start">
           {/* Left Column: Side Mini Thumbnails Strip + Main Image Viewport (Always side-by-side & Screen Fit) */}
           <div className="lg:col-span-7 flex flex-row gap-2 sm:gap-3 md:gap-4 items-stretch w-full h-[50vh] sm:h-[58vh] min-h-[320px] max-h-[430px] sm:max-h-[520px] lg:h-[620px] lg:max-h-[640px] lg:sticky lg:top-24">
-            {/* 1. Vertical Side Thumbnail Gallery Strip */}
-            <div
-              ref={thumbnailContainerRef}
-              className="flex flex-col gap-1.5 sm:gap-2 overflow-y-auto no-scrollbar shrink-0 w-12 sm:w-16 md:w-20 lg:w-24 h-full py-0.5"
-            >
-              {images.map((img, idx) => {
-                const isActive = selectedImage === idx;
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setSelectedImage(idx)}
-                    onMouseEnter={() => setSelectedImage(idx)}
-                    className={`relative aspect-[3/4] w-full rounded-lg sm:rounded-xl overflow-hidden border transition-all shrink-0 cursor-pointer bg-neutral-100 ${isActive
-                        ? 'border-neutral-900 ring-2 ring-neutral-900/30 shadow-sm scale-102'
-                        : 'border-neutral-200/90 opacity-70 hover:opacity-100 hover:border-neutral-500'
-                      }`}
-                    aria-label={`Product thumbnail view ${idx + 1}`}
-                  >
-                    <img
-                      src={img}
-                      alt={`Thumbnail ${idx + 1}`}
-                      className="w-full h-full object-cover object-top"
-                      loading="lazy"
-                    />
-                    {isActive && (
-                      <span className="absolute inset-0 bg-neutral-900/10 pointer-events-none" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+            {/* 1. Vertical Side Thumbnail Gallery Strip (Only shown if multiple photos exist) */}
+            {images.length > 1 && (
+              <div
+                ref={thumbnailContainerRef}
+                className="flex flex-col gap-1.5 sm:gap-2 overflow-y-auto no-scrollbar shrink-0 w-12 sm:w-16 md:w-20 lg:w-24 h-full py-0.5"
+              >
+                {images.map((img, idx) => {
+                  const isActive = selectedImage === idx && !activeColorImage;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setSelectedImage(idx);
+                        setActiveColorImage(null);
+                      }}
+                      onMouseEnter={() => {
+                        setSelectedImage(idx);
+                        setActiveColorImage(null);
+                      }}
+                      className={`relative aspect-[3/4] w-full rounded-lg sm:rounded-xl overflow-hidden border transition-all shrink-0 cursor-pointer bg-neutral-100 ${isActive
+                          ? 'border-neutral-900 ring-2 ring-neutral-900/30 shadow-sm scale-102'
+                          : 'border-neutral-200/90 opacity-70 hover:opacity-100 hover:border-neutral-500'
+                        }`}
+                      aria-label={`Product thumbnail view ${idx + 1}`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Thumbnail ${idx + 1}`}
+                        className="w-full h-full object-cover object-top"
+                        loading="lazy"
+                      />
+                      {isActive && (
+                        <span className="absolute inset-0 bg-neutral-900/10 pointer-events-none" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* 2. Main Big Image Canvas with Magnifier Zoom & Clean Screen Fit */}
             <div
@@ -282,7 +306,7 @@ export function ProductDetailPage() {
               onMouseMove={handleMouseMove}
             >
               <img
-                src={images[selectedImage]}
+                src={currentMainImage}
                 alt={product.title}
                 className={`w-full h-full object-cover object-top transition-transform duration-300 ${isZoomed ? 'scale-150 origin-[var(--zoom-x)_var(--zoom-y)]' : 'scale-100'
                   }`}
@@ -311,12 +335,14 @@ export function ProductDetailPage() {
                 </div>
               )}
 
-              {/* Image Counter Pill */}
-              <div className="absolute bottom-2.5 sm:bottom-4 right-2.5 sm:right-4 z-20">
-                <span className="bg-black/60 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-mono font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-white/20 shadow-2xs">
-                  {selectedImage + 1} / {images.length}
-                </span>
-              </div>
+              {/* Image Counter Pill (Only shown if multiple images and not viewing separate color photo) */}
+              {images.length > 1 && !activeColorImage && (
+                <div className="absolute bottom-2.5 sm:bottom-4 right-2.5 sm:right-4 z-20">
+                  <span className="bg-black/60 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-mono font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-white/20 shadow-2xs">
+                    {selectedImage + 1} / {images.length}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -454,73 +480,85 @@ export function ProductDetailPage() {
               </div>
             </div>
 
-            {/* 5. Color Selection */}
+            {/* 5. Color Selection (with separate image support) */}
             {product.colors && product.colors.length > 0 && (
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="font-semibold text-neutral-800">Color:</span>
                   <span className="font-medium text-brand-maroon">{selectedColor}</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  {product.colors.map((c) => (
-                    <button
-                      key={c.name}
-                      onClick={() => setSelectedColor(c.name)}
-                      title={c.name}
-                      className={`flex items-center space-x-2 px-3 py-1.5 rounded-sm border text-xs font-medium transition-all cursor-pointer ${selectedColor === c.name
-                          ? 'border-neutral-900 bg-neutral-900/5 ring-1 ring-neutral-900 font-semibold'
-                          : 'border-neutral-200 bg-white hover:border-neutral-400'
-                        }`}
-                    >
-                      <span className="w-3 h-3 rounded-xs border border-neutral-300" style={{ backgroundColor: c.hex }} />
-                      <span>{c.name}</span>
-                    </button>
-                  ))}
+                <div className="flex flex-wrap items-center gap-2">
+                  {product.colors.map((c) => {
+                    const isSelected = selectedColor === c.name;
+                    return (
+                      <button
+                        key={c.name}
+                        type="button"
+                        onClick={() => handleColorSelect(c)}
+                        title={c.name}
+                        className={`flex items-center space-x-2 px-3 py-1.5 rounded-sm border text-xs font-medium transition-all cursor-pointer ${isSelected
+                            ? 'border-neutral-900 bg-neutral-900/5 ring-1 ring-neutral-900 font-semibold'
+                            : 'border-neutral-200 bg-white hover:border-neutral-400'
+                          }`}
+                      >
+                        {c.image ? (
+                          <img src={c.image} alt={c.name} className="w-4 h-4 rounded-xs object-cover border border-neutral-300 shrink-0" />
+                        ) : (
+                          <span className="w-3.5 h-3.5 rounded-xs border border-neutral-300 shrink-0" style={{ backgroundColor: c.hex || '#000000' }} />
+                        )}
+                        <span>{c.name}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
-            {/* 6. Size Selector */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-neutral-800 tracking-wide uppercase">Select Size</span>
-              </div>
+            {/* 6. Size Selector (Real Admin Sizes & Authentic Stock Status) */}
+            {allDisplaySizes && allDisplaySizes.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-neutral-800 tracking-wide uppercase">Select Size</span>
+                  <span className={`text-[11px] font-semibold ${Number(product.stock !== undefined && product.stock !== null ? product.stock : 50) > 0 ? 'text-emerald-700' : 'text-red-600'}`}>
+                    {Number(product.stock !== undefined && product.stock !== null ? product.stock : 50) > 0 ? `In Stock (${Number(product.stock !== undefined && product.stock !== null ? product.stock : 50)} units)` : 'Out of Stock'}
+                  </span>
+                </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                {allDisplaySizes.map((sz) => {
-                  const stockNum = Number(product.stock !== undefined ? product.stock : 50);
-                  const isAvailable = availableProductSizes.includes(sz) && stockNum > 0;
-                  const isSelected = selectedSize === sz;
+                <div className="flex flex-wrap items-center gap-2">
+                  {allDisplaySizes.map((sz) => {
+                    const stockNum = Number(product.stock !== undefined && product.stock !== null ? product.stock : 50);
+                    const isAvailable = stockNum > 0;
+                    const isSelected = selectedSize === sz;
 
-                  if (!isAvailable) {
+                    if (!isAvailable) {
+                      return (
+                        <button
+                          key={sz}
+                          type="button"
+                          disabled
+                          title="Out of Stock in this size"
+                          className="min-w-[44px] h-9 px-3 rounded-sm border border-neutral-200 bg-neutral-100/60 text-neutral-400 text-xs font-medium line-through cursor-not-allowed select-none"
+                        >
+                          {sz}
+                        </button>
+                      );
+                    }
+
                     return (
                       <button
                         key={sz}
                         type="button"
-                        disabled
-                        title="Out of Stock in this size"
-                        className="min-w-[44px] h-9 px-3 rounded-sm border border-neutral-200 bg-neutral-100/60 text-neutral-400 text-xs font-medium line-through cursor-not-allowed select-none"
+                        onClick={() => setSelectedSize(sz)}
+                        className={`min-w-[44px] h-9 px-3 rounded-sm text-xs font-semibold transition-all cursor-pointer border ${isSelected
+                            ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs'
+                            : 'bg-white text-neutral-800 border-neutral-300 hover:border-neutral-800'
+                          }`}
                       >
                         {sz}
                       </button>
                     );
-                  }
-
-                  return (
-                    <button
-                      key={sz}
-                      type="button"
-                      onClick={() => setSelectedSize(sz)}
-                      className={`min-w-[44px] h-9 px-3 rounded-sm text-xs font-semibold transition-all cursor-pointer border ${isSelected
-                          ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs'
-                          : 'bg-white text-neutral-800 border-neutral-300 hover:border-neutral-800'
-                        }`}
-                    >
-                      {sz}
-                    </button>
-                  );
-                })}
-              </div>
+                  })}
+                </div>
 
               {/* Tape measure Size Chart Link */}
               <button

@@ -56,22 +56,16 @@ export function AdminProducts() {
     { value: 'unstitched-suits', label: 'Unstitched Suits' },
     { value: 'designer-suits', label: 'Designer Suits' },
     { value: 'sarees', label: 'Sarees' },
-    { value: 'salwar-sets', label: 'Salwar Sets' },
     { value: 'festive-wear', label: 'Festive Wear' },
     { value: 'party-wear', label: 'Party Wear' },
-    { value: 'accessories', label: 'Accessories' },
+    { value: 'accessories', label: 'Accessories (Zewar)' },
     { value: 'jutti', label: 'Jutti' },
   ];
 
   const SECTION_TAGS = [
-    { key: 'is_new_arrival', label: 'New Arrival' },
-    { key: 'is_featured', label: 'Featured Collection' },
+    { key: 'is_new_arrival', label: 'New Arrival (Homepage Shelf & Page)' },
+    { key: 'is_featured', label: 'Featured Collection (The OCT9 Edit Shelf)' },
     { key: 'is_bestseller', label: 'Bestseller' },
-    { key: 'section_party', label: 'Party Picks' },
-    { key: 'section_festive', label: 'Festive Special' },
-    { key: 'section_sale', label: 'On Sale' },
-    { key: 'section_editorial', label: 'Editorial' },
-    { key: 'section_trending', label: 'Trending Now' },
   ];
 
   useEffect(() => {
@@ -497,28 +491,19 @@ export function AdminProducts() {
                   </select>
                 </div>
 
-                {/* Additional Sections / Cross-listing Tags */}
+                {/* Storefront Showcase Sections */}
                 <div className="sm:col-span-2">
-                  <label className="block font-bold text-neutral-700 mb-2">Display Sections <span className="font-normal text-neutral-400 text-[11px]">(select all that apply)</span></label>
+                  <label className="block font-bold text-neutral-700 mb-2">
+                    Storefront Showcase Shelves <span className="font-normal text-neutral-400 text-[11px]">(select all that apply)</span>
+                  </label>
                   <div className="flex flex-wrap gap-2">
                     {SECTION_TAGS.map(tag => {
-                      const isFlag = ['is_new_arrival', 'is_featured', 'is_bestseller'].includes(tag.key);
-                      const isActive = isFlag ? Boolean(formData[tag.key]) : (formData.sections || []).includes(tag.key);
+                      const isActive = Boolean(formData[tag.key]);
                       return (
                         <button
                           key={tag.key}
                           type="button"
-                          onClick={() => {
-                            if (isFlag) {
-                              setFormData({ ...formData, [tag.key]: !formData[tag.key] });
-                            } else {
-                              const cur = formData.sections || [];
-                              setFormData({
-                                ...formData,
-                                sections: isActive ? cur.filter(s => s !== tag.key) : [...cur, tag.key]
-                              });
-                            }
-                          }}
+                          onClick={() => setFormData({ ...formData, [tag.key]: !formData[tag.key] })}
                           className={`px-3 py-1.5 rounded-md text-[11px] font-semibold border transition-colors cursor-pointer ${
                             isActive
                               ? 'bg-neutral-900 text-white border-neutral-900'
@@ -531,7 +516,7 @@ export function AdminProducts() {
                     })}
                   </div>
                   <p className="text-[10px] text-neutral-400 mt-1.5">
-                    Sections control which homepage shelves, filters, and promotional banners this product appears on.
+                    Controls which live homepage showcase shelves and dedicated pages this product appears in.
                   </p>
                 </div>
 

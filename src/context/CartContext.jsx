@@ -19,15 +19,15 @@ export function CartProvider({ children }) {
     localStorage.setItem('oct9_cart', JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product, size = 'M', color = 'Standard', quantity = 1) => {
+  const addToCart = (product, size = 'M', color = 'Standard', quantity = 1, customImage = null) => {
     setCart(prevCart => {
       const existingIndex = prevCart.findIndex(
         item => item.product_id === product.id && item.size === size && item.color === color
       );
 
-      const img = Array.isArray(product.images) && product.images.length > 0
+      const img = customImage || (Array.isArray(product.images) && product.images.length > 0
         ? product.images[0]
-        : (product.image || '');
+        : (product.image || ''));
 
       if (existingIndex > -1) {
         const updated = [...prevCart];

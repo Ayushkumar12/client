@@ -47,8 +47,9 @@ const getCategoryImageUrl = (cat) => {
 };
 
 export function JharokhaCategories() {
-  const { getJharokhaCategories } = useContent();
+  const { getJharokhaCategories, getSection } = useContent();
   const categories = getJharokhaCategories();
+  const sec = getSection('jharokha') || {};
 
   if (!categories || categories.length === 0) return null;
 
@@ -65,6 +66,27 @@ export function JharokhaCategories() {
 
       {/* Full-Width Edge-to-Edge Container */}
       <div className="relative w-full px-2.5 sm:px-6 md:px-8 lg:px-10 xl:px-14">
+        {/* Optional Section Heading Configurable by Admin */}
+        {(sec.title || sec.badge) && (
+          <div className="text-center mb-3 sm:mb-5 md:mb-6">
+            {sec.badge && (
+              <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[#8B6B3D] block mb-1">
+                {sec.badge}
+              </span>
+            )}
+            {sec.title && (
+              <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-medium text-neutral-900 tracking-tight">
+                {sec.title}
+              </h2>
+            )}
+            {sec.subtitle && (
+              <p className="text-xs sm:text-sm text-neutral-500 max-w-xl mx-auto mt-1 font-light">
+                {sec.subtitle}
+              </p>
+            )}
+          </div>
+        )}
+
         {/* Full-width responsive flex container */}
         <div className="flex items-center justify-start lg:justify-center xl:justify-between gap-2.5 sm:gap-4 md:gap-6 lg:gap-5 xl:gap-6 overflow-x-auto pb-2 sm:pb-3 pt-1 no-scrollbar scroll-smooth">
           {categories.map((cat, idx) => {

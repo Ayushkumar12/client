@@ -247,6 +247,39 @@ export const DEFAULT_SITE_CONTENT = {
           image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=600&q=85'
         }
       ]
+    },
+    jharokha: {
+      badge: 'SIGNATURE SILHOUETTES',
+      title: 'Shop by Category',
+      subtitle: 'Handcrafted arches showcasing our iconic royal ethnic silhouettes.'
+    },
+    product_detail: {
+      related_title: 'You May Also Like',
+      related_subtitle: 'Pair your selection with handcrafted companion pieces.',
+      accordion_description: 'DESCRIPTION',
+      accordion_care: 'PRODUCT CARE',
+      accordion_specifications: 'SPECIFICATIONS',
+      accordion_shipping: 'SHIPPING & DELIVERY',
+      accordion_reviews: 'CUSTOMER REVIEWS',
+      trust_badge_1_title: 'Express Delivery',
+      trust_badge_1_sub: '2-4 Days Pan-India',
+      trust_badge_2_title: '7 Days Returns',
+      trust_badge_2_sub: 'Hassle-free pickup',
+      trust_badge_3_title: '100% Authentic',
+      trust_badge_3_sub: 'Pure Artisan Weaves'
+    },
+    cart: {
+      drawer_title: 'Your Shopping Bag',
+      page_title: 'Shopping Bag',
+      summary_title: 'Order Summary',
+      empty_title: 'Your Shopping Bag is Empty',
+      empty_subtitle: 'Explore our latest arrivals to add handcrafted pieces to your wardrobe.',
+      free_shipping_notice: 'FREE Express Shipping on all orders across India'
+    },
+    wishlist: {
+      title: 'My Saved Wishlist',
+      empty_title: 'Your Wishlist is Empty',
+      empty_subtitle: 'Explore our artisanal suits, sarees, and festive wear and save your favorites here.'
     }
   },
   pillars: [
@@ -716,7 +749,9 @@ export function ContentProvider({ children }) {
 
   // Helper: Get Section
   const getSection = (key) => {
-    return content.sections?.[key] || DEFAULT_SITE_CONTENT.sections[key] || {};
+    const defaultSec = DEFAULT_SITE_CONTENT.sections?.[key] || {};
+    const storedSec = content.sections?.[key] || {};
+    return { ...defaultSec, ...storedSec };
   };
 
   // Helper: Get Brand

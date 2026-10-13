@@ -17,6 +17,7 @@ import {
 import { useCart } from '../context/CartContext.jsx';
 import { useWishlist } from '../context/WishlistContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useContent } from '../context/ContentContext.jsx';
 import { ShiprocketPincodeChecker } from '../components/common/ShiprocketPincodeChecker.jsx';
 import { ProductCard } from '../components/common/ProductCard.jsx';
 import { ProductDetailSkeleton } from '../components/common/Skeleton.jsx';
@@ -51,6 +52,8 @@ export function ProductDetailPage() {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { isAdmin, showPublicRatings } = useAuth() || {};
+  const { getSection } = useContent();
+  const pdpSec = getSection('product_detail') || {};
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -757,7 +760,7 @@ export function ProductDetailPage() {
                   onClick={() => toggleAccordion('description')}
                   className="w-full flex items-center justify-between text-left text-xs font-bold uppercase tracking-wider text-neutral-900 cursor-pointer"
                 >
-                  <span>DESCRIPTION</span>
+                  <span>{pdpSec.accordion_description || 'DESCRIPTION'}</span>
                   {openAccordions.description ? (
                     <ChevronUp className="w-4 h-4 text-neutral-600" />
                   ) : (
@@ -786,7 +789,7 @@ export function ProductDetailPage() {
                     onClick={() => toggleAccordion('care')}
                     className="w-full flex items-center justify-between text-left text-xs font-bold uppercase tracking-wider text-neutral-900 cursor-pointer"
                   >
-                    <span>PRODUCT CARE</span>
+                    <span>{pdpSec.accordion_care || 'PRODUCT CARE'}</span>
                     {openAccordions.care ? (
                       <ChevronUp className="w-4 h-4 text-neutral-600" />
                     ) : (
@@ -808,7 +811,7 @@ export function ProductDetailPage() {
                   onClick={() => toggleAccordion('specifications')}
                   className="w-full flex items-center justify-between text-left text-xs font-bold uppercase tracking-wider text-neutral-900 cursor-pointer"
                 >
-                  <span>SPECIFICATIONS</span>
+                  <span>{pdpSec.accordion_specifications || 'SPECIFICATIONS'}</span>
                   {openAccordions.specifications ? (
                     <ChevronUp className="w-4 h-4 text-neutral-600" />
                   ) : (
@@ -852,7 +855,7 @@ export function ProductDetailPage() {
                   onClick={() => toggleAccordion('shipping')}
                   className="w-full flex items-center justify-between text-left text-xs font-bold uppercase tracking-wider text-neutral-900 cursor-pointer"
                 >
-                  <span>SHIPPING & DELIVERY</span>
+                  <span>{pdpSec.accordion_shipping || 'SHIPPING & DELIVERY'}</span>
                   {openAccordions.shipping ? (
                     <ChevronUp className="w-4 h-4 text-neutral-600" />
                   ) : (
@@ -880,7 +883,7 @@ export function ProductDetailPage() {
                     className="w-full flex items-center justify-between text-left text-xs font-bold uppercase tracking-wider text-neutral-900 cursor-pointer"
                   >
                     <div className="flex items-center space-x-2">
-                      <span>CUSTOMER REVIEWS ({product.reviews?.length || product.reviews_count || 0})</span>
+                      <span>{pdpSec.accordion_reviews || 'CUSTOMER REVIEWS'} ({product.reviews?.length || product.reviews_count || 0})</span>
                       <span className="text-[10px] bg-neutral-900 text-white font-mono px-1.5 py-0.2 rounded-xs font-normal">
                         Admin Only
                       </span>
@@ -990,18 +993,18 @@ export function ProductDetailPage() {
             <div className="grid grid-cols-3 divide-x divide-neutral-200 py-3.5 border-t border-b border-neutral-200 text-center">
               <div className="px-2 flex flex-col items-center justify-center">
                 <Truck className="w-4 h-4 text-neutral-800 mb-1" />
-                <span className="text-[11px] font-bold text-neutral-800">Express Delivery</span>
-                <span className="text-[9px] text-neutral-500">2-4 Days Pan-India</span>
+                <span className="text-[11px] font-bold text-neutral-800">{pdpSec.trust_badge_1_title || 'Express Delivery'}</span>
+                <span className="text-[9px] text-neutral-500">{pdpSec.trust_badge_1_sub || '2-4 Days Pan-India'}</span>
               </div>
               <div className="px-2 flex flex-col items-center justify-center">
                 <RotateCcw className="w-4 h-4 text-neutral-800 mb-1" />
-                <span className="text-[11px] font-bold text-neutral-800">7 Days Returns</span>
-                <span className="text-[9px] text-neutral-500">Hassle-free pickup</span>
+                <span className="text-[11px] font-bold text-neutral-800">{pdpSec.trust_badge_2_title || '7 Days Returns'}</span>
+                <span className="text-[9px] text-neutral-500">{pdpSec.trust_badge_2_sub || 'Hassle-free pickup'}</span>
               </div>
               <div className="px-2 flex flex-col items-center justify-center">
                 <ShieldCheck className="w-4 h-4 text-neutral-800 mb-1" />
-                <span className="text-[11px] font-bold text-neutral-800">100% Authentic</span>
-                <span className="text-[9px] text-neutral-500">Pure Artisan Weaves</span>
+                <span className="text-[11px] font-bold text-neutral-800">{pdpSec.trust_badge_3_title || '100% Authentic'}</span>
+                <span className="text-[9px] text-neutral-500">{pdpSec.trust_badge_3_sub || 'Pure Artisan Weaves'}</span>
               </div>
             </div>
           </div>
@@ -1010,10 +1013,15 @@ export function ProductDetailPage() {
         {/* Related Products Section */}
         {product.related && product.related.length > 0 && (
           <div className="mt-12 sm:mt-20 pt-8 sm:pt-12 border-t border-neutral-200">
-            <h2 className="font-sans text-xl sm:text-2xl md:text-3xl font-bold text-neutral-900 mb-6">
-              You May Also Like
+            <h2 className="font-sans text-xl sm:text-2xl md:text-3xl font-bold text-neutral-900 mb-2">
+              {pdpSec.related_title || 'You May Also Like'}
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            {pdpSec.related_subtitle && (
+              <p className="text-xs sm:text-sm text-neutral-500 mb-6 font-light">
+                {pdpSec.related_subtitle}
+              </p>
+            )}
+            <div className={`grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 ${pdpSec.related_subtitle ? '' : 'mt-6'}`}>
               {product.related.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

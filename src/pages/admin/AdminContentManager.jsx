@@ -463,7 +463,7 @@ export function AdminContentManager() {
     { id: 'policy_pages', label: 'Policy & Customer Care Pages' },
     { id: 'hero_slides', label: 'Hero Slideshow Banners' },
     { id: 'jharokha', label: 'Category Arches' },
-    { id: 'homepage_sections', label: 'Sections & Fixed Texts' },
+    { id: 'homepage_sections', label: 'Sections & Headings' },
     { id: 'brand_footer', label: 'Brand Info & Footer' }
   ];
 
@@ -991,8 +991,52 @@ export function AdminContentManager() {
               Jharokha Silhouette Arches
             </h2>
             <p className="text-xs text-neutral-500">
-              Manage the circular/arched categories presented directly below the hero banner.
+              Manage the circular/arched categories presented directly below the hero banner, along with the section heading.
             </p>
+          </div>
+
+          {/* Section Heading & Subtitle Configuration */}
+          <div className="bg-white p-5 rounded-sm border border-neutral-200 shadow-xs space-y-4">
+            <div className="border-b border-neutral-100 pb-2">
+              <h3 className="font-sans text-sm font-bold text-neutral-900 uppercase tracking-wide">
+                Section Heading &amp; Tagline
+              </h3>
+              <p className="text-xs text-neutral-500">
+                Configure the badge, title, and description displayed above the silhouette arches on the storefront homepage.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Badge Text:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.jharokha?.badge || ''}
+                  onChange={(e) => updateSectionField('jharokha', 'badge', e.target.value)}
+                  placeholder="e.g. SIGNATURE SILHOUETTES"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 focus:outline-none focus:border-neutral-900"
+                />
+              </div>
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Section Title:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.jharokha?.title || ''}
+                  onChange={(e) => updateSectionField('jharokha', 'title', e.target.value)}
+                  placeholder="e.g. Shop by Category"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 font-bold"
+                />
+              </div>
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Subtitle / Description:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.jharokha?.subtitle || ''}
+                  onChange={(e) => updateSectionField('jharokha', 'subtitle', e.target.value)}
+                  placeholder="e.g. Handcrafted arches showcasing royal silhouettes"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 focus:outline-none focus:border-neutral-900"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -1066,6 +1110,52 @@ export function AdminContentManager() {
       {/* ========================================================================= */}
       {activeTab === 'homepage_sections' && (
         <div className="space-y-8">
+          {/* Section 0: Category Arches (Jharokha) Section Heading */}
+          <div className="bg-white rounded-sm border border-neutral-200 p-6 space-y-4 shadow-xs">
+            <div className="border-b border-neutral-200 pb-3 flex items-center justify-between">
+              <div>
+                <h3 className="font-sans text-lg font-bold text-neutral-900">
+                  Category Arches (Jharokha) Section Heading
+                </h3>
+                <p className="text-xs text-neutral-500">
+                  Configure the badge, title, and description displayed above the silhouette arches on the storefront homepage.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Badge Text:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.jharokha?.badge || ''}
+                  onChange={(e) => updateSectionField('jharokha', 'badge', e.target.value)}
+                  placeholder="e.g. SIGNATURE SILHOUETTES"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 focus:outline-none focus:border-neutral-900"
+                />
+              </div>
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Section Title:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.jharokha?.title || ''}
+                  onChange={(e) => updateSectionField('jharokha', 'title', e.target.value)}
+                  placeholder="e.g. Shop by Category"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 font-bold"
+                />
+              </div>
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Subtitle / Description:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.jharokha?.subtitle || ''}
+                  onChange={(e) => updateSectionField('jharokha', 'subtitle', e.target.value)}
+                  placeholder="e.g. Handcrafted arches showcasing royal silhouettes"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 focus:outline-none focus:border-neutral-900"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Section 1: Inside OCT9 (The Atelier & 3 Arches) */}
           <div className="bg-white rounded-sm border border-neutral-200 p-6 space-y-6 shadow-xs">
             <div className="border-b border-neutral-200 pb-3 flex items-center justify-between">
@@ -1514,6 +1604,316 @@ export function AdminContentManager() {
                     className="w-full p-2 rounded-lg border border-neutral-300 bg-white"
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 4: Product Detail Page (PDP) Headings, Accordions & Badges */}
+          <div className="bg-white rounded-sm border border-neutral-200 p-6 space-y-6 shadow-xs">
+            <div className="border-b border-neutral-200 pb-3">
+              <h3 className="font-sans text-lg font-bold text-neutral-900">
+                4. Product Detail Page (PDP) Section Headings &amp; Badges
+              </h3>
+              <p className="text-xs text-neutral-500">
+                Customize the related products shelf title, product accordion headings, and the trust badge strip shown on product pages.
+              </p>
+            </div>
+
+            {/* Related Products Shelf Heading */}
+            <div className="bg-[#FAF7F2] p-4 rounded-sm border border-neutral-200 space-y-3">
+              <h4 className="font-sans font-bold text-xs uppercase tracking-wider text-neutral-800">
+                Related Products Shelf
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label className="font-bold text-neutral-700 block mb-1">Shelf Heading Title:</label>
+                  <input
+                    type="text"
+                    value={formData.sections?.product_detail?.related_title || ''}
+                    onChange={(e) => updateSectionField('product_detail', 'related_title', e.target.value)}
+                    placeholder="e.g. You May Also Like"
+                    className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-neutral-700 block mb-1">Shelf Subtitle (Optional):</label>
+                  <input
+                    type="text"
+                    value={formData.sections?.product_detail?.related_subtitle || ''}
+                    onChange={(e) => updateSectionField('product_detail', 'related_subtitle', e.target.value)}
+                    placeholder="e.g. Pair your selection with handcrafted companion pieces."
+                    className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Product Accordion Tab Titles */}
+            <div className="bg-[#FAF7F2] p-4 rounded-sm border border-neutral-200 space-y-3">
+              <h4 className="font-sans font-bold text-xs uppercase tracking-wider text-neutral-800">
+                Product Detail Accordion Headings
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                <div>
+                  <label className="font-bold text-neutral-700 block mb-1">Accordion 1 Title (Description):</label>
+                  <input
+                    type="text"
+                    value={formData.sections?.product_detail?.accordion_description || ''}
+                    onChange={(e) => updateSectionField('product_detail', 'accordion_description', e.target.value)}
+                    placeholder="e.g. DESCRIPTION"
+                    className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-semibold uppercase"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-neutral-700 block mb-1">Accordion 2 Title (Product Care):</label>
+                  <input
+                    type="text"
+                    value={formData.sections?.product_detail?.accordion_care || ''}
+                    onChange={(e) => updateSectionField('product_detail', 'accordion_care', e.target.value)}
+                    placeholder="e.g. PRODUCT CARE"
+                    className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-semibold uppercase"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-neutral-700 block mb-1">Accordion 3 Title (Specifications):</label>
+                  <input
+                    type="text"
+                    value={formData.sections?.product_detail?.accordion_specifications || ''}
+                    onChange={(e) => updateSectionField('product_detail', 'accordion_specifications', e.target.value)}
+                    placeholder="e.g. SPECIFICATIONS"
+                    className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-semibold uppercase"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-neutral-700 block mb-1">Accordion 4 Title (Shipping &amp; Delivery):</label>
+                  <input
+                    type="text"
+                    value={formData.sections?.product_detail?.accordion_shipping || ''}
+                    onChange={(e) => updateSectionField('product_detail', 'accordion_shipping', e.target.value)}
+                    placeholder="e.g. SHIPPING & DELIVERY"
+                    className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-semibold uppercase"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-neutral-700 block mb-1">Accordion 5 Title (Reviews):</label>
+                  <input
+                    type="text"
+                    value={formData.sections?.product_detail?.accordion_reviews || ''}
+                    onChange={(e) => updateSectionField('product_detail', 'accordion_reviews', e.target.value)}
+                    placeholder="e.g. CUSTOMER REVIEWS"
+                    className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-semibold uppercase"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Badges Strip (Under Add to Bag) */}
+            <div className="bg-[#FAF7F2] p-4 rounded-sm border border-neutral-200 space-y-3">
+              <h4 className="font-sans font-bold text-xs uppercase tracking-wider text-neutral-800">
+                Product Page Trust Badges (Under Add to Bag)
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                {/* Badge 1 */}
+                <div className="bg-white p-3 rounded-sm border border-neutral-200 space-y-2">
+                  <span className="font-bold text-neutral-900 block">Badge 1 (Shipping)</span>
+                  <div>
+                    <label className="text-neutral-600 block mb-0.5">Title:</label>
+                    <input
+                      type="text"
+                      value={formData.sections?.product_detail?.trust_badge_1_title || ''}
+                      onChange={(e) => updateSectionField('product_detail', 'trust_badge_1_title', e.target.value)}
+                      placeholder="e.g. Express Delivery"
+                      className="w-full p-2 rounded-sm border border-neutral-300 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-neutral-600 block mb-0.5">Subtitle:</label>
+                    <input
+                      type="text"
+                      value={formData.sections?.product_detail?.trust_badge_1_sub || ''}
+                      onChange={(e) => updateSectionField('product_detail', 'trust_badge_1_sub', e.target.value)}
+                      placeholder="e.g. 2-4 Days Pan-India"
+                      className="w-full p-2 rounded-sm border border-neutral-300"
+                    />
+                  </div>
+                </div>
+
+                {/* Badge 2 */}
+                <div className="bg-white p-3 rounded-sm border border-neutral-200 space-y-2">
+                  <span className="font-bold text-neutral-900 block">Badge 2 (Returns)</span>
+                  <div>
+                    <label className="text-neutral-600 block mb-0.5">Title:</label>
+                    <input
+                      type="text"
+                      value={formData.sections?.product_detail?.trust_badge_2_title || ''}
+                      onChange={(e) => updateSectionField('product_detail', 'trust_badge_2_title', e.target.value)}
+                      placeholder="e.g. 7 Days Returns"
+                      className="w-full p-2 rounded-sm border border-neutral-300 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-neutral-600 block mb-0.5">Subtitle:</label>
+                    <input
+                      type="text"
+                      value={formData.sections?.product_detail?.trust_badge_2_sub || ''}
+                      onChange={(e) => updateSectionField('product_detail', 'trust_badge_2_sub', e.target.value)}
+                      placeholder="e.g. Hassle-free pickup"
+                      className="w-full p-2 rounded-sm border border-neutral-300"
+                    />
+                  </div>
+                </div>
+
+                {/* Badge 3 */}
+                <div className="bg-white p-3 rounded-sm border border-neutral-200 space-y-2">
+                  <span className="font-bold text-neutral-900 block">Badge 3 (Authenticity)</span>
+                  <div>
+                    <label className="text-neutral-600 block mb-0.5">Title:</label>
+                    <input
+                      type="text"
+                      value={formData.sections?.product_detail?.trust_badge_3_title || ''}
+                      onChange={(e) => updateSectionField('product_detail', 'trust_badge_3_title', e.target.value)}
+                      placeholder="e.g. 100% Authentic"
+                      className="w-full p-2 rounded-sm border border-neutral-300 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-neutral-600 block mb-0.5">Subtitle:</label>
+                    <input
+                      type="text"
+                      value={formData.sections?.product_detail?.trust_badge_3_sub || ''}
+                      onChange={(e) => updateSectionField('product_detail', 'trust_badge_3_sub', e.target.value)}
+                      placeholder="e.g. Pure Artisan Weaves"
+                      className="w-full p-2 rounded-sm border border-neutral-300"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 5: Shopping Bag & Cart Section Headings */}
+          <div className="bg-white rounded-sm border border-neutral-200 p-6 space-y-6 shadow-xs">
+            <div className="border-b border-neutral-200 pb-3">
+              <h3 className="font-sans text-lg font-bold text-neutral-900">
+                5. Shopping Bag &amp; Cart Section Headings
+              </h3>
+              <p className="text-xs text-neutral-500">
+                Customize titles and empty state messages across the cart drawer and cart page.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Cart Drawer Title:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.cart?.drawer_title || ''}
+                  onChange={(e) => updateSectionField('cart', 'drawer_title', e.target.value)}
+                  placeholder="e.g. Your Shopping Bag"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Cart Page Title:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.cart?.page_title || ''}
+                  onChange={(e) => updateSectionField('cart', 'page_title', e.target.value)}
+                  placeholder="e.g. Shopping Bag"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Order Summary Title:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.cart?.summary_title || ''}
+                  onChange={(e) => updateSectionField('cart', 'summary_title', e.target.value)}
+                  placeholder="e.g. Order Summary"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="font-bold text-neutral-700 block mb-1">Free Shipping Notification Notice:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.cart?.free_shipping_notice || ''}
+                  onChange={(e) => updateSectionField('cart', 'free_shipping_notice', e.target.value)}
+                  placeholder="e.g. FREE Express Shipping on all orders across India"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Empty Bag Heading:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.cart?.empty_title || ''}
+                  onChange={(e) => updateSectionField('cart', 'empty_title', e.target.value)}
+                  placeholder="e.g. Your Shopping Bag is Empty"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-3">
+                <label className="font-bold text-neutral-700 block mb-1">Empty Bag Subtitle:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.cart?.empty_subtitle || ''}
+                  onChange={(e) => updateSectionField('cart', 'empty_subtitle', e.target.value)}
+                  placeholder="e.g. Explore our handcrafted festive collections..."
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 6: Saved Wishlist Section Headings */}
+          <div className="bg-white rounded-sm border border-neutral-200 p-6 space-y-6 shadow-xs">
+            <div className="border-b border-neutral-200 pb-3">
+              <h3 className="font-sans text-lg font-bold text-neutral-900">
+                6. Saved Wishlist Section Headings
+              </h3>
+              <p className="text-xs text-neutral-500">
+                Customize titles and empty state message for the customer wishlist page.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Wishlist Page Title:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.wishlist?.title || ''}
+                  onChange={(e) => updateSectionField('wishlist', 'title', e.target.value)}
+                  placeholder="e.g. My Saved Wishlist"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Empty Wishlist Heading:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.wishlist?.empty_title || ''}
+                  onChange={(e) => updateSectionField('wishlist', 'empty_title', e.target.value)}
+                  placeholder="e.g. Your Wishlist is Empty"
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-neutral-700 block mb-1">Empty Wishlist Subtitle:</label>
+                <input
+                  type="text"
+                  value={formData.sections?.wishlist?.empty_subtitle || ''}
+                  onChange={(e) => updateSectionField('wishlist', 'empty_subtitle', e.target.value)}
+                  placeholder="e.g. Explore our artisanal suits, sarees, and festive wear..."
+                  className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white"
+                />
               </div>
             </div>
           </div>

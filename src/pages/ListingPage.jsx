@@ -312,6 +312,13 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   };
 
   const config = getCategoryConfig();
+  if (pageAvailability?.title) {
+    config.heading = pageAvailability.title;
+    config.title = pageAvailability.title;
+  }
+  if (pageAvailability?.teaser) {
+    config.description = pageAvailability.teaser;
+  }
 
   const isUnavailable = Boolean(pageAvailability && pageAvailability.status && pageAvailability.status !== 'active');
 

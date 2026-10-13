@@ -11,6 +11,7 @@ import {
   Check
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext.jsx';
+import { useContent } from '../../context/ContentContext.jsx';
 import { getProductUrl } from '../../utils/productUrl.js';
 
 export function CartDrawer() {
@@ -23,6 +24,9 @@ export function CartDrawer() {
     subtotal,
     grandTotal,
   } = useCart();
+
+  const { getSection } = useContent();
+  const cartSec = getSection('cart') || {};
 
   const navigate = useNavigate();
 
@@ -48,7 +52,7 @@ export function CartDrawer() {
             <div className="flex items-center space-x-2">
               <ShoppingBag className="w-5 h-5 text-brand-gold" />
               <h2 className="font-sans font-bold text-base tracking-wide">
-                Your Shopping Bag ({cart.reduce((a, b) => a + b.quantity, 0)})
+                {cartSec.drawer_title || 'Your Shopping Bag'} ({cart.reduce((a, b) => a + b.quantity, 0)})
               </h2>
             </div>
             <button
@@ -64,7 +68,13 @@ export function CartDrawer() {
             <div className="flex items-center space-x-2 text-neutral-800">
               <Truck className="w-4 h-4 text-brand-maroon shrink-0" />
               <span className="font-medium">
-                <strong className="text-emerald-700">FREE Express Shipping</strong> on all orders across India
+                {cartSec.free_shipping_notice ? (
+                  cartSec.free_shipping_notice
+                ) : (
+                  <>
+                    <strong className="text-emerald-700">FREE Express Shipping</strong> on all orders across India
+                  </>
+                )}
               </span>
             </div>
           </div>
@@ -77,8 +87,8 @@ export function CartDrawer() {
                   <ShoppingBag className="w-8 h-8 text-neutral-400" />
                 </div>
                 <div>
-                  <p className="font-sans text-lg font-bold text-neutral-800">Your bag is empty</p>
-                  <p className="text-xs text-neutral-500 mt-1">Explore our latest festive ethnic collection.</p>
+                  <p className="font-sans text-lg font-bold text-neutral-800">{cartSec.empty_title || 'Your bag is empty'}</p>
+                  <p className="text-xs text-neutral-500 mt-1">{cartSec.empty_subtitle || 'Explore our latest festive ethnic collection.'}</p>
                 </div>
                 <button
                   onClick={() => {

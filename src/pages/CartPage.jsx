@@ -14,6 +14,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { useCart } from '../context/CartContext.jsx';
+import { useContent } from '../context/ContentContext.jsx';
 import { getProductUrl } from '../utils/productUrl.js';
 
 export function CartPage() {
@@ -26,6 +27,9 @@ export function CartPage() {
     grandTotal,
   } = useCart();
 
+  const { getSection } = useContent();
+  const cartSec = getSection('cart') || {};
+
   const navigate = useNavigate();
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
@@ -33,7 +37,7 @@ export function CartPage() {
   return (
     <div className="min-h-screen bg-brand-cream/40 py-8 sm:py-12">
       <Helmet>
-        <title>{`Shopping Bag (${totalItems}) | OCT9 Luxury Ethnic Wear`}</title>
+        <title>{`${cartSec.page_title || 'Shopping Bag'} (${totalItems}) | OCT9 Luxury Ethnic Wear`}</title>
         <meta name="description" content="Review your selected designer suits, sarees, and ethnic wear in your OCT9 shopping bag." />
       </Helmet>
 
@@ -42,14 +46,14 @@ export function CartPage() {
         <nav className="flex items-center space-x-2 text-xs text-neutral-500 mb-6">
           <Link to="/" className="hover:text-brand-maroon transition-colors">Home</Link>
           <span>/</span>
-          <span className="text-neutral-900 font-semibold">Shopping Bag</span>
+          <span className="text-neutral-900 font-semibold">{cartSec.page_title || 'Shopping Bag'}</span>
         </nav>
 
         {/* Header Title */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
           <div>
             <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
-              Shopping Bag
+              {cartSec.page_title || 'Shopping Bag'}
             </h1>
             <p className="text-xs text-neutral-500 mt-1">
               {totalItems === 0
@@ -78,10 +82,10 @@ export function CartPage() {
 
             <div className="space-y-2">
               <h2 className="font-sans text-xl sm:text-2xl font-bold text-neutral-900">
-                Your Shopping Bag is Empty
+                {cartSec.empty_title || 'Your Shopping Bag is Empty'}
               </h2>
               <p className="text-xs sm:text-sm text-neutral-500 max-w-md mx-auto leading-relaxed">
-                Explore our handcrafted festive collections, royal Banarasi sarees, and tailored Pakistani suits to fill your bag.
+                {cartSec.empty_subtitle || 'Explore our handcrafted festive collections, royal Banarasi sarees, and tailored Pakistani suits to fill your bag.'}
               </p>
             </div>
 
@@ -110,7 +114,13 @@ export function CartPage() {
                 <div className="flex items-center space-x-2.5 text-xs text-neutral-800">
                   <Truck className="w-4 h-4 text-[#5A1827] shrink-0" />
                   <span className="font-medium">
-                    <strong className="text-emerald-700">FREE Express Shipping</strong> on all orders across India
+                    {cartSec.free_shipping_notice ? (
+                      cartSec.free_shipping_notice
+                    ) : (
+                      <>
+                        <strong className="text-emerald-700">FREE Express Shipping</strong> on all orders across India
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
@@ -265,7 +275,7 @@ export function CartPage() {
               {/* Price Summary Breakdown */}
               <div className="bg-white rounded-sm border border-neutral-200/90 p-5 sm:p-6 shadow-xs space-y-4">
                 <h2 className="font-sans text-base font-bold text-neutral-900 border-b border-neutral-100 pb-3">
-                  Order Summary
+                  {cartSec.summary_title || 'Order Summary'}
                 </h2>
 
                 <div className="space-y-2.5 text-xs text-neutral-600">

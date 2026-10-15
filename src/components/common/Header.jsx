@@ -15,6 +15,7 @@ import {
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useCart } from '../../context/CartContext.jsx';
 import { useWishlist } from '../../context/WishlistContext.jsx';
+import { useContent, DEFAULT_NAV_LINKS } from '../../context/ContentContext.jsx';
 import { api } from '../../services/api.js';
 import { getProductUrl } from '../../utils/productUrl.js';
 
@@ -85,46 +86,10 @@ export function Header() {
     }
   };
 
-  const navLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'New Arrivals', path: '/new-arrivals', badge: 'NEW' },
-    {
-      label: 'Stitched Suits',
-      path: '/category/stitched-suits',
-      children: [
-        { label: 'All Stitched Suits', path: '/category/stitched-suits' },
-        { label: 'Farshi Salwar Suits', path: '/category/stitched-suits?sub_category=Farshi+Salwar+Suit' },
-        { label: 'Palazzo Suits', path: '/category/stitched-suits?sub_category=Palazzo+Suit' },
-        { label: 'Sharara Suits', path: '/category/stitched-suits?sub_category=Sharara+Suit' },
-        { label: 'Anarkali Suits', path: '/category/stitched-suits?sub_category=Anarkali+Suits' },
-      ]
-    },
-    {
-      label: 'Unstitched Suits',
-      path: '/category/unstitched-suits',
-      children: [
-        { label: 'All Unstitched Suits', path: '/category/unstitched-suits' },
-        { label: 'Cotton Suits', path: '/category/unstitched-suits?sub_category=Cotton+Suit' },
-        { label: 'Mulberry Silk Suits', path: '/category/unstitched-suits?sub_category=Mulberry+Suit' },
-        { label: 'Roman Silk Suits', path: '/category/unstitched-suits?sub_category=Roman+Suit' },
-      ]
-    },
-    { label: 'Designer Suits', path: '/category/designer-suits' },
-    { label: 'Festive Wear', path: '/category/festive-wear' },
-    { label: 'Party Wear', path: '/category/party-wear' },
-    { label: 'Sarees', path: '/category/sarees' },
-    {
-      label: 'Accessories',
-      path: '/category/accessories',
-      children: [
-        { label: 'All Accessories', path: '/category/accessories' },
-        { label: 'Rings', path: '/category/accessories?sub_category=Ring' },
-        { label: 'Earrings', path: '/category/accessories?sub_category=Earrings' },
-        { label: 'Necklaces', path: '/category/accessories?sub_category=Necklace' },
-      ]
-    },
-    { label: 'Jutti', path: '/category/jutti' },
-  ];
+  const { getNavLinks } = useContent();
+  const rawNavLinks = getNavLinks ? getNavLinks() : DEFAULT_NAV_LINKS;
+  const navLinks = (Array.isArray(rawNavLinks) && rawNavLinks.length > 0 ? rawNavLinks : DEFAULT_NAV_LINKS)
+    .filter(link => link.active !== false);
 
   const userInitials = user?.name
     ? user.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
@@ -380,7 +345,7 @@ export function Header() {
 
             return (
               <div
-                key={link.label}
+                key={link.id || link.label}
                 className="relative group"
                 onMouseEnter={() => hasChildren && setActiveDropdown(link.label)}
                 onMouseLeave={() => hasChildren && setActiveDropdown(null)}
@@ -459,9 +424,10 @@ export function Header() {
 
             <div className="py-4 space-y-1">
               {navLinks.map((link) => (
-                <div key={link.label}>
+                <div key={link.id || link.label}>
                   <Link
                     to={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center justify-between py-2 px-3 rounded-lg text-neutral-800 font-semibold hover:bg-[#FAF7F2] hover:text-brand-maroon"
                   >
                     <span>{link.label}</span>
@@ -473,10 +439,11 @@ export function Header() {
                   </Link>
                   {link.children && (
                     <div className="pl-6 space-y-1 mt-1 border-l-2 border-neutral-200 ml-3">
-                      {link.children.map((sub) => (
+                      {link.children.map((sub, sIdx) => (
                         <Link
-                          key={sub.label}
+                          key={sub.id || sub.label || sIdx}
                           to={sub.path}
+                          onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-1.5 text-xs text-neutral-600 hover:text-brand-maroon font-medium"
                         >
                           {sub.label}

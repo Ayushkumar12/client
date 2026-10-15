@@ -14,7 +14,8 @@ import {
   Palette,
   Boxes,
   Mail,
-  Database
+  Database,
+  Compass
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 
@@ -54,6 +55,7 @@ export function AdminLayout() {
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
     { label: 'Inventory Management', path: '/admin/inventory', icon: Boxes },
     { label: 'Customer Inquiries', path: '/admin/inquiries', icon: Mail },
+    { label: 'Header Navigation', path: '/admin/navigation', icon: Compass },
     { label: 'Site Content & Policies', path: '/admin/content', icon: Palette },
     { label: 'Analytics & Ratings', path: '/admin/analytics', icon: BarChart3 },
     { label: 'Orders & Fulfillment', path: '/admin/orders', icon: Package },

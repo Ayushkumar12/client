@@ -51,6 +51,7 @@ import { AdminCustomers } from './pages/admin/AdminCustomers.jsx';
 import { AdminContentManager } from './pages/admin/AdminContentManager.jsx';
 import { AdminInventory } from './pages/admin/AdminInventory.jsx';
 import { AdminInquiries } from './pages/admin/AdminInquiries.jsx';
+import { AdminNavigation } from './pages/admin/AdminNavigation.jsx';
 import { AdminDatabase } from './pages/admin/AdminDatabase.jsx';
 import { UnderDevelopmentLaunch } from './components/common/UnderDevelopmentLaunch.jsx';
 import { BackToTopButton } from './components/common/BackToTopButton.jsx';
@@ -225,6 +226,7 @@ export default function App() {
                         <Route path="products" element={<AdminProducts />} />
                         <Route path="customers" element={<AdminCustomers />} />
                         <Route path="inquiries" element={<AdminInquiries />} />
+                        <Route path="navigation" element={<AdminNavigation />} />
                         <Route path="content" element={<AdminContentManager />} />
                         <Route path="database" element={<AdminDatabase />} />
                       </Route>

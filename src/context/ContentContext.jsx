@@ -48,8 +48,108 @@ export const DEFAULT_HOMEPAGE_SECTIONS = [
   }
 ];
 
+export const DEFAULT_NAV_LINKS = [
+  {
+    id: 'nav-home',
+    label: 'Home',
+    path: '/',
+    badge: '',
+    active: true,
+    children: []
+  },
+  {
+    id: 'nav-new-arrivals',
+    label: 'New Arrivals',
+    path: '/new-arrivals',
+    badge: 'NEW',
+    active: true,
+    children: []
+  },
+  {
+    id: 'nav-stitched-suits',
+    label: 'Stitched Suits',
+    path: '/category/stitched-suits',
+    badge: '',
+    active: true,
+    children: [
+      { id: 'sub-stitched-all', label: 'All Stitched Suits', path: '/category/stitched-suits' },
+      { id: 'sub-stitched-farshi', label: 'Farshi Salwar Suits', path: '/category/stitched-suits?sub_category=Farshi+Salwar+Suit' },
+      { id: 'sub-stitched-palazzo', label: 'Palazzo Suits', path: '/category/stitched-suits?sub_category=Palazzo+Suit' },
+      { id: 'sub-stitched-sharara', label: 'Sharara Suits', path: '/category/stitched-suits?sub_category=Sharara+Suit' },
+      { id: 'sub-stitched-anarkali', label: 'Anarkali Suits', path: '/category/stitched-suits?sub_category=Anarkali+Suits' }
+    ]
+  },
+  {
+    id: 'nav-unstitched-suits',
+    label: 'Unstitched Suits',
+    path: '/category/unstitched-suits',
+    badge: '',
+    active: true,
+    children: [
+      { id: 'sub-unstitched-all', label: 'All Unstitched Suits', path: '/category/unstitched-suits' },
+      { id: 'sub-unstitched-cotton', label: 'Cotton Suits', path: '/category/unstitched-suits?sub_category=Cotton+Suit' },
+      { id: 'sub-unstitched-mulberry', label: 'Mulberry Silk Suits', path: '/category/unstitched-suits?sub_category=Mulberry+Suit' },
+      { id: 'sub-unstitched-roman', label: 'Roman Silk Suits', path: '/category/unstitched-suits?sub_category=Roman+Suit' }
+    ]
+  },
+  {
+    id: 'nav-designer-suits',
+    label: 'Designer Suits',
+    path: '/category/designer-suits',
+    badge: '',
+    active: true,
+    children: []
+  },
+  {
+    id: 'nav-festive-wear',
+    label: 'Festive Wear',
+    path: '/category/festive-wear',
+    badge: '',
+    active: true,
+    children: []
+  },
+  {
+    id: 'nav-party-wear',
+    label: 'Party Wear',
+    path: '/category/party-wear',
+    badge: '',
+    active: true,
+    children: []
+  },
+  {
+    id: 'nav-sarees',
+    label: 'Sarees',
+    path: '/category/sarees',
+    badge: '',
+    active: true,
+    children: []
+  },
+  {
+    id: 'nav-accessories',
+    label: 'Accessories',
+    path: '/category/accessories',
+    badge: '',
+    active: true,
+    children: [
+      { id: 'sub-acc-all', label: 'All Accessories', path: '/category/accessories' },
+      { id: 'sub-acc-rings', label: 'Rings', path: '/category/accessories?sub_category=Ring' },
+      { id: 'sub-acc-earrings', label: 'Earrings', path: '/category/accessories?sub_category=Earrings' },
+      { id: 'sub-acc-necklaces', label: 'Necklaces', path: '/category/accessories?sub_category=Necklace' }
+    ]
+  },
+  {
+    id: 'nav-jutti',
+    label: 'Jutti',
+    path: '/category/jutti',
+    badge: '',
+    active: true,
+    children: []
+  }
+];
+
 export const DEFAULT_SITE_CONTENT = {
   homepage_sections: DEFAULT_HOMEPAGE_SECTIONS,
+  nav_links: DEFAULT_NAV_LINKS,
   brand: {
     name: 'OCT9',
     tagline: 'Luxury Without Noise',
@@ -859,6 +959,15 @@ export function ContentProvider({ children }) {
     return merged;
   };
 
+  // Helper: Get Navigation Bar Links
+  const getNavLinks = useCallback(() => {
+    const links = content.nav_links || DEFAULT_SITE_CONTENT.nav_links || DEFAULT_NAV_LINKS;
+    if (!Array.isArray(links) || links.length === 0) {
+      return DEFAULT_NAV_LINKS;
+    }
+    return links;
+  }, [content.nav_links]);
+
   const value = {
     content,
     loading,
@@ -877,6 +986,8 @@ export function ContentProvider({ children }) {
     getBusinessDetails,
     getCookieBanner,
     getHomepageSections,
+    getNavLinks,
+    DEFAULT_NAV_LINKS,
     DEFAULT_HOMEPAGE_SECTIONS
   };
 

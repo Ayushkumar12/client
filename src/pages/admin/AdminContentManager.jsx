@@ -34,6 +34,7 @@ import { useContent, DEFAULT_SITE_CONTENT, DEFAULT_HOMEPAGE_SECTIONS } from '../
 import { useAuth } from '../../context/AuthContext.jsx';
 import { api } from '../../services/api.js';
 import { ImageUploader } from '../../components/common/ImageUploader.jsx';
+import { AdminNavigation } from './AdminNavigation.jsx';
 
 export function AdminContentManager() {
   const { content, updateContent, resetSection, refreshContent } = useContent();
@@ -59,6 +60,17 @@ export function AdminContentManager() {
       setLocalLaunchSettings(launchSettings);
     }
   }, [launchSettings]);
+
+  // Sync tab with ?tab= query parameter if present
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam) {
+        setActiveTab(tabParam);
+      }
+    } catch (e) {}
+  }, []);
 
   // Load VIP launch subscribers
   const loadSubscribers = async () => {
@@ -510,6 +522,7 @@ export function AdminContentManager() {
 
   const tabs = [
     { id: 'page_availability', label: 'Page Availability' },
+    { id: 'navigation_tabs', label: 'Header Navigation' },
     { id: 'section_order', label: 'Arrange Sections' },
     { id: 'homepage_sections', label: 'Section Headings' },
     { id: 'hero_slides', label: 'Hero Slideshow Banners' },
@@ -587,8 +600,12 @@ export function AdminContentManager() {
       </div>
 
       {/* ========================================================================= */}
-      {/* TAB 1: PAGE AVAILABILITY & COMING SOON MANAGER */}
+      {/* TAB: HEADER NAVIGATION & TAB LINKS */}
       {/* ========================================================================= */}
+      {activeTab === 'navigation_tabs' && (
+        <AdminNavigation isEmbedded={true} />
+      )}
+
       {/* ========================================================================= */}
       {/* TAB 1: PAGE AVAILABILITY & COMING SOON MANAGER */}
       {/* ========================================================================= */}

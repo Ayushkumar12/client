@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   ShieldCheck,
   Truck,
@@ -11,23 +11,90 @@ import {
   AlertCircle,
   Loader2,
   ChevronRight,
-  ArrowLeft
+  ArrowLeft,
+  MapPin
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useCart } from '../context/CartContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { SEO } from '../components/common/SEO.jsx';
-import { api } from '../services/api.js';
+import { api, formatImageUrl } from '../services/api.js';
+import { trackBeginCheckout } from '../utils/conversionTracking.js';
+import { UserMapAddressPicker } from '../components/common/UserMapAddressPicker.jsx';
+
+const ensureRazorpayLoaded = () => {
+  return new Promise((resolve) => {
+    if (typeof window !== 'undefined' && typeof window.Razorpay !== 'undefined') {
+      return resolve(true);
+    }
+    const existing = document.querySelector('script[src*="checkout.razorpay.com"]');
+    if (existing) {
+      existing.addEventListener('load', () => resolve(true), { once: true });
+      existing.addEventListener('error', () => resolve(false), { once: true });
+      setTimeout(() => resolve(typeof window.Razorpay !== 'undefined'), 3000);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.head.appendChild(script);
+  });
+};
 
 export function CheckoutPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const {
     cart,
-    subtotal,
-    grandTotal,
-    clearCart
+    subtotal: cartSubtotal,
+    clearCart,
+    removeFromCart
   } = useCart();
+
+  // Buy Now item: only set if user clicked "Buy Now" on a specific product
+  const [buyNowItem] = useState(() => {
+    if (location.state?.fromCart) {
+      try {
+        sessionStorage.removeItem('oct9_buy_now_item');
+      } catch (e) { }
+      return null;
+    }
+    if (location.state?.buyNowItem) {
+      return location.state.buyNowItem;
+    }
+    try {
+      const stored = sessionStorage.getItem('oct9_buy_now_item');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) { }
+    return null;
+  });
+
+  const [pincodeStatus, setPincodeStatus] = useState({
+    checked: false,
+    serviceable: true,
+    message: '',
+    info: null
+  });
+
+  const isBuyNow = Boolean(buyNowItem);
+  const itemsToCheckout = isBuyNow ? [buyNowItem] : cart;
+  const subtotal = isBuyNow ? (Number(buyNowItem.price) * Number(buyNowItem.quantity)) : cartSubtotal;
+  const shippingFee = (pincodeStatus.checked && pincodeStatus.serviceable && pincodeStatus.info?.rate)
+    ? Number(pincodeStatus.info.rate)
+    : 60;
+  const grandTotal = Math.max(0, subtotal + shippingFee);
+  const totalItems = itemsToCheckout.reduce((acc, item) => acc + item.quantity, 0);
+
+  useEffect(() => {
+    if (itemsToCheckout && itemsToCheckout.length > 0) {
+      trackBeginCheckout(itemsToCheckout, grandTotal);
+    }
+  }, []);
 
   const [formData, setFormData] = useState({
     firstName: user?.name ? user.name.split(' ')[0] : '',
@@ -36,74 +103,135 @@ export function CheckoutPage() {
     phone: user?.phone || '',
     address_line1: '',
     address_line2: '',
-    city: 'New Delhi',
-    state: 'Delhi',
-    pincode: '110001',
-    payment_method: 'razorpay', // 'razorpay' or 'cod'
+    city: '',
+    state: '',
+    pincode: '',
+    payment_method: 'razorpay',
     notes: '',
     saveInfo: true
   });
 
   const [shiprocketInfo, setShiprocketInfo] = useState(null);
-  const [pincodeStatus, setPincodeStatus] = useState({
-    checked: false,
-    serviceable: true,
-    cod_available: true,
-    message: '',
-    info: null
-  });
   const [pincodeLoading, setPincodeLoading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [showMapPicker, setShowMapPicker] = useState(false);
+  const [readinessCheck, setReadinessCheck] = useState(null);
+  const [readinessLoading, setReadinessLoading] = useState(false);
 
-  // Prefill default user address if available
+  // Populate form fields directly from user profile as soon as user is available or updated
   useEffect(() => {
-    if (user && user.addresses && user.addresses.length > 0) {
-      const def = user.addresses.find(a => a.is_default) || user.addresses[0];
-      const nameParts = (user.name || def.name || '').trim().split(' ');
-      setFormData(prev => ({
-        ...prev,
-        firstName: nameParts[0] || '',
-        lastName: nameParts.slice(1).join(' ') || '',
-        phone: user.phone || def.phone || '',
-        address_line1: def.address_line1 || '',
-        address_line2: def.address_line2 || '',
-        city: def.city || 'New Delhi',
-        state: def.state || 'Delhi',
-        pincode: def.pincode || '110001',
-      }));
-    }
+    if (!user) return;
+
+    const def = (user.addresses && user.addresses.length > 0)
+      ? (user.addresses.find(a => a.is_default) || user.addresses[0])
+      : null;
+
+    const nameParts = (user.name || def?.name || '').trim().split(' ');
+    const resolvedPhone = (user.phone || def?.phone || (user.email === 'admin@oct9.com' ? '9667100863' : '')).trim();
+
+    setFormData(prev => ({
+      ...prev,
+      email: prev.email || user.email || '',
+      firstName: prev.firstName || nameParts[0] || '',
+      lastName: prev.lastName || nameParts.slice(1).join(' ') || '',
+      phone: prev.phone || resolvedPhone || '',
+      address_line1: prev.address_line1 || def?.address_line1 || '',
+      address_line2: prev.address_line2 || def?.address_line2 || '',
+      city: prev.city || def?.city || '',
+      state: prev.state || def?.state || '',
+      pincode: prev.pincode || def?.pincode || '',
+    }));
   }, [user]);
 
-  // Check Serviceability when pincode or payment method changes
+  // Fetch fresh profile directly on checkout mount to guarantee up-to-date user details
+  useEffect(() => {
+    let active = true;
+    if (isAuthenticated) {
+      api.getProfile().then(res => {
+        if (!active || !res?.success || !res.user) return;
+        const u = res.user;
+        const def = (u.addresses && u.addresses.length > 0)
+          ? (u.addresses.find(a => a.is_default) || u.addresses[0])
+          : null;
+        const nameParts = (u.name || def?.name || '').trim().split(' ');
+        const resolvedPhone = (u.phone || def?.phone || (u.email === 'admin@oct9.com' ? '9667100863' : '')).trim();
+
+        setFormData(prev => ({
+          ...prev,
+          email: u.email || prev.email,
+          firstName: prev.firstName || nameParts[0] || '',
+          lastName: prev.lastName || nameParts.slice(1).join(' ') || '',
+          phone: prev.phone || resolvedPhone || '',
+          address_line1: prev.address_line1 || def?.address_line1 || '',
+          address_line2: prev.address_line2 || def?.address_line2 || '',
+          city: prev.city || def?.city || '',
+          state: prev.state || def?.state || '',
+          pincode: prev.pincode || def?.pincode || ''
+        }));
+      }).catch(() => { });
+    }
+    return () => { active = false; };
+  }, [isAuthenticated]);
+
+  // Live Pre-Order Readiness Check (Stock, Shipping, Payment)
+  const verifyOrderReadiness = async (pin, method) => {
+    if (!itemsToCheckout || itemsToCheckout.length === 0) return;
+    setReadinessLoading(true);
+    try {
+      const res = await api.validateCheckout({
+        items: itemsToCheckout,
+        pincode: pin,
+        payment_method: method
+      });
+      if (res) {
+        setReadinessCheck(res);
+      }
+    } catch (e) {
+      // Graceful fallback
+    } finally {
+      setReadinessLoading(false);
+    }
+  };
+
+  // Check Serviceability & Order Readiness when pincode changes
   useEffect(() => {
     const cleanPin = String(formData.pincode || '').trim();
     if (/^\d{6}$/.test(cleanPin)) {
       verifyShiprocketPincode(cleanPin);
+      verifyOrderReadiness(cleanPin, 'razorpay');
     } else if (cleanPin.length > 0 && cleanPin.length < 6) {
       setPincodeStatus({
         checked: false,
         serviceable: false,
-        cod_available: false,
         message: 'PIN code must be 6 digits',
         info: null
       });
       setShiprocketInfo(null);
+      setReadinessCheck(prev => prev ? {
+        ...prev,
+        shipping_available: false,
+        payment_available: true,
+        details: {
+          ...prev.details,
+          shipping_status: 'Unserviceable',
+          shipping_message: 'Please enter a valid 6-digit delivery PIN code.'
+        }
+      } : null);
+    } else {
+      verifyOrderReadiness('', 'razorpay');
     }
-  }, [formData.pincode, formData.payment_method]);
+  }, [formData.pincode]);
 
   const verifyShiprocketPincode = async (pin) => {
     setPincodeLoading(true);
     try {
-      const res = await api.checkPincode(pin, {
-        cod: formData.payment_method === 'cod' ? '1' : '0'
-      });
+      const res = await api.checkPincode(pin, { cod: '0' });
       if (res && res.serviceable) {
         setShiprocketInfo(res);
         setPincodeStatus({
           checked: true,
           serviceable: true,
-          cod_available: Boolean(res.cod_available),
           message: 'Delivery Available',
           info: res
         });
@@ -120,7 +248,6 @@ export function CheckoutPage() {
         setPincodeStatus({
           checked: true,
           serviceable: false,
-          cod_available: false,
           message: msg,
           info: null
         });
@@ -130,7 +257,6 @@ export function CheckoutPage() {
       setPincodeStatus({
         checked: true,
         serviceable: false,
-        cod_available: false,
         message: `Delivery is currently not available to PIN code ${pin}.`,
         info: null
       });
@@ -147,36 +273,82 @@ export function CheckoutPage() {
     }));
   };
 
-
-  // Main Checkout Submission
+  // Main Checkout Submission with strict 3-point pre-order confirmation (Stock, Shipping, Payment)
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setErrorMsg('');
 
     const fullName = `${formData.firstName} ${formData.lastName}`.trim();
-
     const cleanPin = (formData.pincode || '').trim();
+    const rawContact = (formData.phone || user?.phone || user?.addresses?.[0]?.phone || (formData.email === 'admin@oct9.com' || user?.email === 'admin@oct9.com' ? '9667100863' : '')).trim();
+    const cleanPhone = rawContact.replace(/\D/g, '').slice(-10);
+
+    if (!cleanPhone || cleanPhone.length !== 10) {
+      setErrorMsg('Please enter a valid 10-digit mobile number for order delivery.');
+      return;
+    }
+
+    if (!formData.phone) {
+      setFormData(prev => ({ ...prev, phone: cleanPhone }));
+    }
+
     if (!/^\d{6}$/.test(cleanPin)) {
       setErrorMsg('Please enter a valid 6-digit Indian postal PIN code.');
+      return;
+    }
+
+    if (!formData.address_line1.trim()) {
+      setErrorMsg('Please enter your flat, house number, or street address.');
       return;
     }
 
     setIsProcessing(true);
 
     try {
+      // Step 1: Synchronous Server Pre-Order Readiness Verification (Stock, Shipping, Payment)
+      const readiness = await api.validateCheckout({
+        items: itemsToCheckout,
+        pincode: cleanPin,
+        payment_method: 'razorpay'
+      });
+
+      if (!readiness || !readiness.success) {
+        const failureReason = readiness?.message || 'Unable to confirm order readiness. Please review stock or shipping details.';
+        setErrorMsg(failureReason);
+        setReadinessCheck(readiness);
+        setIsProcessing(false);
+        return;
+      }
+
+      // Explicit verification check
+      if (!readiness.stock_available) {
+        setErrorMsg(readiness.message || 'One or more items in your cart are currently out of stock.');
+        setIsProcessing(false);
+        return;
+      }
+
+      if (!readiness.shipping_available) {
+        setErrorMsg(readiness.message || `Delivery is currently not available to PIN code ${cleanPin}.`);
+        setIsProcessing(false);
+        return;
+      }
+
+      if (!readiness.payment_available) {
+        setErrorMsg(readiness.message || 'Selected payment method is currently unavailable for this order.');
+        setIsProcessing(false);
+        return;
+      }
+
       // 1. Mandatory Pre-Payment Delivery Serviceability Verification
       let pinCheck = shiprocketInfo;
       if (!pinCheck || pinCheck.pincode !== cleanPin) {
         try {
-          pinCheck = await api.checkPincode(cleanPin, {
-            cod: formData.payment_method === 'cod' ? '1' : '0'
-          });
+          pinCheck = await api.checkPincode(cleanPin, { cod: '0' });
           if (pinCheck && pinCheck.serviceable) {
             setShiprocketInfo(pinCheck);
             setPincodeStatus({
               checked: true,
               serviceable: true,
-              cod_available: Boolean(pinCheck.cod_available),
               message: 'Delivery Available',
               info: pinCheck
             });
@@ -195,7 +367,6 @@ export function CheckoutPage() {
         setPincodeStatus({
           checked: true,
           serviceable: false,
-          cod_available: false,
           message: failMessage,
           info: null
         });
@@ -203,29 +374,24 @@ export function CheckoutPage() {
         return;
       }
 
-      // Block COD if COD is not available for this pincode
-      if (formData.payment_method === 'cod' && !pinCheck.cod_available) {
-        const codFailMsg = `Cash on Delivery (COD) is not available for PIN code ${cleanPin}. Please choose Online Payment (UPI / Cards / NetBanking) to place your order.`;
-        setErrorMsg(codFailMsg);
-        setIsProcessing(false);
-        return;
-      }
-
       const orderPayload = {
-        customer_name: fullName || formData.firstName,
-        customer_email: formData.email.trim(),
-        customer_phone: formData.phone.trim(),
+        customer_name: fullName || formData.firstName || user?.name || 'OCT9 Customer',
+        customer_email: (formData.email || user?.email || '').trim(),
+        customer_phone: cleanPhone || formData.phone.trim(),
         shipping_address: {
-          name: fullName || formData.firstName,
-          phone: formData.phone.trim(),
+          name: fullName || formData.firstName || user?.name || 'OCT9 Customer',
+          phone: cleanPhone || formData.phone.trim(),
           address_line1: formData.address_line1.trim(),
           address_line2: (formData.address_line2 || '').trim(),
           city: formData.city.trim(),
           state: formData.state.trim(),
           pincode: cleanPin,
         },
-        items: cart,
-        payment_method: formData.payment_method,
+        items: itemsToCheckout,
+        payment_method: 'razorpay',
+        shipping_fee: shippingFee,
+        grand_total: grandTotal,
+        save_address: Boolean(formData.saveInfo),
         notes: formData.notes
       };
 
@@ -236,77 +402,80 @@ export function CheckoutPage() {
 
       const createdOrder = res.order;
 
-      // Handle Cash on Delivery
-      if (formData.payment_method === 'cod') {
-        try {
-          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        } catch (e) {}
-        clearCart();
-        navigate(`/order-success/${createdOrder.order_number}`);
-        return;
-      }
+      // Razorpay Payment Gateway Online Checkout
+      const options = {
+        key: createdOrder.razorpay_key_id,
+        amount: Math.round(grandTotal * 100),
+        currency: 'INR',
+        name: 'OCT9 Luxury Ethnic Wear',
+        description: `Order #${createdOrder.order_number}`,
+        image: window.location.protocol === 'https:' ? `${window.location.origin}/oct9-logo.jpg` : undefined,
+        order_id: createdOrder.razorpay_order_id,
+        handler: async function (response) {
+          try {
+            const verifyPayload = {
+              order_id: createdOrder.id,
+              order_number: createdOrder.order_number,
+              razorpay_order_id: response.razorpay_order_id || createdOrder.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            };
 
-      // Handle Razorpay Payment Gateway
-      if (formData.payment_method === 'razorpay') {
-        const options = {
-          key: createdOrder.razorpay_key_id,
-          amount: Math.round(grandTotal * 100),
-          currency: 'INR',
-          name: 'OCT9 Luxury Ethnic Wear',
-          description: `Order #${createdOrder.order_number}`,
-          image: window.location.protocol === 'https:' ? `${window.location.origin}/oct9-logo.jpg` : undefined,
-          order_id: createdOrder.razorpay_order_id,
-          handler: async function (response) {
-            try {
-              const verifyPayload = {
-                order_id: createdOrder.id,
-                order_number: createdOrder.order_number,
-                razorpay_order_id: response.razorpay_order_id || createdOrder.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature
-              };
+            const verifyRes = await api.verifyPayment(verifyPayload);
 
-              const verifyRes = await api.verifyPayment(verifyPayload);
+            if (verifyRes.success) {
+              try {
+                confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+              } catch (e) { }
 
-              if (verifyRes.success) {
+              if (isBuyNow) {
                 try {
-                  confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-                } catch (e) {}
-                clearCart();
-                navigate(`/order-success/${createdOrder.order_number}`);
+                  sessionStorage.removeItem('oct9_buy_now_item');
+                } catch (e) { }
+                if (buyNowItem) {
+                  removeFromCart(buyNowItem.product_id, buyNowItem.size, buyNowItem.color);
+                }
               } else {
-                setErrorMsg('Payment verification failed: ' + (verifyRes.message || 'Verification rejected'));
-                setIsProcessing(false);
+                clearCart();
               }
-            } catch (verErr) {
-              setErrorMsg('Error verifying payment: ' + (verErr.message || 'Network error'));
-              setIsProcessing(false);
-            }
-          },
-          prefill: {
-            name: fullName || formData.firstName,
-            email: formData.email,
-            contact: formData.phone
-          },
-          theme: { color: '#5A1827' },
-          modal: {
-            ondismiss: function () {
-              setIsProcessing(false);
-            }
-          }
-        };
 
-        if (typeof window.Razorpay !== 'undefined') {
-          const rzp = new window.Razorpay(options);
-          rzp.on('payment.failed', function (resp) {
-            setErrorMsg('Payment Failed: ' + (resp.error?.description || 'Transaction cancelled by user'));
+            } else if (verifyRes.refunded) {
+              setErrorMsg(verifyRes.message || 'Shiprocket order confirmation could not be completed. A 100% instant refund has been initiated to your original payment method.');
+              setIsProcessing(false);
+            } else {
+              setErrorMsg('Payment verification failed: ' + (verifyRes.message || 'Verification rejected'));
+              setIsProcessing(false);
+            }
+          } catch (verErr) {
+            setErrorMsg('Error verifying payment: ' + (verErr.message || 'Network error'));
             setIsProcessing(false);
-          });
-          rzp.open();
-        } else {
-          setErrorMsg('Payment gateway is loading. Please check your internet connection and try again.');
-          setIsProcessing(false);
+          }
+        },
+        prefill: {
+          name: fullName || `${formData.firstName} ${formData.lastName}`.trim() || user?.name || 'OCT9 Customer',
+          email: (formData.email || user?.email || (user?.email === 'admin@oct9.com' ? 'admin@oct9.com' : 'support@oct9.in')).trim(),
+          contact: cleanPhone || (formData.phone ? formData.phone.replace(/\D/g, '').slice(-10) : '') || (user?.phone ? user.phone.replace(/\D/g, '').slice(-10) : '') || '9667100863'
+        },
+        theme: { color: '#5A1827' },
+        modal: {
+          ondismiss: function () {
+            setIsProcessing(false);
+          }
         }
+      };
+
+      const isReady = typeof window.Razorpay !== 'undefined' || (await ensureRazorpayLoaded());
+
+      if (isReady && typeof window.Razorpay !== 'undefined') {
+        const rzp = new window.Razorpay(options);
+        rzp.on('payment.failed', function (resp) {
+          setErrorMsg('Payment Failed: ' + (resp.error?.description || 'Transaction cancelled by user'));
+          setIsProcessing(false);
+        });
+        rzp.open();
+      } else {
+        setErrorMsg('Payment gateway is loading. Please check your internet connection and try again.');
+        setIsProcessing(false);
       }
     } catch (err) {
       setErrorMsg(err.message || 'Checkout failed. Please try again.');
@@ -350,7 +519,7 @@ export function CheckoutPage() {
     );
   }
 
-  if (cart.length === 0) {
+  if (itemsToCheckout.length === 0) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center bg-white px-4">
         <div className="max-w-md w-full text-center space-y-4 py-16">
@@ -359,7 +528,7 @@ export function CheckoutPage() {
           </div>
           <h1 className="font-sans text-2xl font-bold text-neutral-900">Your bag is empty</h1>
           <p className="text-xs text-neutral-500 max-w-sm mx-auto">
-            You don't have any items in your bag to checkout. Explore our latest arrivals to continue shopping.
+            You don't have any items to checkout. Explore our latest arrivals to continue shopping.
           </p>
           <div className="pt-2">
             <Link
@@ -374,27 +543,13 @@ export function CheckoutPage() {
     );
   }
 
-  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-
   return (
     <div className="min-h-screen bg-white text-neutral-900 font-sans antialiased">
-      <SEO title="Checkout | OCT9 Luxury Ethnic Wear" />
-
-      {/* Top Header Bar */}
-      <header className="border-b border-neutral-200 bg-white sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2.5">
-            <img src="/oct9-logo.jpg" alt="OCT9" className="h-8 w-auto rounded object-contain border border-neutral-200" />
-            <span className="font-bold text-lg tracking-tight text-neutral-900">OCT9</span>
-          </Link>
-
-          <div className="flex items-center space-x-2 text-xs text-neutral-500">
-            <Lock className="w-3.5 h-3.5 text-emerald-600" />
-            <span className="hidden sm:inline font-medium">256-Bit SSL Encrypted Checkout</span>
-            <span className="sm:hidden font-medium">Secure</span>
-          </div>
-        </div>
-      </header>
+      <SEO
+        title="Checkout | OCT9 Luxury Ethnic Wear"
+        description="Complete your order securely at OCT9. Authentic designer suits, sarees, and complimentary pan-India shipping."
+        noindex={true}
+      />
 
       {/* Main Checkout Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -415,15 +570,31 @@ export function CheckoutPage() {
               <section className="space-y-4 pt-2">
                 <div className="flex items-center justify-between border-b border-neutral-200 pb-3">
                   <h2 className="text-base font-bold text-neutral-900">1. Contact Information</h2>
-                  {!isAuthenticated && (
+                  {!isAuthenticated ? (
                     <div className="text-xs text-neutral-500">
                       Already have an account?{' '}
                       <Link to="/login" className="text-[#5A1827] font-semibold hover:underline">
                         Sign In
                       </Link>
                     </div>
+                  ) : (
+                    <span className="text-[11px] text-emerald-800 font-semibold bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+                      Profile Connected
+                    </span>
                   )}
                 </div>
+
+                {isAuthenticated && user && (
+                  <div className="bg-[#FAF7F2] p-2.5 rounded-sm border border-[#E8DCCF] flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                      <span className="text-neutral-700">
+                        Logged in as <strong className="text-neutral-900">{user.name || 'Account User'}</strong> ({user.email})
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-neutral-500 font-medium hidden sm:inline">Prefilled from your profile</span>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -467,8 +638,97 @@ export function CheckoutPage() {
               <section className="space-y-4 pt-4">
                 <div className="flex items-center justify-between border-b border-neutral-200 pb-3">
                   <h2 className="text-base font-bold text-neutral-900">2. Shipping Address</h2>
-                  <span className="text-[11px] text-neutral-500">Domestic Express India</span>
+                  <span className="text-[11px] text-neutral-500">Domestic Standard Delivery</span>
                 </div>
+
+                {/* Saved Addresses from User Profile */}
+                {user?.addresses && user.addresses.length > 0 && (
+                  <div className="p-3 bg-white border border-neutral-200 rounded-sm space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-neutral-900">Saved Addresses from Your Profile</span>
+                      <span className="text-[11px] text-neutral-500">{user.addresses.length} saved</span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {user.addresses.map((addr) => {
+                        const isSelected = formData.address_line1 === addr.address_line1 && formData.pincode === addr.pincode;
+                        return (
+                          <button
+                            key={addr.id}
+                            type="button"
+                            onClick={() => {
+                              const nameParts = (addr.name || user.name || '').trim().split(' ');
+                              setFormData(prev => ({
+                                ...prev,
+                                firstName: nameParts[0] || prev.firstName,
+                                lastName: nameParts.slice(1).join(' ') || prev.lastName,
+                                phone: addr.phone || user.phone || prev.phone,
+                                address_line1: addr.address_line1 || '',
+                                address_line2: addr.address_line2 || '',
+                                city: addr.city || '',
+                                state: addr.state || '',
+                                pincode: addr.pincode || ''
+                              }));
+                            }}
+                            className={`p-2.5 rounded-sm text-left border text-xs transition-colors cursor-pointer ${isSelected
+                                ? 'border-[#5A1827] bg-[#5A1827]/5 font-semibold text-neutral-900'
+                                : 'border-neutral-200 bg-neutral-50/60 hover:bg-neutral-100 text-neutral-700'
+                              }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-[11px] uppercase tracking-wider text-neutral-800">
+                                {addr.type || 'Address'} {addr.is_default ? '★ Default' : ''}
+                              </span>
+                              {isSelected && <span className="text-[10px] text-[#5A1827] font-bold">Selected</span>}
+                            </div>
+                            <p className="truncate text-xs text-neutral-800 mt-0.5">{addr.address_line1}</p>
+                            <p className="text-[11px] text-neutral-500">{addr.city}, {addr.state} - {addr.pincode}</p>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Map-based Address Picker for Customers */}
+                <div className="p-3 bg-[#FAF7F2] border border-[#E8DCCF] rounded-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <MapPin className="w-4 h-4 text-[#5A1827] shrink-0" />
+                    <div>
+                      <span className="text-xs font-bold text-neutral-900 block">Locate Your Address on Map</span>
+                      <span className="text-[11px] text-neutral-600">
+                        Tap map or use GPS to auto-fill street, area, city & PIN code in text. All text fields remain <strong>changeable</strong>.
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowMapPicker(!showMapPicker)}
+                    className="px-3.5 py-2 text-xs font-bold uppercase tracking-wider bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-800 rounded-sm cursor-pointer transition-colors flex items-center justify-center gap-1.5 shrink-0 shadow-2xs"
+                  >
+                    <MapPin className="w-3.5 h-3.5 text-[#5A1827]" />
+                    <span>{showMapPicker ? 'Close Map' : 'Pick Address on Map'}</span>
+                  </button>
+                </div>
+
+                {/* Inline User Map Picker */}
+                {showMapPicker && (
+                  <UserMapAddressPicker
+                    initialPincode={formData.pincode}
+                    initialCity={formData.city}
+                    onSelectAddress={(resolved) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        address_line1: resolved.address_line1 || prev.address_line1,
+                        address_line2: resolved.address_line2 || prev.address_line2,
+                        city: resolved.city || prev.city,
+                        state: resolved.state || prev.state,
+                        pincode: resolved.pincode || prev.pincode
+                      }));
+                      setShowMapPicker(false);
+                    }}
+                    onClose={() => setShowMapPicker(false)}
+                  />
+                )}
 
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -601,13 +861,8 @@ export function CheckoutPage() {
                           Delivery Available to {pincodeStatus.info?.city || formData.city}, {pincodeStatus.info?.state || formData.state}
                         </p>
                         <p className="text-[11px] text-emerald-700">
-                          Estimated delivery within <strong>{pincodeStatus.info?.delivery_date || '2-4 business days'}</strong> via {pincodeStatus.info?.courier_partner || 'Express Courier'}.
+                          Estimated delivery within <strong>{pincodeStatus.info?.delivery_date || '3-5 business days'}</strong> via {pincodeStatus.info?.courier_partner || 'Standard Delivery'}.
                         </p>
-                        {formData.payment_method === 'cod' && !pincodeStatus.cod_available && (
-                          <p className="text-[11px] text-amber-800 font-semibold pt-1">
-                            ⚠ Cash on Delivery (COD) is not available for this PIN code. Please choose Online Payment.
-                          </p>
-                        )}
                       </div>
                     </div>
                   )}
@@ -626,50 +881,24 @@ export function CheckoutPage() {
                 </div>
               </section>
 
-              {/* Section 3: Shipping Method */}
+              {/* Section 3: Payment Method */}
               <section className="space-y-4 pt-4">
                 <div className="flex items-center justify-between border-b border-neutral-200 pb-3">
-                  <h2 className="text-base font-bold text-neutral-900">3. Shipping Method</h2>
-                </div>
-
-                <div className="border border-neutral-300 rounded-md divide-y divide-neutral-200 overflow-hidden bg-white">
-                  <div className="p-3.5 flex items-center justify-between text-xs sm:text-sm">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-4 h-4 rounded-full border-4 border-neutral-900 bg-white" />
-                      <div>
-                        <span className="font-semibold text-neutral-900">Express Air Delivery (Shiprocket Priority)</span>
-                        <p className="text-xs text-neutral-500">Fully insured transit with live SMS tracking</p>
-                      </div>
-                    </div>
-                    <span className="font-bold text-neutral-900">
-                      {shippingFee === 0 ? <strong className="text-emerald-700 uppercase">FREE</strong> : `₹${shippingFee}`}
-                    </span>
-                  </div>
-                </div>
-              </section>
-
-              {/* Section 4: Payment Method */}
-              <section className="space-y-4 pt-4">
-                <div className="flex items-center justify-between border-b border-neutral-200 pb-3">
-                  <h2 className="text-base font-bold text-neutral-900">4. Payment Method</h2>
+                  <h2 className="text-base font-bold text-neutral-900">3. Payment Method</h2>
                   <span className="text-[11px] text-neutral-500">Encrypted & Secure</span>
                 </div>
 
-                <div className="border border-neutral-300 rounded-md divide-y divide-neutral-200 overflow-hidden bg-white">
-                  {/* Option A: Razorpay Online Payment */}
-                  <label
-                    className={`block p-4 cursor-pointer transition-colors ${
-                      formData.payment_method === 'razorpay' ? 'bg-neutral-50/70' : 'hover:bg-neutral-50/40'
-                    }`}
-                  >
+                <div className="border border-neutral-300 rounded-md overflow-hidden bg-white">
+                  {/* Razorpay Online Payment */}
+                  <div className="p-4 bg-neutral-50/70">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-3">
                         <input
                           type="radio"
                           name="payment_method"
                           value="razorpay"
-                          checked={formData.payment_method === 'razorpay'}
-                          onChange={handleInputChange}
+                          checked={true}
+                          readOnly
                           className="mt-0.5 text-neutral-900 focus:ring-neutral-900"
                         />
                         <div>
@@ -677,47 +906,13 @@ export function CheckoutPage() {
                             Online Payment (Razorpay Secure)
                           </span>
                           <span className="text-xs text-neutral-500 block mt-0.5">
-                            UPI (Google Pay, PhonePe, Paytm), Credit / Debit Cards, NetBanking
+                            UPI (Google Pay, PhonePe, Paytm), Credit / Debit Cards, NetBanking, Wallets
                           </span>
                         </div>
                       </div>
                       <CreditCard className="w-5 h-5 text-neutral-600 shrink-0" />
                     </div>
-                  </label>
-
-                  {/* Option B: Cash on Delivery */}
-                  <label
-                    className={`block p-4 cursor-pointer transition-colors ${
-                      formData.payment_method === 'cod' ? 'bg-neutral-50/70' : 'hover:bg-neutral-50/40'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3">
-                        <input
-                          type="radio"
-                          name="payment_method"
-                          value="cod"
-                          checked={formData.payment_method === 'cod'}
-                          onChange={handleInputChange}
-                          className="mt-0.5 text-neutral-900 focus:ring-neutral-900"
-                        />
-                        <div>
-                          <span className="text-xs sm:text-sm font-bold text-neutral-900 block">
-                            Cash on Delivery (COD)
-                          </span>
-                          <span className="text-xs text-neutral-500 block mt-0.5">
-                            Pay upon doorstep delivery
-                          </span>
-                          {pincodeStatus.checked && !pincodeStatus.cod_available && (
-                            <span className="text-[11px] font-semibold text-amber-700 block mt-1">
-                              ⚠ Not available for PIN {formData.pincode}. Choose Online Payment.
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <Banknote className="w-5 h-5 text-neutral-600 shrink-0" />
-                    </div>
-                  </label>
+                  </div>
                 </div>
               </section>
 
@@ -729,38 +924,84 @@ export function CheckoutPage() {
                 </div>
               )}
 
+              {/* Direct Purchase Notice */}
+              {isBuyNow && (
+                <div className="p-3 bg-[#FAF7F2] border border-[#EFE8DC] rounded-sm text-xs text-neutral-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <span>
+                    Direct Purchase: You are buying <strong>{buyNowItem.title}</strong> directly.
+                    {cart.length > 0 ? (
+                      <> Other <strong>{cart.length} {cart.length === 1 ? 'item' : 'items'}</strong> in your shopping bag are saved and not included.</>
+                    ) : null}
+                  </span>
+                  {cart.length > 0 && (
+                    <Link to="/cart" className="text-brand-maroon font-bold underline whitespace-nowrap text-right sm:text-left">
+                      View Shopping Bag
+                    </Link>
+                  )}
+                </div>
+              )}
+
+              {/* Stock Warning Notice */}
+              {itemsToCheckout.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock))) && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-md text-xs text-red-800 space-y-1">
+                  <p className="font-bold">Cannot Place Order — Stock Exceeded</p>
+                  <p className="text-[11px] text-red-700">
+                    {isBuyNow
+                      ? 'The selected item exceeds available warehouse stock.'
+                      : 'One or more items in your order exceed available stock. Please return to your shopping bag to adjust quantities before placing this order.'}
+                  </p>
+                </div>
+              )}
+
+
+
               {/* Submit CTA Button */}
               <div className="pt-4">
                 <button
                   type="submit"
-                  disabled={isProcessing || (pincodeStatus.checked && !pincodeStatus.serviceable)}
-                  className={`w-full h-12 text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-md shadow-sm transition-all flex items-center justify-center space-x-2 cursor-pointer ${
-                    pincodeStatus.checked && !pincodeStatus.serviceable
+                  disabled={isProcessing || (pincodeStatus.checked && !pincodeStatus.serviceable) || itemsToCheckout.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock)))}
+                  className={`w-full h-12 text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-md shadow-sm transition-all flex items-center justify-center space-x-2 cursor-pointer ${(pincodeStatus.checked && !pincodeStatus.serviceable) || itemsToCheckout.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock)))
                       ? 'bg-neutral-400 cursor-not-allowed'
                       : 'bg-[#5A1827] hover:bg-[#43121D] active:scale-98 disabled:bg-neutral-400'
-                  }`}
+                    }`}
                 >
                   {isProcessing ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
                       <span>Verifying & Processing...</span>
                     </>
+                  ) : itemsToCheckout.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock))) ? (
+                    <span>Adjust Quantity to Match Stock</span>
                   ) : pincodeStatus.checked && !pincodeStatus.serviceable ? (
                     <span>Delivery Unavailable for PIN {formData.pincode}</span>
                   ) : (
                     <span>
-                      {formData.payment_method === 'razorpay'
-                        ? `Pay ₹${grandTotal.toLocaleString('en-IN')}`
-                        : `Place Order (Cash on Delivery)`}
+                      Pay ₹{grandTotal.toLocaleString('en-IN')}
                     </span>
                   )}
                 </button>
 
                 <div className="mt-4 flex items-center justify-center space-x-4 text-xs text-neutral-500">
-                  <Link to="/cart" className="hover:text-neutral-900 flex items-center gap-1 font-medium">
-                    <ArrowLeft className="w-3 h-3" />
-                    <span>Return to Bag</span>
-                  </Link>
+                  {isBuyNow ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try {
+                          sessionStorage.removeItem('oct9_buy_now_item');
+                        } catch (e) { }
+                        navigate(-1);
+                      }}
+                      className="hover:text-neutral-900 flex items-center gap-1 font-medium cursor-pointer"
+                    >
+                      <ArrowLeft className="w-3 h-3" />
+                      <span>Back to Product</span>
+                    </button>
+                  ) : (
+                    <Link to="/cart" className="hover:text-neutral-900 flex items-center gap-1 font-medium">
+                      <ArrowLeft className="w-3 h-3" />
+                      <span>Return to Bag</span>
+                    </Link>
+                  )}
                   <span>•</span>
                   <span>7-Day Doorstep Returns</span>
                 </div>
@@ -769,16 +1010,36 @@ export function CheckoutPage() {
 
             {/* RIGHT COLUMN: Sticky Order Summary (5 cols) */}
             <div className="lg:col-span-5 bg-neutral-50 border border-neutral-200 rounded-lg p-5 sm:p-6 space-y-6 lg:sticky lg:top-24">
-              <h2 className="text-base font-bold text-neutral-900 pb-3 border-b border-neutral-200">
-                Order Summary ({totalItems} {totalItems === 1 ? 'Item' : 'Items'})
-              </h2>
+              <div className="flex items-center justify-between pb-3 border-b border-neutral-200">
+                <h2 className="text-base font-bold text-neutral-900">
+                  {isBuyNow ? `Direct Purchase (${totalItems} ${totalItems === 1 ? 'Item' : 'Items'})` : `Order Summary (${totalItems} ${totalItems === 1 ? 'Item' : 'Items'})`}
+                </h2>
+                {isBuyNow && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-maroon bg-brand-maroon/10 px-2 py-0.5 rounded-xs">
+                    Buy Now
+                  </span>
+                )}
+              </div>
 
               {/* Items List */}
               <div className="divide-y divide-neutral-200 max-h-72 overflow-y-auto pr-1 space-y-3">
-                {cart.map((item) => (
+                {itemsToCheckout.map((item) => (
                   <div key={`${item.product_id}-${item.size}-${item.color}`} className="pt-3 first:pt-0 flex items-center space-x-3 text-xs">
                     <div className="relative w-14 h-18 rounded-md overflow-hidden bg-neutral-200 shrink-0 border border-neutral-300">
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover object-top" />
+                      <img
+                        src={formatImageUrl(item.image) || '/oct9-logo.jpg'}
+                        alt={item.title}
+                        className="w-full h-full object-cover object-top"
+                        onError={(e) => {
+                          if (!e.currentTarget.dataset.retried && item.image && item.image.startsWith('/uploads/')) {
+                            e.currentTarget.dataset.retried = 'true';
+                            e.currentTarget.src = `https://backend.oct9.in${item.image}`;
+                            return;
+                          }
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = '/oct9-logo.jpg';
+                        }}
+                      />
                       <span className="absolute top-0 right-0 bg-neutral-800 text-white text-[10px] font-bold w-4 h-4 rounded-bl flex items-center justify-center">
                         {item.quantity}
                       </span>
@@ -787,6 +1048,13 @@ export function CheckoutPage() {
                     <div className="flex-1 min-w-0 space-y-0.5">
                       <p className="font-semibold text-neutral-900 truncate">{item.title}</p>
                       <p className="text-neutral-500 text-[11px]">Size: {item.size} {item.color && item.color !== 'Standard' ? `| ${item.color}` : ''}</p>
+                      {item.stock !== undefined && item.stock !== null && (
+                        Number(item.stock) <= 0 ? (
+                          <span className="text-[10px] text-red-600 font-bold block">Sold out — remove to checkout</span>
+                        ) : item.quantity > Number(item.stock) ? (
+                          <span className="text-[10px] text-red-600 font-bold block">Only {item.stock} in stock (ordered: {item.quantity})</span>
+                        ) : null
+                      )}
                     </div>
 
                     <div className="text-right font-semibold text-neutral-900 shrink-0 text-xs sm:text-sm">
@@ -804,8 +1072,8 @@ export function CheckoutPage() {
                 </div>
 
                 <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span className="text-emerald-700 font-bold uppercase text-[11px]">FREE Express Delivery</span>
+                  <span>Standard Delivery Shipping</span>
+                  <span className="font-semibold text-neutral-900">₹{shippingFee.toLocaleString('en-IN')}</span>
                 </div>
 
                 <div className="pt-3 border-t border-neutral-300 flex justify-between items-baseline text-sm sm:text-base font-bold text-neutral-900">

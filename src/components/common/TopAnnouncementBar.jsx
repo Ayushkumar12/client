@@ -16,7 +16,7 @@ export function TopAnnouncementBar() {
         {/* Left Announcements */}
         <div className="flex items-center space-x-3 sm:space-x-6 overflow-x-auto no-scrollbar py-0.5 truncate text-[11px] sm:text-xs">
           <Link to="/shipping-policy" className="whitespace-nowrap hover:text-brand-maroon transition-colors font-medium">
-            {brand.announcement_bar || 'Complimentary Express Delivery on All Orders Across India'}
+            {brand.announcement_bar || 'Complimentary Standard Delivery on All Orders Across India'}
           </Link>
 
           <span className="hidden md:inline text-neutral-300">•</span>

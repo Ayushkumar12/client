@@ -16,6 +16,7 @@ import {
 import { useCart } from '../context/CartContext.jsx';
 import { useContent } from '../context/ContentContext.jsx';
 import { getProductUrl } from '../utils/productUrl.js';
+import { formatImageUrl } from '../services/api.js';
 
 export function CartPage() {
   const {
@@ -25,12 +26,19 @@ export function CartPage() {
     clearCart,
     subtotal,
     grandTotal,
+    isCartStockValid
   } = useCart();
 
   const { getSection } = useContent();
   const cartSec = getSection('cart') || {};
 
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    try {
+      sessionStorage.removeItem('oct9_buy_now_item');
+    } catch (e) { }
+  }, []);
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -39,6 +47,7 @@ export function CartPage() {
       <Helmet>
         <title>{`${cartSec.page_title || 'Shopping Bag'} (${totalItems}) | OCT9 Luxury Ethnic Wear`}</title>
         <meta name="description" content="Review your selected designer suits, sarees, and ethnic wear in your OCT9 shopping bag." />
+        <meta name="robots" content="noindex, follow" />
       </Helmet>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -118,7 +127,7 @@ export function CartPage() {
                       cartSec.free_shipping_notice
                     ) : (
                       <>
-                        <strong className="text-emerald-700">FREE Express Shipping</strong> on all orders across India
+                        <strong className="text-emerald-700">FREE Standard Delivery</strong> on all orders across India
                       </>
                     )}
                   </span>
@@ -145,10 +154,19 @@ export function CartPage() {
                           className="w-20 h-26 sm:w-24 sm:h-30 rounded-sm overflow-hidden bg-neutral-100 border border-neutral-200/80 shrink-0 block"
                         >
                           <img
-                            src={item.image}
+                            src={formatImageUrl(item.image) || '/oct9-logo.jpg'}
                             alt={item.title}
                             className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-300"
                             loading="lazy"
+                            onError={(e) => {
+                              if (!e.currentTarget.dataset.retried && item.image && item.image.startsWith('/uploads/')) {
+                                e.currentTarget.dataset.retried = 'true';
+                                e.currentTarget.src = `https://backend.oct9.in${item.image}`;
+                                return;
+                              }
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = '/oct9-logo.jpg';
+                            }}
                           />
                         </Link>
 
@@ -191,28 +209,52 @@ export function CartPage() {
                       </div>
 
                       {/* Quantity Controller & Item Subtotal */}
-                      <div className="flex items-center justify-between w-full sm:w-auto sm:space-x-6 pt-3 sm:pt-0 border-t sm:border-t-0 border-neutral-100">
-                        {/* Quantity Counter */}
-                        <div className="flex items-center border border-neutral-300 rounded-sm bg-white shadow-2xs">
-                          <button
-                            type="button"
-                            onClick={() => updateQuantity(item.product_id, item.size, item.color, item.quantity - 1)}
-                            className="w-8 h-8 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-l-sm transition-colors cursor-pointer"
-                            aria-label="Decrease quantity"
-                          >
-                            <Minus className="w-3.5 h-3.5" />
-                          </button>
-                          <span className="w-9 text-center text-xs font-bold text-neutral-900 select-none">
-                            {item.quantity}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => updateQuantity(item.product_id, item.size, item.color, item.quantity + 1)}
-                            className="w-8 h-8 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-r-sm transition-colors cursor-pointer"
-                            aria-label="Increase quantity"
-                          >
-                            <Plus className="w-3.5 h-3.5" />
-                          </button>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full sm:w-auto sm:space-x-6 pt-3 sm:pt-0 border-t sm:border-t-0 border-neutral-100 gap-2">
+                        {/* Quantity Counter & Stock Status */}
+                        <div>
+                          <div className="flex items-center border border-neutral-300 rounded-sm bg-white shadow-2xs w-fit">
+                            <button
+                              type="button"
+                              disabled={item.quantity <= 1}
+                              onClick={() => updateQuantity(item.product_id, item.size, item.color, item.quantity - 1)}
+                              className="w-8 h-8 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-l-sm transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                              aria-label="Decrease quantity"
+                            >
+                              <Minus className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="w-9 text-center text-xs font-bold text-neutral-900 select-none">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              disabled={item.stock !== undefined && item.stock !== null && item.quantity >= Number(item.stock)}
+                              onClick={() => updateQuantity(item.product_id, item.size, item.color, item.quantity + 1)}
+                              className="w-8 h-8 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-r-sm transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                              title={item.stock !== undefined && item.stock !== null && item.quantity >= Number(item.stock) ? `Maximum available stock is ${item.stock}` : 'Increase quantity'}
+                              aria-label="Increase quantity"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+
+                          {/* Stock Feedback Notice */}
+                          {item.stock !== undefined && item.stock !== null && (
+                            <div className="mt-1">
+                              {Number(item.stock) <= 0 ? (
+                                <span className="text-[11px] font-bold text-red-600 block">
+                                  Sold out — Please remove
+                                </span>
+                              ) : item.quantity >= Number(item.stock) ? (
+                                <span className="text-[11px] font-semibold text-amber-700 block">
+                                  Max available stock reached ({item.stock} in stock)
+                                </span>
+                              ) : Number(item.stock) <= 5 ? (
+                                <span className="text-[11px] font-medium text-amber-600 block">
+                                  Only {item.stock} left in stock
+                                </span>
+                              ) : null}
+                            </div>
+                          )}
                         </div>
 
                         {/* Total per Item */}
@@ -245,9 +287,6 @@ export function CartPage() {
                   <span>Continue Shopping</span>
                 </Link>
 
-                <p className="text-xs text-neutral-500">
-                  Secure 256-Bit SSL Encrypted Checkout
-                </p>
               </div>
 
               {/* Luxury Guarantee Highlights */}
@@ -264,8 +303,8 @@ export function CartPage() {
                 </div>
                 <div className="p-3.5 rounded-sm bg-white border border-neutral-200/80 text-center space-y-1">
                   <Truck className="w-5 h-5 text-brand-maroon mx-auto" />
-                  <p className="font-sans text-xs font-bold text-neutral-900">Express Delivery</p>
-                  <p className="text-[11px] text-neutral-500">Real-time GPS tracking</p>
+                  <p className="font-sans text-xs font-bold text-neutral-900">Standard Delivery</p>
+                  <p className="text-[11px] text-neutral-500">Real-time tracking</p>
                 </div>
               </div>
             </div>
@@ -288,30 +327,55 @@ export function CartPage() {
 
                   <div className="flex justify-between">
                     <span>Estimated Shipping</span>
-                    <span className="text-emerald-700 font-bold uppercase text-[11px]">
-                      FREE Express Delivery
+                    <span className="text-neutral-700 font-semibold text-[11px]">
+                      Calculated at checkout
                     </span>
                   </div>
 
                   <div className="pt-3 border-t border-neutral-200 flex justify-between items-baseline text-sm sm:text-base">
-                    <span className="font-bold text-neutral-900">Total Amount</span>
+                    <span className="font-bold text-neutral-900">Subtotal</span>
                     <span className="font-bold text-xl text-[#5A1827]">
-                      ₹{grandTotal.toLocaleString('en-IN')}
+                      ₹{subtotal.toLocaleString('en-IN')}
                     </span>
                   </div>
                   <p className="text-[10px] text-neutral-400 text-right">
-                    All-inclusive pricing • Free Delivery
+                    Standard shipping charge calculated during checkout
                   </p>
                 </div>
+
+                {/* Overstock Warning Banner */}
+                {cart.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock))) && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-sm text-xs text-red-800 space-y-1">
+                    <p className="font-bold">Cannot Proceed to Checkout</p>
+                    <p className="text-[11px] text-red-700">
+                      One or more items in your bag exceed available warehouse inventory. Please adjust quantities to continue.
+                    </p>
+                  </div>
+                )}
 
                 {/* Checkout CTA */}
                 <button
                   type="button"
-                  onClick={() => navigate('/checkout')}
-                  className="w-full h-12 rounded-sm bg-[#5A1827] hover:bg-[#43121D] active:scale-98 text-white text-xs font-semibold uppercase tracking-widest flex items-center justify-center space-x-2 transition-all shadow-md hover:shadow-lg cursor-pointer"
+                  disabled={cart.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock)))}
+                  onClick={() => {
+                    try {
+                      sessionStorage.removeItem('oct9_buy_now_item');
+                    } catch (e) { }
+                    navigate('/checkout', { state: { fromCart: true } });
+                  }}
+                  className={`w-full h-12 rounded-sm text-xs font-semibold uppercase tracking-widest flex items-center justify-center space-x-2 transition-all shadow-md ${cart.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock)))
+                      ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed shadow-none'
+                      : 'bg-[#5A1827] hover:bg-[#43121D] active:scale-98 text-white hover:shadow-lg cursor-pointer'
+                    }`}
                 >
-                  <span>Proceed to Checkout</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>
+                    {cart.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock)))
+                      ? 'Stock Exceeded — Adjust Bag'
+                      : 'Proceed to Checkout'}
+                  </span>
+                  {!cart.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock))) && (
+                    <ArrowRight className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>

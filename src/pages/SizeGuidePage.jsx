@@ -32,6 +32,9 @@ export function SizeGuidePage() {
           name="description"
           content={page.subtitle || 'Comprehensive size charts and measurement guidelines for OCT9 suits, kurtas, sarees, and juttis.'}
         />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
       </Helmet>
 
       <div className="max-w-3xl mx-auto space-y-10">

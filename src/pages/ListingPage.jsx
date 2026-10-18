@@ -28,6 +28,52 @@ import { SEO } from '../components/common/SEO.jsx';
 import { useContent } from '../context/ContentContext.jsx';
 import { api } from '../services/api.js';
 
+// Standard Apparel & Footwear Size Ordering
+const STANDARD_SIZE_ORDER = [
+  'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL', '4XL', '5XL',
+  'Free Size', 'Unstitched', 'Unstitched (Free Size)',
+  '34', '35', '36', '37', '38', '39', '40', '41', '42', '43'
+];
+
+// Color Name to Hex Mapping for Curated Swatches
+const COLOR_HEX_MAP = {
+  black: '#121212',
+  white: '#FFFFFF',
+  ivory: '#FAF7F2',
+  beige: '#E5D5C5',
+  gold: '#D4AF37',
+  golden: '#D4AF37',
+  pink: '#F472B6',
+  'blush pink': '#F472B6',
+  red: '#DC2626',
+  'crimson red': '#991B1B',
+  maroon: '#800000',
+  wine: '#5A1827',
+  'deep wine': '#5A1827',
+  green: '#16A34A',
+  'emerald green': '#065F46',
+  blue: '#2563EB',
+  'royal blue': '#1E3A8A',
+  navy: '#0F172A',
+  'navy blue': '#0F172A',
+  yellow: '#EAB308',
+  mustard: '#CA8A04',
+  orange: '#F97316',
+  rust: '#C2410C',
+  peach: '#FDBA74',
+  purple: '#9333EA',
+  lavender: '#C084FC',
+  mint: '#A7F3D0',
+  'mint seafoam': '#A7F3D0',
+  silver: '#E2E8F0',
+  grey: '#9CA3AF',
+  gray: '#9CA3AF',
+  brown: '#78350F',
+  teal: '#0D9488',
+  coral: '#FB7185',
+  magenta: '#D946EF'
+};
+
 export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   const { categorySlug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -47,7 +93,20 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
 
-  // Filters state
+  // Dynamic Available Filters present in the current category products
+  const [availableFilters, setAvailableFilters] = useState({
+    subCategories: [],
+    sizes: [],
+    fabrics: [],
+    occasions: [],
+    colors: [],
+    minPrice: 0,
+    maxPrice: 15000,
+    hasInStockVariation: false,
+    loaded: false
+  });
+
+  // Selected Filters state
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedFabrics, setSelectedFabrics] = useState(fabricParam ? [fabricParam] : []);
   const [selectedOccasions, setSelectedOccasions] = useState(occasionParam ? [occasionParam] : []);
@@ -58,20 +117,6 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   const [selectedDiscount, setSelectedDiscount] = useState(null);
   const [sortBy, setSortBy] = useState('featured');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-
-  // Common Color Palette Swatches matching screenshots
-  const colorOptions = [
-    { name: 'Black', hex: '#121212' },
-    { name: 'Ivory / White', hex: '#FAF7F2' },
-    { name: 'Beige / Gold', hex: '#E5D5C5' },
-    { name: 'Blush Pink', hex: '#F472B6' },
-    { name: 'Crimson Red', hex: '#991B1B' },
-    { name: 'Deep Wine', hex: '#5A1827' },
-    { name: 'Emerald Green', hex: '#065F46' },
-    { name: 'Royal Blue', hex: '#1E3A8A' },
-    { name: 'Lavender', hex: '#C084FC' },
-    { name: 'Mint Seafoam', hex: '#A7F3D0' }
-  ];
 
   // Specific Category Flags
   const isDesignerSuits = currentCategory === 'designer-suits';
@@ -84,7 +129,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   const isJutti = currentCategory === 'jutti' || currentCategory === 'juttis';
   const isSaree = currentCategory === 'sarees' || currentCategory === 'saree';
 
-  // Specific configuration definitions per category matching all screenshots exactly
+  // Specific configuration definitions per category
   const getCategoryConfig = () => {
     if (isDesignerSuits) {
       return {
@@ -95,13 +140,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1200&q=85',
         badges: ['Premium Fabrics', 'Exclusive Designs', 'Wedding & Festive Ready'],
         theme: 'maroon_gold',
-        typeFilterTitle: 'Suit Type',
-        typeOptions: ['Silk Embellished Designer Suits', 'Anarkali Designer Suits', 'Organza Designer Suits', 'Chanderi Designer Suits', 'Velvet Designer Suits', 'Party Wear Designer Suits', 'Indo-Western Designer Suits'],
-        sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-        fabricOptions: ['Georgette', 'Chanderi Silk', 'Silk', 'Organza', 'Velvet', 'Net', 'Wool Blend'],
-        occasionOptions: ['Wedding', 'Festival', 'Party Wear', 'Engagement', 'Reception', 'Daily Wear'],
-        priceMin: 1499,
-        priceMax: 15000
+        typeFilterTitle: 'Suit Type'
       };
     }
 
@@ -114,14 +153,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=1200&q=85',
         badges: ['100% Pure Fabrics', 'Custom Stitching Freedom', 'Unstitched 3-Piece Sets'],
         theme: 'cream_luxury',
-        typeFilterTitle: 'Fabric Type',
-        typeOptions: ['Cotton Suits', 'Mulberry Silk Suits', 'Roman Silk Suits', 'Chanderi Unstitched', 'Georgette Unstitched', 'Organza Unstitched'],
-        sizeOptions: ['Unstitched (Free Size)'],
-        fabricOptions: ['Pure Cotton', 'Mulberry Silk', 'Roman Silk', 'Chanderi Silk', 'Pure Georgette', 'Modal Silk'],
-        occasionOptions: ['Daily Wear', 'Festive', 'Office Wear', 'Party Wear', 'Casual'],
-        hasAvailabilityFilter: true,
-        priceMin: 799,
-        priceMax: 9999
+        typeFilterTitle: 'Fabric Type'
       };
     }
 
@@ -134,14 +166,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
         badges: ['Ready to Wear', 'Precision Tailoring', 'Wide Range of Sizes'],
         theme: 'dark_burgundy',
-        typeFilterTitle: 'Suit Style',
-        typeOptions: ['Farshi Salwar Suits', 'Palazzo Suits', 'Sharara Suits', 'Straight Suits', 'Anarkali Suits', 'Pakistani Suits'],
-        sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-        fabricOptions: ['Georgette', 'Chanderi', 'Silk', 'Cotton', 'Rayon', 'Velvet', 'Organza'],
-        occasionOptions: ['Festive', 'Daily Wear', 'Party Wear', 'Wedding', 'Casual'],
-        hasAvailabilityFilter: true,
-        priceMin: 999,
-        priceMax: 15000
+        typeFilterTitle: 'Suit Style'
       };
     }
 
@@ -154,13 +179,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1200&q=85',
         badges: ['Latest Designs', 'Premium Quality', 'Limited Stock'],
         theme: 'cream_luxury',
-        typeFilterTitle: 'Category',
-        typeOptions: ['Farshi Salwar Suits', 'Palazzo Suits', 'Sharara Suits', 'Straight Suits', 'Anarkali Suits', 'Cotton Suits', 'Sarees', 'Accessories', 'Jutti', 'Party Wear'],
-        sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-        fabricOptions: ['Georgette', 'Chanderi', 'Silk', 'Cotton', 'Rayon', 'Velvet'],
-        occasionOptions: ['Wedding', 'Festive', 'Party Wear', 'Casual'],
-        priceMin: 999,
-        priceMax: 15000
+        typeFilterTitle: 'Category'
       };
     }
 
@@ -173,19 +192,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1200&q=85',
         badges: ['Handcrafted Designs', 'Premium Quality', 'Free Shipping Above ₹1,999'],
         theme: 'cream_luxury',
-        circularSubcategories: [
-          { name: 'Rings', image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Earrings & Jhumkas', image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Necklace Sets', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Bangles & Kadas', image: 'https://images.unsplash.com/photo-1611591475155-4286fa7c2e7f?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Potlis & Bags', image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=300&q=80' }
-        ],
-        typeFilterTitle: 'Accessory Type',
-        typeOptions: ['Rings', 'Earrings & Jhumkas', 'Necklace Sets', 'Bangles & Kadas', 'Potlis & Bags'],
-        sizeOptions: [],
-        fabricOptions: ['Brass & Kundan Polki', 'Meenakari & Brass', 'Raw Silk & Pearl', 'Freshwater Pearl', 'Brocade & Zari'],
-        priceMin: 499,
-        priceMax: 4999
+        typeFilterTitle: 'Accessory Type'
       };
     }
 
@@ -198,18 +205,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1200&q=85',
         badges: ['Authentic Punjabi Artisans', 'Premium Quality', 'Free Shipping Above ₹1,999'],
         theme: 'cream_luxury',
-        circularSubcategories: [
-          { name: 'Embroidered Juttis', image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Printed Juttis', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Traditional Juttis', image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Wedding Juttis', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' }
-        ],
-        typeFilterTitle: 'Jutti Type',
-        typeOptions: ['Embroidered Juttis', 'Printed Juttis', 'Traditional Juttis', 'Wedding Juttis'],
-        sizeOptions: ['36', '37', '38', '39', '40', '41', '42'],
-        fabricOptions: ['Pure Leather', 'Silk & Leather', 'Velvet & Leather', 'Raw Silk & Leather', 'Cotton & Leather'],
-        priceMin: 899,
-        priceMax: 4999
+        typeFilterTitle: 'Jutti Type'
       };
     }
 
@@ -222,19 +218,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=1200&q=85',
         badges: ['Employed Fabrics', 'Free Shipping Above ₹1,999', 'Easy Returns 7 Days Free Return'],
         theme: 'cream_luxury',
-        circularSubcategories: [
-          { name: 'Silk Sarees', image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Organza Sarees', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Banarasi Sarees', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Chiffon Sarees', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Party Wear', image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=300&q=80' }
-        ],
-        typeFilterTitle: 'Saree Type',
-        typeOptions: ['Silk Sarees', 'Organza Sarees', 'Banarasi Sarees', 'Chiffon Sarees', 'Linen Sarees', 'Party Wear', 'Designer Sarees'],
-        sizeOptions: ['Free Size'],
-        fabricOptions: ['Kanjivaram Silk', 'Chiffon', 'Silk', 'Banarasi Silk', 'Georgette', 'Cotton/Linen', 'Organza', 'Crepe'],
-        priceMin: 1499,
-        priceMax: 9999
+        typeFilterTitle: 'Saree Type'
       };
     }
 
@@ -247,22 +231,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=85',
         badges: ['Handcrafted Embellishments', 'Premium Velvets & Silks', 'Free Shipping Above ₹1,999'],
         theme: 'cream_luxury',
-        circularSubcategories: [
-          { name: 'Reception Wear', image: 'https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Engagement Wear', image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Cocktail Wear', image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Sangeet Wear', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Evening Gowns', image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Velvet Specials', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Bridesmaid Outfits', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' }
-        ],
-        typeFilterTitle: 'Occasion Type',
-        typeOptions: ['Reception Wear', 'Engagement Wear', 'Cocktail Wear', 'Sangeet Wear', 'Evening Gowns', 'Velvet Specials', 'Bridesmaid Outfits'],
-        sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'],
-        fabricOptions: ['Raw Silk & Wool Blend', 'Net & Georgette', 'Velvet', 'Organza', 'Silk', 'Chiffon', 'Satin Blend'],
-        occasionOptions: ['Reception', 'Cocktail', 'Engagement', 'Sangeet', 'Party Wear', 'Wedding'],
-        priceMin: 1499,
-        priceMax: 15000
+        typeFilterTitle: 'Occasion Type'
       };
     }
 
@@ -275,21 +244,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         heroImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85',
         badges: ['Premium Fabrics', 'Exclusive Designs', 'Festive Season Collection'],
         theme: 'maroon_gold',
-        circularSubcategories: [
-          { name: 'Holi', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Diwali', image: 'https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Karwa Chauth', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Chhath Puja', image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Teej', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=300&q=80' },
-          { name: 'Eid', image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=300&q=80' }
-        ],
-        typeFilterTitle: 'Festival',
-        typeOptions: ['Holi', 'Diwali', 'Karwa Chauth', 'Chhath Puja', 'Teej', 'Eid'],
-        categoryOptions: ['Anarkali Suits', 'Straight Suits', 'Sharara Suits', 'Punjabi Suits', 'Kurta Sets', 'Silk Sarees'],
-        sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'],
-        fabricOptions: ['Kanjivaram Silk', 'Georgette', 'Silk', 'Chanderi', 'Cotton & Silk', 'Velvet', 'Organza', 'Raw Silk'],
-        priceMin: 1499,
-        priceMax: 15000
+        typeFilterTitle: 'Festival'
       };
     }
 
@@ -302,12 +257,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
       heroImage: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1200&q=85',
       badges: ['Handcrafted Designs', 'Premium Quality', 'Free Shipping Above ₹1,999'],
       theme: 'cream_luxury',
-      typeFilterTitle: 'Category',
-      typeOptions: ['Suits', 'Designer Suits', 'Festive Wear', 'Party Wear', 'Sarees', 'Accessories', 'Jutti'],
-      sizeOptions: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-      fabricOptions: ['Georgette', 'Chanderi Silk', 'Silk Blend', 'Cotton', 'Velvet', 'Raw Silk', 'Rayon'],
-      priceMin: 999,
-      priceMax: 15000
+      typeFilterTitle: 'Type'
     };
   };
 
@@ -321,6 +271,144 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
   }
 
   const isUnavailable = Boolean(pageAvailability && pageAvailability.status && pageAvailability.status !== 'active');
+
+  // Reset selected filters whenever category changes so filters from another category don't bleed over
+  useEffect(() => {
+    setSelectedSizes([]);
+    setSelectedFabrics(fabricParam ? [fabricParam] : []);
+    setSelectedOccasions(occasionParam ? [occasionParam] : []);
+    setSelectedTypes(subCategoryParam ? [subCategoryParam] : []);
+    setSelectedColors([]);
+    setInStockOnly(false);
+  }, [currentCategory]);
+
+  // Dynamically extract only the filter options present in products belonging to the current page category
+  useEffect(() => {
+    if (isUnavailable) return;
+    let isMounted = true;
+
+    async function loadCategoryFacets() {
+      try {
+        const params = {
+          category: currentCategory === 'all' || currentCategory === 'new-arrivals' ? undefined : currentCategory,
+          new_arrival: isNewArrivalsPage ? 'true' : undefined,
+          limit: 100
+        };
+        const res = await api.getProducts(params);
+        if (res.success && res.products && isMounted) {
+          const prods = res.products;
+
+          // 1. Sub-categories
+          const subCatSet = new Set();
+          prods.forEach(p => {
+            if (p.sub_category && typeof p.sub_category === 'string') {
+              const trimmed = p.sub_category.trim();
+              if (trimmed) subCatSet.add(trimmed);
+            }
+          });
+          const subCats = Array.from(subCatSet).sort();
+
+          // 2. Sizes
+          const sizeSet = new Set();
+          prods.forEach(p => {
+            let pSizes = p.sizes;
+            if (typeof pSizes === 'string') {
+              try { pSizes = JSON.parse(pSizes); } catch (e) { pSizes = [pSizes]; }
+            }
+            if (Array.isArray(pSizes)) {
+              pSizes.forEach(s => {
+                if (!s) return;
+                const str = (typeof s === 'object' ? (s.size || s.name || '') : String(s)).trim();
+                if (str) sizeSet.add(str);
+              });
+            }
+          });
+          const sortedSizes = Array.from(sizeSet).sort((a, b) => {
+            const idxA = STANDARD_SIZE_ORDER.indexOf(a);
+            const idxB = STANDARD_SIZE_ORDER.indexOf(b);
+            if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+            if (idxA !== -1) return -1;
+            if (idxB !== -1) return 1;
+            return a.localeCompare(b, undefined, { numeric: true });
+          });
+
+          // 3. Fabrics
+          const fabricSet = new Set();
+          prods.forEach(p => {
+            if (p.fabric && typeof p.fabric === 'string') {
+              p.fabric.split(',').forEach(f => {
+                const trimmed = f.trim();
+                if (trimmed) fabricSet.add(trimmed);
+              });
+            }
+          });
+          const sortedFabrics = Array.from(fabricSet).sort();
+
+          // 4. Occasions
+          const occasionSet = new Set();
+          prods.forEach(p => {
+            if (p.occasion && typeof p.occasion === 'string') {
+              p.occasion.split(',').forEach(o => {
+                const trimmed = o.trim();
+                if (trimmed) occasionSet.add(trimmed);
+              });
+            }
+          });
+          const sortedOccasions = Array.from(occasionSet).sort();
+
+          // 5. Colors
+          const colorMap = new Map();
+          prods.forEach(p => {
+            let pColors = p.colors;
+            if (typeof pColors === 'string') {
+              try { pColors = JSON.parse(pColors); } catch (e) { pColors = [pColors]; }
+            }
+            if (Array.isArray(pColors)) {
+              pColors.forEach(c => {
+                if (!c) return;
+                const name = typeof c === 'object' ? (c.name || c.color || '') : String(c).trim();
+                const hex = typeof c === 'object' ? (c.hex || '') : '';
+                if (name && !colorMap.has(name)) {
+                  colorMap.set(name, hex || COLOR_HEX_MAP[name.toLowerCase()] || (name.startsWith('#') ? name : '#737373'));
+                }
+              });
+            }
+          });
+          const colorList = Array.from(colorMap.entries()).map(([name, hex]) => ({ name, hex }));
+
+          // 6. Prices
+          const validPrices = prods.map(p => Number(p.price)).filter(pr => !isNaN(pr) && pr > 0);
+          const minP = validPrices.length > 0 ? Math.floor(Math.min(...validPrices)) : 0;
+          const maxP = validPrices.length > 0 ? Math.ceil(Math.max(...validPrices)) : 15000;
+
+          // 7. Stock variation
+          const hasInStock = prods.some(p => Number(p.stock) > 0);
+          const hasOutOfStock = prods.some(p => Number(p.stock) <= 0);
+
+          setAvailableFilters({
+            subCategories: subCats,
+            sizes: sortedSizes,
+            fabrics: sortedFabrics,
+            occasions: sortedOccasions,
+            colors: colorList,
+            minPrice: minP,
+            maxPrice: maxP,
+            hasInStockVariation: hasInStock && hasOutOfStock,
+            loaded: true
+          });
+
+          if (!maxPriceParam) {
+            setPriceRange(maxP);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching category facets:', err);
+      }
+    }
+
+    loadCategoryFacets();
+    return () => { isMounted = false; };
+  }, [currentCategory, isNewArrivalsPage, isUnavailable]);
 
   useEffect(() => {
     if (isUnavailable) return;
@@ -337,6 +425,8 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
     selectedFabrics,
     selectedOccasions,
     selectedTypes,
+    selectedColors,
+    inStockOnly,
     priceRange,
     selectedDiscount,
     sortBy,
@@ -347,7 +437,9 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
     setLoading(true);
     try {
       const page = searchParams.get('page') || 1;
-      const effectiveMaxPrice = maxPriceParam ? Number(maxPriceParam) : (priceRange < 15000 ? priceRange : undefined);
+      const effectiveMaxPrice = maxPriceParam
+        ? Number(maxPriceParam)
+        : (availableFilters.loaded && availableFilters.maxPrice > availableFilters.minPrice && priceRange < availableFilters.maxPrice ? priceRange : undefined);
       const params = {
         category: currentCategory === 'all' || currentCategory === 'new-arrivals' ? undefined : currentCategory,
         new_arrival: isNewArrivalsPage ? 'true' : undefined,
@@ -359,6 +451,8 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
         size: selectedSizes.length > 0 ? selectedSizes.join(',') : undefined,
         fabric: selectedFabrics.length > 0 ? selectedFabrics.join(',') : undefined,
         occasion: selectedOccasions.length > 0 ? selectedOccasions.join(',') : undefined,
+        color: selectedColors.length > 0 ? selectedColors.join(',') : undefined,
+        in_stock: inStockOnly ? 'true' : undefined,
         sort: sortBy,
         page,
         limit: 24,
@@ -366,8 +460,38 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
 
       const res = await api.getProducts(params);
       if (res.success) {
-        setProducts(res.products || []);
-        setPagination(res.pagination || { page: 1, totalPages: 1, total: res.products?.length || 0 });
+        let list = res.products || [];
+
+        // Safeguard for inStockOnly
+        if (inStockOnly) {
+          list = list.filter(p => Number(p.stock) > 0);
+        }
+
+        // Safeguard for selectedColors
+        if (selectedColors.length > 0) {
+          list = list.filter(p => {
+            let pColors = p.colors;
+            if (typeof pColors === 'string') {
+              try { pColors = JSON.parse(pColors); } catch (e) { pColors = [pColors]; }
+            }
+            const colorNames = Array.isArray(pColors)
+              ? pColors.map(c => (typeof c === 'object' ? (c.name || '') : String(c)).toLowerCase())
+              : [];
+            const titleLower = (p.title || '').toLowerCase();
+            return selectedColors.some(sc => {
+              const scLower = sc.toLowerCase();
+              return colorNames.includes(scLower) || titleLower.includes(scLower);
+            });
+          });
+        }
+
+        // Safeguard for client price slider
+        if (availableFilters.loaded && availableFilters.maxPrice > availableFilters.minPrice && priceRange < availableFilters.maxPrice) {
+          list = list.filter(p => Number(p.price) <= priceRange);
+        }
+
+        setProducts(list);
+        setPagination(res.pagination || { page: 1, totalPages: 1, total: list.length });
       }
     } catch (e) {
       console.error('Error fetching catalog:', e);
@@ -392,20 +516,42 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
     setSelectedOccasions(prev => prev.includes(oc) ? prev.filter(o => o !== oc) : [...prev, oc]);
   };
 
+  const handleColorToggle = (colorName) => {
+    setSelectedColors(prev => prev.includes(colorName) ? prev.filter(c => c !== colorName) : [...prev, colorName]);
+  };
+
   const clearAllFilters = () => {
     setSelectedSizes([]);
     setSelectedFabrics([]);
     setSelectedOccasions([]);
     setSelectedTypes([]);
     setSelectedColors([]);
-    setPriceRange(15000);
+    setPriceRange(availableFilters.maxPrice || 15000);
     setSelectedDiscount(null);
     setInStockOnly(false);
     setSortBy('featured');
     setSearchParams({});
   };
 
-  const activeFiltersCount = selectedSizes.length + selectedFabrics.length + selectedOccasions.length + selectedTypes.length + (priceRange < 15000 ? 1 : 0) + (selectedDiscount ? 1 : 0);
+  const isPriceFiltered = availableFilters.loaded && availableFilters.maxPrice > availableFilters.minPrice && priceRange < availableFilters.maxPrice;
+  const activeFiltersCount =
+    selectedSizes.length +
+    selectedFabrics.length +
+    selectedOccasions.length +
+    selectedTypes.length +
+    selectedColors.length +
+    (inStockOnly ? 1 : 0) +
+    (isPriceFiltered ? 1 : 0) +
+    (selectedDiscount ? 1 : 0);
+
+  const hasAnyFilters =
+    availableFilters.subCategories.length > 0 ||
+    availableFilters.sizes.length > 0 ||
+    availableFilters.fabrics.length > 0 ||
+    availableFilters.occasions.length > 0 ||
+    availableFilters.colors.length > 0 ||
+    (availableFilters.maxPrice > availableFilters.minPrice) ||
+    availableFilters.hasInStockVariation;
 
   // Cohesive Brand Theme Classes
   const pageBgClass = 'bg-[#FAF7F2] text-neutral-900';
@@ -512,12 +658,18 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
               )}
             </div>
 
+            {!hasAnyFilters && availableFilters.loaded && (
+              <div className="py-4 text-xs text-neutral-500">
+                All {pagination.total} styles are shown.
+              </div>
+            )}
+
             {/* Category / Subcategory Type Checkboxes */}
-            {config.typeOptions && config.typeOptions.length > 0 && (
+            {availableFilters.subCategories.length > 0 && (
               <div className="space-y-2">
                 <h4 className="text-xs font-bold uppercase tracking-wider">{config.typeFilterTitle}</h4>
                 <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                  {config.typeOptions.map((opt) => (
+                  {availableFilters.subCategories.map((opt) => (
                     <label key={opt} className="flex items-center space-x-2 text-xs cursor-pointer hover:opacity-80">
                       <input
                         type="checkbox"
@@ -533,11 +685,11 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
             )}
 
             {/* Sizes Box Grid */}
-            {config.sizeOptions && config.sizeOptions.length > 0 && (
+            {availableFilters.sizes.length > 0 && (
               <div className="space-y-2.5 pt-4 border-t border-neutral-200/30">
                 <h4 className="text-xs font-bold uppercase tracking-wider">Size</h4>
                 <div className="flex flex-wrap gap-2">
-                  {config.sizeOptions.map((sz) => (
+                  {availableFilters.sizes.map((sz) => (
                     <button
                       key={sz}
                       onClick={() => handleSizeToggle(sz)}
@@ -555,60 +707,62 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
             )}
 
             {/* Price Range Slider with min/max values */}
-            <div className="space-y-2.5 pt-4 border-t border-neutral-200/30">
-              <div className="flex justify-between text-xs font-bold">
-                <span>Price Range</span>
-                <span className="text-brand-maroon">
-                  Up to ₹{priceRange.toLocaleString('en-IN')}
-                </span>
+            {availableFilters.maxPrice > availableFilters.minPrice && (
+              <div className="space-y-2.5 pt-4 border-t border-neutral-200/30">
+                <div className="flex justify-between text-xs font-bold">
+                  <span>Price Range</span>
+                  <span className="text-brand-maroon">
+                    Up to ₹{priceRange.toLocaleString('en-IN')}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={availableFilters.minPrice}
+                  max={availableFilters.maxPrice}
+                  step={Math.max(10, Math.floor((availableFilters.maxPrice - availableFilters.minPrice) / 20))}
+                  value={Math.min(Math.max(priceRange, availableFilters.minPrice), availableFilters.maxPrice)}
+                  onChange={(e) => setPriceRange(Number(e.target.value))}
+                  className="w-full accent-brand-maroon cursor-pointer"
+                />
+                <div className="flex justify-between text-[11px] opacity-60">
+                  <span>₹{availableFilters.minPrice.toLocaleString('en-IN')}</span>
+                  <span>₹{availableFilters.maxPrice.toLocaleString('en-IN')}</span>
+                </div>
               </div>
-              <input
-                type="range"
-                min={config.priceMin || 499}
-                max={config.priceMax || 15000}
-                step={250}
-                value={priceRange}
-                onChange={(e) => setPriceRange(Number(e.target.value))}
-                className="w-full accent-brand-maroon cursor-pointer"
-              />
-              <div className="flex justify-between text-[11px] opacity-60">
-                <span>₹{(config.priceMin || 499).toLocaleString('en-IN')}</span>
-                <span>₹{(config.priceMax || 15000).toLocaleString('en-IN')}+</span>
-              </div>
-            </div>
+            )}
 
             {/* Color Palette Swatches */}
-            <div className="space-y-2.5 pt-4 border-t border-neutral-200/30">
-              <h4 className="text-xs font-bold uppercase tracking-wider">Color</h4>
-              <div className="flex flex-wrap gap-2.5">
-                {colorOptions.map((c) => (
-                  <button
-                    key={c.name}
-                    onClick={() => {
-                      setSelectedColors(prev => prev.includes(c.name) ? prev.filter(x => x !== c.name) : [...prev, c.name]);
-                    }}
-                    title={c.name}
-                    className={`w-6 h-6 rounded-full border transition-transform relative ${
-                      selectedColors.includes(c.name)
-                        ? 'scale-120 ring-2 ring-brand-maroon border-white'
-                        : 'border-neutral-300 hover:scale-110'
-                    }`}
-                    style={{ backgroundColor: c.hex }}
-                  >
-                    {selectedColors.includes(c.name) && (
-                      <Check className="w-3.5 h-3.5 text-white absolute inset-0 m-auto drop-shadow-md" />
-                    )}
-                  </button>
-                ))}
+            {availableFilters.colors.length > 0 && (
+              <div className="space-y-2.5 pt-4 border-t border-neutral-200/30">
+                <h4 className="text-xs font-bold uppercase tracking-wider">Color</h4>
+                <div className="flex flex-wrap gap-2.5">
+                  {availableFilters.colors.map((c) => (
+                    <button
+                      key={c.name}
+                      onClick={() => handleColorToggle(c.name)}
+                      title={c.name}
+                      className={`w-6 h-6 rounded-full border transition-transform relative ${
+                        selectedColors.includes(c.name)
+                          ? 'scale-120 ring-2 ring-brand-maroon border-white'
+                          : 'border-neutral-300 hover:scale-110'
+                      }`}
+                      style={{ backgroundColor: c.hex }}
+                    >
+                      {selectedColors.includes(c.name) && (
+                        <Check className="w-3.5 h-3.5 text-white absolute inset-0 m-auto drop-shadow-md" />
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Fabrics Checkboxes */}
-            {config.fabricOptions && config.fabricOptions.length > 0 && (
+            {availableFilters.fabrics.length > 0 && (
               <div className="space-y-2 pt-4 border-t border-neutral-200/30">
                 <h4 className="text-xs font-bold uppercase tracking-wider">Fabric</h4>
                 <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
-                  {config.fabricOptions.map((fb) => (
+                  {availableFilters.fabrics.map((fb) => (
                     <label key={fb} className="flex items-center space-x-2 text-xs cursor-pointer hover:opacity-80">
                       <input
                         type="checkbox"
@@ -624,11 +778,11 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
             )}
 
             {/* Occasion Checkboxes */}
-            {config.occasionOptions && (
+            {availableFilters.occasions.length > 0 && (
               <div className="space-y-2 pt-4 border-t border-neutral-200/30">
                 <h4 className="text-xs font-bold uppercase tracking-wider">Occasion</h4>
                 <div className="space-y-1.5">
-                  {config.occasionOptions.map((oc) => (
+                  {availableFilters.occasions.map((oc) => (
                     <label key={oc} className="flex items-center space-x-2 text-xs cursor-pointer hover:opacity-80">
                       <input
                         type="checkbox"
@@ -644,7 +798,7 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
             )}
 
             {/* Availability Checkboxes for Suits */}
-            {config.hasAvailabilityFilter && (
+            {availableFilters.hasInStockVariation && (
               <div className="space-y-2 pt-4 border-t border-neutral-200/30">
                 <h4 className="text-xs font-bold uppercase tracking-wider">Availability</h4>
                 <div className="space-y-1.5">
@@ -738,12 +892,18 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
                 </button>
               </div>
 
+              {!hasAnyFilters && availableFilters.loaded && (
+                <div className="py-6 text-center text-xs text-neutral-500">
+                  All styles in this collection are currently shown.
+                </div>
+              )}
+
               {/* Types */}
-              {config.typeOptions && (
+              {availableFilters.subCategories.length > 0 && (
                 <div>
                   <h4 className="text-xs font-bold uppercase mb-2">{config.typeFilterTitle}</h4>
-                  <div className="space-y-1.5">
-                    {config.typeOptions.map(opt => (
+                  <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                    {availableFilters.subCategories.map(opt => (
                       <label key={opt} className="flex items-center space-x-2 text-xs">
                         <input
                           type="checkbox"
@@ -759,11 +919,11 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
               )}
 
               {/* Sizes */}
-              {config.sizeOptions && config.sizeOptions.length > 0 && (
+              {availableFilters.sizes.length > 0 && (
                 <div>
                   <h4 className="text-xs font-bold uppercase mb-2">Size</h4>
                   <div className="flex flex-wrap gap-2">
-                    {config.sizeOptions.map(sz => (
+                    {availableFilters.sizes.map(sz => (
                       <button
                         key={sz}
                         onClick={() => handleSizeToggle(sz)}
@@ -781,18 +941,108 @@ export function ListingPage({ defaultCategory = null, isNewArrivals = false }) {
               )}
 
               {/* Price */}
-              <div>
-                <h4 className="text-xs font-bold uppercase mb-2">Price: Up to ₹{priceRange.toLocaleString('en-IN')}</h4>
-                <input
-                  type="range"
-                  min={config.priceMin || 499}
-                  max={config.priceMax || 15000}
-                  step={250}
-                  value={priceRange}
-                  onChange={(e) => setPriceRange(Number(e.target.value))}
-                  className="w-full accent-brand-maroon"
-                />
-              </div>
+              {availableFilters.maxPrice > availableFilters.minPrice && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase mb-2">Price: Up to ₹{priceRange.toLocaleString('en-IN')}</h4>
+                  <input
+                    type="range"
+                    min={availableFilters.minPrice}
+                    max={availableFilters.maxPrice}
+                    step={Math.max(10, Math.floor((availableFilters.maxPrice - availableFilters.minPrice) / 20))}
+                    value={Math.min(Math.max(priceRange, availableFilters.minPrice), availableFilters.maxPrice)}
+                    onChange={(e) => setPriceRange(Number(e.target.value))}
+                    className="w-full accent-brand-maroon"
+                  />
+                  <div className="flex justify-between text-[11px] opacity-60 mt-1">
+                    <span>₹{availableFilters.minPrice.toLocaleString('en-IN')}</span>
+                    <span>₹{availableFilters.maxPrice.toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Colors */}
+              {availableFilters.colors.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase mb-2">Color</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {availableFilters.colors.map(c => (
+                      <button
+                        key={c.name}
+                        onClick={() => handleColorToggle(c.name)}
+                        title={c.name}
+                        className={`w-6 h-6 rounded-full border transition-transform relative ${
+                          selectedColors.includes(c.name)
+                            ? 'scale-120 ring-2 ring-brand-maroon border-white'
+                            : 'border-neutral-300'
+                        }`}
+                        style={{ backgroundColor: c.hex }}
+                      >
+                        {selectedColors.includes(c.name) && (
+                          <Check className="w-3.5 h-3.5 text-white absolute inset-0 m-auto drop-shadow-md" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Fabrics */}
+              {availableFilters.fabrics.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase mb-2">Fabric</h4>
+                  <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                    {availableFilters.fabrics.map(fb => (
+                      <label key={fb} className="flex items-center space-x-2 text-xs">
+                        <input
+                          type="checkbox"
+                          checked={selectedFabrics.includes(fb)}
+                          onChange={() => handleFabricToggle(fb)}
+                          className="text-brand-maroon rounded"
+                        />
+                        <span>{fb}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Occasions */}
+              {availableFilters.occasions.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase mb-2">Occasion</h4>
+                  <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                    {availableFilters.occasions.map(oc => (
+                      <label key={oc} className="flex items-center space-x-2 text-xs">
+                        <input
+                          type="checkbox"
+                          checked={selectedOccasions.includes(oc)}
+                          onChange={() => handleOccasionToggle(oc)}
+                          className="text-brand-maroon rounded"
+                        />
+                        <span>{oc}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Availability */}
+              {availableFilters.hasInStockVariation && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase mb-2">Availability</h4>
+                  <div className="space-y-1.5">
+                    <label className="flex items-center space-x-2 text-xs cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={inStockOnly}
+                        onChange={(e) => setInStockOnly(e.target.checked)}
+                        className="text-brand-maroon rounded"
+                      />
+                      <span>In Stock</span>
+                    </label>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="pt-4 border-t border-neutral-200/30 flex gap-2">

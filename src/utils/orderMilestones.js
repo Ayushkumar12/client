@@ -119,10 +119,10 @@ export function getMilestoneTrackerSteps(order, customStatus = null) {
     id: 3,
     key: 'shipped',
     label: 'Shipped',
-    location: 'Gurugram National Express Corridor',
+    location: 'Gurugram National Transit Corridor',
     shortLocation: step3Current ? 'Gurugram Corridor' : 'Transit Corridor',
     timestamp: step3Done ? t3 : step3Current ? t3 : 'Awaiting Dispatch',
-    activity: step3Done ? 'Inbound Scan Passed' : step3Current ? 'In Transit via Express Corridor' : 'Awaiting Courier Handover',
+    activity: step3Done ? 'Inbound Scan Passed' : step3Current ? 'In Transit via Standard Surface Corridor' : 'Awaiting Courier Handover',
     status: step3Done ? 'completed' : step3Current ? 'current' : 'upcoming',
     isCompleted: step3Done,
     isCurrent: step3Current
@@ -255,7 +255,7 @@ export function getOrderMilestones(order) {
         activity: 'Dispatched from Fulfillment Facility',
         location: 'Delhi Central Logistics Hub (110020)',
         timestamp: t2,
-        status: 'In transit via Shiprocket Express Multi-Courier Corridor',
+        status: 'In transit via Shiprocket Standard Delivery Corridor',
         completed: true,
         current: false
       },
@@ -274,9 +274,9 @@ export function getOrderMilestones(order) {
     return [
       {
         activity: 'In Transit to Destination Sorting Facility',
-        location: 'Shiprocket National Express Corridor, Regional Hub',
+        location: 'Shiprocket National Transit Corridor, Regional Hub',
         timestamp: t3,
-        status: `In transit to ${destCity} Delivery Center via Shiprocket Express`,
+        status: `In transit to ${destCity} Delivery Center via Shiprocket Standard Delivery`,
         completed: false,
         current: true
       },

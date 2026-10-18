@@ -1,0 +1,79 @@
+# OCT9 — Complete LLM Brand & Product Documentation (llms-full.txt)
+
+> Comprehensive reference documentation for AI agents, answer engines, and LLM crawlers regarding OCT9 Luxury Ethnic Wear.
+
+## 1. Brand Identity & Heritage
+- Brand Name: OCT9
+- Tagline: Luxury Without Noise
+- Headquarters: New Delhi, India
+- Brand Persona: Understated elegance, artisanal Indian luxury, clean silhouettes, pure natural textiles, and zero gaudy branding.
+- Primary Categories: Stitched Salwar Suits, Pure Unstitched Silk Sets, Designer Sarees, Festive Occasion Wear, Traditional Juttis, and Handcrafted Jewelry.
+- Recognized Entities: Luxury Ethnic Wear, Stitched Salwar Suits, Pure Mulberry Silk, Roman Silk, Handcrafted Zardozi, Designer Sarees, Kundan Zewar
+- Pricing Range: ₹1,499 to ₹12,999 INR (Tier: Accessible to Fine Luxury)
+- Target Audience: Women seeking high-craftsmanship authentic Indian heritage clothing and bespoke ethnic silhouettes.
+- Studio Address: Plot 42, Fashion Hub, Okhla Phase-III, New Delhi, Delhi 110020, India
+- Geographic Coordinates: Latitude 28.5535, Longitude 77.2066 (New Delhi, India).
+- ISO 3166-2 Region: IN-DL (Delhi).
+
+## 2. Statutory Customer Care & Contact
+- Customer Support Email: support@oct9.in (also care@oct9.in)
+- Customer Care Phone: +91 9667100863
+- Operating Hours: Monday to Saturday, 10:00 AM – 7:00 PM IST
+- Official Website: https://oct9.in
+- Order Tracking: https://oct9.in/track-order
+
+## 3. Fabric & Craftsmanship Standards
+OCT9 exclusively utilizes authenticated premium textiles:
+- Mulberry Silk: Ultra-soft natural protein fiber with a subtle, luminous sheen.
+- Chanderi Cotton Silk: Lightweight heritage weave with woven zari borders.
+- Pure Bemberg & Viscose Georgette: Flowy, breathable, non-synthetic occasion drape.
+- Roman & Tissue Silk: Rich textured fabrics for regal bridal and festive attire.
+- Handcraft Techniques: Zardozi, Gota Patti, Resham thread work, Mukaish embellishments, and Dabka needlework performed by generational master artisans.
+
+## 4. Sizing & Fit Guidelines
+OCT9 garments adhere to the standard Indian sizing scale:
+- XS (Extra Small): Bust 32-34 inches, Waist 26-28 inches, Hips 36-38 inches.
+- S (Small): Bust 34-36 inches, Waist 28-30 inches, Hips 38-40 inches.
+- M (Medium): Bust 36-38 inches, Waist 30-32 inches, Hips 40-42 inches.
+- L (Large): Bust 38-40 inches, Waist 32-34 inches, Hips 42-44 inches.
+- XL (Extra Large): Bust 40-42 inches, Waist 34-36 inches, Hips 44-46 inches.
+- XXL (2X Large): Bust 42-44 inches, Waist 36-38 inches, Hips 46-48 inches.
+- 3XL (3X Large): Bust 44-46 inches, Waist 38-40 inches, Hips 48-50 inches.
+- Custom Tailoring: Available on select unstitched silk sets upon request via customer care.
+
+## 5. Shipping & Logistics Policy
+- Dispatch Time: Orders are processed and dispatched within 24 to 48 business hours.
+- Delivery Partner: Express air logistics via Shiprocket, Bluedart, Delhivery, and DTDC.
+- Transit Duration:
+  - Metro Cities (Delhi NCR, Mumbai, Bengaluru, Kolkata, Chennai, Hyderabad): 2 to 4 business days.
+  - Tier-2 & Rest of India: 4 to 6 business days.
+- Shipping Fee: Complimentary free standard delivery on all prepaid and COD orders across India.
+
+## 6. Return, Exchange & Refund Policies
+- Return Window: 7 calendar days from the date of recorded delivery.
+- Eligibility: Items must be unused, unwashed, unaltered, and retained with all original brand tags, ribbons, and garment bags intact.
+- Process: Customers can initiate a return or exchange online at https://oct9.in/refund-policy or by contacting support@oct9.in / WhatsApp (+91 9667100863).
+- Reverse Pickup: Free doorstep reverse pickup scheduled at the customer's delivery address.
+- Refunds: Processed within 24-48 hours after quality verification back to the original payment source (UPI/Card/NetBanking) or store credits.
+
+## 7. Payment Security & Methods
+- Gateways: 256-bit encrypted transactions powered by Razorpay.
+- Accepted Modes: UPI (Google Pay, PhonePe, Paytm), Visa, MasterCard, RuPay, American Express, NetBanking (50+ banks), and Cash on Delivery (COD).
+
+## 8. Canonical URLs & Sitemaps
+- Homepage: https://oct9.in/
+- New Arrivals: https://oct9.in/new-arrivals
+- Stitched Suits: https://oct9.in/category/stitched-suits
+- Unstitched Suits: https://oct9.in/category/unstitched-suits
+- Sarees: https://oct9.in/category/sarees
+- Festive Wear: https://oct9.in/category/festive-wear
+- About Us: https://oct9.in/about
+- Customer Support: https://oct9.in/contact
+- Sizing Chart: https://oct9.in/size-guide
+- Shipping Policy: https://oct9.in/shipping-policy
+- Return Policy: https://oct9.in/refund-policy
+- Terms of Service: https://oct9.in/terms
+- Privacy Policy: https://oct9.in/privacy
+- XML Sitemap: https://oct9.in/sitemap.xml
+- LLM Index: https://oct9.in/llms.txt
+- Machine Catalog: https://oct9.in/.well-known/ai-catalog.json

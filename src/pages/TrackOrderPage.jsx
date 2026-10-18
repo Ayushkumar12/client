@@ -89,7 +89,7 @@ export function TrackOrderPage() {
     <div className="bg-[#FAF7F2] min-h-screen py-10">
       <SEO
         title="Track Order | OCT9 Luxury Ethnic Wear"
-        description="Track your OCT9 order with live Shiprocket express shipping updates."
+        description="Track your OCT9 order with live Shiprocket standard delivery updates."
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
@@ -97,7 +97,7 @@ export function TrackOrderPage() {
         <div className="bg-white rounded-sm p-6 sm:p-8 border border-neutral-200 shadow-2xs text-center space-y-3">
           <div className="inline-flex items-center space-x-1.5 bg-neutral-100 text-neutral-800 px-3 py-1 rounded-sm text-xs font-semibold uppercase tracking-wider border border-neutral-200">
             <Truck className="w-3.5 h-3.5 text-neutral-700" />
-            <span>Shiprocket Express Logistics</span>
+            <span>Shiprocket Standard Logistics</span>
           </div>
 
           <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
@@ -194,7 +194,7 @@ export function TrackOrderPage() {
                 {(trackingData?.timeline || [
                   { status: 'Order Manifested', location: 'OCT9 Fulfillment Center, New Delhi', time: 'Oct 02, 2026 • 09:30 AM', completed: true },
                   { status: 'Picked Up by Courier', location: 'Delhi Sort Facility (NH48)', time: 'Oct 02, 2026 • 01:15 PM', completed: true },
-                  { status: 'In Transit', location: 'Express Corridor to Destination', time: 'Oct 02, 2026 • 03:00 PM', completed: true },
+                  { status: 'In Transit', location: 'Standard Surface Corridor to Destination', time: 'Oct 02, 2026 • 03:00 PM', completed: true },
                   { status: 'Out for Delivery', location: 'Destination Regional Center', time: 'Expected Soon', completed: false },
                   { status: 'Delivered', location: 'Doorstep Handover', time: 'Pending Delivery', completed: false }
                 ]).map((step, idx) => (

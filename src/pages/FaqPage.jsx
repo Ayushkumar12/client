@@ -41,6 +41,9 @@ export function FaqPage() {
           name="description"
           content={page.subtitle || 'Find answers to common questions about orders, payments, shipping, sizing, and returns at OCT9.'}
         />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
       </Helmet>
 
       <div className="max-w-3xl mx-auto space-y-10">

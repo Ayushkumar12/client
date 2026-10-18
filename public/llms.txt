@@ -1,0 +1,29 @@
+# OCT9 — Luxury Without Noise
+> Authentic Handcrafted Indian Ethnic Wear, Tailored Silhouettes, and Pure Fabrics based in New Delhi, India. Curated occasion wear engineered for understated elegance.
+
+OCT9 is an authentic Indian luxury ethnic fashion brand based in New Delhi, India. Handcrafted stitched suits, pure unstitched silks, designer sarees, and artisanal jewelry crafted with pure mulberry silk, Chanderi, organza, and intricate zardozi embroidery.
+
+## Core Collections
+- [Storefront](https://oct9.in/): Official luxury ethnic wear storefront and curated collections.
+- [New Arrivals](https://oct9.in/new-arrivals): Latest festive, party-wear, and wedding ethnic silhouettes.
+- [Stitched Suits](https://oct9.in/category/stitched-suits): Ready-to-wear tailored salwar suits, anarkalis, and kurta sets.
+- [Unstitched Suits](https://oct9.in/category/unstitched-suits): Pure unstitched fabric sets in Chanderi, Organza, Mulberry Silk, and Georgette.
+- [Designer Sarees](https://oct9.in/category/sarees): Handcrafted Banarasi, Kanjivaram, and contemporary drape sarees.
+- [Festive & Party Wear](https://oct9.in/category/festive-wear): Curated occasion wear embellished with handcrafted zardozi and gota patti work.
+
+## Brand, Studio & Customer Care
+- [About OCT9](https://oct9.in/about): Philosophy of luxury without noise, atelier craftsmanship, and ethical sourcing.
+- [Contact Customer Support](https://oct9.in/contact): Official customer care, studio appointments, phone (+91 9667100863), and email (support@oct9.in).
+- [Track Order](https://oct9.in/track-order): Live real-time order tracking and express courier logistics across India.
+- [Shipping Policy](https://oct9.in/shipping-policy): Free express delivery terms, dispatch timelines (24-48 hours), and insured transit.
+- [Returns & Exchange Policy](https://oct9.in/refund-policy): Easy 7-day doorstep exchange and return guidelines.
+- [Size & Fit Guide](https://oct9.in/size-guide): Precise body measurement chart for bust, waist, hip, and length fittings (XS to 3XL).
+- [Frequently Asked Questions](https://oct9.in/faq): Common inquiries regarding fabrics, tailoring, orders, and payment security.
+- [Terms & Conditions](https://oct9.in/terms): Official terms of service and commercial compliance.
+- [Privacy Policy](https://oct9.in/privacy): Data protection, customer privacy, and security practices.
+
+## Machine-Readable Catalogs & Documentation
+- [Full Documentation](https://oct9.in/llms-full.txt): Complete brand context, sizing parameters, fabric specifications, return terms, and studio details for AI agents.
+- [XML Sitemap](https://oct9.in/sitemap.xml): Canonical index of all public products, categories, and editorial destinations.
+- [AI Agent Catalog](https://oct9.in/.well-known/ai-catalog.json): Machine-readable Agentic Resource Discovery (ARD) endpoint.
+- [Public Product API](https://backend.oct9.in/api/products): Real-time JSON product catalog feed with pricing, availability, and attributes.

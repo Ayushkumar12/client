@@ -13,7 +13,10 @@ export function WishlistPage() {
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen py-12">
-      <SEO title={`${wishlistSec.title || 'My Saved Wishlist'} | OCT9 Luxury Ethnic Wear`} />
+      <SEO
+        title={`${wishlistSec.title || 'My Saved Wishlist'} | OCT9 Luxury Ethnic Wear`}
+        description="View your saved designer suits, anarkalis, festive sarees, and luxury ethnic wear at OCT9."
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between pb-6 border-b border-brand-border">

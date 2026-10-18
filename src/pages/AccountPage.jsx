@@ -52,7 +52,8 @@ import { OrderMilestoneTracker } from '../components/common/OrderMilestoneTracke
 import { SEO } from '../components/common/SEO.jsx';
 import { getProductUrl } from '../utils/productUrl.js';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
-import { api } from '../services/api.js';
+import { api, formatImageUrl } from '../services/api.js';
+import { UserMapAddressPicker } from '../components/common/UserMapAddressPicker.jsx';
 
 export function AccountPage() {
   const {
@@ -64,6 +65,7 @@ export function AccountPage() {
     saveAddress,
     updateAddress,
     setDefaultAddress,
+    removeDefaultAddress,
     deleteAddress,
     isAdmin,
     showPublicRatings
@@ -97,12 +99,12 @@ export function AccountPage() {
 
   // Profile Form State
   const [profileForm, setProfileForm] = useState({
-    name: user?.name || 'Arijit Singh',
-    email: user?.email || 'arijit.singh@example.com',
-    phone: user?.phone || '9876543210',
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone ? user.phone.replace('+91', '').trim() : '',
     country_code: '+91',
-    dob: user?.dob || '2004-10-15',
-    gender: user?.gender || 'male',
+    dob: user?.dob || '',
+    gender: user?.gender || '',
     preferred_language: user?.preferred_language || 'English'
   });
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -110,6 +112,7 @@ export function AccountPage() {
 
   // Address Modal State
   const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showMapInModal, setShowMapInModal] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState(null);
   const [addressForm, setAddressForm] = useState({
     name: '',
@@ -123,55 +126,6 @@ export function AccountPage() {
     is_default: false
   });
 
-  // Payment Methods State (Persisted in localStorage + default seed)
-  const [savedPayments, setSavedPayments] = useState(() => {
-    try {
-      const saved = localStorage.getItem('oct9_saved_payments');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {}
-    return [
-      {
-        id: 'pm_1',
-        type: 'visa',
-        brand: 'Visa',
-        numberMasked: '**** 4321',
-        expiry: '12/2028',
-        nameOnCard: user?.name || 'Arijit Singh',
-        isDefault: true
-      },
-      {
-        id: 'pm_2',
-        type: 'mastercard',
-        brand: 'Mastercard',
-        numberMasked: '**** 9876',
-        expiry: '08/2027',
-        nameOnCard: user?.name || 'Arijit Singh',
-        isDefault: false
-      },
-      {
-        id: 'pm_3',
-        type: 'upi',
-        brand: 'UPI ID',
-        upiId: (user?.email ? user.email.split('@')[0] : 'arijit.singh') + '@okaxis',
-        nameOnCard: user?.name || 'Arijit Singh',
-        isDefault: false
-      }
-    ];
-  });
-
-  const [paymentMethodType, setPaymentMethodType] = useState('card');
-  const [newCard, setNewCard] = useState({
-    number: '',
-    expiry: '',
-    cvv: '',
-    name: user?.name || 'Arijit Singh',
-    isDefault: false
-  });
-  const [newUpi, setNewUpi] = useState({
-    upiId: '',
-    isDefault: false
-  });
-  const [paymentSaveSuccess, setPaymentSaveSuccess] = useState('');
 
   // Wishlist Tab Filter & Sort
   const [wishlistSearch, setWishlistSearch] = useState('');
@@ -288,10 +242,6 @@ export function AccountPage() {
   }, [user]);
 
   useEffect(() => {
-    localStorage.setItem('oct9_saved_payments', JSON.stringify(savedPayments));
-  }, [savedPayments]);
-
-  useEffect(() => {
     if (activeTab === 'orders' && isAuthenticated) {
       loadOrders();
     }
@@ -334,12 +284,12 @@ export function AccountPage() {
     }
   };
 
-  // Address Save
+  // Address Handlers
   const handleOpenAddAddress = () => {
     setEditingAddressId(null);
     setAddressForm({
-      name: user?.name || 'Arijit Singh',
-      phone: user?.phone || '9876543210',
+      name: user?.name || '',
+      phone: user?.phone ? user.phone.replace('+91', '').trim() : '',
       address_line1: '',
       address_line2: '',
       city: '',
@@ -348,6 +298,7 @@ export function AccountPage() {
       type: 'Home',
       is_default: (user?.addresses || []).length === 0
     });
+    setShowMapInModal(false);
     setShowAddressModal(true);
   };
 
@@ -364,6 +315,7 @@ export function AccountPage() {
       type: addr.type || 'Home',
       is_default: Boolean(addr.is_default)
     });
+    setShowMapInModal(false);
     setShowAddressModal(true);
   };
 
@@ -389,75 +341,21 @@ export function AccountPage() {
     }
   };
 
-  // Payment Methods Handlers
-  const handleSaveNewCard = (e) => {
-    e.preventDefault();
-    if (!newCard.number || !newCard.expiry) return;
-
-    const last4 = newCard.number.replace(/\s+/g, '').slice(-4) || '1234';
-    const isVisa = newCard.number.startsWith('4');
-    const brand = isVisa ? 'Visa' : 'Mastercard';
-
-    const newEntry = {
-      id: 'pm_' + Date.now(),
-      type: isVisa ? 'visa' : 'mastercard',
-      brand: brand,
-      numberMasked: `**** ${last4}`,
-      expiry: newCard.expiry,
-      nameOnCard: newCard.name,
-      isDefault: newCard.isDefault
-    };
-
-    setSavedPayments(prev => {
-      let updated = prev;
-      if (newCard.isDefault) {
-        updated = updated.map(p => ({ ...p, isDefault: false }));
-      }
-      return [newEntry, ...updated];
-    });
-
-    setPaymentSaveSuccess('Card saved successfully!');
-    setTimeout(() => setPaymentSaveSuccess(''), 3000);
-    setNewCard({ number: '', expiry: '', cvv: '', name: user?.name || 'Arijit Singh', isDefault: false });
+  const handleRemoveDefaultAddress = async (addrId) => {
+    try {
+      await removeDefaultAddress(addrId);
+    } catch (err) {
+      alert('Could not remove default address: ' + err.message);
+    }
   };
 
-  const handleSaveNewUpi = (e) => {
-    e.preventDefault();
-    if (!newUpi.upiId) return;
-
-    const newEntry = {
-      id: 'pm_' + Date.now(),
-      type: 'upi',
-      brand: 'UPI ID',
-      upiId: newUpi.upiId,
-      nameOnCard: user?.name || 'Arijit Singh',
-      isDefault: newUpi.isDefault
-    };
-
-    setSavedPayments(prev => {
-      let updated = prev;
-      if (newUpi.isDefault) {
-        updated = updated.map(p => ({ ...p, isDefault: false }));
-      }
-      return [newEntry, ...updated];
-    });
-
-    setPaymentSaveSuccess('UPI ID saved successfully!');
-    setTimeout(() => setPaymentSaveSuccess(''), 3000);
-    setNewUpi({ upiId: '', isDefault: false });
-  };
-
-  const handleSetDefaultPayment = (id) => {
-    setSavedPayments(prev =>
-      prev.map(p => ({
-        ...p,
-        isDefault: p.id === id
-      }))
-    );
-  };
-
-  const handleDeletePayment = (id) => {
-    setSavedPayments(prev => prev.filter(p => p.id !== id));
+  const handleDeleteAddress = async (addrId) => {
+    if (!window.confirm('Are you sure you want to remove this saved address?')) return;
+    try {
+      await deleteAddress(addrId);
+    } catch (err) {
+      alert('Failed to remove address: ' + err.message);
+    }
   };
 
 
@@ -505,49 +403,9 @@ export function AccountPage() {
     };
   }, [orders]);
 
-  // Current Addresses (from user or sample)
+  // Current Addresses strictly from user profile (no mock defaults)
   const currentAddresses = useMemo(() => {
-    if (user?.addresses && user.addresses.length > 0) {
-      return user.addresses;
-    }
-    return [
-      {
-        id: 1,
-        name: user?.name || 'Arijit Singh',
-        phone: user?.phone || '+91 98765 43210',
-        address_line1: 'A-12, Subhash Park Extension',
-        address_line2: 'Shahdara',
-        city: 'Delhi',
-        state: 'Delhi',
-        pincode: '110032',
-        type: 'Home',
-        is_default: 1
-      },
-      {
-        id: 2,
-        name: user?.name || 'Arijit Singh',
-        phone: user?.phone || '+91 98765 43210',
-        address_line1: 'Plot No. 8, Sector 62',
-        address_line2: '',
-        city: 'Noida',
-        state: 'Uttar Pradesh',
-        pincode: '201309',
-        type: 'Office',
-        is_default: 0
-      },
-      {
-        id: 3,
-        name: user?.name || 'Arijit Singh',
-        phone: user?.phone || '+91 98765 43210',
-        address_line1: 'House No. 45, Green Park',
-        address_line2: '',
-        city: 'Agra',
-        state: 'Uttar Pradesh',
-        pincode: '282001',
-        type: 'Other',
-        is_default: 0
-      }
-    ];
+    return Array.isArray(user?.addresses) ? user.addresses : [];
   }, [user]);
 
   if (authLoading) {
@@ -600,14 +458,17 @@ export function AccountPage() {
     orders: 'My Orders',
     wishlist: 'Wishlist',
     addresses: 'Addresses',
-    payment: 'Payment Methods',
     notifications: 'Notifications',
     settings: 'Settings'
   };
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen py-6 sm:py-10 text-neutral-900 font-sans">
-      <SEO title={`${tabTitleMap[activeTab] || 'My Account'} | OCT9 Luxury Ethnic Wear`} />
+      <SEO
+        title={`${tabTitleMap[activeTab] || 'My Account'} | OCT9 Luxury Ethnic Wear`}
+        description="Manage your OCT9 profile details, saved addresses, orders, and security settings."
+        noindex={true}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Top Breadcrumb */}
@@ -640,7 +501,7 @@ export function AccountPage() {
                 </div>
                 <div className="min-w-0">
                   <h3 className="font-bold text-sm text-neutral-900 truncate">
-                    {user.name || 'Arijit Singh'}
+                    {user.name || 'Customer'}
                   </h3>
                   <button
                     onClick={() => setSearchParams({ tab: 'profile' })}
@@ -722,20 +583,6 @@ export function AccountPage() {
                   </div>
                 </button>
 
-                {/* Nav Item: Payment Methods */}
-                <button
-                  onClick={() => setSearchParams({ tab: 'payment' })}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-sm text-xs font-semibold transition-colors cursor-pointer ${
-                    activeTab === 'payment'
-                      ? 'bg-[#5A1827] text-white shadow-2xs font-bold'
-                      : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100/70'
-                  }`}
-                >
-                  <div className="flex items-center space-x-2.5">
-                    <CreditCard className="w-4 h-4" />
-                    <span>Payment Methods</span>
-                  </div>
-                </button>
 
 
                 {/* Nav Item: Notifications */}
@@ -1123,11 +970,20 @@ export function AccountPage() {
                             <div className="flex items-start space-x-4">
                               {/* Order Image Thumbnail */}
                               <div className="w-16 h-18 sm:w-20 sm:h-22 rounded-sm bg-[#9B4553] text-white flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
-                                {firstItem.product_image && firstItem.product_image.startsWith('http') ? (
+                                {firstItem.product_image ? (
                                   <img
-                                    src={firstItem.product_image}
+                                    src={formatImageUrl(firstItem.product_image) || '/oct9-logo.jpg'}
                                     alt={firstItem.product_title}
                                     className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      if (!e.currentTarget.dataset.retried && firstItem.product_image && firstItem.product_image.startsWith('/uploads/')) {
+                                        e.currentTarget.dataset.retried = 'true';
+                                        e.currentTarget.src = `https://backend.oct9.in${firstItem.product_image}`;
+                                        return;
+                                      }
+                                      e.currentTarget.onerror = null;
+                                      e.currentTarget.src = '/oct9-logo.jpg';
+                                    }}
                                   />
                                 ) : (
                                   <div className="p-2 text-center">
@@ -1364,9 +1220,18 @@ export function AccountPage() {
                         <div className="relative aspect-[3/4] bg-neutral-100 overflow-hidden">
                           <Link to={getProductUrl(item)}>
                             <img
-                              src={item.image}
+                              src={formatImageUrl(item.image) || '/oct9-logo.jpg'}
                               alt={item.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              onError={(e) => {
+                                if (!e.currentTarget.dataset.retried && item.image && item.image.startsWith('/uploads/')) {
+                                  e.currentTarget.dataset.retried = 'true';
+                                  e.currentTarget.src = `https://backend.oct9.in${item.image}`;
+                                  return;
+                                }
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = '/oct9-logo.jpg';
+                              }}
                             />
                           </Link>
 
@@ -1427,10 +1292,15 @@ export function AccountPage() {
                           {/* Add to Cart & Trash */}
                           <div className="flex items-center space-x-1.5 pt-2 border-t border-neutral-100">
                             <button
-                              onClick={() => addToCart(item, 'M', 'Standard', 1)}
-                              className="flex-1 py-2 bg-[#5A1827] hover:bg-[#43121D] text-white text-[11px] font-bold rounded-lg transition-colors cursor-pointer text-center"
+                              disabled={item.stock !== undefined && item.stock !== null && Number(item.stock) <= 0}
+                              onClick={() => addToCart(item, item.sizes?.[0] || 'Free Size', 'Standard', 1)}
+                              className={`flex-1 py-2 text-[11px] font-bold rounded-lg transition-colors text-center ${
+                                item.stock !== undefined && item.stock !== null && Number(item.stock) <= 0
+                                  ? 'bg-neutral-200 text-neutral-500 cursor-not-allowed'
+                                  : 'bg-[#5A1827] hover:bg-[#43121D] text-white cursor-pointer'
+                              }`}
                             >
-                              Add to Cart
+                              {item.stock !== undefined && item.stock !== null && Number(item.stock) <= 0 ? 'Out of Stock' : 'Add to Cart'}
                             </button>
                             <button
                               onClick={() => toggleWishlist(item)}
@@ -1473,376 +1343,123 @@ export function AccountPage() {
                   </button>
                 </div>
 
-                {/* 2-Column Responsive Address Cards Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {currentAddresses.map((addr) => {
-                    const isDef = Boolean(addr.is_default);
-                    const tagType = addr.type || 'Home';
-
-                    return (
-                      <div
-                        key={addr.id}
-                        className={`bg-white rounded-sm p-5 border shadow-2xs space-y-3 relative transition-all ${
-                          isDef ? 'border-[#5A1827]/30 ring-1 ring-[#5A1827]/20' : 'border-neutral-200/80'
-                        }`}
-                      >
-                        {/* Top Header: Tag Badge + Actions */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-1.5">
-                            {tagType === 'Home' && <Home className="w-3.5 h-3.5 text-brand-maroon" />}
-                            {tagType === 'Office' && <Building className="w-3.5 h-3.5 text-brand-maroon" />}
-                            {tagType === 'Other' && <MapPin className="w-3.5 h-3.5 text-brand-maroon" />}
-
-                            <span
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                                isDef
-                                  ? 'bg-[#FBF1F3] text-[#5A1827]'
-                                  : 'bg-neutral-100 text-neutral-700'
-                              }`}
-                            >
-                              {isDef ? 'Default Address' : tagType}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center space-x-1 text-neutral-400">
-                            <button
-                              onClick={() => handleOpenEditAddress(addr)}
-                              className="p-1 hover:text-neutral-800 transition-colors cursor-pointer"
-                              title="Edit Address"
-                            >
-                              <Edit2 className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => deleteAddress(addr.id)}
-                              className="p-1 hover:text-rose-600 transition-colors cursor-pointer"
-                              title="Delete Address"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Address Details */}
-                        <div className="text-xs space-y-1">
-                          <p className="font-bold text-neutral-900">{addr.name}</p>
-                          <p className="text-neutral-500">{addr.phone}</p>
-                          <p className="text-neutral-700 leading-relaxed pt-1">
-                            {addr.address_line1} {addr.address_line2 ? `${addr.address_line2}, ` : ''}
-                            <br />
-                            {addr.city}, {addr.state} - <strong>{addr.pincode}</strong>, India
-                          </p>
-                        </div>
-
-                        {/* Bottom Radio Status */}
-                        <div className="pt-2 border-t border-neutral-100">
-                          {isDef ? (
-                            <div className="flex items-center space-x-1.5 text-xs font-bold text-emerald-700">
-                              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                              <span>Default Address</span>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() => handleSetDefaultAddress(addr.id)}
-                              className="flex items-center space-x-1.5 text-xs font-semibold text-neutral-600 hover:text-neutral-900 cursor-pointer"
-                            >
-                              <div className="w-4 h-4 rounded-full border border-neutral-400 flex items-center justify-center" />
-                              <span>Set as Default</span>
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* ========================================================= */}
-            {/* TAB 5: PAYMENT METHODS */}
-            {/* ========================================================= */}
-            {activeTab === 'payment' && (
-              <div className="space-y-6 animate-fadeIn">
-                {/* Header Title */}
-                <div>
-                  <h1 className="font-sans text-2xl sm:text-3xl font-bold text-neutral-900">
-                    Payment Methods
-                  </h1>
-                  <p className="text-xs text-neutral-500 mt-1">
-                    Manage your saved payment methods for a faster and more secure checkout.
-                  </p>
-                </div>
-
-                {paymentSaveSuccess && (
-                  <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-sm flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>{paymentSaveSuccess}</span>
+                {/* Address Cards Grid or Empty State */}
+                {currentAddresses.length === 0 ? (
+                  <div className="bg-white border border-neutral-200/80 p-8 sm:p-12 text-center rounded-sm space-y-4">
+                    <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
+                      <MapPin className="w-6 h-6 text-brand-maroon" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="font-sans text-base font-bold text-neutral-900">No Saved Addresses Yet</h3>
+                      <p className="text-xs text-neutral-500 max-w-sm mx-auto leading-relaxed">
+                        Save your preferred delivery addresses for faster, hassle-free checkout on future orders.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleOpenAddAddress}
+                      className="inline-flex items-center space-x-1.5 px-4 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-sm transition-colors cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add Your First Address</span>
+                    </button>
                   </div>
-                )}
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {currentAddresses.map((addr) => {
+                      const isDef = Boolean(addr.is_default);
+                      const tagType = addr.type || 'Home';
 
-                {/* Card 1: Saved Payment Methods */}
-                <div className="bg-white rounded-sm p-6 sm:p-7 border border-neutral-200/80 shadow-2xs space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-100 pb-3">
-                    <h3 className="font-bold text-sm text-neutral-900">
-                      Saved Payment Methods
-                    </h3>
-                    <span className="text-[11px] text-neutral-500 flex items-center space-x-1">
-                      <Lock className="w-3 h-3 text-neutral-400" />
-                      <span>Your payment information is secure and encrypted.</span>
-                    </span>
-                  </div>
-
-                  <div className="divide-y divide-neutral-100 space-y-1">
-                    {savedPayments.map((pm) => (
-                      <div
-                        key={pm.id}
-                        className="pt-3 pb-3 flex items-center justify-between gap-3 text-xs"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <input
-                            type="radio"
-                            name="default_pm"
-                            checked={pm.isDefault}
-                            onChange={() => handleSetDefaultPayment(pm.id)}
-                            className="accent-[#5A1827] w-4 h-4 cursor-pointer"
-                          />
-
-                          {/* Brand Icon Tag */}
-                          <div className="w-10 h-7 rounded border border-neutral-200 bg-neutral-50 flex items-center justify-center font-bold text-[10px] text-neutral-800 uppercase shrink-0">
-                            {pm.type === 'visa' && <span className="text-blue-700">VISA</span>}
-                            {pm.type === 'mastercard' && <span className="text-amber-600">MC</span>}
-                            {pm.type === 'upi' && <span className="text-emerald-700">UPI</span>}
-                          </div>
-
-                          <div>
-                            <div className="flex items-center space-x-2">
-                              <span className="font-bold text-neutral-900">
-                                {pm.type === 'upi' ? pm.brand : `${pm.brand} ${pm.numberMasked}`}
-                              </span>
-                              {pm.isDefault && (
-                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-50 text-red-700">
-                                  Default
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-[11px] text-neutral-500">
-                              {pm.type === 'upi' ? pm.upiId : `Expires ${pm.expiry}`}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center space-x-3 text-neutral-600">
-                          <span className="hidden sm:inline-block font-semibold text-neutral-800">
-                            {pm.nameOnCard || user?.name}
-                          </span>
-                          <button
-                            onClick={() => handleDeletePayment(pm.id)}
-                            className="text-neutral-400 hover:text-rose-600 p-1 cursor-pointer"
-                            title="Delete Payment Method"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Card 2: Add a New Payment Method */}
-                <div className="bg-white rounded-sm p-6 sm:p-7 border border-neutral-200/80 shadow-2xs space-y-5">
-                  <h3 className="font-bold text-sm text-neutral-900">
-                    Add a New Payment Method
-                  </h3>
-
-                  {/* 4 Method Selector Tabs */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {[
-                      {
-                        key: 'card',
-                        title: 'Credit / Debit Card',
-                        desc: 'Visa, Mastercard, RuPay',
-                        icon: CreditCard
-                      },
-                      {
-                        key: 'upi',
-                        title: 'UPI',
-                        desc: 'Google Pay, PhonePe, Paytm',
-                        icon: QrCode
-                      },
-                      {
-                        key: 'netbanking',
-                        title: 'Net Banking',
-                        desc: 'All major banks supported',
-                        icon: Building
-                      },
-                      {
-                        key: 'wallets',
-                        title: 'Wallets',
-                        desc: 'Paytm, Amazon Pay, Mobikwik',
-                        icon: ShoppingBag
-                      }
-                    ].map((method) => {
-                      const Icon = method.icon;
-                      const isSel = paymentMethodType === method.key;
                       return (
-                        <button
-                          key={method.key}
-                          type="button"
-                          onClick={() => setPaymentMethodType(method.key)}
-                          className={`p-3.5 rounded-sm border text-left transition-all cursor-pointer ${
-                            isSel
-                              ? 'border-[#5A1827] bg-[#FBF1F3]/40 ring-1 ring-[#5A1827]/20 shadow-2xs'
-                              : 'border-neutral-200 bg-white hover:bg-neutral-50'
+                        <div
+                          key={addr.id}
+                          className={`bg-white rounded-sm p-5 border shadow-2xs space-y-3 relative transition-all ${
+                            isDef ? 'border-[#5A1827]/40 ring-1 ring-[#5A1827]/20' : 'border-neutral-200/80'
                           }`}
                         >
-                          <div className="flex items-center justify-between mb-1.5">
-                            <Icon
-                              className={`w-4 h-4 ${isSel ? 'text-[#5A1827]' : 'text-neutral-500'}`}
-                            />
-                            <ChevronRight
-                              className={`w-3.5 h-3.5 ${isSel ? 'text-[#5A1827]' : 'text-neutral-300'}`}
-                            />
+                          {/* Top Header: Tag Badge + Actions */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-1.5">
+                              {tagType === 'Home' && <Home className="w-3.5 h-3.5 text-brand-maroon" />}
+                              {tagType === 'Office' && <Building className="w-3.5 h-3.5 text-brand-maroon" />}
+                              {tagType === 'Other' && <MapPin className="w-3.5 h-3.5 text-brand-maroon" />}
+
+                              <span
+                                className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                                  isDef
+                                    ? 'bg-[#FBF1F3] text-[#5A1827]'
+                                    : 'bg-neutral-100 text-neutral-700'
+                                }`}
+                              >
+                                {isDef ? 'Default Address' : tagType}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center space-x-1 text-neutral-400">
+                              <button
+                                onClick={() => handleOpenEditAddress(addr)}
+                                className="p-1 hover:text-neutral-800 transition-colors cursor-pointer"
+                                title="Edit Address"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteAddress(addr.id)}
+                                className="p-1 hover:text-rose-600 transition-colors cursor-pointer"
+                                title="Delete Address"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
-                          <p
-                            className={`font-bold text-xs ${
-                              isSel ? 'text-[#5A1827]' : 'text-neutral-900'
-                            }`}
-                          >
-                            {method.title}
-                          </p>
-                          <span className="text-[10px] text-neutral-400 line-clamp-1">
-                            {method.desc}
-                          </span>
-                        </button>
+
+                          {/* Address Details */}
+                          <div className="text-xs space-y-1">
+                            <p className="font-bold text-neutral-900">{addr.name}</p>
+                            <p className="text-neutral-500">{addr.phone}</p>
+                            <p className="text-neutral-700 leading-relaxed pt-1">
+                              {addr.address_line1} {addr.address_line2 ? `${addr.address_line2}, ` : ''}
+                              <br />
+                              {addr.city}, {addr.state} - <strong>{addr.pincode}</strong>, India
+                            </p>
+                          </div>
+
+                          {/* Bottom Radio Status & Remove Default Action */}
+                          <div className="pt-2 border-t border-neutral-100 flex items-center justify-between">
+                            {isDef ? (
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center space-x-1.5 text-xs font-bold text-emerald-700">
+                                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                                  <span>Default Address</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveDefaultAddress(addr.id)}
+                                  className="text-[11px] font-semibold text-neutral-500 hover:text-[#5A1827] underline underline-offset-2 transition-colors cursor-pointer"
+                                  title="Remove default address designation"
+                                >
+                                  Remove Default
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleSetDefaultAddress(addr.id)}
+                                className="flex items-center space-x-1.5 text-xs font-semibold text-neutral-600 hover:text-neutral-900 cursor-pointer"
+                              >
+                                <div className="w-4 h-4 rounded-full border border-neutral-400 flex items-center justify-center" />
+                                <span>Set as Default</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       );
                     })}
                   </div>
-
-                  {/* Card Form */}
-                  {paymentMethodType === 'card' && (
-                    <form onSubmit={handleSaveNewCard} className="space-y-4 pt-2">
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div className="sm:col-span-3">
-                          <label className="block text-xs font-bold text-neutral-700 mb-1">
-                            Card Number
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              required
-                              maxLength={19}
-                              placeholder="1234 5678 9012 3456"
-                              value={newCard.number}
-                              onChange={(e) => setNewCard({ ...newCard, number: e.target.value })}
-                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
-                            />
-                            <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-neutral-700 mb-1">
-                            Expiry Date
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              required
-                              maxLength={5}
-                              placeholder="MM/YY"
-                              value={newCard.expiry}
-                              onChange={(e) => setNewCard({ ...newCard, expiry: e.target.value })}
-                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
-                            />
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-neutral-700 mb-1">
-                            CVV
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="password"
-                              required
-                              maxLength={4}
-                              placeholder="123"
-                              value={newCard.cvv}
-                              onChange={(e) => setNewCard({ ...newCard, cvv: e.target.value })}
-                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
-                            />
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-neutral-700 mb-1">
-                            Name on Card
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              required
-                              placeholder="Arijit Singh"
-                              value={newCard.name}
-                              onChange={(e) => setNewCard({ ...newCard, name: e.target.value })}
-                              className="w-full text-xs pl-9 pr-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
-                            />
-                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-                        <label className="flex items-center space-x-2 text-xs font-semibold text-neutral-700 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={newCard.isDefault}
-                            onChange={(e) => setNewCard({ ...newCard, isDefault: e.target.checked })}
-                            className="accent-[#5A1827] rounded"
-                          />
-                          <span>Set as default payment method</span>
-                        </label>
-
-                        <button
-                          type="submit"
-                          className="px-6 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-sm shadow-2xs transition-colors cursor-pointer"
-                        >
-                          Save Card
-                        </button>
-                      </div>
-                    </form>
-                  )}
-
-                  {/* UPI Form */}
-                  {paymentMethodType === 'upi' && (
-                    <form onSubmit={handleSaveNewUpi} className="space-y-4 pt-2">
-                      <div>
-                        <label className="block text-xs font-bold text-neutral-700 mb-1">
-                          UPI ID (e.g. mobile@paytm, name@okhdfcbank)
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="yourname@bank"
-                          value={newUpi.upiId}
-                          onChange={(e) => setNewUpi({ ...newUpi, upiId: e.target.value })}
-                          className="w-full text-xs px-3 py-2.5 bg-neutral-50/70 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
-                        />
-                      </div>
-                      <div className="flex justify-end">
-                        <button
-                          type="submit"
-                          className="px-6 py-2.5 bg-[#5A1827] hover:bg-[#43121D] text-white text-xs font-bold rounded-sm shadow-2xs cursor-pointer"
-                        >
-                          Verify & Save UPI
-                        </button>
-                      </div>
-                    </form>
-                  )}
-                </div>
+                )}
               </div>
             )}
+
 
 
 
@@ -1917,9 +1534,18 @@ export function AccountPage() {
                           <div className="shrink-0">
                             {item.image ? (
                               <img
-                                src={item.image}
+                                src={formatImageUrl(item.image) || '/oct9-logo.jpg'}
                                 alt={item.title}
-                                className="w-10 h-12 rounded-lg object-cover bg-neutral-100 shadow-2xs"
+                                className="w-10 h-12 rounded-lg object-cover bg-neutral-100 shadow-2xs border border-neutral-200"
+                                onError={(e) => {
+                                  if (!e.currentTarget.dataset.retried && item.image && item.image.startsWith('/uploads/')) {
+                                    e.currentTarget.dataset.retried = 'true';
+                                    e.currentTarget.src = `https://backend.oct9.in${item.image}`;
+                                    return;
+                                  }
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = '/oct9-logo.jpg';
+                                }}
                               />
                             ) : (
                               <div
@@ -2048,18 +1674,58 @@ export function AccountPage() {
       {/* Add / Edit Address Modal */}
       {showAddressModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-sm p-6 sm:p-7 max-w-md w-full shadow-2xl space-y-4">
+          <div className="bg-white rounded-sm p-6 sm:p-7 max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="font-sans font-bold text-base text-neutral-900">
                 {editingAddressId ? 'Edit Shipping Address' : 'Add New Shipping Address'}
               </h3>
               <button
-                onClick={() => setShowAddressModal(false)}
+                onClick={() => {
+                  setShowMapInModal(false);
+                  setShowAddressModal(false);
+                }}
                 className="text-neutral-400 hover:text-neutral-700 font-bold p-1 cursor-pointer"
               >
                 ✕
               </button>
             </div>
+
+            {/* Interactive Customer Map Locator */}
+            <div className="flex items-center justify-between bg-neutral-50 p-2.5 rounded-sm border border-neutral-200">
+              <div className="text-[11px] text-neutral-600">
+                <span className="font-bold text-neutral-900 block">Locate on Interactive Map</span>
+                Search area or drop a pin to autofill address text
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowMapInModal(!showMapInModal)}
+                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-800 rounded-sm cursor-pointer transition-colors flex items-center gap-1.5 shrink-0 shadow-2xs"
+              >
+                <MapPin className="w-3.5 h-3.5 text-[#5A1827]" />
+                <span>{showMapInModal ? 'Close Map' : 'Use Map'}</span>
+              </button>
+            </div>
+
+            {showMapInModal && (
+              <div className="pt-1 pb-1">
+                <UserMapAddressPicker
+                  initialPincode={addressForm.pincode}
+                  initialCity={addressForm.city}
+                  onSelectAddress={(resolved) => {
+                    setAddressForm(prev => ({
+                      ...prev,
+                      address_line1: resolved.address_line1 || prev.address_line1,
+                      address_line2: resolved.address_line2 || prev.address_line2,
+                      city: resolved.city || prev.city,
+                      state: resolved.state || prev.state,
+                      pincode: resolved.pincode || prev.pincode
+                    }));
+                    setShowMapInModal(false);
+                  }}
+                  onClose={() => setShowMapInModal(false)}
+                />
+              </div>
+            )}
 
             <form onSubmit={handleSaveAddressSubmit} className="space-y-3.5">
               <div>
@@ -2084,7 +1750,7 @@ export function AccountPage() {
                   type="tel"
                   required
                   maxLength={10}
-                  placeholder="9876543210"
+                  placeholder="9667100863"
                   value={addressForm.phone}
                   onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })}
                   className="w-full text-xs p-2.5 border border-neutral-300 rounded-sm focus:outline-none focus:border-brand-maroon font-semibold"
@@ -2269,9 +1935,9 @@ function getInitialSampleOrders(user) {
       created_at: '2026-09-12T10:24:00.000Z',
       shiprocket_awb: 'SR8492019482',
       delhivery_waybill: 'SR8492019482',
-      customer_name: user?.name || 'Arijit Singh',
-      customer_email: user?.email || 'arijit.singh@example.com',
-      customer_phone: user?.phone || '9876543210',
+      customer_name: user?.name || 'Customer',
+      customer_email: user?.email || '',
+      customer_phone: user?.phone || '',
       shipping_address: JSON.stringify({
         address_line1: 'A-12, Subhash Park Extension',
         city: 'Delhi',
@@ -2303,9 +1969,9 @@ function getInitialSampleOrders(user) {
       created_at: '2026-09-08T16:15:00.000Z',
       shiprocket_awb: 'SR8492019483',
       delhivery_waybill: 'SR8492019483',
-      customer_name: user?.name || 'Arijit Singh',
-      customer_email: user?.email || 'arijit.singh@example.com',
-      customer_phone: user?.phone || '9876543210',
+      customer_name: user?.name || 'Customer',
+      customer_email: user?.email || '',
+      customer_phone: user?.phone || '',
       shipping_address: JSON.stringify({
         address_line1: 'A-12, Subhash Park Extension',
         city: 'Delhi',
@@ -2332,12 +1998,12 @@ function getInitialSampleOrders(user) {
       order_status: 'delivered',
       delhivery_status: 'delivered',
       payment_status: 'paid',
-      payment_method: 'cod',
+      payment_method: 'upi',
       created_at: '2026-09-01T14:35:00.000Z',
       delhivery_waybill: '68386110000088',
-      customer_name: user?.name || 'Arijit Singh',
-      customer_email: user?.email || 'arijit.singh@example.com',
-      customer_phone: user?.phone || '9876543210',
+      customer_name: user?.name || 'Customer',
+      customer_email: user?.email || '',
+      customer_phone: user?.phone || '',
       shipping_address: JSON.stringify({
         address_line1: 'House No. 45, Green Park',
         city: 'Agra',
@@ -2366,9 +2032,9 @@ function getInitialSampleOrders(user) {
       payment_status: 'refunded',
       payment_method: 'card',
       created_at: '2026-08-25T11:20:00.000Z',
-      customer_name: user?.name || 'Arijit Singh',
-      customer_email: user?.email || 'arijit.singh@example.com',
-      customer_phone: user?.phone || '9876543210',
+      customer_name: user?.name || 'Customer',
+      customer_email: user?.email || '',
+      customer_phone: user?.phone || '',
       shipping_address: JSON.stringify({
         address_line1: 'A-12, Subhash Park Extension',
         city: 'Delhi',

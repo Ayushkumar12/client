@@ -3,31 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/jpeg" href="/oct9-logo.jpg" />
+    <link rel="shortcut icon" href="/oct9-logo.jpg" />
+    <link rel="apple-touch-icon" href="/oct9-logo.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta name="theme-color" content="#141414" />
-    <meta name="description" content="OCT9 — Luxury without noise. Handcrafted stitched suits, pure unstitched silks, designer sarees, and artisanal jewelry." />
-    <meta name="keywords" content="OCT9, luxury without noise, ethnic wear, suits, designer suits, anarkali suits, sarees, festive wear, pret" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="description" content="Shop authentic women&#039;s luxury ethnic wear, designer suits, anarkalis, and festive sarees at OCT9. Handcrafted silhouettes, pure mulberry silk, and complimentary pan-India shipping." />
+    <meta name="keywords" content="OCT9, luxury ethnic wear, designer suits, anarkali suits, artisanal sarees, festive wear, pret, pure silk suits" />
     <meta name="author" content="OCT9" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="OCT9 — Luxury Without Noise" />
-    <meta property="og:description" content="OCT9 — Luxury without noise. Handcrafted stitched suits, pure unstitched silks, designer sarees, and artisanal jewelry." />
+    <meta property="og:description" content="Shop authentic women&#039;s luxury ethnic wear, designer suits, anarkalis, and festive sarees at OCT9. Handcrafted silhouettes, pure mulberry silk, and complimentary pan-India shipping." />
     <meta property="og:image" content="/oct9-logo.jpg" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="OCT9 — Luxury Without Noise" />
+    <meta name="twitter:description" content="Shop authentic women&#039;s luxury ethnic wear, designer suits, anarkalis, and festive sarees at OCT9. Handcrafted silhouettes, pure mulberry silk, and complimentary pan-India shipping." />
+    <meta name="twitter:image" content="/oct9-logo.jpg" />
     
     <!-- Web App Manifest for Mobile PWA Experience -->
     <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/oct9-logo.jpg" />
 
-    <!-- Google Fonts: Inter & Plus Jakarta Sans (Sans-serif only) -->
+    <!-- Google Fonts: Inter & Plus Jakarta Sans (Sans-serif only, optimized non-blocking) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    </noscript>
 
-    <!-- Razorpay Checkout SDK -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- Agentic Resource Discovery (ARD) / AI Agent Catalog -->
+    <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json" />
+
+    <!-- Razorpay Checkout SDK (Deferred to prevent 860ms render-blocking) -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
 
     <title>OCT9 — Luxury Without Noise</title>
+    <!-- Geographic & Local Search Meta Tags (GEO) -->
+    <meta name="geo.region" content="IN-DL" />
+    <meta name="geo.placename" content="New Delhi" />
+    <meta name="geo.position" content="28.5535;77.2066" />
+    <meta name="ICBM" content="28.5535, 77.2066" />
   </head>
   <body class="bg-neutral-50 text-neutral-900 font-sans antialiased selection:bg-neutral-800 selection:text-white">
     <div id="root"></div>

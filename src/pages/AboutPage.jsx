@@ -20,6 +20,9 @@ export function AboutPage() {
           name="description"
           content={page.subtitle || 'Learn about OCT9 heritage, master craftsmanship, and pure handloom ethnic collections.'}
         />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
       </Helmet>
 
       <div className="max-w-4xl mx-auto space-y-16 sm:space-y-20">

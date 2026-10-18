@@ -10,7 +10,7 @@ export async function downloadOrderInvoicePdf(order) {
     return;
   }
 
-  const orderIdentifier = order.order_number || order.id || order.shiprocket_order_id;
+  const orderIdentifier = order.shiprocket_order_id || order.order_number || order.delhivery_waybill || order.id;
   if (!orderIdentifier) {
     alert('Order identifier is missing.');
     return;

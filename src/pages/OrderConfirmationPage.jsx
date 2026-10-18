@@ -20,7 +20,8 @@ import { ShiprocketLiveMap } from '../components/common/ShiprocketLiveMap.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
 import { parseAddress } from '../utils/addressUtils.js';
-import { api } from '../services/api.js';
+import { api, formatImageUrl } from '../services/api.js';
+import { trackPurchase } from '../utils/conversionTracking.js';
 
 export function OrderConfirmationPage() {
   const { orderNumber } = useParams();
@@ -35,6 +36,7 @@ export function OrderConfirmationPage() {
         const res = await api.getOrderDetails(orderNumber);
         if (res.success) {
           setOrder(res.order);
+          trackPurchase(res.order);
         }
       } catch (e) {
         console.error('Failed to load order details:', e);
@@ -70,7 +72,11 @@ export function OrderConfirmationPage() {
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen py-10">
-      <SEO title={`Order Confirmed #${order.order_number} | OCT9 Luxury Ethnic Wear`} />
+      <SEO
+        title={`Order Confirmed #${order.order_number} | OCT9 Luxury Ethnic Wear`}
+        description="Your OCT9 order has been confirmed. View receipt, items summary, and dispatch tracking details."
+        noindex={true}
+      />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
         {/* Success Card Header */}
@@ -170,7 +176,20 @@ export function OrderConfirmationPage() {
               {(order.items || []).map((it, idx) => (
                 <div key={idx} className="py-2.5 flex items-center justify-between text-xs">
                   <div className="flex items-center space-x-3">
-                    <img src={it.product_image} alt={it.product_title} className="w-10 h-12 object-cover rounded bg-neutral-100" />
+                    <img
+                      src={formatImageUrl(it.product_image) || '/oct9-logo.jpg'}
+                      alt={it.product_title}
+                      className="w-10 h-12 object-cover rounded bg-neutral-100 border border-neutral-200 shrink-0"
+                      onError={(e) => {
+                        if (!e.currentTarget.dataset.retried && it.product_image && it.product_image.startsWith('/uploads/')) {
+                          e.currentTarget.dataset.retried = 'true';
+                          e.currentTarget.src = `https://backend.oct9.in${it.product_image}`;
+                          return;
+                        }
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/oct9-logo.jpg';
+                      }}
+                    />
                     <div>
                       <p className="font-semibold text-neutral-900">{it.product_title}</p>
                       <p className="text-neutral-500 text-[10px]">Size: {it.size} | Qty: {it.quantity} | {it.color || 'Standard'}</p>

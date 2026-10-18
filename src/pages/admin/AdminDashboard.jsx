@@ -8,7 +8,8 @@ import { AgGridReact } from 'ag-grid-react';
 import { AgCharts } from 'ag-charts-react';
 import {
   ModuleRegistry as GridModuleRegistry,
-  AllCommunityModule as GridAllCommunityModule
+  AllCommunityModule as GridAllCommunityModule,
+  provideGlobalGridOptions
 } from 'ag-grid-community';
 import {
   ModuleRegistry as ChartModuleRegistry,
@@ -18,11 +19,12 @@ import {
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 
-import { api } from '../../services/api.js';
+import { api, extractProductImage } from '../../services/api.js';
 
 // Register AG Grid & AG Charts Community Modules
 GridModuleRegistry.registerModules([GridAllCommunityModule]);
 ChartModuleRegistry.registerModules([ChartAllCommunityModule]);
+provideGlobalGridOptions({ theme: 'legacy' });
 
 export function AdminDashboard() {
   const [metrics, setMetrics] = useState(null);
@@ -368,16 +370,24 @@ export function AdminDashboard() {
               <p className="text-xs text-neutral-400 py-3">No sales activity yet.</p>
             ) : (
               topProducts.map((p) => {
-                const img = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : '';
+                const img = extractProductImage(p);
                 return (
                   <div key={p.id} className="flex items-center space-x-3 p-2 rounded border border-neutral-100 hover:bg-neutral-50 transition-colors">
-                    {img ? (
-                      <img src={img} alt={p.title} className="w-10 h-12 object-cover rounded bg-neutral-100" />
-                    ) : (
-                      <div className="w-10 h-12 bg-neutral-100 rounded flex items-center justify-center text-[10px] text-neutral-400">
-                        No img
-                      </div>
-                    )}
+                    <img
+                      src={img}
+                      alt={p.title}
+                      className="w-10 h-12 object-cover rounded bg-neutral-100 border border-neutral-200 shrink-0"
+                      onError={(e) => {
+                        const rawFirst = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : (p.image || '');
+                        if (!e.currentTarget.dataset.retried && typeof rawFirst === 'string' && rawFirst.startsWith('/uploads/')) {
+                          e.currentTarget.dataset.retried = 'true';
+                          e.currentTarget.src = `https://backend.oct9.in${rawFirst}`;
+                          return;
+                        }
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/oct9-logo.jpg';
+                      }}
+                    />
                     <div className="flex-1 min-w-0 text-xs">
                       <p className="font-medium text-neutral-900 truncate">{p.title}</p>
                       <p className="text-neutral-500">₹{p.price}</p>

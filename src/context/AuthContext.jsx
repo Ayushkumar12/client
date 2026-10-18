@@ -11,9 +11,9 @@ export function AuthProvider({ children }) {
   const [showProductBadges, setShowProductBadges] = useState(false);
   const [siteMode, setSiteMode] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('oct9_site_mode') || 'under_development';
+      return localStorage.getItem('oct9_site_mode') || 'live';
     }
-    return 'under_development';
+    return 'live';
   });
   const [launchSettings, setLaunchSettings] = useState({
     launch_target_date: '2026-10-18T10:00:00+05:30',
@@ -202,6 +202,17 @@ export function AuthProvider({ children }) {
     return res;
   };
 
+  const removeDefaultAddress = async (addressId) => {
+    const res = await api.removeDefaultAddress(addressId);
+    if (res.success && user) {
+      setUser(prev => ({
+        ...prev,
+        addresses: res.addresses
+      }));
+    }
+    return res;
+  };
+
   const deleteAddress = async (addressId) => {
     const res = await api.deleteAddress(addressId);
     if (res.success && user) {
@@ -238,6 +249,7 @@ export function AuthProvider({ children }) {
         saveAddress,
         updateAddress,
         setDefaultAddress,
+        removeDefaultAddress,
         deleteAddress,
       }}
     >

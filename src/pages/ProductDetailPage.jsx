@@ -23,6 +23,7 @@ import { ProductCard } from '../components/common/ProductCard.jsx';
 import { ProductDetailSkeleton } from '../components/common/Skeleton.jsx';
 import { SEO } from '../components/common/SEO.jsx';
 import { api, formatImageUrl } from '../services/api.js';
+import { trackViewItem, trackAddToCart } from '../utils/conversionTracking.js';
 import { decodeProductSlug, encodeProductSlug } from '../utils/productUrl.js';
 
 // Helper to extract clean path for robust image URL comparison
@@ -49,7 +50,7 @@ function urlsMatch(u1, u2) {
 export function ProductDetailPage() {
   const { slug: rawParam } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { isAdmin, showPublicRatings } = useAuth() || {};
   const { getSection } = useContent();
@@ -71,6 +72,8 @@ export function ProductDetailPage() {
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const [addedAnimation, setAddedAnimation] = useState(false);
+  const [stockAlert, setStockAlert] = useState('');
+  const [relatedFallback, setRelatedFallback] = useState([]);
 
   // Collapsible accordion state (matching reference image)
   const [openAccordions, setOpenAccordions] = useState({
@@ -95,6 +98,7 @@ export function ProductDetailPage() {
         const res = await api.getProduct(targetIdentifier);
         if (res.success && res.product) {
           setProduct(res.product);
+          trackViewItem(res.product);
           setSelectedImage(0);
           setActiveColorImage(null);
           if (res.product.sizes && res.product.sizes.length > 0) {
@@ -127,12 +131,56 @@ export function ProductDetailPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [rawParam]);
 
+  // Load related category products for internal linking and discovery if product.related is empty
+  useEffect(() => {
+    if (!product?.category_slug) return;
+    if (Array.isArray(product.related) && product.related.length > 0) return;
+
+    let isMounted = true;
+    api.getProducts({ category: product.category_slug, limit: 8 })
+      .then((res) => {
+        if (res && res.success && Array.isArray(res.products) && isMounted) {
+          const filtered = res.products.filter((p) => p.id !== product.id).slice(0, 4);
+          setRelatedFallback(filtered);
+        }
+      })
+      .catch(() => {});
+
+    return () => { isMounted = false; };
+  }, [product?.id, product?.category_slug, product?.related]);
+
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
     const x = Math.max(0, Math.min(100, ((e.clientX - left) / width) * 100));
     const y = Math.max(0, Math.min(100, ((e.clientY - top) / height) * 100));
     setZoomPos({ x, y });
   };
+
+  const hasExplicitStock = product?.stock !== undefined && product?.stock !== null;
+  const stockNum = hasExplicitStock ? Number(product.stock) : 99;
+  const isOutOfStock = Boolean(product && hasExplicitStock && stockNum <= 0);
+
+  // Determine how many units of this exact variant are already in the user's cart
+  const currentCartItem = cart?.find(
+    (item) => item.product_id === product?.id && item.size === selectedSize && item.color === selectedColor
+  );
+  const inCartQty = currentCartItem ? currentCartItem.quantity : 0;
+  const availableToAdd = hasExplicitStock ? Math.max(0, stockNum - inCartQty) : 99;
+  const isMaxInCart = Boolean(product && hasExplicitStock && stockNum > 0 && inCartQty >= stockNum);
+
+  // Keep stepper quantity clamped to available units unconditionally
+  useEffect(() => {
+    if (!product) return;
+    if (isOutOfStock) {
+      setQuantity(0);
+    } else if (availableToAdd <= 0) {
+      setQuantity(1);
+    } else if (quantity > availableToAdd) {
+      setQuantity(availableToAdd);
+    } else if (quantity < 1 && availableToAdd > 0) {
+      setQuantity(1);
+    }
+  }, [product, availableToAdd, isOutOfStock]);
 
   if (loading) {
     return <ProductDetailSkeleton />;
@@ -233,17 +281,59 @@ export function ProductDetailPage() {
     if (!selectedSize && allDisplaySizes.length > 0) {
       setSelectedSize(allDisplaySizes[0]);
     }
+    setStockAlert('');
   };
 
+
   const handleAddToCart = () => {
-    addToCart(product, selectedSize, selectedColor, quantity, currentMainImage);
+    if (isOutOfStock) {
+      setStockAlert('This item is currently out of stock.');
+      return;
+    }
+    if (isMaxInCart) {
+      setStockAlert(`Maximum available stock (${stockNum} ${stockNum === 1 ? 'unit' : 'units'}) is already in your bag.`);
+      return;
+    }
+    const res = addToCart(product, selectedSize, selectedColor, quantity, currentMainImage);
+    if (res && res.success === false) {
+      setStockAlert(res.message || 'Maximum available stock already reached.');
+      return;
+    }
+    trackAddToCart(product, quantity, { color: selectedColor, size: selectedSize });
+    setStockAlert('');
     setAddedAnimation(true);
     setTimeout(() => setAddedAnimation(false), 2000);
   };
 
   const handleBuyNow = () => {
-    addToCart(product, selectedSize, selectedColor, quantity, currentMainImage);
-    navigate('/checkout');
+    if (isOutOfStock) {
+      setStockAlert('This item is currently out of stock.');
+      return;
+    }
+    const finalSize = selectedSize || (allDisplaySizes && allDisplaySizes.length > 0 ? allDisplaySizes[0] : 'Free Size');
+    const finalColor = selectedColor || (Array.isArray(product.colors) && product.colors[0]?.name ? product.colors[0].name : 'Standard');
+    const buyQty = Math.max(1, Math.min(stockNum, Number(quantity) || 1));
+
+    const buyNowItem = {
+      product_id: product.id,
+      id: product.id,
+      title: product.title,
+      slug: product.slug,
+      image: currentMainImage || (Array.isArray(product.images) && product.images[0]) || product.image || '/oct9-logo.jpg',
+      size: finalSize,
+      color: finalColor,
+      price: Number(product.price),
+      original_price: Number(product.original_price || product.price),
+      stock: stockNum,
+      quantity: buyQty,
+    };
+
+    try {
+      sessionStorage.setItem('oct9_buy_now_item', JSON.stringify(buyNowItem));
+    } catch (e) {}
+
+    setStockAlert('');
+    navigate('/checkout', { state: { buyNowItem } });
   };
 
   const handleShare = () => {
@@ -275,23 +365,56 @@ export function ProductDetailPage() {
     }
   };
 
+  const siteUrl = typeof window !== 'undefined' && window.location.origin.includes('oct9.in')
+    ? window.location.origin
+    : 'https://oct9.in';
+  const currentProductUrl = typeof window !== 'undefined'
+    ? window.location.href.split('?')[0]
+    : `${siteUrl}/product/${product.slug || product.id}`;
+  const categorySlug = product.category_slug || 'suits';
+  const categoryName = categorySlug.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const categoryUrl = `${siteUrl}/category/${categorySlug}`;
+
+  const breadcrumbSchema = {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: siteUrl
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: categoryName,
+        item: categoryUrl
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: product.title,
+        item: currentProductUrl
+      }
+    ]
+  };
+
   const productSchema = {
-    '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
     image: images,
-    description: product.description || product.short_description,
-    sku: product.sku,
+    description: product.description || product.short_description || `${product.title} handcrafted by OCT9 artisans.`,
+    sku: product.sku || `OCT9-${product.id}`,
     brand: {
       '@type': 'Brand',
       name: 'OCT9'
     },
     offers: {
       '@type': 'Offer',
-      url: typeof window !== 'undefined' ? window.location.href : '',
+      url: currentProductUrl,
       priceCurrency: 'INR',
       price: product.price,
-      availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      availability: Number(product.stock) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       seller: {
         '@type': 'Organization',
         name: 'OCT9 Luxury Ethnic Wear'
@@ -306,6 +429,14 @@ export function ProductDetailPage() {
     } : {})
   };
 
+  const richSchemaGraph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      productSchema,
+      breadcrumbSchema
+    ]
+  };
+
   const hasDiscount = product.discount_percent > 0 || (product.original_price && product.original_price > product.price);
   const discountPercent = product.discount_percent || (hasDiscount ? Math.round(((product.original_price - product.price) / product.original_price) * 100) : 0);
 
@@ -313,9 +444,9 @@ export function ProductDetailPage() {
     <div className="pb-24 bg-[#FAF7F2] min-h-screen">
       <SEO
         title={`${product.title} | OCT9 Luxury Ethnic Wear`}
-        description={product.short_description || product.description}
+        description={product.short_description || product.description || `${product.title} by OCT9. Handcrafted luxury ethnic wear with fast shipping across India.`}
         image={images[0]}
-        schemaData={productSchema}
+        schemaData={richSchemaGraph}
       />
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 sm:pt-4 md:pt-6">
@@ -501,9 +632,11 @@ export function ProductDetailPage() {
 
             {/* 3. Real-Time Stock Availability Indicator */}
             {(() => {
-              const stockCount = Number(product.stock !== undefined && product.stock !== null ? product.stock : 0);
-              const isOutOfStock = stockCount <= 0;
-              const isLowStock = stockCount > 0 && stockCount <= 10;
+              const hasExplicitStock = product.stock !== undefined && product.stock !== null;
+              const stockVal = hasExplicitStock ? Number(product.stock) : null;
+              const isOutOfStock = stockVal !== null ? stockVal <= 0 : false;
+              const isLowStock = stockVal !== null && stockVal > 0 && stockVal <= 10;
+              const stockCount = stockVal !== null ? stockVal : 1;
 
               if (isOutOfStock) {
                 return (
@@ -525,7 +658,7 @@ export function ProductDetailPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-semibold text-amber-950 flex items-center space-x-1.5">
                         <AlertTriangle className="w-3.5 h-3.5 text-amber-700" />
-                        <span>Low Stock: Only <strong>{stockCount} units</strong> available</span>
+                        <span>Low Stock: Only <strong>{stockCount} {stockCount === 1 ? 'unit' : 'units'}</strong> available</span>
                       </span>
                       <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Fast Selling</span>
                     </div>
@@ -619,14 +752,15 @@ export function ProductDetailPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-neutral-800 tracking-wide uppercase">Select Size</span>
-                  <span className={`text-[11px] font-semibold ${Number(product.stock !== undefined && product.stock !== null ? product.stock : 0) > 0 ? 'text-emerald-700' : 'text-red-600'}`}>
-                    {Number(product.stock !== undefined && product.stock !== null ? product.stock : 0) > 0 ? `In Stock (${Number(product.stock !== undefined && product.stock !== null ? product.stock : 0)} units)` : 'Out of Stock'}
+                  <span className={`text-[11px] font-semibold ${product.stock !== undefined && product.stock !== null ? (Number(product.stock) > 0 ? 'text-emerald-700' : 'text-red-600') : 'text-emerald-700'}`}>
+                    {product.stock !== undefined && product.stock !== null ? (Number(product.stock) > 0 ? `In Stock (${Number(product.stock)} ${Number(product.stock) === 1 ? 'unit' : 'units'})` : 'Out of Stock') : 'In Stock'}
                   </span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
                   {allDisplaySizes.map((sz) => {
-                    const stockNum = Number(product.stock !== undefined && product.stock !== null ? product.stock : 0);
+                    const hasStock = product.stock !== undefined && product.stock !== null;
+                    const stockNum = hasStock ? Number(product.stock) : 99;
                     const isAvailable = stockNum > 0;
                     const isSelected = selectedSize === sz;
 
@@ -676,42 +810,55 @@ export function ProductDetailPage() {
 
             {/* 7. Quantity Stepper */}
             {(() => {
-              const stockNum = Number(product.stock !== undefined && product.stock !== null ? product.stock : 0);
-              const isOut = stockNum <= 0;
-
               return (
                 <div className="flex items-center space-x-4 pt-1">
                   <span className="text-xs font-semibold text-neutral-800 uppercase">Quantity:</span>
                   <div className="flex items-center border border-neutral-300 rounded-sm bg-white overflow-hidden">
                     <button
-                      disabled={isOut || quantity <= 1}
+                      type="button"
+                      disabled={isOutOfStock || isMaxInCart || quantity <= 1}
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 font-bold transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Decrease quantity"
                     >
                       -
                     </button>
-                    <span className="px-4 text-xs font-bold text-neutral-900 min-w-[28px] text-center">{isOut ? 0 : quantity}</span>
+                    <span className="px-4 text-xs font-bold text-neutral-900 min-w-[28px] text-center">
+                      {isOutOfStock ? 0 : quantity}
+                    </span>
                     <button
-                      disabled={isOut || quantity >= stockNum}
-                      onClick={() => setQuantity(Math.min(stockNum, quantity + 1))}
+                      type="button"
+                      disabled={isOutOfStock || isMaxInCart || quantity >= availableToAdd}
+                      onClick={() => setQuantity(Math.min(availableToAdd, quantity + 1))}
                       className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 font-bold transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                      title={isMaxInCart ? `Maximum stock of ${stockNum} reached` : quantity >= availableToAdd ? `Only ${availableToAdd} available to add` : 'Increase quantity'}
+                      aria-label="Increase quantity"
                     >
                       +
                     </button>
                   </div>
-                  <span className={`text-xs font-medium ${isOut ? 'text-red-600' : 'text-emerald-700'}`}>
-                    {isOut ? 'Item Sold Out' : 'Ready for immediate dispatch'}
+                  <span className={`text-xs font-medium ${isOutOfStock ? 'text-red-600' : isMaxInCart ? 'text-amber-800 font-semibold' : 'text-emerald-700'}`}>
+                    {isOutOfStock
+                      ? 'Item Sold Out'
+                      : isMaxInCart
+                      ? `All available units (${stockNum}) are in your bag`
+                      : 'Ready for immediate dispatch'}
                   </span>
                 </div>
               );
             })()}
 
+            {/* Stock Warning Notice */}
+            {stockAlert && (
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-sm text-xs text-amber-900 flex items-start space-x-2">
+                <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <span className="leading-snug">{stockAlert}</span>
+              </div>
+            )}
+
             {/* 8. Action Buttons (Clean editorial luxury buttons) */}
             {(() => {
-              const stockNum = Number(product.stock !== undefined && product.stock !== null ? product.stock : 0);
-              const isOut = stockNum <= 0;
-
-              if (isOut) {
+              if (isOutOfStock) {
                 return (
                   <div className="pt-2">
                     <button
@@ -730,11 +877,18 @@ export function ProductDetailPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   <button
                     type="button"
+                    disabled={isMaxInCart}
                     onClick={handleAddToCart}
-                    className="w-full py-3.5 px-6 rounded-sm border border-neutral-900 bg-white hover:bg-neutral-900 text-neutral-900 hover:text-white font-semibold text-xs uppercase tracking-widest transition-all duration-200 shadow-2xs hover:shadow-sm cursor-pointer flex items-center justify-center"
+                    className={`w-full py-3.5 px-6 rounded-sm border text-xs uppercase tracking-widest transition-all duration-200 shadow-2xs flex items-center justify-center ${
+                      isMaxInCart
+                        ? 'border-neutral-300 bg-neutral-100 text-neutral-500 cursor-not-allowed'
+                        : 'border-neutral-900 bg-white hover:bg-neutral-900 text-neutral-900 hover:text-white font-semibold hover:shadow-sm cursor-pointer'
+                    }`}
                   >
                     {addedAnimation ? (
                       <span>Added to Bag</span>
+                    ) : isMaxInCart ? (
+                      <span>MAX IN BAG ({inCartQty})</span>
                     ) : (
                       <span>ADD TO CART</span>
                     )}
@@ -993,8 +1147,8 @@ export function ProductDetailPage() {
             <div className="grid grid-cols-3 divide-x divide-neutral-200 py-3.5 border-t border-b border-neutral-200 text-center">
               <div className="px-2 flex flex-col items-center justify-center">
                 <Truck className="w-4 h-4 text-neutral-800 mb-1" />
-                <span className="text-[11px] font-bold text-neutral-800">{pdpSec.trust_badge_1_title || 'Express Delivery'}</span>
-                <span className="text-[9px] text-neutral-500">{pdpSec.trust_badge_1_sub || '2-4 Days Pan-India'}</span>
+                <span className="text-[11px] font-bold text-neutral-800">{pdpSec.trust_badge_1_title || 'Standard Delivery'}</span>
+                <span className="text-[9px] text-neutral-500">{pdpSec.trust_badge_1_sub || '3-7 Days Pan-India'}</span>
               </div>
               <div className="px-2 flex flex-col items-center justify-center">
                 <RotateCcw className="w-4 h-4 text-neutral-800 mb-1" />
@@ -1010,19 +1164,29 @@ export function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Related Products Section */}
-        {product.related && product.related.length > 0 && (
+        {/* Related Products Section (Internal Linking & Product Discovery) */}
+        {((product.related && product.related.length > 0) || relatedFallback.length > 0) && (
           <div className="mt-12 sm:mt-20 pt-8 sm:pt-12 border-t border-neutral-200">
-            <h2 className="font-sans text-xl sm:text-2xl md:text-3xl font-bold text-neutral-900 mb-2">
-              {pdpSec.related_title || 'You May Also Like'}
-            </h2>
+            <div className="flex items-baseline justify-between mb-2">
+              <h2 className="font-sans text-xl sm:text-2xl md:text-3xl font-bold text-neutral-900">
+                {pdpSec.related_title || 'You May Also Like'}
+              </h2>
+              {product.category_slug && (
+                <Link
+                  to={`/category/${product.category_slug}`}
+                  className="text-xs font-semibold text-neutral-900 hover:text-brand-maroon underline underline-offset-4"
+                >
+                  View All {(product.category_slug || '').replace('-', ' ')} →
+                </Link>
+              )}
+            </div>
             {pdpSec.related_subtitle && (
               <p className="text-xs sm:text-sm text-neutral-500 mb-6 font-light">
                 {pdpSec.related_subtitle}
               </p>
             )}
             <div className={`grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 ${pdpSec.related_subtitle ? '' : 'mt-6'}`}>
-              {product.related.map((p) => (
+              {((product.related && product.related.length > 0) ? product.related : relatedFallback).map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>

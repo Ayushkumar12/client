@@ -16,7 +16,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { useCart } from '../../context/CartContext.jsx';
 import { useWishlist } from '../../context/WishlistContext.jsx';
 import { useContent, DEFAULT_NAV_LINKS } from '../../context/ContentContext.jsx';
-import { api } from '../../services/api.js';
+import { api, formatImageUrl } from '../../services/api.js';
 import { getProductUrl } from '../../utils/productUrl.js';
 
 export function Header() {
@@ -86,7 +86,8 @@ export function Header() {
     }
   };
 
-  const { getNavLinks } = useContent();
+  const { getNavLinks, getBrand } = useContent();
+  const brand = getBrand ? getBrand() : {};
   const rawNavLinks = getNavLinks ? getNavLinks() : DEFAULT_NAV_LINKS;
   const navLinks = (Array.isArray(rawNavLinks) && rawNavLinks.length > 0 ? rawNavLinks : DEFAULT_NAV_LINKS)
     .filter(link => link.active !== false);
@@ -111,16 +112,21 @@ export function Header() {
         {/* Brand Logo */}
         <Link to="/" className="flex items-center space-x-2.5 sm:space-x-3 group shrink-0">
           <img
-            src="/oct9-logo.jpg"
-            alt="OCT9"
+            src={brand?.logo || "/oct9-logo.jpg"}
+            alt={brand?.name || "OCT9"}
+            onError={(e) => { e.currentTarget.src = '/oct9-logo.jpg'; }}
             className="h-8 sm:h-9 w-auto rounded-lg object-contain border border-neutral-200 shadow-2xs"
           />
           <div className="flex flex-col">
             <span className="text-lg sm:text-xl font-bold tracking-tight text-neutral-900 leading-tight">
-              OCT<span className="text-neutral-700">9</span>
+              {brand?.name ? (
+                brand.name
+              ) : (
+                <>OCT<span className="text-neutral-700">9</span></>
+              )}
             </span>
             <span className="text-xs tracking-wider text-neutral-500 font-medium hidden sm:block">
-              Luxury Without Noise
+              {brand?.tagline || 'Luxury Without Noise'}
             </span>
           </div>
         </Link>
@@ -152,9 +158,10 @@ export function Header() {
               </div>
               <div className="max-h-80 overflow-y-auto divide-y divide-neutral-100">
                 {searchResults.map((product) => {
-                  const img = (Array.isArray(product.images) && product.images.length > 0 && product.images[0])
+                  const rawImg = (Array.isArray(product.images) && product.images.length > 0 && product.images[0])
                     ? product.images[0]
                     : (product.image || '/oct9-logo.jpg');
+                  const img = formatImageUrl(rawImg) || '/oct9-logo.jpg';
                   return (
                     <Link
                       key={product.id}
@@ -162,7 +169,20 @@ export function Header() {
                       className="flex items-center space-x-3 p-2.5 hover:bg-neutral-50 transition-colors"
                       onClick={() => setShowSearchDropdown(false)}
                     >
-                      <img src={img} alt={product.title} className="w-10 h-12 object-cover rounded border border-neutral-200 bg-neutral-100" />
+                      <img
+                        src={img}
+                        alt={product.title}
+                        className="w-10 h-12 object-cover rounded border border-neutral-200 bg-neutral-100 shrink-0"
+                        onError={(e) => {
+                          if (!e.currentTarget.dataset.retried && rawImg && typeof rawImg === 'string' && rawImg.startsWith('/uploads/')) {
+                            e.currentTarget.dataset.retried = 'true';
+                            e.currentTarget.src = `https://backend.oct9.in${rawImg}`;
+                            return;
+                          }
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = '/oct9-logo.jpg';
+                        }}
+                      />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-bold text-neutral-900 truncate">{product.title}</p>
                         <p className="text-[10px] text-neutral-500 capitalize">{product.sub_category || product.category_slug}</p>
@@ -393,10 +413,15 @@ export function Header() {
           <div className="w-4/5 max-w-sm bg-white h-full overflow-y-auto p-5 border-r border-neutral-200 text-sm animate-slideRight">
             <div className="flex items-center justify-between pb-4 border-b border-neutral-200">
               <div className="flex items-center space-x-2.5">
-                <img src="/oct9-logo.jpg" alt="OCT9" className="h-8 w-auto rounded object-contain border border-neutral-200" />
+                <img
+                  src={brand?.logo || "/oct9-logo.jpg"}
+                  alt={brand?.name || "OCT9"}
+                  onError={(e) => { e.currentTarget.src = '/oct9-logo.jpg'; }}
+                  className="h-8 w-auto rounded object-contain border border-neutral-200"
+                />
                 <div className="flex flex-col">
-                  <span className="font-sans font-bold text-neutral-900 tracking-widest leading-none">OCT9</span>
-                  <span className="text-xs uppercase tracking-wider text-neutral-500 font-medium">Luxury Without Noise</span>
+                  <span className="font-sans font-bold text-neutral-900 tracking-widest leading-none">{brand?.name || 'OCT9'}</span>
+                  <span className="text-xs uppercase tracking-wider text-neutral-500 font-medium">{brand?.tagline || 'Luxury Without Noise'}</span>
                 </div>
               </div>
               <button onClick={() => setIsMobileMenuOpen(false)} className="text-neutral-500 hover:text-neutral-900 cursor-pointer">

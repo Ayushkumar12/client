@@ -13,6 +13,7 @@ import {
 import { useCart } from '../../context/CartContext.jsx';
 import { useContent } from '../../context/ContentContext.jsx';
 import { getProductUrl } from '../../utils/productUrl.js';
+import { formatImageUrl } from '../../services/api.js';
 
 export function CartDrawer() {
   const {
@@ -33,8 +34,11 @@ export function CartDrawer() {
   if (!isCartOpen) return null;
 
   const handleCheckoutClick = () => {
+    try {
+      sessionStorage.removeItem('oct9_buy_now_item');
+    } catch (e) {}
     closeCart();
-    navigate('/checkout');
+    navigate('/checkout', { state: { fromCart: true } });
   };
 
   return (
@@ -72,7 +76,7 @@ export function CartDrawer() {
                   cartSec.free_shipping_notice
                 ) : (
                   <>
-                    <strong className="text-emerald-700">FREE Express Shipping</strong> on all orders across India
+                    <strong className="text-emerald-700">FREE Standard Delivery</strong> on all orders across India
                   </>
                 )}
               </span>
@@ -104,9 +108,18 @@ export function CartDrawer() {
               cart.map((item, idx) => (
                 <div key={`${item.product_id}-${item.size}-${item.color}-${idx}`} className="py-3.5 flex space-x-3">
                   <img
-                    src={item.image || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80'}
+                    src={formatImageUrl(item.image) || '/oct9-logo.jpg'}
                     alt={item.title}
-                    className="w-20 h-24 object-cover object-top rounded-lg bg-neutral-100 shrink-0"
+                    className="w-20 h-24 object-cover object-top rounded-lg bg-neutral-100 shrink-0 border border-neutral-200"
+                    onError={(e) => {
+                      if (!e.currentTarget.dataset.retried && item.image && item.image.startsWith('/uploads/')) {
+                        e.currentTarget.dataset.retried = 'true';
+                        e.currentTarget.src = `https://backend.oct9.in${item.image}`;
+                        return;
+                      }
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/oct9-logo.jpg';
+                    }}
                   />
 
                   <div className="flex-1 flex flex-col justify-between">
@@ -161,17 +174,18 @@ export function CartDrawer() {
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center border border-neutral-200 rounded-md bg-neutral-50">
                         <button
+                          disabled={item.quantity <= 1}
                           onClick={() => updateQuantity(item.product_id, item.size, item.color, item.quantity - 1)}
-                          className="p-1 text-neutral-600 hover:bg-neutral-200 rounded-l transition-colors"
+                          className="p-1 text-neutral-600 hover:bg-neutral-200 rounded-l transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                         >
                           <Minus className="w-3 h-3" />
                         </button>
                         <span className="px-3 text-xs font-semibold text-neutral-800">{item.quantity}</span>
                         <button
-                          disabled={item.stock !== undefined && item.quantity >= item.stock}
+                          disabled={item.stock !== undefined && item.stock !== null && item.quantity >= Number(item.stock)}
                           onClick={() => updateQuantity(item.product_id, item.size, item.color, item.quantity + 1)}
                           className="p-1 text-neutral-600 hover:bg-neutral-200 rounded-r transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                          title={item.stock !== undefined && item.quantity >= item.stock ? `Max available stock is ${item.stock}` : 'Increase quantity'}
+                          title={item.stock !== undefined && item.stock !== null && item.quantity >= Number(item.stock) ? `Max available stock is ${item.stock}` : 'Increase quantity'}
                         >
                           <Plus className="w-3 h-3" />
                         </button>
@@ -197,7 +211,7 @@ export function CartDrawer() {
                   <span className="font-semibold text-neutral-900">₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Express Shipping</span>
+                  <span>Standard Delivery</span>
                   <span className="text-emerald-700 font-bold uppercase text-[11px]">FREE</span>
                 </div>
                 <div className="flex justify-between text-sm font-bold text-neutral-900 pt-2 border-t border-brand-border">
@@ -208,12 +222,29 @@ export function CartDrawer() {
 
               {/* Action Buttons: Proceed to Checkout & View Full Cart Page */}
               <div className="space-y-2 pt-1">
+                {cart.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock))) && (
+                  <p className="text-[11px] font-medium text-red-700 bg-red-50 p-2 border border-red-200 rounded-sm">
+                    Some items in your bag exceed available stock. Please adjust quantities to checkout.
+                  </p>
+                )}
+
                 <button
+                  disabled={cart.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock)))}
                   onClick={handleCheckoutClick}
-                  className="w-full py-3 bg-[#5A1827] hover:bg-[#43121D] active:scale-98 text-white text-xs sm:text-sm font-semibold uppercase tracking-wider rounded-sm shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                  className={`w-full py-3 text-xs sm:text-sm font-semibold uppercase tracking-wider rounded-sm shadow-sm flex items-center justify-center space-x-2 transition-all ${
+                    cart.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock)))
+                      ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed shadow-none'
+                      : 'bg-[#5A1827] hover:bg-[#43121D] active:scale-98 text-white cursor-pointer'
+                  }`}
                 >
-                  <span>Proceed to Checkout</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>
+                    {cart.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock)))
+                      ? 'Stock Exceeded — Adjust'
+                      : 'Proceed to Checkout'}
+                  </span>
+                  {!cart.some(item => item.stock !== undefined && item.stock !== null && (Number(item.stock) <= 0 || item.quantity > Number(item.stock))) && (
+                    <ArrowRight className="w-4 h-4" />
+                  )}
                 </button>
 
                 <button

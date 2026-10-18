@@ -131,7 +131,7 @@ export function LoginPage() {
           {/* Genuine Retail Reassurance */}
           <div className="grid grid-cols-3 gap-3 border-t border-white/20 pt-4 text-xs">
             <div className="space-y-1">
-              <p className="font-semibold text-white text-xs">Express Delivery</p>
+              <p className="font-semibold text-white text-xs">Standard Delivery</p>
               <p className="text-[11px] text-neutral-300">Live Shiprocket Tracking</p>
             </div>
             <div className="space-y-1">

@@ -57,9 +57,9 @@ export function ContactPage() {
     }
   };
 
-  const phone = page.phone || brand.support_phone || '+91 98765 43210';
-  const email = page.email || brand.support_email || 'support@oct9.com';
-  const whatsapp = page.whatsapp || brand.whatsapp_number || '919876543210';
+  const phone = page.phone || brand.support_phone || '+91 9667100863';
+  const email = page.email || brand.support_email || 'support@oct9.in';
+  const whatsapp = page.whatsapp || brand.whatsapp_number || '919667100863';
   const cleanWhatsapp = whatsapp.replace(/[^0-9]/g, '');
 
   return (
@@ -70,6 +70,9 @@ export function ContactPage() {
           name="description"
           content={page.subtitle || 'Get in touch with OCT9 customer support for sizing assistance, order inquiries, and styling help.'}
         />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
       </Helmet>
 
       <div className="max-w-4xl mx-auto space-y-10">
@@ -200,7 +203,7 @@ export function ContactPage() {
                     </label>
                     <input
                       type="tel"
-                      placeholder="+91 98765 43210"
+                      placeholder="+91 9667100863"
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       className="w-full text-xs px-3.5 py-2.5 rounded-lg border border-neutral-300 focus:outline-none focus:border-neutral-900"

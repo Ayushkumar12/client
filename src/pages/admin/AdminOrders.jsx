@@ -16,7 +16,7 @@ import {
 import { ShiprocketTrackerModal } from '../../components/common/ShiprocketTrackerModal.jsx';
 import { TableSkeleton } from '../../components/common/Skeleton.jsx';
 import { downloadOrderInvoicePdf } from '../../utils/invoicePdf.js';
-import { api } from '../../services/api.js';
+import { api, formatImageUrl } from '../../services/api.js';
 
 function parseAddress(shippingAddress) {
   if (!shippingAddress) return {};
@@ -380,7 +380,20 @@ export function AdminOrders() {
                 {(selectedOrder.items || []).map((it, idx) => (
                   <div key={idx} className="p-3 flex items-center justify-between text-xs bg-white">
                     <div className="flex items-center space-x-3">
-                      <img src={it.product_image} alt={it.product_title} className="w-10 h-12 object-cover rounded bg-neutral-100" />
+                      <img
+                        src={formatImageUrl(it.product_image) || '/oct9-logo.jpg'}
+                        alt={it.product_title}
+                        className="w-10 h-12 object-cover rounded bg-neutral-100 border border-neutral-200 shrink-0"
+                        onError={(e) => {
+                          if (!e.currentTarget.dataset.retried && it.product_image && it.product_image.startsWith('/uploads/')) {
+                            e.currentTarget.dataset.retried = 'true';
+                            e.currentTarget.src = `https://backend.oct9.in${it.product_image}`;
+                            return;
+                          }
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = '/oct9-logo.jpg';
+                        }}
+                      />
                       <div>
                         <p className="font-bold text-neutral-900">{it.product_title}</p>
                         <p className="text-neutral-500 text-[11px]">Size: {it.size} | Color: {it.color} | Qty: {it.quantity}</p>

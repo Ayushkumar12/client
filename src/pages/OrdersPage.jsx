@@ -28,7 +28,7 @@ import { downloadOrderInvoicePdf } from '../utils/invoicePdf.js';
 import { parseAddress } from '../utils/addressUtils.js';
 import { getProductUrl } from '../utils/productUrl.js';
 import { useAuth } from '../context/AuthContext.jsx';
-import { api } from '../services/api.js';
+import { api, formatImageUrl } from '../services/api.js';
 
 export function OrdersPage() {
   const { user, isAuthenticated } = useAuth();
@@ -148,7 +148,11 @@ export function OrdersPage() {
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen pb-24 pt-6">
-      <SEO title="My Orders & History | OCT9 Luxury Ethnic Wear" />
+      <SEO
+        title="My Orders & History | OCT9 Luxury Ethnic Wear"
+        description="Review your past orders, active shipments, delivery status, and invoices for your handcrafted OCT9 ethnic wear."
+        noindex={true}
+      />
 
       {!isAuthenticated ? (
         <div className="max-w-md mx-auto px-4 py-20 text-center space-y-5">
@@ -323,9 +327,18 @@ export function OrdersPage() {
                       <div key={idx} className="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
                         <div className="flex items-center space-x-3.5">
                           <img
-                            src={item.product_image || '/oct9-logo.jpg'}
+                            src={formatImageUrl(item.product_image) || '/oct9-logo.jpg'}
                             alt={item.product_title}
-                            className="w-14 h-16 sm:w-16 sm:h-20 object-cover rounded-lg bg-neutral-100 shrink-0"
+                            className="w-14 h-16 sm:w-16 sm:h-20 object-cover rounded-lg bg-neutral-100 shrink-0 border border-neutral-200"
+                            onError={(e) => {
+                              if (!e.currentTarget.dataset.retried && item.product_image && item.product_image.startsWith('/uploads/')) {
+                                e.currentTarget.dataset.retried = 'true';
+                                e.currentTarget.src = `https://backend.oct9.in${item.product_image}`;
+                                return;
+                              }
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = '/oct9-logo.jpg';
+                            }}
                           />
                           <div>
                             <h4 className="font-bold text-xs sm:text-sm text-neutral-900 line-clamp-1">{item.product_title}</h4>

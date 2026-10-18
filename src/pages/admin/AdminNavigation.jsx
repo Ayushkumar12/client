@@ -16,7 +16,6 @@ import {
   FolderPlus,
   Compass,
   Link2,
-  Sparkles,
   Layers,
   HelpCircle
 } from 'lucide-react';
@@ -635,7 +634,7 @@ export function AdminNavigation({ isEmbedded = false }) {
         {/* Quick Add Presets Strip */}
         <div className="pt-2 border-t border-neutral-100">
           <div className="flex items-center space-x-2 mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-neutral-500" />
+            <Layers className="w-3.5 h-3.5 text-neutral-500" />
             <span className="text-[11px] font-bold text-neutral-600 uppercase tracking-wider">
               Quick 1-Click Category Shortcuts:
             </span>

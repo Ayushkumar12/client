@@ -35,6 +35,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { api } from '../../services/api.js';
 import { ImageUploader } from '../../components/common/ImageUploader.jsx';
 import { AdminNavigation } from './AdminNavigation.jsx';
+import { AdminSeoManager } from './AdminSeoManager.jsx';
 
 export function AdminContentManager() {
   const { content, updateContent, resetSection, refreshContent } = useContent();
@@ -522,6 +523,7 @@ export function AdminContentManager() {
 
   const tabs = [
     { id: 'page_availability', label: 'Page Availability' },
+    { id: 'seo_aeo_geo', label: 'SEO, AEO & GEO' },
     { id: 'navigation_tabs', label: 'Header Navigation' },
     { id: 'section_order', label: 'Arrange Sections' },
     { id: 'homepage_sections', label: 'Section Headings' },
@@ -598,6 +600,13 @@ export function AdminContentManager() {
           </button>
         ))}
       </div>
+
+      {/* ========================================================================= */}
+      {/* TAB: SEO, AEO & GEO COMMAND CENTER */}
+      {/* ========================================================================= */}
+      {activeTab === 'seo_aeo_geo' && (
+        <AdminSeoManager isEmbedded={true} />
+      )}
 
       {/* ========================================================================= */}
       {/* TAB: HEADER NAVIGATION & TAB LINKS */}
@@ -1956,7 +1965,7 @@ export function AdminContentManager() {
                       type="text"
                       value={formData.sections?.product_detail?.trust_badge_1_title || ''}
                       onChange={(e) => updateSectionField('product_detail', 'trust_badge_1_title', e.target.value)}
-                      placeholder="e.g. Express Delivery"
+                      placeholder="e.g. Standard Delivery"
                       className="w-full p-2 rounded-sm border border-neutral-300 font-bold"
                     />
                   </div>
@@ -1966,7 +1975,7 @@ export function AdminContentManager() {
                       type="text"
                       value={formData.sections?.product_detail?.trust_badge_1_sub || ''}
                       onChange={(e) => updateSectionField('product_detail', 'trust_badge_1_sub', e.target.value)}
-                      placeholder="e.g. 2-4 Days Pan-India"
+                      placeholder="e.g. 3-7 Days Pan-India"
                       className="w-full p-2 rounded-sm border border-neutral-300"
                     />
                   </div>
@@ -2076,7 +2085,7 @@ export function AdminContentManager() {
                   type="text"
                   value={formData.sections?.cart?.free_shipping_notice || ''}
                   onChange={(e) => updateSectionField('cart', 'free_shipping_notice', e.target.value)}
-                  placeholder="e.g. FREE Express Shipping on all orders across India"
+                  placeholder="e.g. FREE Standard Delivery on all orders across India"
                   className="w-full p-2.5 rounded-sm border border-neutral-300 bg-white"
                 />
               </div>
@@ -2205,6 +2214,7 @@ export function AdminContentManager() {
                   type="text"
                   value={formData.brand?.support_phone || ''}
                   onChange={(e) => updateBrandField('support_phone', e.target.value)}
+                  placeholder="+91 9667100863"
                   className="w-full p-2.5 rounded-xl border border-neutral-300"
                 />
               </div>
@@ -2215,6 +2225,7 @@ export function AdminContentManager() {
                   type="email"
                   value={formData.brand?.support_email || ''}
                   onChange={(e) => updateBrandField('support_email', e.target.value)}
+                  placeholder="support@oct9.in"
                   className="w-full p-2.5 rounded-xl border border-neutral-300"
                 />
               </div>
@@ -2390,7 +2401,7 @@ export function AdminContentManager() {
                     type="text"
                     value={formData.pages?.contact?.whatsapp || ''}
                     onChange={(e) => updatePageData('contact', 'whatsapp', e.target.value)}
-                    placeholder="919876543210"
+                    placeholder="919667100863"
                     className="w-full p-2.5 rounded-xl border border-neutral-300 font-mono"
                   />
                 </div>
@@ -2440,7 +2451,7 @@ export function AdminContentManager() {
               <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                 <div>
                   <h3 className="font-sans text-base font-bold text-neutral-900">Shipping & Delivery Policy Page (/shipping-policy)</h3>
-                  <p className="text-xs text-neutral-500">Edit free shipping rules, express dispatch metrics, and policy section descriptions.</p>
+                  <p className="text-xs text-neutral-500">Edit free shipping rules, standard dispatch metrics, and policy section descriptions.</p>
                 </div>
                 <a
                   href="/shipping-policy"
@@ -3398,7 +3409,7 @@ export function AdminContentManager() {
                       type="email"
                       value={formData.business_details?.grievance_email || ''}
                       onChange={(e) => updateBusinessField('grievance_email', e.target.value)}
-                      placeholder="care@oct9.com"
+                      placeholder="support@oct9.in"
                       className="w-full p-2 rounded-lg border border-neutral-300 font-mono"
                     />
                   </div>
@@ -3408,7 +3419,7 @@ export function AdminContentManager() {
                       type="text"
                       value={formData.business_details?.grievance_phone || ''}
                       onChange={(e) => updateBusinessField('grievance_phone', e.target.value)}
-                      placeholder="+91 98765 43210"
+                      placeholder="+91 9667100863"
                       className="w-full p-2 rounded-lg border border-neutral-300 font-mono"
                     />
                   </div>

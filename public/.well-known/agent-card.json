@@ -1,0 +1,28 @@
+{
+  "name": "OCT9 Luxury Ethnic Wear Customer Care & Style Agent",
+  "description": "Autonomous Agent-to-Agent interface for customer support, sizing consultations, luxury Indian ethnic wear collections, and live order tracking.",
+  "version": "1.0.0",
+  "url": "https://oct9.in",
+  "provider": {
+    "organization": "OCT9 Luxury Ethnic Wear",
+    "url": "https://oct9.in",
+    "contact": {
+      "email": "support@oct9.in",
+      "telephone": "+91 9667100863"
+    }
+  },
+  "capabilities": {
+    "productSearch": {
+      "endpoint": "https://backend.oct9.in/api/products",
+      "method": "GET"
+    },
+    "orderTracking": {
+      "endpoint": "https://backend.oct9.in/api/orders/track",
+      "method": "GET"
+    },
+    "pincodeServiceability": {
+      "endpoint": "https://backend.oct9.in/api/shiprocket/pincode",
+      "method": "GET"
+    }
+  }
+}

@@ -93,7 +93,12 @@ export function Footer() {
           {/* Brand Info Column */}
           <div className="col-span-1 sm:col-span-2 lg:col-span-2 space-y-2 sm:space-y-4">
             <Link to="/" className="inline-flex items-center space-x-2.5 group">
-              <img src="/oct9-logo.jpg" alt="OCT9" className="h-8 sm:h-10 w-auto rounded-md object-contain border border-neutral-200 shadow-2xs" />
+              <img
+                src={brand.logo || "/oct9-logo.jpg"}
+                alt={brand.name || "OCT9"}
+                onError={(e) => { e.currentTarget.src = '/oct9-logo.jpg'; }}
+                className="h-8 sm:h-10 w-auto rounded-md object-contain border border-neutral-200 shadow-2xs"
+              />
               <div className="flex flex-col">
                 <span className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-neutral-900">
                   {brand.name || 'OCT9'}

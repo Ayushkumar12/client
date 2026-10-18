@@ -9,6 +9,7 @@ export function NotFoundPage() {
       <SEO
         title="404 - Page Not Found | OCT9"
         description="The page you requested could not be found. Explore our collections or reach out to customer care."
+        noindex={true}
       />
 
       <div className="min-h-[70vh] flex flex-col items-center justify-center bg-brand-cream px-4 py-20">

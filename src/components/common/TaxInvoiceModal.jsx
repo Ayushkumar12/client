@@ -77,7 +77,7 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
             <p className="font-semibold text-neutral-900">OCT9 Luxury Apparel Pvt. Ltd.</p>
             <p className="text-neutral-700">Plot 42, Okhla Industrial Area Phase-III</p>
             <p className="text-neutral-700">New Delhi - 110020, Delhi, IN</p>
-            <p className="text-neutral-700">Email: support@oct9.com</p>
+            <p className="text-neutral-700">Email: support@oct9.in</p>
           </div>
 
           <hr className="border-t border-neutral-200" />
@@ -89,7 +89,7 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
               <p className="font-semibold text-neutral-900">{order.customer_name}</p>
               <p className="text-neutral-700">{addr.address_line1} {addr.address_line2 || ''}</p>
               <p className="text-neutral-700">{addr.city}, {addr.state} - {addr.pincode}</p>
-              <p className="text-neutral-700">Email: {order.customer_email || 'support@oct9.com'} • Phone: +91 {order.customer_phone}</p>
+              <p className="text-neutral-700">Email: {order.customer_email || 'support@oct9.in'} • Phone: +91 {order.customer_phone}</p>
             </div>
 
             <div>
@@ -97,7 +97,7 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
               <p className="font-semibold text-neutral-900">{order.customer_name}</p>
               <p className="text-neutral-700">{billingAddr.address_line1 || addr.address_line1} {billingAddr.address_line2 || ''}</p>
               <p className="text-neutral-700">{billingAddr.city || addr.city}, {billingAddr.state || addr.state} - {billingAddr.pincode || addr.pincode}</p>
-              <p className="text-neutral-700">Email: {order.customer_email || 'support@oct9.com'} • Phone: +91 {order.customer_phone}</p>
+              <p className="text-neutral-700">Email: {order.customer_email || 'support@oct9.in'} • Phone: +91 {order.customer_phone}</p>
             </div>
           </div>
 
@@ -155,7 +155,7 @@ export function TaxInvoiceModal({ order, isOpen, onClose }) {
               <div>
                 <p className="font-bold text-neutral-900">Payment Type</p>
                 <p className="text-neutral-700">{isCOD ? 'Cash on Delivery (COD)' : 'Prepaid (Razorpay Online)'}</p>
-                <p className="text-[11px] text-emerald-700 font-semibold mt-0.5">Complimentary Express Shipping Included</p>
+                <p className="text-[11px] text-emerald-700 font-semibold mt-0.5">Complimentary Standard Delivery Included</p>
               </div>
 
               <div className="text-sm font-bold text-neutral-900">

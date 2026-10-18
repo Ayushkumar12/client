@@ -266,7 +266,7 @@ export function RegisterPage() {
                     autoComplete="tel"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="9876543210"
+                    placeholder="9667100863"
                     className="w-full text-xs sm:text-sm pl-14 pr-4 py-3 bg-white border border-neutral-300 rounded-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-[#5A1827] focus:ring-1 focus:ring-[#5A1827] transition-all shadow-2xs font-mono"
                   />
                   <Phone className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />

@@ -4,26 +4,49 @@ import { Heart } from 'lucide-react';
 import { useCart } from '../../context/CartContext.jsx';
 import { useWishlist } from '../../context/WishlistContext.jsx';
 import { getProductUrl } from '../../utils/productUrl.js';
+import { trackAddToCart } from '../../utils/conversionTracking.js';
+import { formatImageUrl } from '../../services/api.js';
 
 function getProductSilhouetteLabel(product) {
   if (!product) return '';
   return (product.sub_category || '').trim() || (product.category_slug ? product.category_slug.replace(/-/g, ' ') : '');
 }
 
-const FALLBACK_PRODUCT_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500' viewBox='0 0 400 500' fill='%23F5F5F5'%3E%3Crect width='400' height='500' fill='%23F5F5F5'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='13' fill='%239CA3AF'%3ENo Image%3C/text%3E%3C/svg%3E";
+const FALLBACK_PRODUCT_IMAGE = '/oct9-logo.jpg';
 
 export function ProductCard({ product, showDescription = true, showInstantBuy = true, compact = false }) {
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const navigate = useNavigate();
 
   // Normalize product images
-  const images = Array.isArray(product.images) && product.images.length > 0
-    ? product.images
-    : [product.image || FALLBACK_PRODUCT_IMAGE];
+  let images = [];
+  if (Array.isArray(product.images) && product.images.length > 0) {
+    images = product.images;
+  } else if (typeof product.images === 'string' && product.images.trim().length > 0) {
+    const trimmed = product.images.trim();
+    if (trimmed.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed) && parsed.length > 0) images = parsed;
+      } catch (e) {
+        images = [trimmed];
+      }
+    } else {
+      images = [trimmed];
+    }
+  } else if (product.image) {
+    images = [product.image];
+  }
 
-  const mainImage = images[0] || FALLBACK_PRODUCT_IMAGE;
-  const hoverImage = images.length > 1 ? images[1] : mainImage;
+  if (images.length === 0) {
+    images = [FALLBACK_PRODUCT_IMAGE];
+  }
+
+  const rawMainImage = images[0] || FALLBACK_PRODUCT_IMAGE;
+  const rawHoverImage = images.length > 1 ? images[1] : rawMainImage;
+  const mainImage = formatImageUrl(rawMainImage) || FALLBACK_PRODUCT_IMAGE;
+  const hoverImage = formatImageUrl(rawHoverImage) || mainImage;
   const isWishlisted = isInWishlist(product.id);
 
   // Available Sizes
@@ -33,6 +56,7 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
 
   const [selectedSize, setSelectedSize] = useState(() => availableSizes[0] || '');
   const [isAdded, setIsAdded] = useState(false);
+  const [stockLimitAlert, setStockLimitAlert] = useState(false);
 
   // Category Tag - Clean silhouette/product name in Title Case
   const categoryLabel = getProductSilhouetteLabel(product);
@@ -43,10 +67,23 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
   const hasDiscount = product.discount_percent > 0 || (product.original_price && product.original_price > product.price);
   const discountPercent = product.discount_percent || (hasDiscount ? Math.round(((product.original_price - product.price) / product.original_price) * 100) : 0);
 
-  // Stock status checks
-  const stockCount = Number(product.stock !== undefined ? product.stock : 0);
-  const isOutOfStock = stockCount <= 0;
-  const isLowStock = stockCount > 0 && stockCount <= 10;
+  // Stock status checks: only mark out of stock when stock is explicitly 0 or negative
+  const hasExplicitStock = product.stock !== undefined && product.stock !== null;
+  const stockVal = hasExplicitStock ? Number(product.stock) : null;
+  const isOutOfStock = stockVal !== null ? stockVal <= 0 : false;
+  const isLowStock = stockVal !== null && stockVal > 0 && stockVal <= 10;
+  const stockCount = stockVal !== null ? stockVal : 1;
+
+  const primaryColor = (Array.isArray(product.colors) && product.colors.length > 0 && product.colors[0]?.name)
+    ? product.colors[0].name
+    : '';
+
+  // Check if user already holds the maximum available stock for this variant in their bag
+  const inCartItem = cart?.find(
+    (item) => item.product_id === product.id && item.size === selectedSize && item.color === primaryColor
+  );
+  const inCartQty = inCartItem ? inCartItem.quantity : 0;
+  const isMaxStockInCart = stockVal !== null && stockVal > 0 && inCartQty >= stockVal;
 
   const handleSizeClick = (sz, e) => {
     e.preventDefault();
@@ -55,15 +92,22 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
     setSelectedSize(sz);
   };
 
-  const primaryColor = (Array.isArray(product.colors) && product.colors.length > 0 && product.colors[0]?.name)
-    ? product.colors[0].name
-    : '';
-
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (isOutOfStock) return;
-    addToCart(product, selectedSize, primaryColor, 1);
+    if (isMaxStockInCart) {
+      setStockLimitAlert(true);
+      setTimeout(() => setStockLimitAlert(false), 2000);
+      return;
+    }
+    const res = addToCart(product, selectedSize, primaryColor, 1);
+    if (res && res.success === false) {
+      setStockLimitAlert(true);
+      setTimeout(() => setStockLimitAlert(false), 2000);
+      return;
+    }
+    trackAddToCart(product, 1, { size: selectedSize, color: primaryColor });
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 1800);
   };
@@ -72,8 +116,29 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
     e.preventDefault();
     e.stopPropagation();
     if (isOutOfStock) return;
-    addToCart(product, selectedSize, primaryColor, 1);
-    navigate('/checkout');
+
+    const finalSize = selectedSize || (availableSizes.length > 0 ? availableSizes[0] : 'Free Size');
+    const finalColor = primaryColor || 'Standard';
+
+    const buyNowItem = {
+      product_id: product.id,
+      id: product.id,
+      title: product.title,
+      slug: product.slug,
+      image: mainImage || '/oct9-logo.jpg',
+      size: finalSize,
+      color: finalColor,
+      price: Number(product.price),
+      original_price: Number(product.original_price || product.price),
+      stock: stockVal !== null ? stockVal : 99,
+      quantity: 1,
+    };
+
+    try {
+      sessionStorage.setItem('oct9_buy_now_item', JSON.stringify(buyNowItem));
+    } catch (err) {}
+
+    navigate('/checkout', { state: { buyNowItem } });
   };
 
   const handleWishlistClick = (e) => {
@@ -97,6 +162,11 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
             }`}
             loading="lazy"
             onError={(e) => {
+              if (!e.currentTarget.dataset.retried && rawMainImage && typeof rawMainImage === 'string' && rawMainImage.startsWith('/uploads/')) {
+                e.currentTarget.dataset.retried = 'true';
+                e.currentTarget.src = `https://backend.oct9.in${rawMainImage}`;
+                return;
+              }
               e.currentTarget.onerror = null;
               e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
             }}
@@ -110,6 +180,11 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
               className="w-full h-full object-cover object-top absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out"
               loading="lazy"
               onError={(e) => {
+                if (!e.currentTarget.dataset.retried && rawHoverImage && typeof rawHoverImage === 'string' && rawHoverImage.startsWith('/uploads/')) {
+                  e.currentTarget.dataset.retried = 'true';
+                  e.currentTarget.src = `https://backend.oct9.in${rawHoverImage}`;
+                  return;
+                }
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
               }}
@@ -164,7 +239,7 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
           {/* Low Stock Urgency Tag */}
           {isLowStock && (
             <span className="bg-amber-500 text-neutral-950 text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 rounded-sm shadow-2xs tracking-wide border border-amber-300">
-              <span>Only {stockCount} left</span>
+              <span>{stockCount === 1 ? 'Only 1 left in stock' : `Only ${stockCount} left`}</span>
             </span>
           )}
         </div>
@@ -250,16 +325,23 @@ export function ProductCard({ product, showDescription = true, showInstantBuy = 
             type="button"
             disabled={isOutOfStock}
             onClick={handleAddToCart}
+            title={isMaxStockInCart ? `Maximum available stock (${stockCount}) is in your bag` : undefined}
             className={`flex-1 h-8 sm:h-9 px-2 sm:px-3 rounded-sm text-[11px] sm:text-xs font-semibold uppercase tracking-wider flex items-center justify-center transition-all shadow-2xs box-border ${
               isOutOfStock
                 ? 'w-full bg-neutral-200 text-neutral-500 cursor-not-allowed border border-neutral-300 shadow-none'
+                : isMaxStockInCart
+                ? 'bg-neutral-800 text-neutral-200 cursor-pointer'
                 : 'bg-[#5A1827] hover:bg-[#43121D] active:scale-98 text-white hover:shadow-md cursor-pointer'
             }`}
           >
             {isOutOfStock ? (
               <span className="whitespace-nowrap">Out of Stock</span>
+            ) : stockLimitAlert ? (
+              <span className="whitespace-nowrap text-amber-300">Max in Bag</span>
             ) : isAdded ? (
               <span className="whitespace-nowrap">Added</span>
+            ) : isMaxStockInCart ? (
+              <span className="whitespace-nowrap">In Bag ({inCartQty})</span>
             ) : (
               <span className="whitespace-nowrap">Add to Cart</span>
             )}

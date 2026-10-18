@@ -2,6 +2,9 @@ User-agent: *
 Allow: /
 Allow: /sitemap.xml
 Allow: /sitemap
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
 Allow: /about
 Allow: /contact
 Allow: /shipping-policy
@@ -19,5 +22,37 @@ Disallow: /admin/
 Disallow: /checkout
 Disallow: /account
 Disallow: /api/
+
+# AI Agent & Answer Engine Crawlers (Answer Engine Optimization - AEO)
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
+
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
+
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
+
+User-agent: CCBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
 
 Sitemap: https://oct9.in/sitemap.xml

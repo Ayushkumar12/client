@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { api } from '../../services/api.js';
+import { SEO } from './SEO.jsx';
 
 export function UnderDevelopmentLaunch() {
   const { launchSettings } = useAuth();
@@ -81,6 +82,11 @@ export function UnderDevelopmentLaunch() {
 
   return (
     <div className="min-h-screen flex flex-col justify-between bg-[#FAF7F2] text-[#1F2937] font-sans selection:bg-[#881337] selection:text-white">
+      <SEO
+        title="OCT9 — Official Launch & VIP Early Access | Luxury Ethnic Wear"
+        description="OCT9 is preparing an exclusive curation of hand-embroidered silhouettes, timeless festive ensembles, and modern ethnic pret. Sign up for VIP launch access."
+        canonicalUrl="/"
+      />
       {/* 1. Top Announcement Bar */}
       <div className="bg-[#881337] text-white py-2 px-4 text-center border-b border-white/10 text-xs tracking-wider">
         <div className="uppercase tracking-widest text-[11px] font-medium">
@@ -198,10 +204,10 @@ export function UnderDevelopmentLaunch() {
         <p className="mb-2">
           Questions or customer inquiries? Contact{' '}
           <a
-            href="mailto:care@oct9.com"
+            href="mailto:support@oct9.in"
             className="text-[#881337] font-medium hover:underline"
           >
-            Customer Support (care@oct9.com)
+            Customer Support (support@oct9.in)
           </a>
         </p>
         <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-[11px] text-[#52525B] my-3">

@@ -12,7 +12,7 @@ import {
   EyeOff,
   X
 } from 'lucide-react';
-import { api } from '../../services/api.js';
+import { api, formatImageUrl, extractProductImage } from '../../services/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { ImageUploader } from '../../components/common/ImageUploader.jsx';
 import { TableSkeleton } from '../../components/common/Skeleton.jsx';
@@ -90,10 +90,6 @@ export function AdminProducts() {
     { key: 'is_bestseller', label: 'Bestseller' },
   ];
 
-  useEffect(() => {
-    fetchProducts();
-  }, [selectedCategory]);
-
   const fetchProducts = async () => {
     setLoading(true);
     try {
@@ -107,6 +103,10 @@ export function AdminProducts() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [selectedCategory]);
 
   // Color management helpers
   const handleAddColor = (e) => {
@@ -464,13 +464,28 @@ export function AdminProducts() {
               </thead>
               <tbody className="divide-y divide-neutral-100">
                 {products.map((p) => {
-                  const img = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : '';
+                  const img = extractProductImage(p);
                   const hasReviews = Number(p.reviews_count || 0) > 0 && Number(p.rating || 0) > 0;
                   return (
                     <tr key={p.id} className="hover:bg-neutral-50/80 transition-colors">
                       <td className="p-4">
                         <div className="flex items-center space-x-3">
-                          <img src={img} alt={p.title} className="w-12 h-14 object-cover rounded-lg bg-neutral-100" />
+                          <img
+                            src={img}
+                            alt={p.title}
+                            className="w-12 h-14 object-cover rounded-lg bg-neutral-100 border border-neutral-200 shrink-0"
+                            loading="lazy"
+                            onError={(e) => {
+                              const rawFirst = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : (p.image || '');
+                              if (!e.currentTarget.dataset.retried && typeof rawFirst === 'string' && rawFirst.startsWith('/uploads/')) {
+                                e.currentTarget.dataset.retried = 'true';
+                                e.currentTarget.src = `https://backend.oct9.in${rawFirst}`;
+                                return;
+                              }
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = '/oct9-logo.jpg';
+                            }}
+                          />
                           <div>
                             <p className="font-bold text-neutral-900 text-sm">{p.title}</p>
                             <span className="text-[10px] text-neutral-400 font-mono">SKU: {p.sku}</span>
@@ -971,9 +986,18 @@ export function AdminProducts() {
                             {c.image ? (
                               <div className="flex items-center gap-2 bg-neutral-50 p-1 rounded border border-neutral-200">
                                 <img
-                                  src={c.image}
+                                  src={formatImageUrl(c.image)}
                                   alt={c.name}
                                   className="w-7 h-9 object-cover rounded border border-neutral-300"
+                                  onError={(e) => {
+                                    if (!e.currentTarget.dataset.retried && c.image && c.image.startsWith('/uploads/')) {
+                                      e.currentTarget.dataset.retried = 'true';
+                                      e.currentTarget.src = `https://backend.oct9.in${c.image}`;
+                                      return;
+                                    }
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = '/oct9-logo.jpg';
+                                  }}
                                 />
                                 <span className="text-[10px] text-neutral-600 max-w-[120px] truncate">{c.image}</span>
                                 <button
@@ -998,7 +1022,20 @@ export function AdminProducts() {
                                         title={`Attach Photo #${i + 1}`}
                                         className="w-7 h-8 rounded border border-neutral-300 hover:border-neutral-900 overflow-hidden cursor-pointer"
                                       >
-                                        <img src={img} alt={`#${i + 1}`} className="w-full h-full object-cover" />
+                                        <img
+                                          src={formatImageUrl(img)}
+                                          alt={`#${i + 1}`}
+                                          className="w-full h-full object-cover"
+                                          onError={(e) => {
+                                            if (!e.currentTarget.dataset.retried && img && img.startsWith('/uploads/')) {
+                                              e.currentTarget.dataset.retried = 'true';
+                                              e.currentTarget.src = `https://backend.oct9.in${img}`;
+                                              return;
+                                            }
+                                            e.currentTarget.onerror = null;
+                                            e.currentTarget.src = '/oct9-logo.jpg';
+                                          }}
+                                        />
                                       </button>
                                     ))}
                                   </div>

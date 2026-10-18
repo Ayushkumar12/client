@@ -18,6 +18,9 @@ export function PrivacyPage() {
           name="description"
           content={page.subtitle || 'Learn how OCT9 protects your personal information and safeguards customer data.'}
         />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
       </Helmet>
 
       <div className="max-w-3xl mx-auto space-y-10">

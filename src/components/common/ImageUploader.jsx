@@ -19,7 +19,11 @@ import { api, formatImageUrl } from '../../services/api.js';
 
 export function ImageUploader({
   images,
+  currentImage,
+  value,
   onChange,
+  onImageUploaded,
+  onUpload,
   multiple = false,
   maxFiles = 8,
   label = '',
@@ -42,12 +46,26 @@ export function ImageUploader({
 
   const fileInputRef = useRef(null);
 
-  // Normalize image list
+  // Safe dispatcher that supports onChange, onImageUploaded, and onUpload
+  const notifyChange = (newVal) => {
+    if (typeof onChange === 'function') {
+      onChange(newVal);
+    }
+    if (typeof onImageUploaded === 'function') {
+      onImageUploaded(newVal);
+    }
+    if (typeof onUpload === 'function') {
+      onUpload(newVal);
+    }
+  };
+
+  // Normalize image list across all prop variations
+  const resolvedImages = images !== undefined ? images : (currentImage !== undefined ? currentImage : value);
   const currentImages = (
-    Array.isArray(images)
-      ? images
-      : typeof images === 'string' && images.trim().length > 0
-      ? [images]
+    Array.isArray(resolvedImages)
+      ? resolvedImages
+      : typeof resolvedImages === 'string' && resolvedImages.trim().length > 0
+      ? [resolvedImages]
       : []
   ).filter((img) => typeof img === 'string' && img.trim().length > 0);
 
@@ -78,7 +96,7 @@ export function ImageUploader({
         const res = await api.uploadMultipleImages(fileArray);
         if (res.success && res.urls) {
           const updated = [...currentImages, ...res.urls];
-          onChange(updated);
+          notifyChange(updated);
           setUploadSuccess(true);
           setTimeout(() => setUploadSuccess(false), 2500);
         } else {
@@ -92,7 +110,7 @@ export function ImageUploader({
 
         const res = await api.uploadImage(file);
         if (res.success && res.url) {
-          onChange(res.url);
+          notifyChange(res.url);
           setLocalPreview(null);
           setUploadSuccess(true);
           setTimeout(() => setUploadSuccess(false), 2500);
@@ -113,13 +131,13 @@ export function ImageUploader({
   const handleRemoveSingle = (e) => {
     e.stopPropagation();
     setLocalPreview(null);
-    onChange('');
+    notifyChange('');
   };
 
   const handleRemoveGalleryItem = (indexToRemove, e) => {
     e.stopPropagation();
     const updated = currentImages.filter((_, idx) => idx !== indexToRemove);
-    onChange(updated);
+    notifyChange(updated);
   };
 
   const handleSetPrimary = (indexToPrimary, e) => {
@@ -127,7 +145,7 @@ export function ImageUploader({
     if (indexToPrimary === 0) return;
     const selected = currentImages[indexToPrimary];
     const rest = currentImages.filter((_, idx) => idx !== indexToPrimary);
-    onChange([selected, ...rest]);
+    notifyChange([selected, ...rest]);
   };
 
   const handleDragOver = (e) => {
@@ -166,11 +184,11 @@ export function ImageUploader({
   const handleSelectFromLibrary = (mediaItem) => {
     if (multiple) {
       if (!currentImages.includes(mediaItem.url)) {
-        onChange([...currentImages, mediaItem.url]);
+        notifyChange([...currentImages, mediaItem.url]);
       }
     } else {
       setLocalPreview(null);
-      onChange(mediaItem.url);
+      notifyChange(mediaItem.url);
     }
     setShowMediaLibrary(false);
   };

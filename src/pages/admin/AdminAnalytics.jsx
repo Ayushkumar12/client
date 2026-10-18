@@ -14,7 +14,8 @@ import { AgGridReact } from 'ag-grid-react';
 import { AgCharts } from 'ag-charts-react';
 import {
   ModuleRegistry as GridModuleRegistry,
-  AllCommunityModule as GridAllCommunityModule
+  AllCommunityModule as GridAllCommunityModule,
+  provideGlobalGridOptions
 } from 'ag-grid-community';
 import {
   ModuleRegistry as ChartModuleRegistry,
@@ -30,6 +31,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 // Register AG Grid & AG Charts Community Modules
 GridModuleRegistry.registerModules([GridAllCommunityModule]);
 ChartModuleRegistry.registerModules([ChartAllCommunityModule]);
+provideGlobalGridOptions({ theme: 'legacy' });
 
 export function AdminAnalytics() {
   const { showPublicRatings, showProductBadges, refreshSettings } = useAuth();

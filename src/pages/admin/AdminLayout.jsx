@@ -15,7 +15,8 @@ import {
   Boxes,
   Mail,
   Database,
-  Compass
+  Compass,
+  Globe
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 
@@ -53,6 +54,7 @@ export function AdminLayout() {
 
   const navItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
+    { label: 'SEO & GEO Command Center', path: '/admin/seo', icon: Globe },
     { label: 'Inventory Management', path: '/admin/inventory', icon: Boxes },
     { label: 'Customer Inquiries', path: '/admin/inquiries', icon: Mail },
     { label: 'Header Navigation', path: '/admin/navigation', icon: Compass },
@@ -213,7 +215,16 @@ export function AdminLayout() {
           </div>
         </div>
 
-        <Outlet />
+        <React.Suspense
+          fallback={
+            <div className="flex-1 flex flex-col items-center justify-center p-16 text-neutral-500">
+              <div className="w-7 h-7 border-2 border-neutral-300 border-t-neutral-800 rounded-full animate-spin mb-3"></div>
+              <span className="text-xs font-mono tracking-wider uppercase">Loading Module...</span>
+            </div>
+          }
+        >
+          <Outlet />
+        </React.Suspense>
       </main>
     </div>
   );

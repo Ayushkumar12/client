@@ -153,11 +153,14 @@ export const DEFAULT_SITE_CONTENT = {
   brand: {
     name: 'OCT9',
     tagline: 'Luxury Without Noise',
+    description: 'Luxury without noise',
+    logo: '/oct9-logo.jpg',
+    logo_url: '/oct9-logo.jpg',
     sub_tagline: 'Luxury Indian Pret & Ethnic Wear',
     announcement_bar: '',
-    support_phone: '+91 98765 43210',
-    support_email: 'support@oct9.com',
-    whatsapp_number: '919876543210',
+    support_phone: '+91 9667100863',
+    support_email: 'support@oct9.in',
+    whatsapp_number: '919667100863',
     address: 'OCT9 Fashion Store, New Delhi 110049',
     instagram_url: 'https://instagram.com',
     facebook_url: 'https://facebook.com',
@@ -407,8 +410,8 @@ export const DEFAULT_SITE_CONTENT = {
       accordion_specifications: 'SPECIFICATIONS',
       accordion_shipping: 'SHIPPING & DELIVERY',
       accordion_reviews: 'CUSTOMER REVIEWS',
-      trust_badge_1_title: 'Express Delivery',
-      trust_badge_1_sub: '2-4 Days Pan-India',
+      trust_badge_1_title: 'Standard Delivery',
+      trust_badge_1_sub: '3-7 Days Pan-India',
       trust_badge_2_title: '7 Days Returns',
       trust_badge_2_sub: 'Hassle-free pickup',
       trust_badge_3_title: '100% Authentic',
@@ -420,7 +423,7 @@ export const DEFAULT_SITE_CONTENT = {
       summary_title: 'Order Summary',
       empty_title: 'Your Shopping Bag is Empty',
       empty_subtitle: 'Explore our latest arrivals to add handcrafted pieces to your wardrobe.',
-      free_shipping_notice: 'FREE Express Shipping on all orders across India'
+      free_shipping_notice: 'FREE Standard Delivery on all orders across India'
     },
     wishlist: {
       title: 'My Saved Wishlist',
@@ -466,9 +469,9 @@ export const DEFAULT_SITE_CONTENT = {
       badge: 'Customer Support',
       title: 'Contact Us',
       subtitle: 'We are here to assist you with sizing, styling advice, order tracking & inquiries.',
-      phone: '+91 98765 43210',
-      email: 'support@oct9.com',
-      whatsapp: '919876543210',
+      phone: '+91 9667100863',
+      email: 'support@oct9.in',
+      whatsapp: '919667100863',
       hours: 'Monday – Saturday: 10:00 AM – 7:30 PM IST',
       address: 'OCT9 Flagship Studio, Fashion Hub, Shahpur Jat, New Delhi 110049',
       response_time: 'Within 2 business hours',
@@ -477,14 +480,14 @@ export const DEFAULT_SITE_CONTENT = {
     shipping: {
       badge: 'Domestic & Global Delivery',
       title: 'Shipping & Delivery Policy',
-      subtitle: 'Insured express shipping across India powered by Shiprocket & premium air courier partners.',
+      subtitle: 'Insured standard delivery across India powered by Shiprocket & trusted courier partners.',
       free_shipping_threshold: '0',
       standard_shipping_fee: '0',
       dispatch_ready: '24–48 Hours',
       dispatch_tailored: '5–7 Business Days',
-      delivery_metro: '2–4 Business Days',
+      delivery_metro: '3–5 Business Days',
       delivery_rest: '4–7 Business Days',
-      courier_partners: 'Bluedart, Delhivery, DTDC, Xpressbees & Shadowfax via Shiprocket',
+      courier_partners: 'Delhivery, Shadowfax, DTDC, Bluedart Surface & Ecom Express via Shiprocket',
       sections: [
         {
           title: '1. Order Processing & Dispatch Timelines',
@@ -492,7 +495,7 @@ export const DEFAULT_SITE_CONTENT = {
         },
         {
           title: '2. Shipping Charges & Free Shipping',
-          content: 'We offer 100% FREE insured express shipping on all prepaid and COD orders across India with no minimum order value.'
+          content: 'We offer 100% FREE insured standard delivery on all prepaid and COD orders across India with no minimum order value.'
         },
         {
           title: '3. Real-Time Tracking via Shiprocket',
@@ -599,7 +602,7 @@ export const DEFAULT_SITE_CONTENT = {
           items: [
             {
               question: 'How long does delivery take?',
-              answer: 'Metro cities typically receive deliveries within 2–4 business days. Rest of India takes 4–7 business days depending on pin code.'
+              answer: 'Metro cities typically receive deliveries within 3–5 business days. Rest of India takes 4–7 business days depending on pin code.'
             },
             {
               question: 'Is Cash on Delivery (COD) available?',
@@ -607,7 +610,7 @@ export const DEFAULT_SITE_CONTENT = {
             },
             {
               question: 'Are there any hidden shipping charges?',
-              answer: 'No. All orders qualify for Free Express Shipping across India with no minimum order value.'
+              answer: 'No. All orders qualify for Free Standard Delivery across India with no minimum order value.'
             }
           ]
         },
@@ -659,7 +662,7 @@ export const DEFAULT_SITE_CONTENT = {
         },
         {
           title: '3. Copyright Claims & Takedown Policy (Notice & Safe Harbor)',
-          content: 'OCT9 respects the intellectual property rights of third parties and operates in compliance with safe-harbor standards. If you are a copyright or trademark owner and believe in good faith that any material or image displayed on this site infringes your intellectual property, please submit a written infringement notice to our designated agent at care@oct9.com with: (a) Identification of the copyrighted work claimed to be infringed; (b) Direct URL/link to the material on our platform; (c) Evidence of legal ownership or authorization; and (d) Your full contact details. Valid notices will be reviewed and acted upon within 36 hours.'
+          content: 'OCT9 respects the intellectual property rights of third parties and operates in compliance with safe-harbor standards. If you are a copyright or trademark owner and believe in good faith that any material or image displayed on this site infringes your intellectual property, please submit a written infringement notice to our designated agent at support@oct9.in with: (a) Identification of the copyrighted work claimed to be infringed; (b) Direct URL/link to the material on our platform; (c) Evidence of legal ownership or authorization; and (d) Your full contact details. Valid notices will be reviewed and acted upon within 36 hours.'
         },
         {
           title: '4. Third-Party Trademarks & Payment Gateways',
@@ -675,7 +678,7 @@ export const DEFAULT_SITE_CONTENT = {
         },
         {
           title: '7. Statutory Grievance Redressal Mechanism',
-          content: 'In compliance with Rule 5(9) of the Consumer Protection (E-Commerce) Rules, 2020, OCT9 has designated a Grievance Redressal Officer. Any consumer grievances, service disputes, or copyright notices may be addressed to: Grievance Officer, Customer Care, OCT9 Fashion Store, New Delhi 110049; Email: care@oct9.com or support@oct9.com; Phone: +91 98765 43210. Acknowledgment will be issued within 48 hours, and complaints will be resolved within 30 days.'
+          content: 'In compliance with Rule 5(9) of the Consumer Protection (E-Commerce) Rules, 2020, OCT9 has designated a Grievance Redressal Officer. Any consumer grievances, service disputes, or copyright notices may be addressed to: Grievance Officer, Customer Care, OCT9 Fashion Store, New Delhi 110049; Email: support@oct9.in; Phone: +91 9667100863. Acknowledgment will be issued within 48 hours, and complaints will be resolved within 30 days.'
         },
         {
           title: '8. Governing Law & Jurisdiction',
@@ -706,12 +709,20 @@ export const DEFAULT_SITE_CONTENT = {
           content: 'We use necessary functional cookies and local storage solely to retain your active shopping cart, wishlist selections, and authenticated session tokens. We do not sell, rent, or trade your personal browsing history to third-party ad networks.'
         },
         {
-          title: '5. Data Rights & Erasure (DPDP Act, 2023)',
-          content: 'Under the Digital Personal Data Protection Act, you have the right to request access to, correction of, or permanent erasure of your account and personal details from our active databases. To exercise your data rights, submit a written request to support@oct9.com.'
+          title: '5. Data Rights & Permanent Erasure (DPDP Act, 2023)',
+          content: 'Under India’s Digital Personal Data Protection (DPDP) Act 2023, you have the right to request access, correction, or permanent deletion of your account and personal data from our active databases. To initiate a data deletion request, send an email to support@oct9.in with the subject "Data Deletion Request" or call +91 9667100863. Verified requests are processed within 7 business days.'
         },
         {
-          title: '6. Privacy Grievance Officer',
-          content: 'If you have any questions, concerns, or grievances regarding the handling of your personal data, please contact our Data Protection & Grievance Desk at support@oct9.com or care@oct9.com.'
+          title: '6. Children’s Data & Age of Consent',
+          content: 'OCT9 does not knowingly solicit, collect, or track personal data of minors under 18 years of age without verifiable parental or legal guardian consent. Our services and digital storefront are intended exclusively for individuals eligible to enter into binding contracts under the Indian Contract Act, 1872.'
+        },
+        {
+          title: '7. Transparency: Zero Hidden Fees & No Dark Patterns',
+          content: 'We adhere to honest commerce principles. All prices displayed on product pages are all-inclusive with complimentary pan-India delivery. We do not use countdown pressure tactics, hidden cart surcharges, or pre-selected recurring charges.'
+        },
+        {
+          title: '8. Privacy Grievance Officer',
+          content: 'If you have any questions, concerns, or grievances regarding the handling of your personal data, please contact our Data Protection & Grievance Desk at support@oct9.in or by phone at +91 9667100863.'
         }
       ]
     },
@@ -754,7 +765,7 @@ export const DEFAULT_SITE_CONTENT = {
         },
         {
           title: '6. Cookie Queries & Data Privacy Support',
-          content: 'If you have any questions regarding our cookie practices, or wish to exercise your data preferences, contact our Data Protection Desk at care@oct9.com.'
+          content: 'If you have any questions regarding our cookie practices, or wish to exercise your data preferences, contact our Data Protection Desk at support@oct9.in.'
         }
       ]
     }
@@ -775,12 +786,132 @@ export const DEFAULT_SITE_CONTENT = {
     registered_address: 'OCT9 Flagship Studio, Fashion Hub, Shahpur Jat, New Delhi 110049',
     operating_address: 'Plot 42, Okhla Industrial Area Phase-III, New Delhi 110020',
     grievance_officer_name: 'Customer Grievance Officer',
-    grievance_email: 'care@oct9.com',
-    grievance_phone: '+91 98765 43210',
-    support_email: 'support@oct9.com',
+    grievance_email: 'support@oct9.in',
+    grievance_phone: '+91 9667100863',
+    support_email: 'support@oct9.in',
     dispute_jurisdiction: 'Courts of New Delhi, India'
+  },
+  seo: {
+    meta_title: "OCT9 | Women's Luxury Ethnic Wear, Suits & Sarees",
+    meta_description: "Luxury without noise",
+    keywords: "OCT9, luxury without noise, ethnic wear, suits, designer suits, salwar suits, anarkali suits, sarees, festive wear, indian fashion, luxury ethnic wear",
+    canonical_base_url: "https://oct9.in",
+    site_name: "OCT9 Luxury Ethnic Wear",
+    og_image: "/oct9-logo.jpg",
+    twitter_card: "summary_large_image",
+    twitter_site: "@oct9india",
+    robots_default: "index, follow",
+    thin_category_noindex: true,
+    thin_category_threshold: 3,
+    aeo: {
+      enabled: true,
+      brand_summary: "OCT9 is an authentic Indian luxury ethnic fashion brand based in New Delhi, India. OCT9 specializes in handcrafted stitched suits, pure unstitched Roman and Mulberry silks, designer festive sarees, and artisan kundan jewellery. All orders include complimentary insured pan-India standard delivery via Shiprocket.",
+      primary_entities: "Luxury Ethnic Wear, Stitched Salwar Suits, Pure Mulberry Silk, Roman Silk, Handcrafted Zardozi, Designer Sarees, Kundan Zewar, Pan-India Standard Delivery",
+      price_range: "₹₹ (₹1,499 - ₹12,999)",
+      target_audience: "Women seeking high-craftsmanship authentic Indian heritage clothing and contemporary occasion wear",
+      allow_gptbot: true,
+      allow_perplexitybot: true,
+      allow_claudebot: true,
+      allow_google_extended: true,
+      allow_ccbot: false,
+      llms_txt_active: true
+    },
+    geo: {
+      enabled: true,
+      business_type: "FashionStore",
+      store_name: "OCT9 Flagship Studio",
+      latitude: "28.5535",
+      longitude: "77.2066",
+      geo_placename: "New Delhi",
+      geo_region: "IN-DL",
+      geo_position: "28.5535;77.2066",
+      icbm: "28.5535, 77.2066",
+      street_address: "Plot 42, Luxury Fashion Hub, Okhla Phase-III",
+      full_address: "Plot 42, Luxury Fashion Hub, Okhla Phase-III, New Delhi, Delhi 110001, India",
+      city: "New Delhi",
+      state: "Delhi",
+      postal_code: "110001",
+      country: "India",
+      country_code: "IN",
+      telephone: "+91 9667100863",
+      email: "support@oct9.in",
+      opening_hours: "Mo-Sa 10:00-19:00",
+      currencies_accepted: "INR",
+      payment_accepted: "Razorpay, UPI, NetBanking, Credit Card, Debit Card, Cash on Delivery",
+      service_area: "India & Worldwide NRI Delivery"
+    },
+    page_overrides: {
+      home: {
+        path: "/",
+        title: "OCT9 | Women's Luxury Ethnic Wear, Suits & Sarees",
+        description: "Luxury without noise",
+        noindex: false
+      },
+      new_arrivals: {
+        path: "/new-arrivals",
+        title: "New Arrivals | Latest Handcrafted Indian Wear | OCT9",
+        description: "Discover the newest designer suits, festive sarees, and handcrafted silhouettes freshly launched in the OCT9 luxury collection.",
+        noindex: false
+      },
+      stitched_suits: {
+        path: "/category/stitched-suits",
+        title: "Designer Stitched Suits & Salwar Kameez | OCT9 Luxury",
+        description: "Shop ready-to-wear stitched suits with exquisite embroidery, tailored cuts, and premium linings. Complimentary pan-India shipping.",
+        noindex: false
+      },
+      unstitched_suits: {
+        path: "/category/unstitched-suits",
+        title: "Pure Unstitched Suits & Silk Fabrics | OCT9 India",
+        description: "Browse authentic unstitched 3-piece suit fabrics in pure Chanderi, Mulberry silk, and organza with hand-embroidered dupattas.",
+        noindex: false
+      },
+      sarees: {
+        path: "/category/sarees",
+        title: "Designer Festive & Wedding Sarees | OCT9 India",
+        description: "Elegantly draped festive sarees in pure organza, mulberry silk, and intricate zardozi embroidery with free pan-India shipping.",
+        noindex: false
+      },
+      contact: {
+        path: "/contact",
+        title: "Contact Customer Care & Studio | OCT9 New Delhi",
+        description: "Reach our customer support team via phone at 9667100863 or support@oct9.in. We are ready to assist with orders and deliveries.",
+        noindex: false
+      },
+      about: {
+        path: "/about",
+        title: "About OCT9 | Heritage Indian Ethnic Wear & Craftsmanship",
+        description: "Discover the heritage of OCT9. Handcrafted luxury ethnic wear celebrating generational weavers, pure silks, and timeless elegance.",
+        noindex: false
+      },
+      shipping: {
+        path: "/shipping-policy",
+        title: "Shipping & Delivery Policy | Pan-India Standard Delivery | OCT9",
+        description: "Learn about OCT9 complimentary pan-India shipping, Shiprocket courier dispatch timelines, tracking, and secure delivery guarantees.",
+        noindex: false
+      },
+      refunds: {
+        path: "/refund-policy",
+        title: "Hassle-Free Returns & Refund Policy | OCT9 Care",
+        description: "Review our clear 7-day return, exchange, and direct refund guidelines for luxury ethnic wear purchases on OCT9.",
+        noindex: false
+      },
+      privacy: {
+        path: "/privacy",
+        title: "Privacy Policy & DPDP Act Compliance | OCT9 India",
+        description: "Learn how OCT9 safeguards your personal data, transaction security, and consumer rights in accordance with the DPDP Act 2023.",
+        noindex: false
+      },
+      terms: {
+        path: "/terms",
+        title: "Terms and Conditions of Use | OCT9 Luxury Wear",
+        description: "Official terms and conditions governing browsing, purchasing, and services on OCT9 luxury ethnic wear digital storefront.",
+        noindex: false
+      }
+    }
   }
 };
+
+export const DEFAULT_SEO_CONFIG = DEFAULT_SITE_CONTENT.seo;
 
 const API_BASE = '/api/content';
 
@@ -816,6 +947,13 @@ export function ContentProvider({ children }) {
             privacy: { ...DEFAULT_SITE_CONTENT.pages.privacy, ...(data.content.pages?.privacy || {}) },
             about: { ...DEFAULT_SITE_CONTENT.pages.about, ...(data.content.pages?.about || {}) },
             cookie: { ...DEFAULT_SITE_CONTENT.pages.cookie, ...(data.content.pages?.cookie || {}) }
+          },
+          seo: {
+            ...DEFAULT_SEO_CONFIG,
+            ...(data.content.seo || {}),
+            aeo: { ...DEFAULT_SEO_CONFIG.aeo, ...(data.content.seo?.aeo || {}) },
+            geo: { ...DEFAULT_SEO_CONFIG.geo, ...(data.content.seo?.geo || {}) },
+            page_overrides: { ...DEFAULT_SEO_CONFIG.page_overrides, ...(data.content.seo?.page_overrides || {}) }
           }
         }));
       }
@@ -836,7 +974,7 @@ export function ContentProvider({ children }) {
       const data = await api.updateAdminContent(updates);
       if (data && data.success && data.content) {
         setContent(data.content);
-        return { success: true, message: data.message };
+        return { success: true, message: data.message, sync: data.sync };
       }
       return { success: false, message: data.message || 'Failed to update content' };
     } catch (e) {
@@ -987,8 +1125,10 @@ export function ContentProvider({ children }) {
     getCookieBanner,
     getHomepageSections,
     getNavLinks,
+    getSeoConfig: () => content.seo || DEFAULT_SEO_CONFIG,
     DEFAULT_NAV_LINKS,
-    DEFAULT_HOMEPAGE_SECTIONS
+    DEFAULT_HOMEPAGE_SECTIONS,
+    DEFAULT_SEO_CONFIG
   };
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;

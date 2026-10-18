@@ -69,7 +69,7 @@ export function ShiprocketTrackerModal({ waybill, isOpen, onClose, destinationCi
                   Live
                 </span>
               </div>
-              <p className="text-xs text-neutral-500">Multi-Carrier Surface & Air Express</p>
+              <p className="text-xs text-neutral-500">Standard Surface Delivery</p>
             </div>
           </div>
 
@@ -142,12 +142,12 @@ export function ShiprocketTrackerModal({ waybill, isOpen, onClose, destinationCi
 
                 <div>
                   <span className="text-[10px] text-neutral-500 uppercase tracking-wider block font-semibold">Carrier</span>
-                  <span className="font-semibold text-neutral-900">{data.courier || 'Shiprocket Express'}</span>
+                  <span className="font-semibold text-neutral-900">{data.courier || 'Shiprocket Standard Delivery'}</span>
                 </div>
 
                 <div>
                   <span className="text-[10px] text-neutral-500 uppercase tracking-wider block font-semibold">Est. Delivery</span>
-                  <span className="font-semibold text-neutral-900">{data.expected_delivery || '2-3 Days'}</span>
+                  <span className="font-semibold text-neutral-900">{data.expected_delivery || '3-5 Days'}</span>
                 </div>
               </div>
 

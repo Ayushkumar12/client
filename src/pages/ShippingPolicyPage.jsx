@@ -18,6 +18,9 @@ export function ShippingPolicyPage() {
           name="description"
           content={page.subtitle || 'Learn about OCT9 shipping charges, domestic delivery timelines, real-time Shiprocket tracking, and transit insurance.'}
         />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
       </Helmet>
 
       <div className="max-w-3xl mx-auto space-y-10">
@@ -30,7 +33,7 @@ export function ShippingPolicyPage() {
             {page.title || 'Shipping & Delivery Policy'}
           </h1>
           <p className="text-sm text-neutral-600 leading-relaxed max-w-2xl">
-            {page.subtitle || 'Insured express shipping across India powered by Shiprocket & premium air courier partners.'}
+            {page.subtitle || 'Insured standard delivery across India powered by Shiprocket & trusted courier partners.'}
           </p>
           <p className="text-xs text-neutral-400 pt-1">
             Last updated: {page.last_updated || 'October 2026'}
@@ -64,9 +67,9 @@ export function ShippingPolicyPage() {
               Metro Cities
             </span>
             <p className="text-lg font-sans font-bold text-neutral-900">
-              {page.delivery_metro || '2–4 Days'}
+              {page.delivery_metro || '3–5 Days'}
             </p>
-            <p className="text-xs text-neutral-500 mt-0.5">Express Air</p>
+            <p className="text-xs text-neutral-500 mt-0.5">Standard Delivery</p>
           </div>
 
           <div>

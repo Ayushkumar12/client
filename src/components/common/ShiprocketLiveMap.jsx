@@ -39,11 +39,11 @@ export function ShiprocketLiveMap({
   }, [waybill]);
 
   const activeWaybill = waybill || apiData?.waybill || '';
-  const courierPartner = apiData?.courier || 'Shiprocket Express Multi-Carrier';
-  const serviceType = apiData?.service_type || 'Shiprocket Multi-Carrier Surface & Air Express';
+  const courierPartner = apiData?.courier || 'Shiprocket Standard Delivery';
+  const serviceType = apiData?.service_type || 'Shiprocket Standard Surface Delivery';
   const originLocation = apiData?.origin || 'OCT9 Central Hub, New Delhi (110020)';
   const deliveryStatusText = apiData?.current_status || (currentStatus === 'manifested' ? 'Manifested & Assigned' : 'In Transit');
-  const estDeliveryDate = apiData?.expected_delivery || expectedDelivery || 'Within 2-3 Days';
+  const estDeliveryDate = apiData?.expected_delivery || expectedDelivery || 'Within 3-5 Days';
 
   const copyAWB = () => {
     if (!activeWaybill) return;

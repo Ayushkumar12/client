@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import { CartProvider } from './context/CartContext.jsx';
 import { WishlistProvider } from './context/WishlistContext.jsx';
 import { ContentProvider } from './context/ContentContext.jsx';
+import { ToastProvider } from './context/ToastContext.jsx';
 
 import { Header } from './components/common/Header.jsx';
 import { Footer } from './components/common/Footer.jsx';
@@ -17,6 +18,7 @@ import { ErrorBoundary } from './components/common/ErrorBoundary.jsx';
 // Pages
 import { HomePage } from './pages/HomePage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
+import { ErrorPage } from './pages/ErrorPage.jsx';
 import { ListingPage } from './pages/ListingPage.jsx';
 import { ProductDetailPage } from './pages/ProductDetailPage.jsx';
 import { CartPage } from './pages/CartPage.jsx';
@@ -39,20 +41,21 @@ import { AboutPage } from './pages/AboutPage.jsx';
 import { CookiePolicyPage } from './pages/CookiePolicyPage.jsx';
 import { SitemapPage } from './pages/SitemapPage.jsx';
 
-// Admin Pages
-import { AdminLayout } from './pages/admin/AdminLayout.jsx';
-import { AdminDashboard } from './pages/admin/AdminDashboard.jsx';
-import { AdminAnalytics } from './pages/admin/AdminAnalytics.jsx';
-import { AdminOrders } from './pages/admin/AdminOrders.jsx';
-import { AdminReturns } from './pages/admin/AdminReturns.jsx';
-import { AdminShiprocket } from './pages/admin/AdminShiprocket.jsx';
-import { AdminProducts } from './pages/admin/AdminProducts.jsx';
-import { AdminCustomers } from './pages/admin/AdminCustomers.jsx';
-import { AdminContentManager } from './pages/admin/AdminContentManager.jsx';
-import { AdminInventory } from './pages/admin/AdminInventory.jsx';
-import { AdminInquiries } from './pages/admin/AdminInquiries.jsx';
-import { AdminNavigation } from './pages/admin/AdminNavigation.jsx';
-import { AdminDatabase } from './pages/admin/AdminDatabase.jsx';
+// Admin Pages (Code-split via React.lazy to keep customer bundle lightweight and eliminate unused JavaScript)
+const AdminLayout = React.lazy(() => import('./pages/admin/AdminLayout.jsx').then(m => ({ default: m.AdminLayout })));
+const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard.jsx').then(m => ({ default: m.AdminDashboard })));
+const AdminAnalytics = React.lazy(() => import('./pages/admin/AdminAnalytics.jsx').then(m => ({ default: m.AdminAnalytics })));
+const AdminOrders = React.lazy(() => import('./pages/admin/AdminOrders.jsx').then(m => ({ default: m.AdminOrders })));
+const AdminReturns = React.lazy(() => import('./pages/admin/AdminReturns.jsx').then(m => ({ default: m.AdminReturns })));
+const AdminShiprocket = React.lazy(() => import('./pages/admin/AdminShiprocket.jsx').then(m => ({ default: m.AdminShiprocket })));
+const AdminProducts = React.lazy(() => import('./pages/admin/AdminProducts.jsx').then(m => ({ default: m.AdminProducts })));
+const AdminCustomers = React.lazy(() => import('./pages/admin/AdminCustomers.jsx').then(m => ({ default: m.AdminCustomers })));
+const AdminContentManager = React.lazy(() => import('./pages/admin/AdminContentManager.jsx').then(m => ({ default: m.AdminContentManager })));
+const AdminInventory = React.lazy(() => import('./pages/admin/AdminInventory.jsx').then(m => ({ default: m.AdminInventory })));
+const AdminInquiries = React.lazy(() => import('./pages/admin/AdminInquiries.jsx').then(m => ({ default: m.AdminInquiries })));
+const AdminNavigation = React.lazy(() => import('./pages/admin/AdminNavigation.jsx').then(m => ({ default: m.AdminNavigation })));
+const AdminSeoManager = React.lazy(() => import('./pages/admin/AdminSeoManager.jsx').then(m => ({ default: m.AdminSeoManager })));
+const AdminDatabase = React.lazy(() => import('./pages/admin/AdminDatabase.jsx').then(m => ({ default: m.AdminDatabase })));
 import { UnderDevelopmentLaunch } from './components/common/UnderDevelopmentLaunch.jsx';
 import { BackToTopButton } from './components/common/BackToTopButton.jsx';
 import { ScrollProgressBar } from './components/common/ScrollProgressBar.jsx';
@@ -69,6 +72,11 @@ const SEO_AND_POLICY_ROUTES = [
   '/sitemap',
   '/sitemap.xml',
   '/robots.txt',
+  '/llms.txt',
+  '/llms-full.txt',
+  '/.well-known/ai-catalog.json',
+  '/.well-known/ard.json',
+  '/ai-catalog.json',
   '/about',
   '/contact',
   '/shipping-policy',
@@ -175,11 +183,12 @@ export default function App() {
     <ErrorBoundary>
       <HelmetProvider>
         <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <ContentProvider>
-                <ScrollToTop />
-                <MainLayout>
+          <ToastProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <ContentProvider>
+                  <ScrollToTop />
+                  <MainLayout>
                   <ErrorBoundary>
                     <Routes>
                       {/* Storefront Routes */}
@@ -214,9 +223,24 @@ export default function App() {
                       <Route path="/refund-policy" element={<ReturnsPage />} />
                       <Route path="/about" element={<AboutPage />} />
 
-                      {/* Admin Routes */}
-                      <Route path="/admin" element={<AdminLayout />}>
+                      {/* Admin Routes (Lazy-loaded with enterprise fallback) */}
+                      <Route
+                        path="/admin"
+                        element={
+                          <React.Suspense
+                            fallback={
+                              <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center text-neutral-400">
+                                <div className="w-8 h-8 border-2 border-neutral-700 border-t-white rounded-full animate-spin mb-3"></div>
+                                <span className="text-xs tracking-wider uppercase font-mono">Loading Administration...</span>
+                              </div>
+                            }
+                          >
+                            <AdminLayout />
+                          </React.Suspense>
+                        }
+                      >
                         <Route index element={<AdminDashboard />} />
+                        <Route path="seo" element={<AdminSeoManager />} />
                         <Route path="inventory" element={<AdminInventory />} />
                         <Route path="analytics" element={<AdminAnalytics />} />
                         <Route path="orders" element={<AdminOrders />} />
@@ -231,6 +255,10 @@ export default function App() {
                         <Route path="database" element={<AdminDatabase />} />
                       </Route>
 
+                      {/* Error Routes */}
+                      <Route path="/error" element={<ErrorPage />} />
+                      <Route path="/500" element={<ErrorPage />} />
+
                       {/* 404 Fallback */}
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>
@@ -239,7 +267,8 @@ export default function App() {
               </ContentProvider>
             </WishlistProvider>
           </CartProvider>
-        </AuthProvider>
+        </ToastProvider>
+      </AuthProvider>
       </HelmetProvider>
     </ErrorBoundary>
   );

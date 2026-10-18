@@ -9,8 +9,15 @@ export function isLocalWebsite() {
   return host === 'localhost' || host === '127.0.0.1' || host === '::1' || /^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host);
 }
 
-// Resolve primary API based strictly on current website host
+// Resolve primary API based strictly on current website host or env switch
 function resolveInitialBase() {
+  if (import.meta.env.VITE_USE_LOCALHOST === 'true') {
+    if (typeof window !== 'undefined' && (window.location.port === '5173' || window.location.port === '3000')) {
+      return '/api';
+    }
+    return LOCALHOST_API;
+  }
+
   if (typeof window !== 'undefined') {
     const port = window.location.port;
 
@@ -26,7 +33,7 @@ function resolveInitialBase() {
     return LIVE_BACKEND_API;
   }
 
-  return LIVE_BACKEND_API;
+  return LOCALHOST_API;
 }
 
 let CURRENT_API_BASE = resolveInitialBase();
@@ -43,7 +50,22 @@ export const API_BASE = CURRENT_API_BASE;
 
 export function formatImageUrl(url) {
   if (!url || typeof url !== 'string') return '';
-  const trimmed = url.trim();
+  let trimmed = url.trim();
+
+  // If running in production (live domain), convert any localhost or relative uploads to live backend
+  if (!isLocalWebsite()) {
+    if (trimmed.includes('localhost:') || trimmed.includes('127.0.0.1:')) {
+      const match = trimmed.match(/\/uploads\/.*$/);
+      if (match) {
+        return `https://backend.oct9.in${match[0]}`;
+      }
+    }
+    // Upgrade insecure http:// URLs to https:// to prevent Mixed Content warnings
+    if (trimmed.startsWith('http://') && !trimmed.includes('localhost') && !trimmed.includes('127.0.0.1')) {
+      trimmed = trimmed.replace(/^http:\/\//i, 'https://');
+    }
+  }
+
   if (
     trimmed.startsWith('http://') ||
     trimmed.startsWith('https://') ||
@@ -52,19 +74,46 @@ export function formatImageUrl(url) {
   ) {
     return trimmed;
   }
-  if (trimmed.startsWith('/uploads/')) {
-    if (CURRENT_API_BASE === '/api' || CURRENT_API_BASE.startsWith('/')) {
-      return trimmed;
+  const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  if (cleanPath.startsWith('/uploads/')) {
+    if (isLocalWebsite()) {
+      if (CURRENT_API_BASE === '/api' || CURRENT_API_BASE.startsWith('/')) {
+        return cleanPath;
+      }
+      return `${CURRENT_API_BASE.replace(/\/api\/?$/, '')}${cleanPath}`;
     }
-    return `${CURRENT_API_BASE.replace(/\/api\/?$/, '')}${trimmed}`;
-  }
-  if (trimmed.startsWith('uploads/')) {
-    if (CURRENT_API_BASE === '/api' || CURRENT_API_BASE.startsWith('/')) {
-      return `/${trimmed}`;
-    }
-    return `${CURRENT_API_BASE.replace(/\/api\/?$/, '')}/${trimmed}`;
+    // On production/live website, always resolve directly to live backend uploads domain
+    const base = (CURRENT_API_BASE && !CURRENT_API_BASE.startsWith('/'))
+      ? CURRENT_API_BASE.replace(/\/api\/?$/, '')
+      : 'https://backend.oct9.in';
+    return `${base}${cleanPath}`;
   }
   return trimmed;
+}
+
+export function extractProductImage(product, fallback = '/oct9-logo.jpg') {
+  if (!product) return fallback;
+  let raw = '';
+  if (Array.isArray(product.images) && product.images.length > 0) {
+    raw = product.images[0];
+  } else if (typeof product.images === 'string' && product.images.trim().length > 0) {
+    const trimmed = product.images.trim();
+    if (trimmed.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed) && parsed.length > 0) raw = parsed[0];
+      } catch (e) {
+        raw = trimmed;
+      }
+    } else {
+      raw = trimmed;
+    }
+  } else if (product.image) {
+    raw = product.image;
+  }
+
+  const formatted = formatImageUrl(raw);
+  return formatted || fallback;
 }
 
 function getAuthHeader() {
@@ -124,28 +173,10 @@ async function request(endpoint, options = {}) {
     ...options.headers,
   };
 
-  console.groupCollapsed(`[API Request] ${method} ${endpoint}`);
-  console.log('Request Endpoint:', endpoint);
-  console.log('Request Options:', options);
-  if (options.body) {
-    try {
-      console.log('Request Payload:', JSON.parse(options.body));
-    } catch {
-      console.log('Request Body:', options.body);
-    }
-  }
-  console.groupEnd();
-
   try {
     const response = await fetchWithFallback(endpoint, { ...options, headers });
     const duration = (performance.now() - startTime).toFixed(1);
     const data = await response.json().catch(() => ({}));
-
-    console.groupCollapsed(`[API Response] ${response.status} ${method} ${endpoint} (${duration}ms)`);
-    console.log('Status Code:', response.status);
-    console.log('Response URL:', response.url);
-    console.log('Response Data:', data);
-    console.groupEnd();
 
     if (!response.ok) {
       console.error(`[API Error] ${response.status} ${method} ${endpoint}:`, data);
@@ -163,11 +194,6 @@ async function uploadRequest(endpoint, formData) {
   const startTime = performance.now();
   const headers = getAuthHeader();
 
-  console.groupCollapsed(`[API Upload Request] POST ${endpoint}`);
-  console.log('Endpoint:', endpoint);
-  console.log('FormData:', formData);
-  console.groupEnd();
-
   try {
     const response = await fetchWithFallback(endpoint, {
       method: 'POST',
@@ -177,13 +203,8 @@ async function uploadRequest(endpoint, formData) {
     const duration = (performance.now() - startTime).toFixed(1);
     const data = await response.json().catch(() => ({}));
 
-    console.groupCollapsed(`[API Upload Response] ${response.status} POST ${endpoint} (${duration}ms)`);
-    console.log('Status Code:', response.status);
-    console.log('Response Data:', data);
-    console.groupEnd();
-
     if (!response.ok) {
-      console.error(`❌ [API Upload Error] ${response.status} POST ${endpoint}:`, data);
+      console.error(`[API Upload Error] ${response.status} POST ${endpoint}:`, data);
       throw new Error(data.message || `Upload failed with status ${response.status}`);
     }
     return data;
@@ -207,6 +228,7 @@ export const api = {
   saveAddress: (address) => request('/auth/address', { method: 'POST', body: JSON.stringify(address) }),
   updateAddress: (id, address) => request(`/auth/address/${id}`, { method: 'PUT', body: JSON.stringify(address) }),
   setDefaultAddress: (id) => request(`/auth/address/${id}/default`, { method: 'PUT' }),
+  removeDefaultAddress: (id) => request(`/auth/address/${id}/default`, { method: 'DELETE' }),
   deleteAddress: (id) => request(`/auth/address/${id}`, { method: 'DELETE' }),
 
   // Products
@@ -225,6 +247,7 @@ export const api = {
   deleteProduct: (id) => request(`/products/${id}`, { method: 'DELETE' }),
 
   // Orders & Payments
+  validateCheckout: (payload) => request('/orders/validate-checkout', { method: 'POST', body: JSON.stringify(payload) }),
   createOrder: (orderData) => request('/orders/create', { method: 'POST', body: JSON.stringify(orderData) }),
   verifyPayment: (paymentData) => request('/orders/verify-payment', { method: 'POST', body: JSON.stringify(paymentData) }),
   getUserOrders: () => request('/orders/my-orders'),
@@ -312,6 +335,9 @@ export const api = {
     method: 'POST',
     body: JSON.stringify({ section })
   }),
+  syncSeoFiles: () => request('/content/admin/sync-seo', {
+    method: 'POST'
+  }),
 
   // Multi-Channel Inventory Management (Flipkart, Amazon, Myntra, Storefront)
   getInventoryOverview: () => request('/inventory/overview'),
@@ -322,10 +348,30 @@ export const api = {
     });
     return request(`/inventory/products?${query.toString()}`);
   },
-  updateMasterStock: (productId, data) => request(`/inventory/products/${productId}/stock`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  }),
+  updateMasterStock: (productId, data) => {
+    const payload = typeof data === 'object' && data !== null
+      ? {
+          ...data,
+          stock: data.stock !== undefined ? data.stock : data.new_stock
+        }
+      : { stock: data };
+    return request(`/inventory/products/${productId}/stock`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
+  },
+  updateProductStock: (productId, data) => {
+    const payload = typeof data === 'object' && data !== null
+      ? {
+          ...data,
+          stock: data.stock !== undefined ? data.stock : data.new_stock
+        }
+      : { stock: data };
+    return request(`/inventory/products/${productId}/stock`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
+  },
   updateChannelListing: (productId, channelKey, data) => request(`/inventory/products/${productId}/channel/${channelKey}`, {
     method: 'PUT',
     body: JSON.stringify(data)
@@ -659,6 +705,31 @@ export const api = {
     method: 'POST',
     body: JSON.stringify(data)
   }),
+  // Image & Media Uploads (SQL Database & Disk Storage)
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return uploadRequest('/upload/image', formData);
+  },
+  uploadMultipleImages: async (files) => {
+    const formData = new FormData();
+    (files || []).forEach((file) => {
+      formData.append('images', file);
+    });
+    return uploadRequest('/upload/multiple', formData);
+  },
+  uploadBase64Image: async (base64Data, filename) => {
+    return request('/upload/base64', {
+      method: 'POST',
+      body: JSON.stringify({ image: base64Data, filename })
+    });
+  },
+  getMediaLibrary: (params = {}) => {
+    const query = new URLSearchParams(params);
+    const qStr = query.toString() ? `?${query.toString()}` : '';
+    return request(`/upload/media${qStr}`);
+  },
+  deleteMedia: (id) => request(`/upload/media/${id}`, { method: 'DELETE' }),
   formatImageUrl,
 };
 

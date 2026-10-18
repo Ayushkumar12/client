@@ -7,9 +7,9 @@ export function FloatingContactButton() {
   const brand = getBrand();
   const [isOpen, setIsOpen] = useState(false);
 
-  const whatsappNumber = brand.whatsapp_number || '919876543210';
-  const phone = brand.support_phone || '+91 98765 43210';
-  const email = brand.support_email || 'care@oct9.com';
+  const whatsappNumber = brand.whatsapp_number || '919667100863';
+  const phone = brand.support_phone || '+91 9667100863';
+  const email = brand.support_email || 'support@oct9.in';
 
   const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(
     'Hello OCT9 Customer Care, I have an inquiry regarding my order / ethnic collection.'

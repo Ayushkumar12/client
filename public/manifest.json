@@ -1,10 +1,11 @@
 {
   "short_name": "OCT9",
-  "name": "OCT9 - Luxury Ethnic Elegance",
+  "name": "OCT9 — Luxury Without Noise",
+  "description": "Shop authentic women's luxury ethnic wear, designer suits, anarkalis, and festive sarees at OCT9. Handcrafted silhouettes, pure mulberry silk, and complimentary pan-India shipping.",
   "icons": [
     {
-      "src": "/logo-gold.svg",
-      "type": "image/svg+xml",
+      "src": "/oct9-logo.jpg",
+      "type": "image/jpeg",
       "sizes": "192x192 512x512"
     }
   ],

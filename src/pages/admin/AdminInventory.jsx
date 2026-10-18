@@ -18,7 +18,7 @@ import {
   ArrowRight,
   AlertCircle
 } from 'lucide-react';
-import { api } from '../../services/api.js';
+import { api, formatImageUrl, extractProductImage } from '../../services/api.js';
 import { TableSkeleton } from '../../components/common/Skeleton.jsx';
 
 export function AdminInventory() {
@@ -704,9 +704,20 @@ export function AdminInventory() {
                       <td className="py-3 px-3.5">
                         <div className="flex items-center space-x-3">
                           <img
-                            src={p.image || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80'}
+                            src={extractProductImage(p)}
                             alt={p.title}
                             className="w-10 h-12 object-cover rounded border border-neutral-200 shrink-0 bg-neutral-100"
+                            loading="lazy"
+                            onError={(e) => {
+                              const rawFirst = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : (p.image || '');
+                              if (!e.currentTarget.dataset.retried && typeof rawFirst === 'string' && rawFirst.startsWith('/uploads/')) {
+                                e.currentTarget.dataset.retried = 'true';
+                                e.currentTarget.src = `https://backend.oct9.in${rawFirst}`;
+                                return;
+                              }
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = '/oct9-logo.jpg';
+                            }}
                           />
                           <div className="min-w-0">
                             <p className="font-medium text-neutral-900 truncate max-w-[200px]">{p.title}</p>
@@ -906,9 +917,19 @@ export function AdminInventory() {
 
             <div className="flex items-center space-x-3 bg-neutral-50 p-3 rounded border border-neutral-200">
               <img
-                src={stockEditProduct.image || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80'}
+                src={extractProductImage(stockEditProduct)}
                 alt={stockEditProduct.title}
-                className="w-10 h-12 object-cover rounded border border-neutral-200 shrink-0"
+                className="w-10 h-12 object-cover rounded border border-neutral-200 shrink-0 bg-neutral-100"
+                onError={(e) => {
+                  const rawFirst = Array.isArray(stockEditProduct.images) && stockEditProduct.images.length > 0 ? stockEditProduct.images[0] : (stockEditProduct.image || '');
+                  if (!e.currentTarget.dataset.retried && typeof rawFirst === 'string' && rawFirst.startsWith('/uploads/')) {
+                    e.currentTarget.dataset.retried = 'true';
+                    e.currentTarget.src = `https://backend.oct9.in${rawFirst}`;
+                    return;
+                  }
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/oct9-logo.jpg';
+                }}
               />
               <div className="min-w-0">
                 <p className="font-medium text-xs text-neutral-900 truncate">{stockEditProduct.title}</p>

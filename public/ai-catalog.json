@@ -1,0 +1,65 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "OCT9 Luxury Ethnic Wear",
+    "identifier": "https://oct9.in"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:oct9.in:mcp:catalog",
+      "displayName": "OCT9 Luxury Ethnic Wear Product Catalog MCP Server",
+      "type": "application/mcp-server-card+json",
+      "url": "https://backend.oct9.in/api/products",
+      "description": "Model Context Protocol interface providing structured tool-use access to live luxury ethnic wear inventory, stitched suits, silks, sarees, and pricing.",
+      "representativeQueries": [
+        "luxury stitched suits",
+        "pure unstitched silk suits",
+        "designer festive sarees",
+        "handcrafted zardozi occasion wear"
+      ]
+    },
+    {
+      "identifier": "urn:air:oct9.in:agent:shopping",
+      "displayName": "OCT9 Luxury Ethnic Wear Customer Care & Style Agent",
+      "type": "application/a2a-agent-card+json",
+      "url": "https://oct9.in/.well-known/agent-card.json",
+      "description": "Autonomous Agent-to-Agent interface for customer care, sizing guidance, order tracking, and bespoke styling inquiries.",
+      "representativeQueries": [
+        "OCT9 Luxury Ethnic Wear customer care contact",
+        "OCT9 Luxury Ethnic Wear order tracking assistance",
+        "OCT9 Luxury Ethnic Wear size guide recommendations"
+      ]
+    },
+    {
+      "identifier": "urn:air:oct9.in:skills:brand",
+      "displayName": "OCT9 Luxury Ethnic Wear LLM Knowledge Index",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://oct9.in/llms.txt",
+      "description": "Standardized concise LLM summary and navigational index according to the llmstxt.org specification.",
+      "representativeQueries": [
+        "OCT9 Luxury Ethnic Wear brand summary",
+        "OCT9 Luxury Ethnic Wear return policy",
+        "OCT9 Luxury Ethnic Wear studio details"
+      ]
+    },
+    {
+      "identifier": "urn:air:oct9.in:skills:full-documentation",
+      "displayName": "OCT9 Luxury Ethnic Wear Full LLM Documentation",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://oct9.in/llms-full.txt",
+      "description": "Comprehensive reference documentation covering fabric purity standards, sizing chart measurements, studio coordinates, and customer service details.",
+      "representativeQueries": [
+        "OCT9 Luxury Ethnic Wear size guide measurements",
+        "OCT9 Luxury Ethnic Wear pure mulberry silk standards",
+        "OCT9 Luxury Ethnic Wear studio location New Delhi"
+      ]
+    },
+    {
+      "identifier": "urn:air:oct9.in:catalog:root",
+      "displayName": "OCT9 Luxury Ethnic Wear Master Agentic Catalog",
+      "type": "application/ai-catalog+json",
+      "url": "https://oct9.in/.well-known/ai-catalog.json",
+      "description": "Master Agentic Resource Discovery (ARD) catalog indexing all MCP servers, agent cards, and skills for the OCT9 Luxury Ethnic Wear brand."
+    }
+  ]
+}
